@@ -103,7 +103,7 @@ Local branch `main`, tracking `crynet/main`. Latest commit `e7be48a` = checkpoin
 
 | Remote | Points at | Purpose |
 |---|---|---|
-| `crynet` | `github.com/Amazo123/CryNet.git` | **The live project.** Every change is committed here and pushed. Created 2026-10-29, currently **private**. |
+| `crynet` | `github.com/Amazo123/CryNet.git` | **The live project.** Every change is committed here and pushed. Created 2026-10-29, **public** since 2026-10-29. |
 | `legacy` | `github.com/Amazo123/Multi-Node-Infant-Cry-Detection.git` | The **old** project (Arduino firmware, BOM, wiring guides, old `model_data.h`). Read-only reference — do not push to it. Its hub `.ino`, `firmware/common/protocol.h`, `firmware/central_hub_s3/pins.h` and `dsp_mel_extractor.cpp` are the starting point for checkpoint 2. |
 
 **Backup rule:** after every meaningful change → update this file → `git add -A && git commit && git push crynet main`. Never commit `research/_cache/` (5.5 GB of corpora) or the `_*_work/` scratch dirs; they are gitignored and the notebook re-downloads the corpora itself.
@@ -138,6 +138,8 @@ Local branch `main`, tracking `crynet/main`. Latest commit `e7be48a` = checkpoin
 
 | Date | Change | Files touched | Notes |
 |---|---|---|---|
+| 2026-10-29 | **CryNet repo made public** (was private) at the user's request. | GitHub repo settings | `github.com/Amazo123/CryNet` → private: false. |
+| 2026-10-29 | **Added §6 "Legacy system vs. this rebuild"** — a line-by-line comparison of the abandoned system (read directly from the `legacy` remote) against the rebuild: architecture, model size (6.15 MB FP32 vs 135 KB INT8), mel bands, CMVN, dataset strategy, trigger/threshold, verification discipline. Documents what was inherited on purpose (hardware, topology, wire protocol) vs. re-decided (everything model/feature/threshold related), and states plainly that checkpoint 2 firmware is still pending. | `SYSTEM_UPDATE.md` | Answers the user's question about whether the rebuild is genuinely new or a re-skin of the failed system. Evidence: legacy `TinyCryNet` (attention + GRU, 6.15 MB), `RMS_TRIGGER_THRESHOLD 0.18`, 128 mel, no CMVN, ICD as a git submodule. |
 | 2026-10-29 | **Checkpoint 1 committed and pushed to GitHub.** Created `github.com/Amazo123/CryNet` (private), committed the full checkpoint-1 deliverable as `e7be48a`, renamed the branch `master` → `main`, pushed with upstream tracking. The old repo was renamed remote `origin` → `legacy` and left as a read-only reference. | all checkpoint-1 files; `.gitignore` | `.gitignore` extended to exclude `research/_real_work/`, `research/_realfast_work/`, `*.exe`, `*.pdb`, `*.o`, `*.obj` (build scratch). Push verified: remote `main` = `e7be48a`, 34 files. |
 | 2026-10-29 | **Created `SYSTEM_UPDATE.md`** — standing living status/recovery log. Imported the full checkpoint-1 state from `PROJECT_HANDOFF.md` and verified it against disk (`research/_realfast_out/*`, `metrics.json`, `deploy_config.json`, `real_fast.log`). | `SYSTEM_UPDATE.md` (new) | First entry. Establishes the update-after-every-edit protocol and the context-management rules (§0). |
 | 2026-10-29 | `PROJECT_HANDOFF.md` §5 file map now points at `SYSTEM_UPDATE.md` as the living log / recovery layer. | `PROJECT_HANDOFF.md` | One-line map addition. |
@@ -146,7 +148,38 @@ Local branch `main`, tracking `crynet/main`. Latest commit `e7be48a` = checkpoin
 
 ---
 
-## 6. Quick reference
+## 6. Legacy system vs. this rebuild (what was inherited, what was re-decided)
+
+Verified on 2026-10-29 by reading the legacy repo directly (`legacy` remote): `firmware/central_hub_s3/central_hub_s3.ino`, `dsp_mel_extractor.h`, `firmware/common/protocol.h`, `model_training/tiny_crynet_esp32.py`, `model_training/reference_pipeline.py`, `model_artifacts/README.md`, and the git tree.
+
+### Inherited on purpose (hardware + topology — the user's real boards)
+Same 3× ESP32-C3 cot nodes → ESP32-S3 hub → ESP32-C3 wearable; same ESP-NOW telemetry/audio-fragment protocol; same 2 s @ 16 kHz window with 512-pt FFT and hop 400; same `wearable_alert_packet_t` BLE format; same TFT/GATT UI. Nothing here was re-litigated, because the hardware is fixed and the wire format already exists.
+
+### Re-decided from scratch (this is where the new work is)
+
+| Aspect | Legacy system | This rebuild |
+|---|---|---|
+| Architecture | `TinyCryNet` — 5 × BSConvU blocks + **CCA channel attention** + **GRU** temporal aggregator (PyTorch → ONNX) | 3 plain CNN variants, **no attention, no RNN**, chosen so every op has a TFLite Micro kernel (asserted at export) |
+| Model size | `model_data.h` = **6,157,199 bytes (6.15 MB)**, FP32 in flash; needed a bespoke **6.0 MB `app0` partition** | **135 KB INT8** — 45× smaller, fits comfortably in stock partitions |
+| Input | `[1,1,81,128]` — 128 mel bands | `[1,81,64,1]` — 64 mel bands |
+| Mel filter | `htk=True`, `fmin=0` | librosa **slaney**, `fmin=20 Hz` |
+| Level handling | `power_to_db(top_db=80)` — **absolute dB, no normalisation** ⇒ the model was level-dependent | **per-window CMVN** ⇒ level-invariant (ICD cries sit at RMS 0.006 vs negatives at 0.3–0.46) |
+| Dataset | ICD pulled in as a **git submodule** of an academic baseline repo (`ICD_MMSP`, tree mode 160000); one corpus, no audio-level verification, no external negatives | every corpus **profiled at audio level**; ICD as primary **combined with** cry4 + ESC-50 + Snoring; contaminated corpora rejected; negatives deliberately include cat meows, speech, snoring |
+| Trigger | hard-coded `RMS_TRIGGER_THRESHOLD 0.18` + `CONFIRMATION_PROB 0.65` | trigger ~0.03 + silence gate 0.0015 + **threshold calibrated on data** (0.23 at ≥ 95 % recall) with the whole recall/FPR curve reported |
+| Training | 35-epoch SpeechBrain/PyTorch run, artifacts in a 105 MB LFS tarball; no recorded per-class false-alarm analysis | Keras/TFLite notebook, **hard-example mining**, **per-category FPR breakdown**, cross-corpus evaluation on corpora never trained on |
+| Verification | `verify_dsp_parity.py` existed as a simulation script | **automated** C↔Python parity (max deviation 7.06 × 10⁻⁵), INT8↔float parity (AUC delta −0.00007), TFLM kernel assertion at export, manifest↔archive 1:1 corpus check |
+| Claimed latency | "≈ 40 ms" (never measured on the board) | unmeasured — to be measured in checkpoint 2 (est. 100–300 ms) |
+
+### Why the legacy system failed — and what that means
+The legacy repo's **last commit** is `fix(firmware): resolve false cry detection, packet loss, and full-screen landscape display` — i.e. the system was still being debugged on the hardware when it was abandoned, and the failures it was chasing were *system-level* (ESP-NOW packet loss, TFT layout, false triggers), not dataset-level. With `RMS_TRIGGER_THRESHOLD 0.18`, a soft cry (ICD cries sit at RMS ≈ 0.006) **never reached the classifier at all**, so the old model was never fairly tested on the real hardware. The rebuild therefore changed the model, the features, the trigger and the threshold — but the *dataset* was kept, because the evidence points at the firmware and the trigger logic, not at ICD.
+
+### What is still not new / not proven yet
+- **Checkpoint 2 (firmware) has not been written.** The deployed code is still the legacy Arduino firmware. The "brand new working system" is currently half-built: the model half is new and validated, the firmware half is pending.
+- **No in-domain data.** The model has never heard the user's INMP441, room or gain. ~50 self-recorded clips remain the single biggest accuracy win, and they are also the honest test of whether the new system actually works in the real room.
+
+---
+
+## 7. Quick reference
 
 **Run locally**
 ```bash
