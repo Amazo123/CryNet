@@ -1,0 +1,34 @@
+{
+  "source": "research/verify_int8_parity.py",
+  "model_sha256_note": "the SHA-256 of crynet_int8.tflite is checked by firmware/tools/check_artifact_drift.py",
+  "fold": "4",
+  "clips": 5693,
+  "windows": 11386,
+  "cry_windows": 5330,
+  "threshold": 0.95,
+  "auc_int8": 0.9979257387584547,
+  "auc_float32": 0.9992991305662472,
+  "auc_delta": -0.0013733918077925011,
+  "max_abs_delta_p": 0.18222764134407043,
+  "mean_abs_delta_p": 0.0028648970182985067,
+  "decision_agreement": 0.9995608642192165,
+  "int8_at_threshold": {
+    "tp": 5213,
+    "fn": 117,
+    "fp": 22,
+    "tn": 6034,
+    "recall": 0.9780487804878049,
+    "fpr": 0.003632760898282695,
+    "precision": 0.9957975167144222
+  },
+  "float32_at_threshold": {
+    "tp": 5214,
+    "fn": 116,
+    "fp": 22,
+    "tn": 6034,
+    "recall": 0.9782363977485928,
+    "fpr": 0.003632760898282695,
+    "precision": 0.9957983193277311
+  },
+  "elapsed_s": 65.03343319892883
+}

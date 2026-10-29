@@ -46,6 +46,7 @@ REPORT = OUT / "verify_int8_parity.json"
 
 CELL_MARKERS = [
     "CELL 1 — Environment",
+    "CELL 2 — Dependencies",
     "CELL 3 — Dataset acquisition",
     "CELL 4 — The audio front end",
     "CELL 5 — Archive readers",
@@ -110,19 +111,24 @@ def main() -> int:
           f"({n_cry} cry, {len(val_entries) - n_cry} non-cry)")
 
     # ---- feature extraction -------------------------------------------------
+    failures = {"missing": 0, "decode": 0, "ok": 0}
+
     def features_for(entry):
         stem, label, sub, fold, key = entry
         reader = READERS[key]
         member = reader.index_by_stem().get(stem)
         if member is None:
+            failures["missing"] += 1
             return None
         try:
             x = decode(reader.read(member))
         except Exception:
-            return None
+            x = None
         if x is None:
+            failures["decode"] += 1
             return None
         feats = [log_mel(w) for w in take_windows(x, 2, None, mode="center")]
+        failures["ok"] += 1
         return np.stack(feats).astype(np.float32), label
 
     t0 = time.time()
@@ -134,9 +140,18 @@ def main() -> int:
             feats, label = res
             X.append(feats)
             y.extend([label] * feats.shape[0])
+
+    if not X:
+        raise SystemExit(
+            f"no features were extracted: {failures['missing']} clips were not "
+            f"found in the archives and {failures['decode']} failed to decode. "
+            f"Check that the cached archives match the manifest."
+        )
     X = np.concatenate(X, axis=0)
     y = np.asarray(y, dtype=np.int32)
-    print(f"features: {X.shape}  ({time.time() - t0:.0f}s)")
+    print(f"features: {X.shape}  ({time.time() - t0:.0f}s)  "
+          f"[ok {failures['ok']}, missing {failures['missing']}, "
+          f"undecodable {failures['decode']}]")
 
     # ---- models -------------------------------------------------------------
     import tensorflow as tf  # noqa: E402
