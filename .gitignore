@@ -1,0 +1,23 @@
+# research scratch: corpora, caches and build scripts
+research/_cache/
+research/_stub_cache/
+research/_stub_work/
+research/_stub_out/
+research/_work/
+research/_out/
+research/_parity/
+research/_real_work/
+research/_realfast_work/
+research/dl/
+research/dl_hf/
+research/out/
+research/*.zip
+__pycache__/
+*.pyc
+research/mel_c.bin
+research/hello.c
+research/zigcache*/
+*.exe
+*.pdb
+*.o
+*.obj

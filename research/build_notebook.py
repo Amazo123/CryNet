@@ -1,0 +1,1837 @@
+"""Generates notebooks/crynet_training.ipynb -- the full infant-cry training pipeline.
+
+Kept as a builder script (not raw JSON) so the notebook source is reviewable and
+regeneratable.  Run:  python build_notebook.py
+"""
+import json
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+OUT = ROOT / "notebooks" / "crynet_training.ipynb"
+
+CELLS = []
+
+
+def md(text):
+    CELLS.append(("markdown", text.strip("\n")))
+
+
+def code(text):
+    CELLS.append(("code", text.strip("\n")))
+
+
+# ======================================================================================
+md(r"""
+# CryNet — Infant Cry Detection for ESP32-S3
+
+**Binary cry / no-cry classifier, trained on 28.5k real recordings, exported as an INT8 TensorFlow Lite model for TFLite Micro on the ESP32-S3 Central Hub.**
+
+---
+
+## What this notebook does
+
+| # | Stage | Output |
+|---|-------|--------|
+| 1 | **Acquire** — ICD corpus (28,478 clips), Baby-Cry-4, ESC-50, Snoring | cached archives |
+| 2 | **Frontend** — 16 kHz mono → 81×64 log-Mel (bit-reproducible with the C firmware) | `crynet_tables.h` |
+| 3 | **Build** — 2 s windows, "any cry present" labelling, real-noise + RIR augmentation | feature matrix |
+| 4 | **Train** — 3 CNN variants, pick the best on validation AUC | model |
+| 5 | **Mine** — score the training set, duplicate the worst mistakes, fine-tune | better model |
+| 6 | **Calibrate** — threshold sweep for ≥95 % recall on the cry class | alarm threshold |
+| 7 | **Quantize** — full INT8 post-training quantization + numerical parity check | `crynet_int8.tflite` |
+| 8 | **Export** — TFLite + C header + C reference DSP + TFLM glue + contract | `out/` |
+
+---
+
+## The data (why this is the right corpus)
+
+**ICD — `hoyyu1/infant-cry-detection` (primary).** 28,478 clips, *all* 16 kHz mono / 5 s, pre-assigned 5 balanced folds.
+
+| Class | n | Source |
+|---|---|---|
+| cry | 5,026 | EnesBabyCries |
+| cry | 4,552 | CryCeleb2023 |
+| cry | 3,752 | iFLYTEK 2020 (Xunfei) |
+| non-cry | 4,963 | VoxCeleb **speech** |
+| non-cry | 4,506 | DASEE **domestic** noise |
+| non-cry | 2,076 | human non-speech |
+| non-cry | 1,953 | **cat** meows |
+| non-cry | 1,650 | silence |
+
+Three independent cry corpora (hundreds of different infants, three recording chains) against speech, household noise, cat meows and silence — the exact confusion set that produces false alarms in a nursery.
+
+**Supplementary corpora** (cry diversity + *held-out cross-corpus* test sets):
+`karimeletriby/infant-cry-classification-4-classes` (4,871 real cries, 16 kHz, cross-dataset deduplicated), ESC-50 (1,960 non-cry + 40 real `crying_baby`), Snoring (1,000 adult-vocal hard negatives).
+
+> Every corpus is split **by source clip**, never by window, so no recording can appear in both train and test.
+
+---
+
+## The firmware contract (read this before touching the C code)
+
+The model is only as good as the front end it is fed. This notebook fixes the contract:
+
+```
+int16_t pcm[32000]                2.000 s @ 16 kHz, mono
+   -> float x = pcm/32768.0
+   -> subtract mean (DC removal; the INMP441 sits at ~+18000 counts)
+   -> zero-pad 256 front / 512 rear
+   -> 81 frames, 512-pt Hann window, hop 400
+   -> |rfft|^2  (257 bins)
+   -> 64 Mel bands (librosa slaney mel, 20 Hz - 8 kHz)
+   -> 10*log10(max(P,1e-10)), floored at -80 dB
+   -> per-window standardisation (mean 0, std 1)
+   -> int8 quantise: q = round(v/scale) + zero_point
+   -> TFLite Micro int8 inference -> P(cry)
+```
+
+`out/dsp_crynet.c` implements exactly this, and `out/crynet_tables.h` carries the *exact* Mel filterbank and Hann window used in training, so the firmware cannot drift from the model. A parity test (Python reference vs compiled C) runs at the end of this notebook if a C compiler is available.
+
+---
+
+## How to run
+
+1. Kaggle → *Add Input* → attach nothing (everything is downloaded at runtime) **or** pre-attach for speed.
+2. Accelerator: **GPU T4** (CPU works but takes ~5× longer).
+3. Internet: **On** — the notebook pulls **~4.6 GB** of audio (ICD + ESC-50 + Baby-Cry + Snoring) and caches it under `./_cache`. The Hugging Face files are fetched with `huggingface_hub`, so an interrupted transfer resumes instead of starting over.
+4. `Run All`. Artifacts land in `/kaggle/working/out/`.
+
+Expected wall-clock on Kaggle (T4): ~10 min download + ~10 min feature extraction + ~40-60 min training for the four variants.
+
+Useful switches:
+
+| variable | effect |
+|---|---|
+| `CRYNET_FAST=1` | subsample the corpora and train for 3 epochs — local smoke test |
+| `CRYNET_OFFLINE=1` | never download; use whatever is already in `CRYNET_CACHE` |
+| `CRYNET_KINDS` | which variants to train, e.g. `temporal_cnn` (default `conv_cnn,sep_cnn,temporal_cnn`) |
+| `CRYNET_EPOCHS` | training epochs (default 25) |
+| `CRYNET_CACHE` | where the archives live (default `./_cache`) |
+| `CRYNET_OUT` | where the artifacts are written (default `./out`) |
+
+Local smoke test: `CRYNET_FAST=1 python run_notebook_local.py`.
+""")
+
+# ======================================================================================
+code(r"""
+# ============================================================================
+# CELL 1 — Environment, configuration, contract constants
+# ============================================================================
+import os
+import sys
+import io
+import csv
+import json
+import math
+import time
+import random
+import hashlib
+import shutil
+import zipfile
+import threading
+import warnings
+import subprocess
+from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor
+
+warnings.filterwarnings("ignore")
+os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "2")
+
+import numpy as np
+
+FAST = os.environ.get("CRYNET_FAST", "0") == "1"          # local smoke-test mode
+CACHE = Path(os.environ.get("CRYNET_CACHE", "./_cache")).resolve()
+WORK = Path(os.environ.get("CRYNET_WORK", "./_work")).resolve()
+OUT = Path(os.environ.get("CRYNET_OUT", "./out")).resolve()
+for _d in (CACHE, WORK, OUT):
+    _d.mkdir(parents=True, exist_ok=True)
+
+SEED = 1337
+random.seed(SEED)
+np.random.seed(SEED)
+
+# ---------------------------------------------------------------------------
+# SIGNAL CONTRACT — these numbers are mirrored into the C firmware.
+# Change one and the C side is regenerated automatically, but the trained
+# weights would no longer match, so treat them as frozen.
+# ---------------------------------------------------------------------------
+SR          = 16000        # Hz
+WIN_SEC     = 2.0          # seconds per inference window
+N_SAMPLES   = int(SR * WIN_SEC)      # 32000
+N_FFT       = 512
+HOP         = 400
+N_MELS      = 64
+FMIN        = 20.0
+FMAX        = 8000.0
+CENTER_PAD  = 256          # zero pad at the front (librosa center=True behaviour)
+TAIL_PAD    = 512          # zero pad at the rear
+N_FRAMES    = 1 + (N_SAMPLES + CENTER_PAD + TAIL_PAD - N_FFT) // HOP   # 81
+DB_FLOOR    = -80.0
+LOG_EPS     = 1e-10
+CMVN        = True         # per-window mean/variance normalisation
+
+# Inference gate: below this the window is (near) silent and the model is not run.
+# The ICD recordings sit around RMS 0.006 (~-44 dBFS), and a distant whimper
+# can be quieter, so the gate is deliberately low.  The model itself rejects
+# near-silent windows; this gate only skips work.
+SILENCE_RMS_GATE = 0.0015  # ~ -56 dBFS on a 16-bit normalised signal
+TARGET_RECALL = 0.95       # alarm threshold is chosen to reach this on the cry class
+
+assert N_FRAMES == 81, N_FRAMES
+
+print("=" * 72)
+print("CryNet — infant cry detection for ESP32-S3")
+print("=" * 72)
+print(f"  mode          : {'FAST (local smoke test)' if FAST else 'FULL'}")
+print(f"  signal        : {SR} Hz mono, {WIN_SEC:.1f} s window ({N_SAMPLES} samples)")
+print(f"  log-mel       : {N_FRAMES} frames x {N_MELS} bands, n_fft={N_FFT}, hop={HOP}")
+print(f"  dB floor      : {DB_FLOOR} dB   CMVN: {CMVN}")
+print(f"  cache / work  : {CACHE}  |  {WORK}")
+print(f"  artifacts     : {OUT}")
+print("=" * 72)
+""")
+
+# ======================================================================================
+code(r"""
+# ============================================================================
+# CELL 2 — Dependencies
+# ============================================================================
+def _pip(*pkgs):
+    subprocess.run([sys.executable, "-m", "pip", "install", "-q", *pkgs],
+                   check=False, capture_output=True)
+
+
+for _p in ("librosa", "soundfile", "soxr", "scipy", "sklearn"):
+    try:
+        __import__(_p)
+    except Exception:
+        _pip(_p)
+
+import soundfile as sf
+import librosa
+import scipy.signal as sps
+import tensorflow as tf
+
+print("tensorflow", tf.__version__, "| librosa", librosa.__version__)
+
+try:
+    gpus = tf.config.list_physical_devices("GPU")
+    for g in gpus:
+        tf.config.experimental.set_memory_growth(g, True)
+    print("GPU:", gpus if gpus else "none (CPU mode — expect it to be slower)")
+except Exception as e:  # pragma: no cover
+    print("GPU probe failed:", e)
+
+tf.random.set_seed(SEED)
+""")
+
+# ======================================================================================
+code(r"""
+# ============================================================================
+# CELL 3 — Dataset acquisition
+#
+#  HF     : hoyyu1/infant-cry-detection  (28,478 clips, 16 kHz, 5 s, 5 folds)
+#           fetched with huggingface_hub (resumable + retried) — a 4.6 GB
+#           transfer must not be lost to a dropped connection.
+#  Kaggle : public download endpoint, no auth required:
+#           https://www.kaggle.com/api/v1/datasets/download/{owner}/{slug}
+#
+#  A file attached to the notebook (/kaggle/input) is used as-is.
+#  Everything is cached, so a re-run costs nothing.
+#  Set CRYNET_OFFLINE=1 to require the archives to be present already.
+# ============================================================================
+HF_REPO = "hoyyu1/infant-cry-detection"
+HF_URL = "https://huggingface.co/datasets/{repo}/resolve/main/{path}"
+KAGGLE_URL = "https://www.kaggle.com/api/v1/datasets/download/{ref}"
+OFFLINE = os.environ.get("CRYNET_OFFLINE", "0") == "1"
+KAGGLE_INPUT = Path("/kaggle/input") if Path("/kaggle/input").exists() else None
+
+DATASETS = {
+    # key        : (kind, ref, member, approx size in bytes)
+    "icd_meta": ("hf",     HF_REPO, "metadata/all28479.csv", 1_700_000),
+    "icd_pos":  ("hf",     HF_REPO, "audio/positive.zip",    2_160_000_000),
+    "icd_neg":  ("hf",     HF_REPO, "audio/negative.zip",    2_480_000_000),
+    "icd_rir":  ("hf",     HF_REPO, "rir.zip",               110_000_000),
+    "cry4":    ("kaggle", "karimeletriby/infant-cry-classification-4-classes", None, 495_000_000),
+    "esc50":   ("kaggle", "akaliutau/esc-50", None, 617_000_000),
+    "snore":   ("kaggle", "tareqkhanemu/snoring", None, 118_000_000),
+}
+OPTIONAL = {"icd_rir"}
+
+
+def canonical_path(key):
+    kind, ref, member, _sz = DATASETS[key]
+    if kind == "hf":
+        return CACHE / member
+    return CACHE / (key + "__" + ref.replace("/", "_") + ".zip")
+
+
+def _attached(basename):
+    '''A copy attached to the notebook (/kaggle/input) wins over downloading.'''
+    if KAGGLE_INPUT is None:
+        return None
+    try:
+        for f in KAGGLE_INPUT.rglob(basename):
+            if f.is_file():
+                return f
+    except Exception:
+        pass
+    return None
+
+
+def _curl(url, dest):
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    tmp = dest.with_suffix(dest.suffix + ".part")
+    with tmp.open("wb") as fh:
+        subprocess.run(["curl", "-sSL", "--max-time", "5400", "-o", str(tmp), url], check=True)
+    tmp.replace(dest)
+
+
+def _hf_download(member, dest):
+    '''Resumable download; falls back to curl if the hub library is unavailable.'''
+    try:
+        from huggingface_hub import hf_hub_download
+        return Path(hf_hub_download(HF_REPO, member, repo_type="dataset",
+                                    local_dir=str(CACHE)))
+    except Exception as e:
+        print(f"  huggingface_hub unavailable ({e}); using curl")
+        _curl(HF_URL.format(repo=HF_REPO, path=member), dest)
+        return dest
+
+
+def acquire(key):
+    kind, ref, member, size = DATASETS[key]
+    dest = canonical_path(key)
+    if dest.exists() and (OFFLINE or dest.stat().st_size >= size * 0.98):
+        print(f"  cached     {key:9s} {dest.stat().st_size/1e6:8.1f} MB")
+        return dest
+    if OFFLINE:
+        raise FileNotFoundError(f"{key} missing at {dest} (CRYNET_OFFLINE=1)")
+
+    att = _attached(Path(member).name if kind == "hf" else dest.name)
+    t0 = time.time()
+    if att is not None:
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(att, dest)
+        print(f"  attached   {key:9s} {dest.stat().st_size/1e6:8.1f} MB")
+    elif kind == "hf":
+        _hf_download(member, dest)
+        print(f"  downloaded {key:9s} {dest.stat().st_size/1e6:8.1f} MB  ({time.time()-t0:.0f}s)")
+    else:
+        _curl(KAGGLE_URL.format(ref=ref), dest)
+        print(f"  downloaded {key:9s} {dest.stat().st_size/1e6:8.1f} MB  ({time.time()-t0:.0f}s)")
+    return dest
+
+
+print("Acquiring corpora ...")
+PATHS = {}
+for key in DATASETS:
+    try:
+        PATHS[key] = acquire(key)
+    except Exception as e:
+        if key in OPTIONAL:
+            print(f"  [optional] {key} unavailable ({e}) — continuing without it")
+        else:
+            raise
+
+with open(PATHS["icd_meta"], newline="", encoding="utf-8-sig") as fh:
+    ICD_ROWS = list(csv.DictReader(fh))
+print("ICD manifest:", len(ICD_ROWS), "clips")
+""")
+
+# ======================================================================================
+code(r"""
+# ============================================================================
+# CELL 4 — The audio front end: the single source of truth.
+#
+# The C firmware in out/dsp_crynet.c is generated from these same numbers and
+# is verified against this implementation by a parity test at the end.
+# ============================================================================
+from numpy.lib.stride_tricks import sliding_window_view
+
+MEL_BANK = librosa.filters.mel(sr=SR, n_fft=N_FFT, n_mels=N_MELS,
+                                fmin=FMIN, fmax=FMAX, htk=False, norm="slaney"
+                                ).astype(np.float32)          # (64, 257)
+HANN = np.hanning(N_FFT).astype(np.float32)                  # (512,)
+
+
+def log_mel(x):
+    '''(32000,) float32 in [-1,1]  ->  (81, 64) float32 standardised log-Mel.'''
+    x = np.asarray(x, dtype=np.float32)
+    assert x.shape[0] == N_SAMPLES, x.shape
+    x = x - x.mean()                                   # DC removal (INMP441 bias)
+    xp = np.concatenate([np.zeros(CENTER_PAD, np.float32), x,
+                         np.zeros(TAIL_PAD, np.float32)])
+    frames = sliding_window_view(xp, N_FFT)[::HOP]      # (81, 512)
+    spec = np.fft.rfft(frames * HANN, axis=-1)          # (81, 257) complex
+    power = spec.real ** 2 + spec.imag ** 2             # (81, 257)
+    mel = power @ MEL_BANK.T                           # (81, 64)
+    db = 10.0 * np.log10(np.maximum(mel, LOG_EPS))
+    db = np.maximum(db, DB_FLOOR)
+    if CMVN:
+        db = (db - db.mean()) / (db.std() + 1e-6)
+    return db.astype(np.float32)
+
+
+_probe = np.zeros(N_SAMPLES, np.float32)
+_probe[8000:16000] = np.sin(2 * np.pi * 420 * np.arange(8000) / SR)
+_m = log_mel(_probe)
+print(f"log_mel shape : {_m.shape}  (expect ({N_FRAMES}, {N_MELS}))")
+print(f"value range   : [{_m.min():.2f}, {_m.max():.2f}]")
+print(f"mean / std    : {_m.mean():+.4f} / {_m.std():.4f}   (CMVN -> ~0 / ~1)")
+print(f"mel bank      : {MEL_BANK.shape}, non-zero weights {int((MEL_BANK>0).sum())}")
+""")
+
+# ======================================================================================
+code(r"""
+# ============================================================================
+# CELL 5 — Archive readers (archives are read in place; nothing is unzipped)
+# ============================================================================
+class ZipReader:
+    '''Thread-safe reader over a zip archive (one handle per thread).'''
+
+    def __init__(self, path):
+        self.path = str(path)
+        self._local = threading.local()
+        self._names = None
+        self._index = None
+
+    def zf(self):
+        z = getattr(self._local, "zf", None)
+        if z is None:
+            z = zipfile.ZipFile(self.path)
+            self._local.zf = z
+        return z
+
+    def names(self):
+        if self._names is None:
+            self._names = [n for n in self.zf().namelist() if not n.endswith("/")]
+        return self._names
+
+    def read(self, member):
+        return self.zf().read(member)
+
+    def index_by_stem(self):
+        if self._index is None:
+            idx = {}
+            for n in self.names():
+                idx.setdefault(Path(n).stem.lower(), n)
+            self._index = idx
+        return self._index
+
+
+def decode(raw_bytes, target_sr=SR):
+    '''bytes -> float32 mono at target_sr (None on unreadable data).'''
+    try:
+        x, sr = sf.read(io.BytesIO(raw_bytes), dtype="float32", always_2d=False)
+    except Exception:
+        return None
+    if x.ndim > 1:
+        x = x.mean(axis=1)
+    if sr != target_sr:
+        x = librosa.resample(x, orig_sr=sr, target_sr=target_sr, res_type="soxr_hq")
+    x = np.asarray(x, dtype=np.float32)
+    if x.size < SR // 2:
+        return None
+    return x
+
+
+def take_windows(x, n, rng=None, mode="random"):
+    '''Slice a clip into n windows of exactly N_SAMPLES.'''
+    if len(x) <= N_SAMPLES:
+        w = np.zeros(N_SAMPLES, np.float32)
+        w[: len(x)] = x
+        return [w]
+    max_start = len(x) - N_SAMPLES
+    if mode == "center":
+        starts = [max_start // 2] if n == 1 else \
+                 list(np.linspace(0, max_start, n).astype(int))
+    else:
+        if rng is None:
+            starts = [0]
+        else:
+            starts = list(rng.integers(0, max_start + 1, size=n))
+    return [np.array(x[s:s + N_SAMPLES], dtype=np.float32) for s in starts]
+
+
+print("ZipReader ready.")
+""")
+
+# ======================================================================================
+code(r"""
+# ============================================================================
+# CELL 6 — Corpus manifests
+#
+#   ICD        : positive/negative, subclass, fold  (from the shipped manifest)
+#   cry4       : every clip is a real infant cry            -> label 1
+#   ESC-50     : crying_baby -> label 1, all other categories -> label 0
+#   Snoring    : adult vocalisations                          -> label 0
+# ============================================================================
+READERS = {
+    "icd_pos": ZipReader(PATHS["icd_pos"]),
+    "icd_neg": ZipReader(PATHS["icd_neg"]),
+    "cry4":    ZipReader(PATHS["cry4"]),
+    "esc50":   ZipReader(PATHS["esc50"]),
+    "snore":   ZipReader(PATHS["snore"]),
+}
+
+# --- ICD -----------------------------------------------------------------------
+ICD_POS_IDX = READERS["icd_pos"].index_by_stem()
+ICD_NEG_IDX = READERS["icd_neg"].index_by_stem()
+
+icd_entries = []           # (stem, label, subclass, fold, reader_key)
+for r in ICD_ROWS:
+    stem = Path(r["wav"]).stem.lower()
+    if r["class_string"] == "positive":
+        if stem in ICD_POS_IDX:
+            icd_entries.append((stem, 1, r.get("subclass", "cry"), r["fold"], "icd_pos"))
+    else:
+        if stem in ICD_NEG_IDX:
+            icd_entries.append((stem, 0, r.get("subclass", "noncry"), r["fold"], "icd_neg"))
+
+# --- cry4 ---------------------------------------------------------------------
+cry4_entries = []
+for member in READERS["cry4"].names():
+    if not member.lower().endswith(".wav"):
+        continue
+    parts = Path(member).parts
+    cls = parts[-2].lower() if len(parts) >= 2 else "cry4"
+    cry4_entries.append((Path(member).stem.lower(), 1, f"cry4_{cls}", "x", "cry4"))
+
+# --- ESC-50 -------------------------------------------------------------------
+ESC50_META = {}
+for member in READERS["esc50"].names():
+    if member.lower().endswith("esc50.csv"):
+        for row in csv.DictReader(io.StringIO(READERS["esc50"].read(member).decode("utf-8", "ignore"))):
+            ESC50_META[Path(row["filename"]).stem.lower()] = row["category"].lower()
+        break
+
+esc50_idx = READERS["esc50"].index_by_stem()
+esc50_entries = []
+for stem, cat in ESC50_META.items():
+    if stem not in esc50_idx:
+        continue
+    label = 1 if cat == "crying_baby" else 0
+    esc50_entries.append((stem, label, f"esc50_{cat}", "x", "esc50"))
+
+# --- snoring ------------------------------------------------------------------
+snore_idx = READERS["snore"].index_by_stem()
+snore_entries = [(s, 0, "snoring", "x", "snore") for s in snore_idx]
+
+print(f"ICD      : {len(icd_entries):>6}  (cry={sum(e[1] for e in icd_entries)})")
+print(f"cry4     : {len(cry4_entries):>6}  (cry={sum(e[1] for e in cry4_entries)})")
+print(f"ESC-50   : {len(esc50_entries):>6}  (cry={sum(e[1] for e in esc50_entries)})")
+print(f"snoring  : {len(snore_entries):>6}")
+""")
+
+# ======================================================================================
+code(r"""
+# ============================================================================
+# CELL 7 — Augmentation resources: a real-noise bank and room impulse responses
+# ============================================================================
+rng_global = np.random.default_rng(SEED)
+
+
+def _load_noise_pool():
+    '''Real non-cry recordings (from the ICD negative pool) for SNR mixing.'''
+    out = []
+    step = max(1, len(icd_entries) // (1500 if not FAST else 300))
+    cand = [e for e in icd_entries if e[1] == 0][::step][:1500 if not FAST else 300]
+    for stem, _l, _s, _f, key in cand:
+        x = decode(READERS[key].read(READERS[key].index_by_stem()[stem]))
+        if x is None:
+            continue
+        out.append(take_windows(x, 1, mode="center")[0])
+    return out
+
+
+def _load_rirs():
+    if "icd_rir" not in PATHS:
+        return []
+    try:
+        zr = ZipReader(PATHS["icd_rir"])
+        out = []
+        for m in zr.names():
+            if not m.lower().endswith((".wav", ".flac")):
+                continue
+            x, sr = sf.read(io.BytesIO(zr.read(m)), dtype="float32", always_2d=False)
+            if x.ndim > 1:
+                x = x.mean(axis=1)
+            if sr != SR:
+                x = librosa.resample(x, orig_sr=sr, target_sr=SR, res_type="soxr_hq")
+            if 0.05 < len(x) < SR and np.max(np.abs(x)) > 1e-6:
+                out.append(np.asarray(x, np.float32))
+            if len(out) >= 60:
+                break
+        return out
+    except Exception as e:
+        print("  RIRs unavailable:", e)
+        return []
+
+
+_t0 = time.time()
+NOISE_POOL = _load_noise_pool()
+RIRS = _load_rirs()
+print(f"noise pool : {len(NOISE_POOL)} x {N_SAMPLES} samples")
+print(f"RIRs       : {len(RIRS)}")
+print(f"({time.time()-_t0:.1f}s)")
+""")
+
+# ======================================================================================
+code(r"""
+# ============================================================================
+# CELL 8 — Augmentation in the waveform domain
+# ============================================================================
+def augment_window(x, rng):
+    '''Gain + optional room impulse response + optional real-noise mix.'''
+    y = x.copy()
+    y = y * float(10 ** (rng.uniform(-18.0, 6.0) / 20.0))       # random gain
+    peak = float(np.max(np.abs(y)))
+    if peak > 0.98:
+        y = y * (0.98 / peak)
+
+    if RIRS and rng.random() < 0.35:                              # reverberation
+        r = RIRS[rng.integers(len(RIRS))]
+        y = sps.fftconvolve(y, r)[:N_SAMPLES]
+        if len(y) < N_SAMPLES:
+            y = np.pad(y, (0, N_SAMPLES - len(y)))
+
+    if NOISE_POOL and rng.random() < 0.5:                         # real noise mix
+        n = NOISE_POOL[rng.integers(len(NOISE_POOL))]
+        snr_db = rng.uniform(3.0, 25.0)
+        ps, pn = float(np.mean(y ** 2)), float(np.mean(n ** 2))
+        if ps > 1e-12 and pn > 1e-12:
+            a = np.sqrt(ps / (pn * 10 ** (snr_db / 10.0)))
+            y = y + a * n
+            p2 = float(np.max(np.abs(y)))
+            if p2 > 0.99:
+                y = y * (0.99 / p2)
+    return y.astype(np.float32)
+
+
+print("augment_window ready")
+""")
+
+# ======================================================================================
+code(r"""
+# ============================================================================
+# CELL 9 — Feature extraction
+#
+#   build_corpus(entries, n_base, n_aug, mode) ->
+#       X      (N, 81, 64) float16
+#       y      (N,) int8
+#       meta   list of (subclass, fold)
+#       group  (N,) int64   clip id, so splits can never leak across clips
+# ============================================================================
+def build_corpus(entries, n_base=2, n_aug=1, mode="random", subsample=None, tag=""):
+    import zlib
+    rng = np.random.default_rng(SEED + zlib.crc32(tag.encode()) % 10000)
+    items = list(entries)
+    if subsample and len(items) > subsample:
+        sel = rng.choice(len(items), subsample, replace=False)
+        items = [items[i] for i in sorted(sel)]
+
+    Xs, ys, ms, gs, srcs = [], [], [], [], []
+    counter = [0]
+
+    def _one(item):
+        stem, label, sub, fold, key = item
+        reader = READERS[key]
+        member = reader.index_by_stem().get(stem)
+        if member is None:
+            return None
+        try:
+            x = decode(reader.read(member))
+        except Exception:
+            return None
+        if x is None:
+            return None
+        gid = counter[0]
+        counter[0] += 1
+        feats = []
+        for w in take_windows(x, n_base, rng, mode=mode):
+            feats.append(log_mel(w))
+        for _ in range(n_aug):
+            w = take_windows(x, 1, rng, mode="random")[0]
+            feats.append(log_mel(augment_window(w, rng)))
+        return feats, label, sub, fold, gid, item
+
+    with ThreadPoolExecutor(max_workers=8) as ex:
+        for res in ex.map(_one, items):
+            if res is None:
+                continue
+            feats, label, sub, fold, gid, item = res
+            for f in feats:
+                Xs.append(f.astype(np.float16))
+                ys.append(label)
+                ms.append((sub, fold))
+                gs.append(gid)
+                srcs.append(item)
+
+    if not Xs:
+        return (np.zeros((0, N_FRAMES, N_MELS), np.float16), np.zeros((0,), np.int8),
+                [], np.zeros((0,), np.int64), [])
+    return (np.stack(Xs), np.asarray(ys, np.int8), ms, np.asarray(gs, np.int64), srcs)
+
+
+SUB = None if not FAST else 2500     # per-corpus subsample in FAST mode
+
+t0 = time.time()
+X_icd, y_icd, m_icd, g_icd, src_icd = build_corpus(icd_entries, n_base=2, n_aug=0,
+                                          mode="random", subsample=SUB, tag="icd")
+print(f"  ICD base windows : {X_icd.shape}  ({time.time()-t0:.0f}s)")
+""")
+
+# ======================================================================================
+code(r"""
+# ============================================================================
+# CELL 10 — Supplementary corpora
+# ============================================================================
+t0 = time.time()
+X_cry4, y_cry4, m_cry4, g_cry4, src_cry4 = build_corpus(cry4_entries, n_base=1, n_aug=0,
+                                              mode="center", subsample=SUB, tag="cry4")
+X_esc50, y_esc50, m_esc50, g_esc50, src_esc50 = build_corpus(esc50_entries, n_base=1, n_aug=0,
+                                                  mode="center", subsample=SUB, tag="esc50")
+X_snore, y_snore, m_snore, g_snore, src_snore = build_corpus(snore_entries, n_base=1, n_aug=0,
+                                                  mode="center", subsample=SUB, tag="snore")
+print(f"  cry4   {X_cry4.shape}")
+print(f"  esc50  {X_esc50.shape}")
+print(f"  snore  {X_snore.shape}")
+print(f"  ({time.time()-t0:.0f}s)")
+""")
+
+# ======================================================================================
+code(r"""
+# ============================================================================
+# CELL 11 — Augmented training views for the ICD training portion
+#
+# We re-read the ICD training clips and produce one extra augmented view of
+# each clip (random crop + gain + noise/reverb).  Augmented views exist only
+# for the training folds.
+# ============================================================================
+ICD_FOLD_OF = np.array([str(m[1]) for m in m_icd])
+TRAIN_FOLDS = {"1", "2", "3"}
+VAL_FOLDS = {"4"}
+TEST_FOLDS = {"5"}
+
+icd_train_rows = np.where(np.isin(ICD_FOLD_OF, list(TRAIN_FOLDS)))[0]
+# map feature row -> source entry (entries were consumed in order)
+# build_corpus recorded the exact source entry for every emitted window, so the
+# augmented views can never be attached to the wrong clip.
+
+print(f"ICD training windows: {len(icd_train_rows)}")
+
+t0 = time.time()
+X_aug, y_aug, m_aug = [], [], []
+_aug_rng = np.random.default_rng(SEED + 7)
+
+
+def _aug_one(row):
+    gi = int(row)
+    entry = src_icd[gi]
+    stem, label, sub, fold, key = entry
+    reader = READERS[key]
+    member = reader.index_by_stem().get(stem)
+    if member is None:
+        return None
+    try:
+        x = decode(reader.read(member))
+    except Exception:
+        return None
+    if x is None:
+        return None
+    w = take_windows(x, 1, _aug_rng, mode="random")[0]
+    return log_mel(augment_window(w, _aug_rng)).astype(np.float16), int(label), (sub, fold)
+
+
+N_AUG = 1 if FAST else 2
+# One representative row per source CLIP (not per window) so every clip gets
+# exactly N_AUG augmented views instead of N_AUG x (windows per clip).
+_seen, icd_train_clips = set(), []
+for _gi in icd_train_rows:
+    _gid = int(g_icd[_gi])
+    if _gid not in _seen:
+        _seen.add(_gid)
+        icd_train_clips.append(int(_gi))
+print(f"ICD training clips: {len(icd_train_clips)}  (windows: {len(icd_train_rows)})")
+
+with ThreadPoolExecutor(max_workers=8) as ex:
+    for _ in range(N_AUG):
+        for res in ex.map(_aug_one, icd_train_clips):
+            if res is None:
+                continue
+            X_aug.append(res[0])
+            y_aug.append(res[1])
+            m_aug.append(res[2])
+
+X_aug = np.stack(X_aug) if X_aug else np.zeros((0, N_FRAMES, N_MELS), np.float16)
+y_aug = np.asarray(y_aug, np.int8)
+print(f"  augmented views : {X_aug.shape}  ({time.time()-t0:.0f}s)")
+""")
+
+# ======================================================================================
+code(r"""
+# ============================================================================
+# CELL 12 — Assemble the split
+#
+#   TRAIN      ICD folds 1-3 (clean + augmented) + 70% of cry4
+#              + 75% of ESC-50 non-cry + 75% of Snoring
+#   VAL        ICD fold 4
+#   TEST       ICD fold 5
+#   CROSS      the held-out 30% of cry4, 25% of ESC-50, 25% of Snoring
+#              + ALL 40 ESC-50 crying_baby clips  -> unseen corpora, unseen babies
+# ============================================================================
+def dedupe_groups(X, y, groups):
+    '''Remove windows whose source clip produced a byte-identical window.'''
+    seen, keep = set(), []
+    for i in range(len(X)):
+        h = hashlib.md5(np.ascontiguousarray(X[i].astype(np.float32)).tobytes()).hexdigest()
+        if h in seen:
+            continue
+        seen.add(h)
+        keep.append(i)
+    return np.asarray(keep, np.int64)
+
+
+def split_by_clip(X, y, groups, frac, seed):
+    '''Split whole clips (never windows) into two parts.'''
+    uids = np.unique(groups)
+    rng = np.random.default_rng(seed)
+    rng.shuffle(uids)
+    n_test = int(round(len(uids) * frac))
+    held = set(uids[:n_test].tolist())
+    mask = np.array([g in held for g in groups])
+    return mask
+
+
+# ---- ICD rows ---------------------------------------------------------------
+icd_is_train = np.isin(ICD_FOLD_OF, list(TRAIN_FOLDS))
+icd_is_val = np.isin(ICD_FOLD_OF, list(VAL_FOLDS))
+icd_is_test = np.isin(ICD_FOLD_OF, list(TEST_FOLDS))
+
+# ---- supplementary splits ----------------------------------------------------
+cry4_hold = split_by_clip(X_cry4, y_cry4, g_cry4, 0.30, SEED + 11)
+esc50_hold = split_by_clip(X_esc50, y_esc50, g_esc50, 0.25, SEED + 12)
+snore_hold = split_by_clip(X_snore, y_snore, g_snore, 0.25, SEED + 13)
+
+# every ESC-50 crying_baby clip is held out -> pure cross-domain cry test
+esc50_cry = np.array([m[0] == "esc50_crying_baby" for m in m_esc50])
+esc50_keep = ~esc50_hold & ~esc50_cry
+
+# ---- assemble ---------------------------------------------------------------
+X_train_parts = [X_icd[icd_is_train], X_aug]
+y_train_parts = [y_icd[icd_is_train], y_aug]
+m_train_parts = [m_icd[i] for i in np.where(icd_is_train)[0]], m_aug
+
+X_train = np.concatenate(X_train_parts)
+y_train = np.concatenate(y_train_parts)
+
+X_val = X_icd[icd_is_val]
+y_val = y_icd[icd_is_val]
+X_test = X_icd[icd_is_test]
+y_test = y_icd[icd_is_test]
+
+X_train = np.concatenate([X_train, X_cry4[~cry4_hold], X_esc50[esc50_keep], X_snore[~snore_hold]])
+y_train = np.concatenate([y_train, y_cry4[~cry4_hold], y_esc50[esc50_keep], y_snore[~snore_hold]])
+
+X_cross = np.concatenate([X_cry4[cry4_hold], X_esc50[esc50_hold | esc50_cry], X_snore[snore_hold]])
+y_cross = np.concatenate([y_cry4[cry4_hold], y_esc50[esc50_hold | esc50_cry], y_snore[snore_hold]])
+meta_cross = ([m_cry4[i] for i in np.where(cry4_hold)[0]] +
+              [m_esc50[i] for i in np.where(esc50_hold | esc50_cry)[0]] +
+              [m_snore[i] for i in np.where(snore_hold)[0]])
+
+# ---- dedupe exact duplicates inside the training set -------------------------
+keep = dedupe_groups(X_train, y_train, np.arange(len(X_train)))
+dropped = len(X_train) - len(keep)
+X_train, y_train = X_train[keep], y_train[keep]
+
+print(f"TRAIN  {str(X_train.shape):>18}  cry={int(y_train.sum())}  "
+      f"non-cry={int((y_train==0).sum())}   (dropped {dropped} duplicate windows)")
+print(f"VAL    {str(X_val.shape):>18}  cry={int(y_val.sum())}")
+print(f"TEST   {str(X_test.shape):>18}  cry={int(y_test.sum())}")
+print(f"CROSS  {str(X_cross.shape):>18}  cry={int(y_cross.sum())}   "
+      f"[cry4 + ESC-50 + snoring — unseen corpora, unseen babies]")
+
+cw = {c: float(len(y_train) / (2.0 * max(int((y_train == c).sum()), 1))) for c in (0, 1)}
+print("class weights:", cw)
+
+# Release the intermediates: only the final split matrices are needed from here
+# on, and they are what the tf.data pipeline holds in memory.
+import gc
+for _v in ("X_icd", "X_aug", "X_cry4", "X_esc50", "X_snore",
+           "y_icd", "y_aug", "y_cry4", "y_esc50", "y_snore"):
+    if _v in globals():
+        del globals()[_v]
+gc.collect()
+""")
+
+# ======================================================================================
+code(r"""
+# ============================================================================
+# CELL 13 — tf.data pipeline with SpecAugment
+# ============================================================================
+AUTOTUNE = tf.data.AUTOTUNE
+
+
+def spec_augment(xb):
+    '''SpecAugment: mask 2 random frequency bands and 2 random time spans.
+
+    Implemented with pure TF ops so the tensor shape stays static (a
+    tf.py_function would erase it and Keras could not infer the batch shape).
+    Masks are drawn per sample.'''
+    x = xb
+    B = tf.shape(x)[0]
+    T, M = xb.shape[1], xb.shape[2]
+    for _ in range(2):
+        f0 = tf.random.uniform([B, 1, 1], minval=0, maxval=M - 8, dtype=tf.int32)
+        fw = tf.random.uniform([B, 1, 1], minval=1, maxval=9, dtype=tf.int32)
+        cols = tf.range(M, dtype=tf.int32)[None, None, :]
+        x = tf.where((cols >= f0) & (cols < f0 + fw), tf.zeros_like(x), x)
+    for _ in range(2):
+        t0 = tf.random.uniform([B, 1, 1], minval=0, maxval=T - 12, dtype=tf.int32)
+        tw = tf.random.uniform([B, 1, 1], minval=1, maxval=13, dtype=tf.int32)
+        rows = tf.range(T, dtype=tf.int32)[None, :, None]
+        x = tf.where((rows >= t0) & (rows < t0 + tw), tf.zeros_like(x), x)
+    return x
+
+
+def make_ds(X, y, batch_size, train):
+    ds = tf.data.Dataset.from_tensor_slices((X, y))
+    if train:
+        # A bounded shuffle buffer: shuffling the whole corpus would copy it.
+        buf = int(min(len(X), 32768))
+        ds = ds.shuffle(buf, seed=SEED, reshuffle_each_iteration=True)
+    ds = ds.batch(batch_size, drop_remainder=train)
+    if train:
+        ds = ds.map(lambda xb, yb: (spec_augment(tf.cast(xb, tf.float32)), yb),
+                    num_parallel_calls=AUTOTUNE)
+        ds = ds.repeat()
+    else:
+        ds = ds.map(lambda xb, yb: (tf.cast(xb, tf.float32), yb))
+    return ds.prefetch(AUTOTUNE)
+
+
+BATCH = 128 if not FAST else 64
+ds_train = make_ds(X_train, y_train, BATCH, True)
+ds_val = make_ds(X_val, y_val, BATCH, False)
+ds_test = make_ds(X_test, y_test, BATCH, False)
+ds_cross = make_ds(X_cross, y_cross, BATCH, False)
+
+print("tf.data ready:", X_train.shape, "->", BATCH, "x", N_FRAMES, "x", N_MELS)
+print(f"training windows: {len(X_train)}  ({int(y_train.sum())} cry / "
+      f"{int((y_train == 0).sum())} non-cry)")
+""")
+
+# ======================================================================================
+code(r"""
+# ============================================================================
+# CELL 14 — Model zoo
+#
+# Every block is TFLite-Micro friendly: Conv2D / DepthwiseConv2D / BatchNorm /
+# ReLU / MaxPool / GlobalAveragePooling / Dense.  No attention, no RNN.
+# ============================================================================
+from tensorflow.keras import layers, models
+
+
+def make_model(kind, seed=SEED):
+    tf.keras.utils.set_random_seed(seed)
+    inp = layers.Input(shape=(N_FRAMES, N_MELS, 1), name="mel")
+    x = inp
+
+    if kind == "conv_cnn":
+        for f in (16, 32, 64, 64, 96):
+            x = layers.Conv2D(f, 3, padding="same", use_bias=False)(x)
+            x = layers.BatchNormalization()(x)
+            x = layers.ReLU()(x)
+            x = layers.MaxPool2D((2, 2))(x)
+        x = layers.GlobalAveragePooling2D()(x)
+        x = layers.Dense(64, activation="relu")(x)
+        x = layers.Dropout(0.3)(x)
+
+    elif kind == "sep_cnn":
+        for f in (24, 48, 96, 128):
+            x = layers.DepthwiseConv2D(3, padding="same", use_bias=False)(x)
+            x = layers.BatchNormalization()(x)
+            x = layers.ReLU()(x)
+            x = layers.Conv2D(f, 1, use_bias=False)(x)
+            x = layers.BatchNormalization()(x)
+            x = layers.ReLU()(x)
+            x = layers.MaxPool2D((2, 2))(x)
+        x = layers.GlobalAveragePooling2D()(x)
+        x = layers.Dense(64, activation="relu")(x)
+        x = layers.Dropout(0.3)(x)
+
+    elif kind == "bsc_cnn":
+        for f in (32, 64, 128, 128):
+            x = layers.Conv2D(f, 3, padding="same", use_bias=False)(x)
+            x = layers.BatchNormalization()(x)
+            x = layers.ReLU()(x)
+            x = layers.MaxPool2D((2, 2))(x)
+        x = layers.GlobalAveragePooling2D()(x)
+        x = layers.Dense(96, activation="relu")(x)
+        x = layers.Dropout(0.3)(x)
+
+    elif kind == "temporal_cnn":
+        x = layers.Conv2D(64, (5, 1), padding="same", use_bias=False)(x)
+        x = layers.BatchNormalization()(x)
+        x = layers.ReLU()(x)
+        x = layers.MaxPool2D((2, 1))(x)
+        for f in (96, 128):
+            x = layers.Conv2D(f, (3, 1), padding="same", use_bias=False)(x)
+            x = layers.BatchNormalization()(x)
+            x = layers.ReLU()(x)
+            x = layers.MaxPool2D((2, 1))(x)
+        x = layers.GlobalAveragePooling2D()(x)
+        x = layers.Dense(64, activation="relu")(x)
+        x = layers.Dropout(0.3)(x)
+
+    else:
+        raise ValueError(kind)
+
+    out = layers.Dense(2, activation="softmax", name="probs")(x)
+    m = models.Model(inp, out, name=kind)
+    m.compile(optimizer=tf.keras.optimizers.Adam(1e-3),
+              loss="sparse_categorical_crossentropy", metrics=["accuracy"])
+    return m
+
+
+# Three variants, deliberately different in shape, so the comparison is meaningful:
+#   conv_cnn      plain 2-D CNN over the log-Mel plane       (reference)
+#   sep_cnn       depthwise-separable — the smallest / fastest on the ESP32
+#   temporal_cnn  1-D convolutions over time, Mel bins as channels (strongest
+#                 for keyword-style tasks)
+# Add "bsc_cnn" to the list if you want a fourth candidate.
+_KINDS_DEFAULT = "conv_cnn,sep_cnn,temporal_cnn"
+KINDS = [k.strip() for k in os.environ.get("CRYNET_KINDS", _KINDS_DEFAULT).split(",")
+         if k.strip()]
+if FAST:
+    KINDS = [k for k in KINDS if k in ("conv_cnn", "temporal_cnn")] or KINDS[:1]
+
+for k in KINDS:
+    mm = make_model(k)
+    print(f"{k:14s} params={mm.count_params():>9,}  in={mm.input_shape}  out={mm.output_shape}")
+""")
+
+# ======================================================================================
+code(r"""
+# ============================================================================
+# CELL 15 — Train every variant, keep the best on validation AUC
+# ============================================================================
+EPOCHS = int(os.environ.get("CRYNET_EPOCHS", 3 if FAST else 35))
+
+METRICS, MODELS = {}, {}
+BEST_KIND, BEST_AUC = None, -1.0
+
+
+def _auc(y, p):
+    from sklearn.metrics import roc_auc_score
+    return float(roc_auc_score(y, p)) if len(set(y.tolist())) > 1 else float("nan")
+
+
+for kind in KINDS:
+    print("\n" + "=" * 72)
+    print(f"TRAINING {kind}   ({EPOCHS} epochs)")
+    print("=" * 72)
+    tf.keras.utils.set_random_seed(SEED)
+    model = make_model(kind)
+
+    callbacks = [
+        tf.keras.callbacks.ReduceLROnPlateau(monitor="val_loss", factor=0.5,
+                                             patience=3, min_lr=1e-5, verbose=0),
+        tf.keras.callbacks.EarlyStopping(monitor="val_loss", patience=5,
+                                         restore_best_weights=True, verbose=0),
+    ]
+    hist = model.fit(ds_train, steps_per_epoch=max(1, len(X_train) // BATCH),
+                     epochs=EPOCHS, validation_data=ds_val, callbacks=callbacks,
+                     class_weight=cw, verbose=2)
+
+    m = {
+        "kind": kind,
+        "params": int(model.count_params()),
+        "val_auc": _auc(y_val, model.predict(X_val, verbose=0)[:, 1]),
+        "test_auc": _auc(y_test, model.predict(X_test, verbose=0)[:, 1]),
+        "cross_auc": _auc(y_cross, model.predict(X_cross, verbose=0)[:, 1]),
+    }
+    METRICS[kind] = m
+    MODELS[kind] = model
+    print(f"  params={m['params']:,}  val_auc={m['val_auc']:.4f}  "
+          f"test_auc={m['test_auc']:.4f}  cross_auc={m['cross_auc']:.4f}")
+    if m["val_auc"] == m["val_auc"] and m["val_auc"] > BEST_AUC:
+        BEST_KIND, BEST_AUC = kind, m["val_auc"]
+
+BEST_MODEL = MODELS[BEST_KIND]
+print("\n" + "=" * 72)
+print(f"SELECTED: {BEST_KIND}   val AUC {BEST_AUC:.4f}   "
+      f"{BEST_MODEL.count_params():,} parameters")
+print("=" * 72)
+""")
+
+# ======================================================================================
+code(r"""
+# ============================================================================
+# CELL 16 — Hard-example mining (second round)
+#
+# The first round's mistakes are the most valuable training signal there is.
+# A cough or a car horn that the model rates as a cry is exactly what turns a
+# baby monitor into a nuisance, and the missed cries are exactly what a
+# caregiver needs to hear about.  So: score the training set, take the
+# worst-scoring negatives and the best-scoring positives, duplicate them, and
+# fine-tune for a few epochs at a low learning rate.
+#
+# Only training rows are mined, so the held-out folds stay honest.
+# ============================================================================
+MINED_ROUNDS = int(os.environ.get("CRYNET_MINING_ROUNDS", 1))
+
+if MINED_ROUNDS > 0:
+    print("=" * 72)
+    print("HARD-EXAMPLE MINING")
+    print("=" * 72)
+    neg_idx = np.where(y_train == 0)[0]
+    pos_idx = np.where(y_train == 1)[0]
+
+    p_neg = BEST_MODEL.predict(X_train[neg_idx], verbose=0)[:, 1]
+    p_pos = BEST_MODEL.predict(X_train[pos_idx], verbose=0)[:, 1]
+
+    n_hard = int(min(len(neg_idx), 600))
+    hard_neg = neg_idx[np.argsort(-p_neg)[:n_hard]]          # most cry-like
+    hard_pos = pos_idx[np.argsort(p_pos)[:n_hard]]           # least cry-like
+    print(f"  hardest negatives : {len(hard_neg)}  (P(cry) up to {p_neg.max():.3f})")
+    print(f"  hardest positives : {len(hard_pos)}  (P(cry) down to {p_pos.min():.3f})")
+
+    X_mine = np.concatenate([X_train, X_train[hard_neg], X_train[hard_pos]])
+    y_mine = np.concatenate([y_train, y_train[hard_neg], y_train[hard_pos]])
+    print(f"  fine-tuning set   : {X_mine.shape[0]} windows "
+          f"(+{len(hard_neg) + len(hard_pos)} hard examples)")
+
+    BEST_MODEL.compile(optimizer=tf.keras.optimizers.Adam(3e-4),
+                       loss="sparse_categorical_crossentropy", metrics=["accuracy"])
+    mine_hist = BEST_MODEL.fit(
+        make_ds(X_mine, y_mine, BATCH, True),
+        steps_per_epoch=max(1, len(X_mine) // BATCH),
+        epochs=6,
+        validation_data=ds_val,
+        callbacks=[tf.keras.callbacks.EarlyStopping(monitor="val_loss", patience=3,
+                                                    restore_best_weights=True, verbose=0)],
+        verbose=2,
+    )
+    del X_mine, y_mine
+    import gc
+    gc.collect()
+    print(f"  after mining: val_auc = "
+          f"{_auc(y_val, BEST_MODEL.predict(X_val, verbose=0)[:, 1]):.4f}")
+else:
+    print("hard-example mining disabled (CRYNET_MINING_ROUNDS=0)")
+""")
+
+# ======================================================================================
+code(r"""
+# ============================================================================
+# CELL 17 — Metrics, threshold calibration, per-corpus breakdown
+# ============================================================================
+from sklearn.metrics import (roc_auc_score, average_precision_score,
+                             confusion_matrix, f1_score,
+                             precision_recall_fscore_support)
+
+
+def metrics_from_probs(y, p, threshold=0.5):
+    yh = (p >= threshold).astype(int)
+    cm = confusion_matrix(y, yh, labels=[0, 1])
+    tn, fp, fn, tp = cm.ravel()
+    prec, rec, f1, _ = precision_recall_fscore_support(y, yh, average="binary",
+                                                        zero_division=0)
+    return {
+        "n": int(len(y)), "cry": int(y.sum()),
+        "auc": float(roc_auc_score(y, p)) if len(set(y.tolist())) > 1 else float("nan"),
+        "ap": float(average_precision_score(y, p)) if y.sum() > 0 else float("nan"),
+        "acc": float((yh == y).mean()),
+        "precision": float(prec), "recall": float(rec), "f1": float(f1),
+        "fpr": float(fp / max(fp + tn, 1)),
+        "tn": int(tn), "fp": int(fp), "fn": int(fn), "tp": int(tp),
+    }
+
+
+def show(m, name):
+    print(f"  {name:26s} n={m['n']:<6} cry={m['cry']:<6} AUC={m['auc']:.4f} "
+          f"AP={m['ap']:.4f} acc={m['acc']:.4f} F1={m['f1']:.4f} "
+          f"rec={m['recall']:.4f} prec={m['precision']:.4f} FPR={m['fpr']:.4f}")
+    return m
+
+
+p_val = BEST_MODEL.predict(X_val, verbose=0)[:, 1]
+
+print("Threshold sweep on the ICD validation fold")
+rows = []
+for t in np.arange(0.05, 0.96, 0.01):
+    yh = (p_val >= t).astype(int)
+    rec = float((yh[y_val == 1] == 1).mean()) if (y_val == 1).any() else 0.0
+    fpr = float((yh[y_val == 0] == 1).mean()) if (y_val == 0).any() else 0.0
+    rows.append((float(t), rec, fpr))
+ok = [r for r in rows if r[1] >= TARGET_RECALL]
+THRESHOLD = float(max(r[0] for r in ok)) if ok else 0.5
+print(f"  target recall {TARGET_RECALL:.0%}  ->  THRESHOLD = {THRESHOLD:.2f}")
+for t, rec, fpr in rows[::5]:
+    print(f"    t={t:.2f}  recall={rec:.4f}  FPR={fpr:.4f}")
+
+print("\nPer-corpus detail at the selected threshold")
+print("-" * 104)
+res_val = show(metrics_from_probs(y_val, p_val, THRESHOLD), "ICD val (fold 4)")
+res_test = show(metrics_from_probs(y_test, BEST_MODEL.predict(X_test, verbose=0)[:, 1], THRESHOLD),
+                "ICD test (fold 5)")
+res_cross = show(metrics_from_probs(y_cross, BEST_MODEL.predict(X_cross, verbose=0)[:, 1], THRESHOLD),
+                 "cross-corpus (unseen)")
+
+print("\nCross-corpus breakdown:")
+mc = [m[0] for m in meta_cross]
+for grp in sorted(set(mc)):
+    sel = np.array([g == grp for g in mc])
+    if sel.sum() == 0:
+        continue
+    show(metrics_from_probs(y_cross[sel],
+                            BEST_MODEL.predict(X_cross[sel], verbose=0)[:, 1], THRESHOLD),
+         "  " + grp)
+
+print("\nPer-subclass on the ICD test fold:")
+mt = [m[0] for m in m_icd]
+test_rows = np.where(icd_is_test)[0]
+for sub in sorted(set(mt[i] for i in test_rows)):
+    sel = np.array([mt[i] == sub for i in test_rows])
+    if sel.sum() < 20:
+        continue
+    p = BEST_MODEL.predict(X_test[sel], verbose=0)[:, 1]
+    yt = y_test[sel]
+    rec = float((p[yt == 1] >= THRESHOLD).mean()) if (yt == 1).any() else float("nan")
+    print(f"  {sub:14s} n={int(sel.sum()):<6} cry={int(yt.sum()):<6} "
+          f"recall={rec:.4f} meanP={p.mean():.4f}")
+""")
+
+# ======================================================================================
+code(r"""
+# ============================================================================
+# CELL 18 — INT8 quantization + numerical parity with the float model
+# ============================================================================
+_repr_idx = np.random.default_rng(SEED).choice(
+    len(X_train), min(512, len(X_train)), replace=False)
+
+
+def representative_gen():
+    # The converter wants a LIST with one array per input tensor, and the shape
+    # must match the model input exactly: (batch, frames, mels, 1)
+    for i in _repr_idx:
+        yield [X_train[i:i + 1, :, :, None].astype(np.float32)]
+
+
+converter = tf.lite.TFLiteConverter.from_keras_model(BEST_MODEL)
+converter.optimizations = [tf.lite.Optimize.DEFAULT]
+converter.representative_dataset = representative_gen
+converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
+converter.inference_input_type = tf.int8
+converter.inference_output_type = tf.int8
+tflite_int8 = converter.convert()
+(OUT / "crynet_int8.tflite").write_bytes(tflite_int8)
+
+conv_f = tf.lite.TFLiteConverter.from_keras_model(BEST_MODEL)
+conv_f.optimizations = [tf.lite.Optimize.DEFAULT]
+tflite_float = conv_f.convert()
+(OUT / "crynet_float.tflite").write_bytes(tflite_float)
+
+interp = tf.lite.Interpreter(model_content=tflite_int8)
+interp.allocate_tensors()
+inp_d = interp.get_input_details()[0]
+out_d = interp.get_output_details()[0]
+IN_SCALE, IN_ZP = float(inp_d["quantization"][0]), int(inp_d["quantization"][1])
+OUT_SCALE, OUT_ZP = float(out_d["quantization"][0]), int(out_d["quantization"][1])
+print("input :", inp_d["shape"], inp_d["dtype"].__name__,
+      f"scale={IN_SCALE:.8f} zp={IN_ZP}")
+print("output:", out_d["shape"], out_d["dtype"].__name__,
+      f"scale={OUT_SCALE:.8f} zp={OUT_ZP}")
+
+
+# --- guardrail: every op in the model must have a TFLite Micro kernel ---------
+# (TFLM registers MEAN via kernels/reduce.cc, AVERAGE_POOL_2D via pooling.cc, ...)
+TFLM_KERNELS = {
+    "CONV_2D", "DEPTHWISE_CONV_2D", "AVERAGE_POOL_2D", "MAX_POOL_2D",
+    "MEAN", "FULLY_CONNECTED", "SOFTMAX", "LOGISTIC", "RELU", "TANH",
+    "RESHAPE", "PAD", "SQUEEZE", "LEAKY_RELU",
+}
+model_ops = sorted({d["op_name"] for d in interp._get_ops_details()})
+# DELEGATE only appears because the host interpreter runs XNNPACK; TFLM has none
+ops_for_tflm = [o for o in model_ops if o != "DELEGATE"]
+missing_kernels = [o for o in ops_for_tflm if o not in TFLM_KERNELS]
+print("model operators :", ops_for_tflm)
+if missing_kernels:
+    print(f"  WARNING — no TFLite Micro kernel for: {missing_kernels}")
+    print("  The model will NOT run on the ESP32-S3 until this is fixed.")
+else:
+    print("  all operators have a TFLite Micro kernel")
+
+
+def run_int8(interp, X):
+    i_d = interp.get_input_details()[0]
+    o_d = interp.get_output_details()[0]
+    s, z = i_d["quantization"]
+    out = np.zeros((len(X), 2), np.float32)
+    for i in range(len(X)):
+        q = np.clip(np.round(X[i].astype(np.float32) / s) + z, -128, 127).astype(np.int8)
+        interp.set_tensor(i_d["index"], q[None, ..., None])
+        interp.invoke()
+        o = interp.get_tensor(o_d["index"])[0].astype(np.float32)
+        out[i] = (o - o_d["quantization"][1]) * o_d["quantization"][0]
+    return out
+
+
+n_check = min(4000, len(X_val))
+p_int8 = run_int8(interp, X_val[:n_check])[:, 1]
+p_float = BEST_MODEL.predict(X_val[:n_check], verbose=0)[:, 1]
+agree = float(((p_int8 >= THRESHOLD) == (p_float >= THRESHOLD)).mean())
+print(f"\nparity on {n_check} validation windows:")
+print(f"  max |delta p|        = {np.abs(p_int8 - p_float).max():.4f}")
+print(f"  mean |delta p|       = {np.abs(p_int8 - p_float).mean():.5f}")
+print(f"  decision agreement   = {agree:.4%}")
+
+res_int8 = show(metrics_from_probs(y_val[:n_check], p_int8, THRESHOLD),
+                "INT8 (as deployed) val")
+res_f32 = show(metrics_from_probs(y_val[:n_check], p_float, THRESHOLD),
+               "float32 reference val")
+print(f"\n  model size : int8 {len(tflite_int8)/1024:.1f} KB | "
+      f"float32 {len(tflite_float)/1024:.1f} KB")
+print(f"  AUC delta  : {res_int8['auc'] - res_f32['auc']:+.5f}")
+""")
+
+# ======================================================================================
+code(r"""
+# ============================================================================
+# CELL 19 — Export the deployment artifacts
+# ============================================================================
+BEST_MODEL.save(OUT / "crynet.keras")
+print("saved the trained Keras model -> crynet.keras")
+
+
+def to_c_array(data: bytes, name: str) -> str:
+    out = [f"// {len(data)} bytes — generated by the CryNet notebook",
+           f"const unsigned char {name}[] = {{"]
+    for i in range(0, len(data), 16):
+        out.append("  " + ", ".join(f"0x{b:02x}" for b in data[i:i + 16]) + ",")
+    out.append("};")
+    out.append(f"const unsigned int {name}_len = {len(data)};")
+    return "\n".join(out)
+
+
+(OUT / "model_data.h").write_text(
+    "#ifndef CRYNET_MODEL_DATA_H\n#define CRYNET_MODEL_DATA_H\n"
+    "#include <stdint.h>\n\n"
+    "#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n"
+    + to_c_array(tflite_int8, "crynet_model")
+    + "\n\n#ifdef __cplusplus\n}\n#endif\n#endif\n", encoding="utf-8")
+
+# --- sparse Mel filterbank + Hann window -------------------------------------
+mel_rows = []
+for m in range(N_MELS):
+    w = MEL_BANK[m]
+    nz = np.nonzero(w > 0)[0]
+    mel_rows.append((int(nz[0]), int(nz[-1]) + 1,
+                     w[nz[0]:nz[-1] + 1].astype(np.float32)))
+flat = np.concatenate([w for _, _, w in mel_rows])
+offs, acc = [], 0
+for _, _, w in mel_rows:
+    offs.append(acc)
+    acc += len(w)
+
+L = [
+    "#ifndef CRYNET_TABLES_H",
+    "#define CRYNET_TABLES_H",
+    "#include <stdint.h>",
+    "",
+    "/* Generated by the CryNet training notebook — do not edit by hand. */",
+    f"#define CRYNET_SR            {SR}",
+    f"#define CRYNET_N_SAMPLES     {N_SAMPLES}",
+    f"#define CRYNET_N_FFT         {N_FFT}",
+    f"#define CRYNET_HOP           {HOP}",
+    f"#define CRYNET_N_MELS        {N_MELS}",
+    f"#define CRYNET_N_FRAMES      {N_FRAMES}",
+    f"#define CRYNET_CENTER_PAD    {CENTER_PAD}",
+    f"#define CRYNET_TAIL_PAD      {TAIL_PAD}",
+    f"#define CRYNET_DB_FLOOR      ({DB_FLOOR:.1f}f)",
+    f"#define CRYNET_LOG_EPS       ({LOG_EPS:.10f}f)",
+    f"#define CRYNET_CMVN          {1 if CMVN else 0}",
+    f"#define CRYNET_IN_SCALE      {IN_SCALE:.9f}f",
+    f"#define CRYNET_IN_ZP         {IN_ZP}",
+    f"#define CRYNET_OUT_SCALE     {OUT_SCALE:.9f}f",
+    f"#define CRYNET_OUT_ZP        {OUT_ZP}",
+    f"#define CRYNET_THRESHOLD     {THRESHOLD:.4f}f",
+    f"#define CRYNET_SILENCE_RMS   {SILENCE_RMS_GATE:.6f}f",
+    "",
+    "/* Sparse Mel filterbank: band m uses FFT bins",
+    "   CRYNET_MEL_START[m] .. CRYNET_MEL_END[m]-1 with weights taken from",
+    "   CRYNET_MEL_WEIGHTS[CRYNET_MEL_OFFSET[m] + (bin - CRYNET_MEL_START[m])]. */",
+    "const int16_t CRYNET_MEL_START[CRYNET_N_MELS] = {",
+    "  " + ", ".join(str(s) for s, _, _ in mel_rows),
+    "};",
+    "const int16_t CRYNET_MEL_END[CRYNET_N_MELS] = {",
+    "  " + ", ".join(str(e) for _, e, _ in mel_rows),
+    "};",
+    "const int16_t CRYNET_MEL_OFFSET[CRYNET_N_MELS] = {",
+    "  " + ", ".join(str(o) for o in offs),
+    "};",
+    f"const float CRYNET_MEL_WEIGHTS[{acc}] = {{",
+]
+for i in range(0, acc, 10):
+    L.append("  " + ", ".join(f"{v:.8f}f" for v in flat[i:i + 10]) + ",")
+L.append("};")
+L.append("")
+L.append(f"const float CRYNET_HANN[CRYNET_N_FFT] = {{")
+for i in range(0, N_FFT, 10):
+    L.append("  " + ", ".join(f"{v:.8f}f" for v in HANN[i:i + 10]) + ",")
+L.append("};")
+L.append("")
+L.append("#endif /* CRYNET_TABLES_H */")
+(OUT / "crynet_tables.h").write_text("\n".join(L), encoding="utf-8")
+
+print(f"wrote {OUT/'model_data.h'}   ({len(tflite_int8)/1024:.1f} KB model)")
+print(f"wrote {OUT/'crynet_tables.h'} ({acc} Mel weights)")
+""")
+
+# ======================================================================================
+code(r'''
+# ============================================================================
+# CELL 20 — The C reference implementation (port this to ESP-IDF)
+# ============================================================================
+C_SOURCE = r"""
+/* ===========================================================================
+ * dsp_crynet.c — CryNet log-Mel front end, numerically identical to the
+ *                Python implementation used for training.
+ *
+ *  Host parity test:
+ *      gcc -O2 -DCRYNET_SELFTEST -o dsp_test dsp_crynet.c -lm
+ *      ./dsp_test probe.s16le
+ *
+ *  On the ESP32-S3 replace fft512() with ESP-DSP:
+ *      dsps_fft2r() + dsps_cmplx_mag()  (roughly 10x faster than the
+ *      reference FFT below, which is kept so the file builds anywhere).
+ * =========================================================================*/
+#include <math.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+
+#include "crynet_tables.h"
+
+typedef struct { float re, im; } cpx_t;
+
+/* ---- iterative radix-2 FFT, N = 512, in place ---------------------------- */
+static void fft512(cpx_t *a) {
+    unsigned i, j, len;
+    cpx_t t;
+    for (i = 1, j = 0; i < 512; i++) {
+        unsigned bit = 512 >> 1;
+        for (; j & bit; bit >>= 1) j ^= bit;
+        j ^= bit;
+        if (i < j) { t = a[i]; a[i] = a[j]; a[j] = t; }
+    }
+    for (len = 2; len <= 512; len <<= 1) {
+        float ang = -2.0f * 3.14159265358979f / (float)len;
+        float wr = cosf(ang), wi = sinf(ang);
+        for (i = 0; i < 512; i += len) {
+            float cr = 1.0f, ci = 0.0f;
+            for (j = 0; j < len / 2; j++) {
+                cpx_t u = a[i + j];
+                cpx_t v;
+                v.re = a[i + j + len / 2].re * cr - a[i + j + len / 2].im * ci;
+                v.im = a[i + j + len / 2].re * ci + a[i + j + len / 2].im * cr;
+                a[i + j].re = u.re + v.re;  a[i + j].im = u.im + v.im;
+                a[i + j + len / 2].re = u.re - v.re;
+                a[i + j + len / 2].im = u.im - v.im;
+                float nr = cr * wr - ci * wi;
+                ci = cr * wi + ci * wr;
+                cr = nr;
+            }
+        }
+    }
+}
+
+/* ---- log-Mel front end ---------------------------------------------------- */
+/*  pcm     : CRYNET_N_SAMPLES int16 mono samples @ 16 kHz
+ *  mel_out : CRYNET_N_FRAMES * CRYNET_N_MELS floats (standardised dB)     */
+void crynet_log_mel(const int16_t *pcm, float *mel_out) {
+    static float x[CRYNET_N_SAMPLES + CRYNET_CENTER_PAD + CRYNET_TAIL_PAD];
+    static cpx_t spec[CRYNET_N_FFT];
+    static float power[CRYNET_N_FFT / 2 + 1];
+    static float mel[CRYNET_N_MELS];
+
+    /* 1. DC removal + normalise to [-1, 1] */
+    float mean = 0.0f;
+    for (int i = 0; i < CRYNET_N_SAMPLES; i++) mean += (float)pcm[i];
+    mean /= (float)CRYNET_N_SAMPLES;
+
+    memset(x, 0, sizeof(float) * (CRYNET_N_SAMPLES + CRYNET_CENTER_PAD + CRYNET_TAIL_PAD));
+    for (int i = 0; i < CRYNET_N_SAMPLES; i++)
+        x[CRYNET_CENTER_PAD + i] = ((float)pcm[i] - mean) / 32768.0f;
+
+    /* 2. frames -> FFT -> power -> mel -> dB */
+    for (int fr = 0; fr < CRYNET_N_FRAMES; fr++) {
+        const float *w = x + fr * CRYNET_HOP;
+        for (int i = 0; i < CRYNET_N_FFT; i++) {
+            spec[i].re = w[i] * CRYNET_HANN[i];
+            spec[i].im = 0.0f;
+        }
+        fft512(spec);
+        for (int i = 0; i <= CRYNET_N_FFT / 2; i++)
+            power[i] = spec[i].re * spec[i].re + spec[i].im * spec[i].im;
+        for (int m = 0; m < CRYNET_N_MELS; m++) {
+            float acc = 0.0f;
+            int start = CRYNET_MEL_START[m], end = CRYNET_MEL_END[m];
+            const float *wts = &CRYNET_MEL_WEIGHTS[CRYNET_MEL_OFFSET[m]];
+            for (int b = start; b < end; b++) acc += power[b] * wts[b - start];
+            mel[m] = acc;
+        }
+        for (int m = 0; m < CRYNET_N_MELS; m++) {
+            float p = mel[m];
+            if (p < CRYNET_LOG_EPS) p = CRYNET_LOG_EPS;
+            float db = 10.0f * log10f(p);
+            if (db < CRYNET_DB_FLOOR) db = CRYNET_DB_FLOOR;
+            mel_out[fr * CRYNET_N_MELS + m] = db;
+        }
+    }
+
+#if CRYNET_CMVN
+    /* 3. per-window standardisation */
+    float mu = 0.0f;
+    const int n = CRYNET_N_FRAMES * CRYNET_N_MELS;
+    for (int i = 0; i < n; i++) mu += mel_out[i];
+    mu /= (float)n;
+    float var = 0.0f;
+    for (int i = 0; i < n; i++) { float d = mel_out[i] - mu; var += d * d; }
+    float sd = sqrtf(var / (float)n) + 1e-6f;
+    for (int i = 0; i < n; i++) mel_out[i] = (mel_out[i] - mu) / sd;
+#endif
+}
+
+/* ---- quantisation helpers ------------------------------------------------ */
+void crynet_quantise(const float *mel, int8_t *q) {
+    const int n = CRYNET_N_FRAMES * CRYNET_N_MELS;
+    for (int i = 0; i < n; i++) {
+        float v = nearbyintf(mel[i] / CRYNET_IN_SCALE) + (float)CRYNET_IN_ZP;
+        if (v > 127.0f) v = 127.0f;
+        if (v < -128.0f) v = -128.0f;
+        q[i] = (int8_t)v;
+    }
+}
+
+float crynet_dequantise(int8_t v) {
+    return ((float)v - (float)CRYNET_OUT_ZP) * CRYNET_OUT_SCALE;
+}
+
+/* ---- silence gate -------------------------------------------------------- */
+float crynet_window_rms(const int16_t *pcm) {
+    float mean = 0.0f;
+    for (int i = 0; i < CRYNET_N_SAMPLES; i++) mean += (float)pcm[i];
+    mean /= (float)CRYNET_N_SAMPLES;
+    float acc = 0.0f;
+    for (int i = 0; i < CRYNET_N_SAMPLES; i++) {
+        float d = ((float)pcm[i] - mean) / 32768.0f;
+        acc += d * d;
+    }
+    return sqrtf(acc / (float)CRYNET_N_SAMPLES);
+}
+
+/* ---- host parity test ---------------------------------------------------- */
+#ifdef CRYNET_SELFTEST
+int main(int argc, char **argv) {
+    if (argc < 2) { fprintf(stderr, "usage: %s raw_pcm_s16le.bin\n", argv[0]); return 2; }
+    FILE *f = fopen(argv[1], "rb");
+    if (!f) { perror("fopen"); return 2; }
+    static int16_t pcm[CRYNET_N_SAMPLES];
+    size_t got = fread(pcm, sizeof(int16_t), CRYNET_N_SAMPLES, f);
+    fclose(f);
+    if (got != CRYNET_N_SAMPLES) { fprintf(stderr, "short read\n"); return 2; }
+    static float mel[CRYNET_N_FRAMES * CRYNET_N_MELS];
+    crynet_log_mel(pcm, mel);
+    FILE *o = fopen("mel_c.bin", "wb");
+    fwrite(mel, sizeof(float), CRYNET_N_FRAMES * CRYNET_N_MELS, o);
+    fclose(o);
+    fprintf(stderr, "wrote mel_c.bin  rms=%.6f\n", crynet_window_rms(pcm));
+    return 0;
+}
+#endif
+"""
+
+(OUT / "dsp_crynet.c").write_text(C_SOURCE, encoding="utf-8")
+(OUT / "dsp_crynet.h").write_text(
+    "#ifndef DSP_CRYNET_H\n#define DSP_CRYNET_H\n#include <stdint.h>\n"
+    "#include \"crynet_tables.h\"\n"
+    "#ifdef __cplusplus\nextern \"C\" {\n#endif\n"
+    "void crynet_log_mel(const int16_t *pcm, float *mel_out);\n"
+    "void crynet_quantise(const float *mel, int8_t *q);\n"
+    "float crynet_dequantise(int8_t v);\n"
+    "float crynet_window_rms(const int16_t *pcm);\n"
+    "#ifdef __cplusplus\n}\n#endif\n#endif\n", encoding="utf-8")
+
+# --- TFLite Micro glue: the missing link between the DSP and the model -------
+TFLM_GLUE = r"""
+/* ===========================================================================
+ * crynet_infer_example.c — glue between the DSP front end and TFLite Micro.
+ *
+ * Port this into the ESP32-S3 firmware.  It assumes:
+ *   - model_data.h   (the INT8 model as a C array)
+ *   - crynet_tables.h (Mel filterbank, Hann window, quantisation constants)
+ *   - dsp_crynet.c   (the log-Mel front end)
+ *
+ * ESP-IDF: add the TensorFlowLite-ESP32 component and include
+ * "tensorflow/lite/micro/micro_interpreter.h".
+ * =========================================================================*/
+#include <stdint.h>
+#include <string.h>
+
+#include "tensorflow/lite/micro/micro_interpreter.h"
+#include "tensorflow/lite/micro/micro_mutable_op_resolver.h"
+#include "tensorflow/lite/schema/schema_generated.h"
+
+#include "dsp_crynet.h"
+#include "model_data.h"
+
+#ifndef CRYNET_ARENA_SIZE
+#define CRYNET_ARENA_SIZE 120000   /* bytes; raise if AllocateTensors fails */
+#endif
+
+/* The ops the exported model uses: CONV_2D, DEPTHWISE_CONV_2D, MAX_POOL_2D,
+ * MEAN, FULLY_CONNECTED, SOFTMAX.  AddConv2D() etc. come from
+ * tensorflow/lite/micro/kernels/kernel_registrar.h. */
+static tflite::MicroMutableOpResolver<6> g_resolver;
+static tflite::MicroInterpreter *g_interp = nullptr;
+static uint8_t *g_arena = nullptr;
+
+bool crynet_init() {
+  g_arena = (uint8_t *)malloc(CRYNET_ARENA_SIZE);
+  if (g_arena == nullptr) return false;
+  g_resolver.AddConv2D();
+  g_resolver.AddDepthwiseConv2D();
+  g_resolver.AddMaxPool2D();
+  g_resolver.AddMean();            /* GlobalAveragePooling2D lowers to MEAN */
+  g_resolver.AddFullyConnected();
+  g_resolver.AddSoftmax();
+
+  const tflite::Model *model = tflite::GetModel(crynet_model);
+  static tflite::MicroInterpreter interpreter(model, g_resolver, g_arena,
+                                              CRYNET_ARENA_SIZE);
+  if (interpreter.AllocateTensors() != kTfLiteOk) return false;
+  g_interp = &interpreter;
+  return true;
+}
+
+/* pcm: CRYNET_N_SAMPLES int16 samples @ 16 kHz mono.
+ * Returns P(cry) in [0, 1]; 0.0 if the window is silent or inference failed. */
+float crynet_probability(const int16_t *pcm) {
+  if (g_interp == nullptr) return 0.0f;
+  if (crynet_window_rms(pcm) < CRYNET_SILENCE_RMS) return 0.0f;   /* silence gate */
+
+  static float mel[CRYNET_N_FRAMES * CRYNET_N_MELS];
+  static int8_t quant[CRYNET_N_FRAMES * CRYNET_N_MELS];
+  crynet_log_mel(pcm, mel);
+  crynet_quantise(mel, quant);
+
+  TfLiteTensor *in = g_interp->input(0);
+  memcpy(in->data.raw, quant, sizeof(quant));
+  in->bytes = sizeof(quant);
+  if (g_interp->Invoke() != kTfLiteOk) return 0.0f;
+
+  TfLiteTensor *out = g_interp->output(0);
+  const int8_t *o = out->data.int8;
+  /* output order is [P(no_cry), P(cry)] */
+  return (float)(o[1] - out->params.zero_point) * out->params.scale;
+}
+
+/* Call once per 2 s window; returns true when the alarm should fire. */
+bool crynet_is_cry(const int16_t *pcm, float *confidence) {
+  const float p = crynet_probability(pcm);
+  if (confidence) *confidence = p;
+  return p >= CRYNET_THRESHOLD;
+}
+"""
+(OUT / "crynet_infer_example.c").write_text(TFLM_GLUE, encoding="utf-8")
+
+contract = {
+    "model": "crynet_int8.tflite",
+    "model_sha256": hashlib.sha256(tflite_int8).hexdigest(),
+    "model_bytes": len(tflite_int8),
+    "input": {
+        "name": "mel", "shape": [1, N_FRAMES, N_MELS, 1], "dtype": "int8",
+        "scale": IN_SCALE, "zero_point": IN_ZP,
+        "preprocessing": [
+            f"int16 PCM, {SR} Hz mono, {N_SAMPLES} samples ({WIN_SEC}s)",
+            "subtract mean (DC removal)",
+            f"zero-pad {CENTER_PAD} front / {TAIL_PAD} rear",
+            f"{N_FRAMES} frames, {N_FFT}-pt Hann, hop {HOP}",
+            f"{N_MELS} Mel bands (librosa slaney, {FMIN}-{FMAX} Hz)",
+            f"10*log10(max(P, {LOG_EPS})) floored at {DB_FLOOR} dB",
+            "per-window standardisation" if CMVN else "no CMVN",
+            "q = round(v/scale) + zero_point",
+        ],
+    },
+    "output": {"shape": [1, 2], "dtype": "int8", "scale": OUT_SCALE,
+               "zero_point": OUT_ZP, "classes": ["no_cry", "cry"]},
+    "operators": ops_for_tflm,
+    "tflm_kernel_check": "ok" if not missing_kernels else missing_kernels,
+    "decision": {
+        "threshold": THRESHOLD,
+        "silence_rms_gate": SILENCE_RMS_GATE,
+        "rule": "P(cry) >= threshold  ->  ALERT",
+    },
+    "tflite_micro": {
+        "arena_bytes_hint": 120000,
+        "note": "put the tensor arena in PSRAM if it does not fit in internal SRAM",
+    },
+    "metrics": {
+        "selected_model": BEST_KIND,
+        "parameters": int(BEST_MODEL.count_params()),
+        "val_auc": res_val["auc"], "test_auc": res_test["auc"], "cross_auc": res_cross["auc"],
+        "val_f1": res_val["f1"], "test_f1": res_test["f1"], "cross_f1": res_cross["f1"],
+        "val_recall": res_val["recall"], "val_precision": res_val["precision"],
+        "int8_val_auc": res_int8["auc"], "float_val_auc": res_f32["auc"],
+    },
+}
+(OUT / "deploy_config.json").write_text(json.dumps(contract, indent=2), encoding="utf-8")
+(OUT / "metrics.json").write_text(json.dumps(
+    {"selected": BEST_KIND, "threshold": THRESHOLD,
+     "variants": {k: v for k, v in METRICS.items()}}, indent=2), encoding="utf-8")
+
+print("artifacts written to", OUT)
+for f in sorted(OUT.iterdir()):
+    print(f"   {f.name:26s} {f.stat().st_size/1024:9.1f} KB")
+''')
+
+# ======================================================================================
+code(r"""
+# ============================================================================
+# CELL 21 — C <-> Python numerical parity test (skipped when no compiler)
+# ============================================================================
+gcc = shutil.which("gcc") or shutil.which("cc") or shutil.which("clang")
+CC_CMD = [gcc] if gcc else None
+if CC_CMD is None:
+    try:                                    # pip install ziglang -> a full C compiler
+        import ziglang
+        CC_CMD = [sys.executable, "-m", "ziglang", "cc"]
+    except Exception:
+        CC_CMD = None
+parity = None
+
+if CC_CMD is None:
+    print("no C compiler found — skipping the parity test.")
+    print("Compile it yourself:  gcc -O2 -DCRYNET_SELFTEST -o dsp_test "
+          "out/dsp_crynet.c -lm")
+else:
+    print("compiling out/dsp_crynet.c with", " ".join(CC_CMD), "...")
+    exe = WORK / ("dsp_test" + (".exe" if os.name == "nt" else ""))
+    env = dict(os.environ)
+    env.setdefault("ZIG_GLOBAL_CACHE_DIR", str(WORK / "zigcache"))
+    r = subprocess.run(CC_CMD + ["-O2", "-DCRYNET_SELFTEST", "-I", str(OUT),
+                                 "-o", str(exe), str(OUT / "dsp_crynet.c"), "-lm"],
+                       capture_output=True, text=True, env=env)
+    if r.returncode != 0:
+        print("compile failed:\n", r.stderr[:2000])
+    else:
+        rs = np.random.default_rng(7)
+        t = np.arange(N_SAMPLES) / SR
+        pcm = (0.35 * np.sin(2 * np.pi * 420 * t)
+               + 0.12 * np.sin(2 * np.pi * 1350 * t)
+               + 0.02 * rs.standard_normal(N_SAMPLES)).astype(np.float32)
+        pcm16 = (np.clip(pcm, -1, 1) * 32767).astype(np.int16)
+        raw = WORK / "probe.s16le"
+        raw.write_bytes(pcm16.tobytes())
+
+        run = subprocess.run([str(exe), str(raw)], capture_output=True, text=True, cwd=str(WORK))
+        if run.returncode != 0:
+            print("parity binary failed:", run.stderr[:1000])
+        else:
+            mel_c = np.fromfile(WORK / "mel_c.bin", dtype=np.float32).reshape(N_FRAMES, N_MELS)
+            mel_py = log_mel(pcm16.astype(np.float32) / 32768.0)
+            diff = np.abs(mel_c - mel_py)
+            parity = {"max_abs_diff": float(diff.max()),
+                      "mean_abs_diff": float(diff.mean())}
+            print(f"  max |C - Python|  = {diff.max():.3e}")
+            print(f"  mean|C - Python|  = {diff.mean():.3e}")
+            if diff.max() < 1e-2:
+                print("  OK — the C front end matches training (float32 rounding only)")
+            else:
+                print("  WARNING: mismatch — do not ship this C code")
+            (OUT / "c_parity.json").write_text(json.dumps(parity, indent=2), encoding="utf-8")
+
+print(json.dumps({"parity": parity}, indent=2))
+""")
+
+# ======================================================================================
+code(r"""
+# ============================================================================
+# CELL 22 — Final report
+# ============================================================================
+print("=" * 78)
+print("  CryNet — final report")
+print("=" * 78)
+print(f"  selected model     : {BEST_KIND}  ({BEST_MODEL.count_params():,} parameters)")
+print(f"  int8 model size    : {len(tflite_int8)/1024:.1f} KB")
+print(f"  input              : [1,{N_FRAMES},{N_MELS},1] int8  "
+      f"(scale {IN_SCALE:.6f}, zp {IN_ZP})")
+print(f"  output             : [1,2] int8 -> [P(no_cry), P(cry)]")
+print(f"  alarm threshold    : {THRESHOLD:.2f}")
+print(f"  silence RMS gate   : {SILENCE_RMS_GATE}")
+print()
+print(f"  ICD val  (fold 4)  : AUC {res_val['auc']:.4f}  F1 {res_val['f1']:.4f}  "
+      f"recall {res_val['recall']:.4f}  FPR {res_val['fpr']:.4f}")
+print(f"  ICD test (fold 5)  : AUC {res_test['auc']:.4f}  F1 {res_test['f1']:.4f}  "
+      f"recall {res_test['recall']:.4f}  FPR {res_test['fpr']:.4f}")
+print(f"  cross-corpus       : AUC {res_cross['auc']:.4f}  F1 {res_cross['f1']:.4f}  "
+      f"recall {res_cross['recall']:.4f}  FPR {res_cross['fpr']:.4f}")
+print(f"  int8 vs float32    : AUC {res_int8['auc']:.4f} vs {res_f32['auc']:.4f}  "
+      f"(delta {res_int8['auc']-res_f32['auc']:+.5f})")
+print()
+print("  artifacts in", OUT)
+for f in sorted(OUT.iterdir()):
+    print(f"    {f.name:26s} {f.stat().st_size/1024:9.1f} KB")
+print()
+print("  next: flash model_data.h + crynet_tables.h + dsp_crynet.c into the")
+print("        ESP32-S3 firmware, then wire crynet_log_mel() -> TFLite Micro.")
+print("=" * 78)
+""")
+
+# ======================================================================================
+md(r"""
+---
+
+## Where to go next (checkpoint 2)
+
+1. **Wire the front end into the firmware.** `out/dsp_crynet.c` is portable C99 — swap `fft512()` for ESP-DSP `dsps_fft2r()` + `dsps_cmplx_mag()` (≈10× faster) and copy `crynet_tables.h` and `model_data.h` next to it.
+2. **Run TFLite Micro** with an INT8 input tensor `[1, 81, 64, 1]`; put the tensor arena in PSRAM if it does not fit in internal SRAM.
+3. **Lower the trigger threshold.** The old hub fired an audio pull at RMS ≥ 0.18, so a *soft* cry never reached any classifier. Feed the model anything above ~0.03 RMS and let it reject the false triggers — rejecting false triggers is exactly what it was trained for (speech, cat meows, household noise).
+4. **Record ~50 real clips from your own INMP441** (cries + room noise + speech + TV), then re-run this notebook with them as a small custom corpus. Matching your actual microphone, gain and room is the single biggest accuracy win left.
+5. **Alert policy.** The existing BLE packet carries `cot_id`, `alert_type`, `confidence_pct`; the model output maps straight onto it (`alert_type = 0x01` when `P(cry) >= threshold`).
+""")
+
+
+# ======================================================================================
+def build():
+    cells = []
+    for kind, src in CELLS:
+        lines = src.split("\n")
+        if kind == "markdown":
+            cell = {"cell_type": "markdown", "id": f"cell-{len(cells)}",
+                    "metadata": {}, "source": lines}
+        else:
+            cell = {"cell_type": "code", "id": f"cell-{len(cells)}",
+                    "execution_count": None, "metadata": {},
+                    "outputs": [], "source": lines}
+        cells.append(cell)
+
+    nb = {
+        "cells": cells,
+        "metadata": {
+            "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
+            "language_info": {"name": "python", "version": "3.11"},
+        },
+        "nbformat": 4,
+        "nbformat_minor": 5,
+    }
+    OUT.parent.mkdir(parents=True, exist_ok=True)
+    OUT.write_text(json.dumps(nb, indent=1), encoding="utf-8")
+    print(f"wrote {OUT}  ({len(cells)} cells)")
+
+
+if __name__ == "__main__":
+    build()

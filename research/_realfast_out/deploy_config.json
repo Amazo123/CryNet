@@ -1,0 +1,71 @@
+{
+  "model": "crynet_int8.tflite",
+  "model_sha256": "d6d1dc4ff33b0f28fc10d63fe304bc1aabce97398a4bc66a51d8d47408485ef0",
+  "model_bytes": 138312,
+  "input": {
+    "name": "mel",
+    "shape": [
+      1,
+      81,
+      64,
+      1
+    ],
+    "dtype": "int8",
+    "scale": 0.07170649617910385,
+    "zero_point": -37,
+    "preprocessing": [
+      "int16 PCM, 16000 Hz mono, 32000 samples (2.0s)",
+      "subtract mean (DC removal)",
+      "zero-pad 256 front / 512 rear",
+      "81 frames, 512-pt Hann, hop 400",
+      "64 Mel bands (librosa slaney, 20.0-8000.0 Hz)",
+      "10*log10(max(P, 1e-10)) floored at -80.0 dB",
+      "per-window standardisation",
+      "q = round(v/scale) + zero_point"
+    ]
+  },
+  "output": {
+    "shape": [
+      1,
+      2
+    ],
+    "dtype": "int8",
+    "scale": 0.00390625,
+    "zero_point": -128,
+    "classes": [
+      "no_cry",
+      "cry"
+    ]
+  },
+  "operators": [
+    "CONV_2D",
+    "FULLY_CONNECTED",
+    "MAX_POOL_2D",
+    "MEAN",
+    "SOFTMAX"
+  ],
+  "tflm_kernel_check": "ok",
+  "decision": {
+    "threshold": 0.23000000000000004,
+    "silence_rms_gate": 0.0015,
+    "rule": "P(cry) >= threshold  ->  ALERT"
+  },
+  "tflite_micro": {
+    "arena_bytes_hint": 120000,
+    "note": "put the tensor arena in PSRAM if it does not fit in internal SRAM"
+  },
+  "metrics": {
+    "selected_model": "conv_cnn",
+    "parameters": 122770,
+    "val_auc": 0.980694214876033,
+    "test_auc": 0.9838989441930618,
+    "cross_auc": 0.9886919831223627,
+    "val_f1": 0.9145129224652088,
+    "test_f1": 0.9131455399061033,
+    "cross_f1": 0.9413233458177278,
+    "val_recall": 0.9504132231404959,
+    "val_precision": 0.8812260536398467,
+    "int8_val_auc": 0.9806239669421487,
+    "float_val_auc": 0.980694214876033
+  }
+}

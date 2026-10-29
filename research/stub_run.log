@@ -1,0 +1,469 @@
+
+======================================================================
+== CELL 1
+======================================================================
+========================================================================
+CryNet — infant cry detection for ESP32-S3
+========================================================================
+  mode          : FAST (local smoke test)
+  signal        : 16000 Hz mono, 2.0 s window (32000 samples)
+  log-mel       : 81 frames x 64 bands, n_fft=512, hop=400
+  dB floor      : -80.0 dB   CMVN: True
+  cache / work  : C:\Users\HP\.t3\projects\fp-2\research\_stub_cache  |  C:\Users\HP\.t3\projects\fp-2\research\_stub_work
+  artifacts     : C:\Users\HP\.t3\projects\fp-2\research\_stub_out
+========================================================================
+-- cell 1 ok (0.2s)
+
+======================================================================
+== CELL 2
+======================================================================
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1793276048.462356    1932 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1793276052.650386    1932 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+WARNING:tensorflow:TensorFlow GPU support is not available on native Windows for TensorFlow >= 2.11. Even if CUDA/cuDNN are installed, GPU will not be used. Please use WSL2 or the TensorFlow-DirectML plugin.
+tensorflow 2.21.0 | librosa 0.11.0
+GPU: none (CPU mode — expect it to be slower)
+-- cell 2 ok (7.8s)
+
+======================================================================
+== CELL 3
+======================================================================
+Acquiring corpora ...
+  cached     icd_meta       0.0 MB
+  cached     icd_pos       36.9 MB
+  cached     icd_neg       35.5 MB
+  [optional] icd_rir unavailable (icd_rir missing at C:\Users\HP\.t3\projects\fp-2\research\_stub_cache\rir.zip (CRYNET_OFFLINE=1)) — continuing without it
+  cached     cry4         494.6 MB
+  cached     esc50        646.2 MB
+  cached     snore        118.2 MB
+ICD manifest: 500 clips
+-- cell 3 ok (0.0s)
+
+======================================================================
+== CELL 4
+======================================================================
+log_mel shape : (81, 64)  (expect (81, 64))
+value range   : [-0.33, 5.51]
+mean / std    : +0.0000 / 1.0000   (CMVN -> ~0 / ~1)
+mel bank      : (64, 257), non-zero weights 497
+-- cell 4 ok (0.4s)
+
+======================================================================
+== CELL 5
+======================================================================
+ZipReader ready.
+-- cell 5 ok (0.0s)
+
+======================================================================
+== CELL 6
+======================================================================
+ICD      :    500  (cry=250)
+cry4     :   4871  (cry=4871)
+ESC-50   :   2000  (cry=40)
+snoring  :   1001
+-- cell 6 ok (0.2s)
+
+======================================================================
+== CELL 7
+======================================================================
+noise pool : 250 x 32000 samples
+RIRs       : 0
+(0.4s)
+-- cell 7 ok (0.4s)
+
+======================================================================
+== CELL 8
+======================================================================
+augment_window ready
+-- cell 8 ok (0.0s)
+
+======================================================================
+== CELL 9
+======================================================================
+  ICD base windows : (1000, 81, 64)  (1s)
+-- cell 9 ok (1.3s)
+
+======================================================================
+== CELL 10
+======================================================================
+  cry4   (2500, 81, 64)
+  esc50  (2000, 81, 64)
+  snore  (1000, 81, 64)
+  (16s)
+-- cell 10 ok (15.7s)
+
+======================================================================
+== CELL 11
+======================================================================
+ICD training windows: 606
+ICD training clips: 303  (windows: 606)
+  augmented views : (303, 81, 64)  (1s)
+-- cell 11 ok (0.7s)
+
+======================================================================
+== CELL 12
+======================================================================
+TRAIN      (4803, 81, 64)  cry=2198  non-cry=2605   (dropped 79 duplicate windows)
+VAL         (202, 81, 64)  cry=102
+TEST        (192, 81, 64)  cry=96
+CROSS      (1527, 81, 64)  cry=790   [cry4 + ESC-50 + snoring — unseen corpora, unseen babies]
+class weights: {0: 0.9218809980806142, 1: 1.0925841674249317}
+-- cell 12 ok (0.5s)
+
+======================================================================
+== CELL 13
+======================================================================
+E0000 00:00:1793276073.689128    1932 util.cc:131] oneDNN supports DT_HALF only on platforms with AVX-512. Falling back to the default Eigen-based implementation if present.
+WARNING:tensorflow:AutoGraph could not transform <function make_ds.<locals>.<lambda> at 0x0000027FC43536A0> and will run it as-is.
+Cause: could not parse the source code of <function make_ds.<locals>.<lambda> at 0x0000027FC43536A0>: no matching AST found among candidates:
+
+To silence this warning, decorate the function with @tf.autograph.experimental.do_not_convert
+WARNING:tensorflow:AutoGraph could not transform <function make_ds.<locals>.<lambda> at 0x0000027FC4353560> and will run it as-is.
+Cause: could not parse the source code of <function make_ds.<locals>.<lambda> at 0x0000027FC4353560>: no matching AST found among candidates:
+
+To silence this warning, decorate the function with @tf.autograph.experimental.do_not_convert
+WARNING:tensorflow:AutoGraph could not transform <function make_ds.<locals>.<lambda> at 0x0000027FD0241800> and will run it as-is.
+Cause: could not parse the source code of <function make_ds.<locals>.<lambda> at 0x0000027FD0241800>: no matching AST found among candidates:
+
+To silence this warning, decorate the function with @tf.autograph.experimental.do_not_convert
+WARNING:tensorflow:AutoGraph could not transform <function make_ds.<locals>.<lambda> at 0x0000027FD02437E0> and will run it as-is.
+Cause: could not parse the source code of <function make_ds.<locals>.<lambda> at 0x0000027FD02437E0>: no matching AST found among candidates:
+
+To silence this warning, decorate the function with @tf.autograph.experimental.do_not_convert
+tf.data ready: (4803, 81, 64) -> 64 x 81 x 64
+training windows: 4803  (2198 cry / 2605 non-cry)
+-- cell 13 ok (0.2s)
+
+======================================================================
+== CELL 14
+======================================================================
+conv_cnn       params=  122,770  in=(None, 81, 64, 1)  out=(None, 2)
+temporal_cnn   params=   65,154  in=(None, 81, 64, 1)  out=(None, 2)
+-- cell 14 ok (0.2s)
+
+======================================================================
+== CELL 15
+======================================================================
+
+========================================================================
+TRAINING conv_cnn   (3 epochs)
+========================================================================
+Epoch 1/3
+75/75 - 17s - 231ms/step - accuracy: 0.9025 - loss: 0.2420 - val_accuracy: 0.9208 - val_loss: 0.4909 - learning_rate: 0.0010
+Epoch 2/3
+75/75 - 13s - 176ms/step - accuracy: 0.9533 - loss: 0.1209 - val_accuracy: 0.9604 - val_loss: 0.1796 - learning_rate: 0.0010
+Epoch 3/3
+75/75 - 13s - 172ms/step - accuracy: 0.9627 - loss: 0.1070 - val_accuracy: 0.9455 - val_loss: 0.1824 - learning_rate: 0.0010
+  params=122,770  val_auc=1.0000  test_auc=1.0000  cross_auc=0.9313
+
+========================================================================
+TRAINING temporal_cnn   (3 epochs)
+========================================================================
+Epoch 1/3
+75/75 - 93s - 1s/step - accuracy: 0.8327 - loss: 0.4010 - val_accuracy: 0.5050 - val_loss: 0.5073 - learning_rate: 0.0010
+Epoch 2/3
+75/75 - 90s - 1s/step - accuracy: 0.8790 - loss: 0.2924 - val_accuracy: 0.5050 - val_loss: 0.4785 - learning_rate: 0.0010
+Epoch 3/3
+75/75 - 92s - 1s/step - accuracy: 0.8975 - loss: 0.2513 - val_accuracy: 1.0000 - val_loss: 0.2232 - learning_rate: 0.0010
+  params=65,154  val_auc=1.0000  test_auc=1.0000  cross_auc=0.8539
+
+========================================================================
+SELECTED: conv_cnn   val AUC 1.0000   122,770 parameters
+========================================================================
+-- cell 15 ok (326.9s)
+
+======================================================================
+== CELL 16
+======================================================================
+WARNING:tensorflow:AutoGraph could not transform <function make_ds.<locals>.<lambda> at 0x0000027FD0242840> and will run it as-is.
+Cause: could not parse the source code of <function make_ds.<locals>.<lambda> at 0x0000027FD0242840>: no matching AST found among candidates:
+
+To silence this warning, decorate the function with @tf.autograph.experimental.do_not_convert
+========================================================================
+HARD-EXAMPLE MINING
+========================================================================
+  hardest negatives : 600  (P(cry) up to 1.000)
+  hardest positives : 600  (P(cry) down to 0.013)
+  fine-tuning set   : 6003 windows (+1200 hard examples)
+Epoch 1/6
+93/93 - 20s - 219ms/step - accuracy: 0.9575 - loss: 0.1103 - val_accuracy: 0.7129 - val_loss: 0.3789
+Epoch 2/6
+93/93 - 16s - 171ms/step - accuracy: 0.9688 - loss: 0.0841 - val_accuracy: 1.0000 - val_loss: 0.0725
+Epoch 3/6
+93/93 - 16s - 171ms/step - accuracy: 0.9714 - loss: 0.0824 - val_accuracy: 1.0000 - val_loss: 0.0025
+Epoch 4/6
+93/93 - 15s - 166ms/step - accuracy: 0.9745 - loss: 0.0694 - val_accuracy: 1.0000 - val_loss: 0.0042
+Epoch 5/6
+93/93 - 15s - 164ms/step - accuracy: 0.9797 - loss: 0.0608 - val_accuracy: 1.0000 - val_loss: 8.3093e-04
+Epoch 6/6
+93/93 - 15s - 166ms/step - accuracy: 0.9810 - loss: 0.0505 - val_accuracy: 1.0000 - val_loss: 0.0010
+  after mining: val_auc = 1.0000
+-- cell 16 ok (102.8s)
+
+======================================================================
+== CELL 17
+======================================================================
+Threshold sweep on the ICD validation fold
+  target recall 95%  ->  THRESHOLD = 0.95
+    t=0.05  recall=1.0000  FPR=0.0000
+    t=0.10  recall=1.0000  FPR=0.0000
+    t=0.15  recall=1.0000  FPR=0.0000
+    t=0.20  recall=1.0000  FPR=0.0000
+    t=0.25  recall=1.0000  FPR=0.0000
+    t=0.30  recall=1.0000  FPR=0.0000
+    t=0.35  recall=1.0000  FPR=0.0000
+    t=0.40  recall=1.0000  FPR=0.0000
+    t=0.45  recall=1.0000  FPR=0.0000
+    t=0.50  recall=1.0000  FPR=0.0000
+    t=0.55  recall=1.0000  FPR=0.0000
+    t=0.60  recall=1.0000  FPR=0.0000
+    t=0.65  recall=1.0000  FPR=0.0000
+    t=0.70  recall=1.0000  FPR=0.0000
+    t=0.75  recall=1.0000  FPR=0.0000
+    t=0.80  recall=1.0000  FPR=0.0000
+    t=0.85  recall=1.0000  FPR=0.0000
+    t=0.90  recall=1.0000  FPR=0.0000
+    t=0.95  recall=1.0000  FPR=0.0000
+
+Per-corpus detail at the selected threshold
+--------------------------------------------------------------------------------------------------------
+  ICD val (fold 4)           n=202    cry=102    AUC=1.0000 AP=1.0000 acc=1.0000 F1=1.0000 rec=1.0000 prec=1.0000 FPR=0.0000
+  ICD test (fold 5)          n=192    cry=96     AUC=1.0000 AP=1.0000 acc=1.0000 F1=1.0000 rec=1.0000 prec=1.0000 FPR=0.0000
+  cross-corpus (unseen)      n=1527   cry=790    AUC=0.9891 AP=0.9916 acc=0.9339 F1=0.9320 rec=0.8759 prec=0.9957 FPR=0.0041
+
+Cross-corpus breakdown:
+    cry4_burping             n=61     cry=61     AUC=nan AP=1.0000 acc=0.7869 F1=0.8807 rec=0.7869 prec=1.0000 FPR=0.0000
+    cry4_needs               n=487    cry=487    AUC=nan AP=1.0000 acc=0.9774 F1=0.9886 rec=0.9774 prec=1.0000 FPR=0.0000
+    cry4_physical_pain       n=97     cry=97     AUC=nan AP=1.0000 acc=0.7629 F1=0.8655 rec=0.7629 prec=1.0000 FPR=0.0000
+    cry4_scared              n=105    cry=105    AUC=nan AP=1.0000 acc=0.8381 F1=0.9119 rec=0.8381 prec=1.0000 FPR=0.0000
+    esc50_airplane           n=14     cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_breathing          n=10     cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_brushing_teeth     n=12     cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_can_opening        n=8      cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_car_horn           n=8      cry=0      AUC=nan AP=nan acc=0.8750 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.1250
+    esc50_cat                n=8      cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_chainsaw           n=11     cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_chirping_birds     n=11     cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_church_bells       n=11     cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_clapping           n=7      cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_clock_alarm        n=4      cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_clock_tick         n=5      cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_coughing           n=12     cry=0      AUC=nan AP=nan acc=0.9167 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0833
+    esc50_cow                n=9      cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_crackling_fire     n=14     cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_crickets           n=9      cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_crow               n=6      cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_crying_baby        n=40     cry=40     AUC=nan AP=1.0000 acc=0.1500 F1=0.2609 rec=0.1500 prec=1.0000 FPR=0.0000
+    esc50_dog                n=13     cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_door_wood_creaks   n=7      cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_door_wood_knock    n=7      cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_drinking_sipping   n=10     cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_engine             n=12     cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_fireworks          n=13     cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_footsteps          n=7      cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_frog               n=12     cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_glass_breaking     n=10     cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_hand_saw           n=9      cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_helicopter         n=7      cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_hen                n=13     cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_insects            n=9      cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_keyboard_typing    n=9      cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_laughing           n=9      cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_mouse_click        n=10     cry=0      AUC=nan AP=nan acc=0.9000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.1000
+    esc50_pig                n=13     cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_pouring_water      n=10     cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_rain               n=13     cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_rooster            n=12     cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_sea_waves          n=8      cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_sheep              n=13     cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_siren              n=6      cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_sneezing           n=8      cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_snoring            n=10     cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_thunderstorm       n=14     cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_toilet_flush       n=9      cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_train              n=14     cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_vacuum_cleaner     n=12     cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_washing_machine    n=12     cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_water_drops        n=14     cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    esc50_wind               n=3      cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+    snoring                  n=250    cry=0      AUC=nan AP=nan acc=1.0000 F1=0.0000 rec=0.0000 prec=0.0000 FPR=0.0000
+
+Per-subclass on the ICD test fold:
+  EnesBabyCries  n=38     cry=38     recall=1.0000 meanP=0.9997
+  cryceleb       n=34     cry=34     recall=1.0000 meanP=0.9998
+  domestic       n=24     cry=0      recall=nan meanP=0.0004
+  vox            n=34     cry=0      recall=nan meanP=0.0003
+  xunfei         n=24     cry=24     recall=1.0000 meanP=0.9993
+-- cell 17 ok (8.3s)
+
+======================================================================
+== CELL 18
+======================================================================
+Saved artifact at 'C:\Users\HP\AppData\Local\Temp\tmp5003ovil'. The following endpoints are available:
+
+* Endpoint 'serve'
+  args_0 (POSITIONAL_ONLY): TensorSpec(shape=(None, 81, 64, 1), dtype=tf.float32, name='mel')
+Output Type:
+  TensorSpec(shape=(None, 2), dtype=tf.float32, name=None)
+Captures:
+  2747820968080: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820968656: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820968848: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820968272: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820969808: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820969232: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820969424: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820969616: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820967120: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820970768: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820970192: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820970384: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820970576: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820967312: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820971728: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820971152: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820971344: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820971536: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820969040: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820972688: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820972112: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820972304: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820972496: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820970000: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820973648: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820973072: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820970960: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820973264: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820974608: TensorSpec(shape=(), dtype=tf.resource, name=None)
+fully_quantize: 0, inference_type: 6, input_inference_type: INT8, output_inference_type: INT8
+Saved artifact at 'C:\Users\HP\AppData\Local\Temp\tmphio5hg9h'. The following endpoints are available:
+
+* Endpoint 'serve'
+  args_0 (POSITIONAL_ONLY): TensorSpec(shape=(None, 81, 64, 1), dtype=tf.float32, name='mel')
+Output Type:
+  TensorSpec(shape=(None, 2), dtype=tf.float32, name=None)
+Captures:
+  2747820968080: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820968656: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820968848: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820968272: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820969808: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820969232: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820969424: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820969616: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820967120: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820970768: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820970192: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820970384: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820970576: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820967312: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820971728: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820971152: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820971344: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820971536: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820969040: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820972688: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820972112: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820972304: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820972496: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820970000: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820973648: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820973072: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820970960: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820973264: TensorSpec(shape=(), dtype=tf.resource, name=None)
+  2747820974608: TensorSpec(shape=(), dtype=tf.resource, name=None)
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+input : [ 1 81 64  1] int8 scale=0.23200062 zp=-107
+output: [1 2] int8 scale=0.00390625 zp=-128
+model operators : ['CONV_2D', 'FULLY_CONNECTED', 'MAX_POOL_2D', 'MEAN', 'SOFTMAX']
+  all operators have a TFLite Micro kernel
+
+parity on 202 validation windows:
+  max |delta p|        = 0.0089
+  mean |delta p|       = 0.00197
+  decision agreement   = 100.0000%
+  INT8 (as deployed) val     n=202    cry=102    AUC=1.0000 AP=1.0000 acc=1.0000 F1=1.0000 rec=1.0000 prec=1.0000 FPR=0.0000
+  float32 reference val      n=202    cry=102    AUC=1.0000 AP=1.0000 acc=1.0000 F1=1.0000 rec=1.0000 prec=1.0000 FPR=0.0000
+
+  model size : int8 135.1 KB | float32 131.0 KB
+  AUC delta  : +0.00000
+-- cell 18 ok (5.5s)
+
+======================================================================
+== CELL 19
+======================================================================
+saved the trained Keras model -> crynet.keras
+wrote C:\Users\HP\.t3\projects\fp-2\research\_stub_out\model_data.h   (135.1 KB model)
+wrote C:\Users\HP\.t3\projects\fp-2\research\_stub_out\crynet_tables.h (497 Mel weights)
+-- cell 19 ok (0.2s)
+
+======================================================================
+== CELL 20
+======================================================================
+artifacts written to C:\Users\HP\.t3\projects\fp-2\research\_stub_out
+   c_parity.json                    0.1 KB
+   crynet.keras                  1537.0 KB
+   crynet_float.tflite            131.0 KB
+   crynet_infer_example.c           3.0 KB
+   crynet_int8.tflite             135.1 KB
+   crynet_tables.h                 15.2 KB
+   deploy_config.json               1.7 KB
+   dsp_crynet.c                     6.1 KB
+   dsp_crynet.h                     0.4 KB
+   metrics.json                     0.4 KB
+   model_data.h                   836.1 KB
+-- cell 20 ok (0.0s)
+
+======================================================================
+== CELL 21
+======================================================================
+compiling out/dsp_crynet.c with C:\Users\HP\AppData\Local\Programs\Python\Python311\python.exe -m ziglang cc ...
+  max |C - Python|  = 7.063e-05
+  mean|C - Python|  = 2.812e-06
+  OK — the C front end matches training (float32 rounding only)
+{
+  "parity": {
+    "max_abs_diff": 7.063150405883789e-05,
+    "mean_abs_diff": 2.811505055433372e-06
+  }
+}
+-- cell 21 ok (0.6s)
+
+======================================================================
+== CELL 22
+======================================================================
+==============================================================================
+  CryNet — final report
+==============================================================================
+  selected model     : conv_cnn  (122,770 parameters)
+  int8 model size    : 135.1 KB
+  input              : [1,81,64,1] int8  (scale 0.232001, zp -107)
+  output             : [1,2] int8 -> [P(no_cry), P(cry)]
+  alarm threshold    : 0.95
+  silence RMS gate   : 0.0015
+
+  ICD val  (fold 4)  : AUC 1.0000  F1 1.0000  recall 1.0000  FPR 0.0000
+  ICD test (fold 5)  : AUC 1.0000  F1 1.0000  recall 1.0000  FPR 0.0000
+  cross-corpus       : AUC 0.9891  F1 0.9320  recall 0.8759  FPR 0.0041
+  int8 vs float32    : AUC 1.0000 vs 1.0000  (delta +0.00000)
+
+  artifacts in C:\Users\HP\.t3\projects\fp-2\research\_stub_out
+    c_parity.json                    0.1 KB
+    crynet.keras                  1537.0 KB
+    crynet_float.tflite            131.0 KB
+    crynet_infer_example.c           3.0 KB
+    crynet_int8.tflite             135.1 KB
+    crynet_tables.h                 15.2 KB
+    deploy_config.json               1.7 KB
+    dsp_crynet.c                     6.1 KB
+    dsp_crynet.h                     0.4 KB
+    metrics.json                     0.4 KB
+    model_data.h                   836.1 KB
+
+  next: flash model_data.h + crynet_tables.h + dsp_crynet.c into the
+        ESP32-S3 firmware, then wire crynet_log_mel() -> TFLite Micro.
+==============================================================================
+-- cell 22 ok (0.0s)
+
+local run complete
