@@ -24,6 +24,29 @@
 3. `git status` + `git log --oneline -5` to see what is committed vs. uncommitted.
 4. Continue from **§4 Next action**.
 
+### 0.1 Live background work (as of 2026-10-29, ~19:30)
+
+| What | Where | How to check |
+|---|---|---|
+| PlatformIO ESP32-S3 build of `firmware/hub_infer` | background process, log at `research/toolchain/pio_build.log` | `tail -40 research/toolchain/pio_build.log`; if the process is gone, re-run `cd firmware/hub_infer && python -m platformio run` |
+| Toolchain install | `~/.platformio/packages/` (riscv32 done, xtensa-esp-elf in progress) | `ls ~/.platformio/packages/` |
+
+**A background build survives `/compact` and even a lost session** — it writes to the log file on disk, not to the chat. Compaction only rewrites conversation history.
+
+**What is NOT yet done — do not claim otherwise:**
+- The firmware has **never been compiled**. No build result exists yet.
+- The firmware has **never run on hardware**. The user has not connected the S3.
+- `firmware/` and `research/out/` are **not yet committed or pushed** (only `SYSTEM_UPDATE.md` was updated at the time of writing).
+
+**Next concrete steps after the build finishes:**
+1. Fix any compile errors (likely areas: the `esp_heap_caps.h` owning component, `tflite::MicroInterpreter` API details, the `PRIV_REQUIRES esp-tflite-micro` component name).
+2. Once it builds, ask the user to flash the S3 and read the serial log — the app prints per-probe feature deltas, P(cry), front-end and inference latency, and arena usage.
+3. Only then move to Stage 2b (node firmware).
+
+**Tools built so far (all runnable on the host):**
+- `firmware/tools/check_artifact_drift.py` — verifies `research/out/` against `deploy_config.json` and the staged firmware copies. Currently **PASS**.
+- `firmware/tools/gen_probe_refs.py` — regenerates `crynet_probe_refs.h` (expected on-device features) from the notebook's own front end.
+
 ---
 
 ## 1. Project in one paragraph
@@ -62,7 +85,7 @@ Mel weights are **exported from Python into C** (`crynet_tables.h`), so firmware
 
 ## 3. Live status (as of 2026-10-29)
 
-**Checkpoint 1 = DONE and validated. Checkpoint 2 (ESP32-S3 firmware) = NOT STARTED.**
+**Checkpoint 1 = DONE, including the full Kaggle run. Checkpoint 2 (ESP32-S3 firmware) = Stage 2a in progress.**
 
 ### Done
 - Dataset forensics: every candidate corpus downloaded and profiled at audio level (SR, duration, RMS, autocorr F0, spectral centroid/flatness).
@@ -75,27 +98,33 @@ Mel weights are **exported from Python into C** (`crynet_tables.h`), so firmware
 - **INT8 vs float32:** AUC delta **−0.00007**, 99.70 % decision agreement.
 - Notebook validated with `nbformat.validate()`.
 
-### Current numbers (indicative — small local run, NOT the final Kaggle run)
-3 epochs on an 8,490-window subsample. The real Kaggle run is 74 k windows / 35 epochs / 3 models.
+### Current numbers — **the full Kaggle run** (authoritative)
 
-| Split | AUC | F1 | Recall | FPR |
+The user ran `notebooks/crynet_training.ipynb` on Kaggle (GPU T4) and the artifacts are in `research/out/`. These numbers supersede the earlier subsample figures.
+
+| Split | AUC | F1 | Recall | Precision |
 |---|---|---|---|---|
-| ICD val (fold 4) | 0.9807 | 0.9145 | 0.9504 | 0.1240 |
-| ICD test (fold 5) | 0.9839 | 0.9131 | 0.9534 | 0.1058 |
-| cross-corpus (cry4+ESC50+snore, unseen) | 0.9887 | 0.9413 | 0.9544 | 0.0789 |
+| ICD val (fold 4) | **0.9994** | 0.9905 | 0.9844 | 0.9966 |
+| ICD test (fold 5) | **0.9995** | 0.9905 | — | — |
+| cross-corpus (cry4 + ESC-50 + snoring, never trained on) | **0.9973** | 0.9801 | — | — |
 
-- Selected variant: **`conv_cnn`** (122,770 params) → **135.1 KB INT8** (`research/_realfast_out/crynet_int8.tflite`, SHA-256 `d6d1dc4f…485ef0`).
-- `sep_cnn` was not trained in the fast run; `temporal_cnn` underperformed (val AUC 0.695) and was dropped.
-- **Calibrated alarm threshold = 0.23** (largest threshold reaching ≥ 95 % recall on the ICD val fold). At 0.50 it would be recall 91.9 % / FPR 4.2 %.
-- Input quantisation: scale **0.071706**, zero_point **−37**. Output: `[1,2]` int8, scale 0.00390625, zp −128, classes `["no_cry","cry"]`.
-- Quantisation: input scale 0.0717, zero_point −37. Tensor arena hint **120 KB** (put in PSRAM if it does not fit in internal SRAM).
-- Unseen-cry recall: cry4 `needs` 98.8 % / `physical_pain` 96.9 % / `scared` 90.5 % / `burping` 82.0 %; ESC-50 `crying_baby` 85 %.
-- Worst false-alarm categories: `coughing` 57 % · `car_horn` 33 % · `church_bells` 33 % · `siren` 25 % · `washing_machine` 23 %.
-- Mining effect on the stand-in run: cross-corpus FPR **0.109 → 0.004**.
+| Variant | Params | val AUC | cross AUC |
+|---|---|---|---|
+| **`conv_cnn` (selected)** | 122,770 | **0.9994** | 0.9973 |
+| `sep_cnn` | 29,839 | 0.9974 | 0.9928 |
+| `temporal_cnn` | 65,154 | 0.9805 | 0.9714 |
+
+- Deployed model: `crynet_int8.tflite`, **137,384 bytes**, SHA-256 `4aef55d8cfc0fb75aa944e73945ef5b832f12d71479c48f82aff58563126bc11`.
+- **Calibrated alarm threshold = 0.95** (re-derived by this run; the earlier subsample's 0.23 no longer applies).
+- Input quantisation: scale **0.060125612**, zero_point **−4**. Output: `[1,2]` int8, scale 0.00390625, zp −128, classes `["no_cry","cry"]`.
+- Tensor arena hint **120 KB** (the firmware reserves 256 KB and places it in PSRAM).
+- C front end vs Python on the real run: max deviation **6.905 × 10⁻⁵**, mean 2.79 × 10⁻⁶.
+- TFLM kernel check: **ok** — ops `CONV_2D, FULLY_CONNECTED, MAX_POOL_2D, MEAN, SOFTMAX`.
+- **Open gap:** this run's `deploy_config.json` reports `int8_val_auc` / `float_val_auc` as **NaN**, so the INT8-vs-float parity figures were not produced by the full run (the earlier subsample run measured ΔAUC −0.00007 with 99.70 % decision agreement). To be closed — either re-run that notebook cell or compare int8 and float on-device in Stage 2a.
 
 ### Artifacts on disk
-`research/_realfast_out/` — full export set from the real-corpus fast run: `crynet_int8.tflite`, `crynet_float.tflite`, `crynet.keras`, `model_data.h`, `crynet_tables.h`, `dsp_crynet.c/.h`, `crynet_infer_example.c`, `deploy_config.json`, `metrics.json`, `c_parity.json`.
-`research/out/` is **empty** — the real Kaggle run has not happened.
+`research/out/` — **the authoritative full-run artifacts**: `crynet_int8.tflite`, `crynet_float.tflite`, `crynet.keras`, `model_data.h`, `crynet_tables.h`, `dsp_crynet.c/.h`, `crynet_infer_example.c`, `deploy_config.json`, `metrics.json`, `c_parity.json`.
+`research/_realfast_out/` — the earlier subsample run, kept for comparison.
 Logs: `research/real_fast.log`, `research/stub_run.log`.
 
 ### Git state and remotes
@@ -123,14 +152,8 @@ Local branch `main`, tracking `crynet/main`. Latest commit `e7be48a` = checkpoin
 
 ## 4. Next action (checkpoint 2 — ESP32-S3 firmware)
 
-### 4.0 Placement of the Kaggle run outputs (do this first)
-The notebook writes to `CRYNET_OUT` (default `./out`). On Kaggle that is `/kaggle/working/out/`. Download the `out/` folder (or the whole `/kaggle/working` as a zip) and place it at:
-
-```
-C:\Users\HP\.t3\projects\fp-2\research\out\
-```
-
-`research/out/` is **no longer gitignored** — the real full-run artifacts are committed to `crynet` so the firmware is always built against the exact weights that were trained. Expected contents:
+### 4.0 Kaggle outputs — received and staged
+The user placed the full-run `out/` at `research/out/`. `firmware/tools/check_artifact_drift.py` verifies the SHA-256, model size, quantisation, thresholds and the staged copies. **Current result: PASS** (137,384 bytes, SHA-256 `4aef55d8…126bc11`, threshold 0.95, input scale 0.060125612 / zp −4).
 
 | File | Used by | Why it matters |
 |---|---|---|
@@ -174,7 +197,7 @@ Exit criteria: compiles; runs on the S3; on-board front-end deviation vs Python 
 This machine originally had **no ESP-IDF, no PlatformIO, no Arduino IDE and no Xtensa compiler**. PlatformIO **6.2.0 is now installed** (`research/toolchain/pio_install.log`) so the firmware can actually be **compiled and checked** here rather than written blind; the first `pio run` for `esp32s3` downloads the Xtensa toolchain. Flashing still requires the user's physical boards.
 
 ### 4.4 User-side action in parallel
-Run `notebooks/crynet_training.ipynb` on Kaggle (GPU T4, Internet On, ~40 min) and drop `out/` into `research/out/` as described in §4.0.
+**Done:** user ran the full Kaggle notebook and dropped `out/` into `research/out/`. Next user-side action is to connect the ESP32-S3 for the Stage 2a on-device verification once the build passes.
 
 ---
 
@@ -182,6 +205,8 @@ Run `notebooks/crynet_training.ipynb` on Kaggle (GPU T4, Internet On, ~40 min) a
 
 | Date | Change | Files touched | Notes |
 |---|---|---|---|
+| 2026-10-29 | **Full Kaggle outputs received and staged.** `research/out/` contains the full run. Model `conv_cnn`, 137,384 bytes, SHA-256 `4aef55d8…126bc11`, threshold 0.95, input scale 0.060125612 / zp −4. `firmware/tools/check_artifact_drift.py` verifies the outputs and the staged copies against `deploy_config.json` — **PASS**. On-device probe references generated by `firmware/tools/gen_probe_refs.py` from the notebook's own front end. | `research/out/*`, `firmware/hub_infer/components/*`, `firmware/tools/*` | Val AUC 0.9994, test AUC 0.9995, cross AUC 0.9973. C/Python parity 6.905 × 10⁻⁵. **Gap:** `int8_val_auc` and `float_val_auc` are NaN in the full-run config; parity needs to be re-measured. |
+| 2026-10-29 | **Stage 2a (hub inference core) scaffolded.** New ESP-IDF project with `crynet_model`, `crynet_dsp` (PSRAM-aware, reference FFT), `crynet_infer` (TFLM INT8), and the four on-device verification probes. PlatformIO espressif32 toolchain download/build in progress (`research/toolchain/pio_build.log`). | `firmware/hub_infer/*`, `firmware/tools/*` | **NOT yet compiled or run on hardware.** The user has not connected the board. TFLM port is checked out under `firmware/third_party/esp-tflite-micro` for testing but is not yet vendored/pinned; dependency wiring still needs completion. |
 | 2026-10-29 | **Checkpoint-2 plan written into §4** — where to place the Kaggle `out/` (`research/out/`, now un-gitignored so the trained weights are versioned), the "firmware written from scratch" contract (§4.1: re-derived vs deliberately kept), the 4-stage plan 2a→2d (§4.2), and the toolchain status (§4.3). | `SYSTEM_UPDATE.md`, `.gitignore` | PlatformIO 6.2.0 installed via pip so the firmware can be compiled and checked here — this machine had no ESP-IDF, PlatformIO, Arduino IDE or Xtensa compiler. |
 | 2026-10-29 | **CryNet repo made public** (was private) at the user's request. | GitHub repo settings | `github.com/Amazo123/CryNet` → private: false. |
 | 2026-10-29 | **Added §6 "Legacy system vs. this rebuild"** — a line-by-line comparison of the abandoned system (read directly from the `legacy` remote) against the rebuild: architecture, model size (6.15 MB FP32 vs 135 KB INT8), mel bands, CMVN, dataset strategy, trigger/threshold, verification discipline. Documents what was inherited on purpose (hardware, topology, wire protocol) vs. re-decided (everything model/feature/threshold related), and states plainly that checkpoint 2 firmware is still pending. | `SYSTEM_UPDATE.md` | Answers the user's question about whether the rebuild is genuinely new or a re-skin of the failed system. Evidence: legacy `TinyCryNet` (attention + GRU, 6.15 MB), `RMS_TRIGGER_THRESHOLD 0.18`, 128 mel, no CMVN, ICD as a git submodule. |
