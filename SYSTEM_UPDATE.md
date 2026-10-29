@@ -98,8 +98,17 @@ Mel weights are **exported from Python into C** (`crynet_tables.h`), so firmware
 `research/out/` is **empty** — the real Kaggle run has not happened.
 Logs: `research/real_fast.log`, `research/stub_run.log`.
 
-### Git state
-Branch `master`, one commit `997cc9b Initial commit`. **All checkpoint-1 work is uncommitted** (modified `README.md`; untracked `.gitignore`, `PROJECT_HANDOFF.md`, `notebooks/`, `research/`).
+### Git state and remotes
+Local branch `main`, tracking `crynet/main`. Latest commit `e7be48a` = checkpoint 1 (all of it now committed — nothing uncommitted).
+
+| Remote | Points at | Purpose |
+|---|---|---|
+| `crynet` | `github.com/Amazo123/CryNet.git` | **The live project.** Every change is committed here and pushed. Created 2026-10-29, currently **private**. |
+| `legacy` | `github.com/Amazo123/Multi-Node-Infant-Cry-Detection.git` | The **old** project (Arduino firmware, BOM, wiring guides, old `model_data.h`). Read-only reference — do not push to it. Its hub `.ino`, `firmware/common/protocol.h`, `firmware/central_hub_s3/pins.h` and `dsp_mel_extractor.cpp` are the starting point for checkpoint 2. |
+
+**Backup rule:** after every meaningful change → update this file → `git add -A && git commit && git push crynet main`. Never commit `research/_cache/` (5.5 GB of corpora) or the `_*_work/` scratch dirs; they are gitignored and the notebook re-downloads the corpora itself.
+
+**What is *not* in GitHub:** the raw datasets (5.5 GB — re-downloaded automatically by the notebook) and the `_work`/`_parity` build scratch. Everything that is source, model, exported artifact, doc or log **is** in the repo.
 
 ### Open risks
 1. The full Kaggle run has not happened — every number above is a floor, not final.
@@ -129,6 +138,7 @@ Branch `master`, one commit `997cc9b Initial commit`. **All checkpoint-1 work is
 
 | Date | Change | Files touched | Notes |
 |---|---|---|---|
+| 2026-10-29 | **Checkpoint 1 committed and pushed to GitHub.** Created `github.com/Amazo123/CryNet` (private), committed the full checkpoint-1 deliverable as `e7be48a`, renamed the branch `master` → `main`, pushed with upstream tracking. The old repo was renamed remote `origin` → `legacy` and left as a read-only reference. | all checkpoint-1 files; `.gitignore` | `.gitignore` extended to exclude `research/_real_work/`, `research/_realfast_work/`, `*.exe`, `*.pdb`, `*.o`, `*.obj` (build scratch). Push verified: remote `main` = `e7be48a`, 34 files. |
 | 2026-10-29 | **Created `SYSTEM_UPDATE.md`** — standing living status/recovery log. Imported the full checkpoint-1 state from `PROJECT_HANDOFF.md` and verified it against disk (`research/_realfast_out/*`, `metrics.json`, `deploy_config.json`, `real_fast.log`). | `SYSTEM_UPDATE.md` (new) | First entry. Establishes the update-after-every-edit protocol and the context-management rules (§0). |
 | 2026-10-29 | `PROJECT_HANDOFF.md` §5 file map now points at `SYSTEM_UPDATE.md` as the living log / recovery layer. | `PROJECT_HANDOFF.md` | One-line map addition. |
 | 2026-10-29 | Checkpoint 1 completed and validated (before this file existed). | `notebooks/crynet_training.ipynb`, `research/*` | Details in `PROJECT_HANDOFF.md` §4. |
