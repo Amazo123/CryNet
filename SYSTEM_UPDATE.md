@@ -123,14 +123,58 @@ Local branch `main`, tracking `crynet/main`. Latest commit `e7be48a` = checkpoin
 
 ## 4. Next action (checkpoint 2 — ESP32-S3 firmware)
 
-1. **Port `dsp_crynet.c` to ESP-IDF.** Replace the reference radix-2 FFT with ESP-DSP `dsps_fft2r` + `dsps_cmplx_mag` (~10× faster). Copy `crynet_tables.h` + `model_data.h` into the firmware tree.
-2. **Wire TFLite Micro.** INT8 input `[1, 81, 64, 1]`; `MicroMutableOpResolver` with `AddConv2D`, `AddDepthwiseConv2D`, `AddMaxPool2D`, `AddMean`, `AddFullyConnected`, `AddSoftmax`; arena in PSRAM if needed. `crynet_infer_example.c` is the template.
-3. **Fix the hub trigger threshold:** drop the RMS ≥ 0.18 audio-pull trigger to ~0.03 so soft cries reach the model; add the 0.0015 silence gate; let the calibrated 0.23 threshold do the discriminating.
-4. **Forward the model output** to the existing BLE packet: `alert_type = 0x01` when `P(cry) >= 0.23`, `confidence_pct = round(P(cry) * 100)`.
-5. **Measure** inference latency and arena usage on the real board; log both.
-6. **Collect ~50 in-domain clips**, add as a custom corpus to the notebook, retrain.
+### 4.0 Placement of the Kaggle run outputs (do this first)
+The notebook writes to `CRYNET_OUT` (default `./out`). On Kaggle that is `/kaggle/working/out/`. Download the `out/` folder (or the whole `/kaggle/working` as a zip) and place it at:
 
-*User-side action in parallel:* run `notebooks/crynet_training.ipynb` on Kaggle (GPU T4, Internet On, ~40 min) and download `out/`.
+```
+C:\Users\HP\.t3\projects\fp-2\research\out\
+```
+
+`research/out/` is **no longer gitignored** — the real full-run artifacts are committed to `crynet` so the firmware is always built against the exact weights that were trained. Expected contents:
+
+| File | Used by | Why it matters |
+|---|---|---|
+| `crynet_int8.tflite` | reference | the deployable model; `model_data.h` is the same bytes as a C array |
+| `model_data.h` | hub | `crynet_model[]` + `crynet_model_len` — compiled into flash |
+| `crynet_tables.h` | hub, node | Mel filterbank (start/end/offset + weights), Hann window, all constants, quant scales, **calibrated threshold**, silence gate |
+| `deploy_config.json` | hub | input shape, quantisation params, operator list, TFLM kernel check, threshold, metrics, model SHA-256 |
+| `metrics.json` | docs | per-variant AUC / F1 / recall |
+| `c_parity.json` | docs | measured C-vs-Python front-end deviation |
+| `crynet_float.tflite`, `crynet.keras`, `dsp_crynet.c/.h`, `crynet_infer_example.c` | reference | float reference, retrainable model, the portable C front end, TFLM glue template |
+
+`research/_realfast_out/` stays as the *subsample* run for comparison; `research/out/` becomes the **authoritative** one.
+
+### 4.1 The firmware is written from scratch — what that means concretely
+The firmware is **not** a port of the abandoned Arduino code. ESP-IDF, new module layout, new transport, new application state machine. Explicitly:
+
+**Re-derived (legacy code is not reused):**
+1. **Application architecture.** The legacy hub was one 46 KB `.ino` with global state and a `loop()`/FreeRTOS mix. New: ESP-IDF with separate components (`crynet_dsp`, `crynet_model`, `crynet_infer`, `node_link`), a dedicated inference task, and an explicit event-driven state machine.
+2. **The node↔hub transport.** The legacy telemetry had no ack, no retry, no per-fragment integrity check — which is exactly why it lost audio packets. New: my own packet layout with session IDs, per-fragment sequence numbers, CRC, and retransmission; the hub tolerates loss by design.
+3. **The DSP front end.** The legacy `dsp_mel_extractor.cpp` implements the *old* contract (128 mel, HTK scale, no normalisation) and is incompatible with the new model anyway. New: the notebook's `dsp_crynet.c` (this rebuild's own code, already validated against Python to 7.06 × 10⁻⁵), ported to ESP-DSP `dsps_fft2r` + `dsps_cmplx_mag`.
+4. **Trigger and decision logic.** Legacy: hard-coded `RMS ≥ 0.18` + `CONFIRMATION_PROB 0.65`. New: `RMS ≥ 0.03` trigger, 0.0015 silence gate, and the **calibrated** threshold from `crynet_tables.h`.
+
+**Kept deliberately (hardware facts, not design decisions):**
+1. The model's input contract (2 s, 16 kHz, 81 × 64 log-Mel, CMVN) — the trained weights require it exactly.
+2. Physical pin assignments and the board wiring — facts about the user's real hardware, verified against the wiring docs, with the driver code written fresh.
+3. The 3-node → hub → wearable topology and the binary alert semantics (`alert_type 0x01`).
+
+### 4.2 Staged plan — one artifact per stage
+
+**Stage 2a — hub inference core.** *(the risk-reduction stage: no radio, no display, no BLE)*
+Minimal ESP-IDF app that links `model_data.h` + `crynet_tables.h`, runs the DSP front end and TFLM INT8 on a 2 s buffer, and prints `P(cry)`, inference latency and tensor-arena usage. Runs the **same four probes** as the Python parity test *on the target MCU*, so the DSP is verified on real hardware, not just on the host.
+Exit criteria: compiles; runs on the S3; on-board front-end deviation vs Python < 1 × 10⁻³; latency and arena measured and logged; arena moved to PSRAM if it does not fit in internal SRAM.
+
+**Stage 2b — node firmware (ESP32-C3).** I2S INMP441 capture at 16 kHz, DC-offset removal, 100 ms RMS telemetry, on-demand 64 KB audio burst with fragmentation + CRC + retry.
+
+**Stage 2c — hub system.** ESP-NOW receive, RMS trigger, audio assembly across 320 fragments, inference, TFT display, BLE GATT server, alert packet.
+
+**Stage 2d — wearable (ESP32-C3).** BLE notification client, SSD1306 OLED, DRV2605L haptic.
+
+### 4.3 Toolchain status
+This machine originally had **no ESP-IDF, no PlatformIO, no Arduino IDE and no Xtensa compiler**. PlatformIO **6.2.0 is now installed** (`research/toolchain/pio_install.log`) so the firmware can actually be **compiled and checked** here rather than written blind; the first `pio run` for `esp32s3` downloads the Xtensa toolchain. Flashing still requires the user's physical boards.
+
+### 4.4 User-side action in parallel
+Run `notebooks/crynet_training.ipynb` on Kaggle (GPU T4, Internet On, ~40 min) and drop `out/` into `research/out/` as described in §4.0.
 
 ---
 
@@ -138,6 +182,7 @@ Local branch `main`, tracking `crynet/main`. Latest commit `e7be48a` = checkpoin
 
 | Date | Change | Files touched | Notes |
 |---|---|---|---|
+| 2026-10-29 | **Checkpoint-2 plan written into §4** — where to place the Kaggle `out/` (`research/out/`, now un-gitignored so the trained weights are versioned), the "firmware written from scratch" contract (§4.1: re-derived vs deliberately kept), the 4-stage plan 2a→2d (§4.2), and the toolchain status (§4.3). | `SYSTEM_UPDATE.md`, `.gitignore` | PlatformIO 6.2.0 installed via pip so the firmware can be compiled and checked here — this machine had no ESP-IDF, PlatformIO, Arduino IDE or Xtensa compiler. |
 | 2026-10-29 | **CryNet repo made public** (was private) at the user's request. | GitHub repo settings | `github.com/Amazo123/CryNet` → private: false. |
 | 2026-10-29 | **Added §6 "Legacy system vs. this rebuild"** — a line-by-line comparison of the abandoned system (read directly from the `legacy` remote) against the rebuild: architecture, model size (6.15 MB FP32 vs 135 KB INT8), mel bands, CMVN, dataset strategy, trigger/threshold, verification discipline. Documents what was inherited on purpose (hardware, topology, wire protocol) vs. re-decided (everything model/feature/threshold related), and states plainly that checkpoint 2 firmware is still pending. | `SYSTEM_UPDATE.md` | Answers the user's question about whether the rebuild is genuinely new or a re-skin of the failed system. Evidence: legacy `TinyCryNet` (attention + GRU, 6.15 MB), `RMS_TRIGGER_THRESHOLD 0.18`, 128 mel, no CMVN, ICD as a git submodule. |
 | 2026-10-29 | **Checkpoint 1 committed and pushed to GitHub.** Created `github.com/Amazo123/CryNet` (private), committed the full checkpoint-1 deliverable as `e7be48a`, renamed the branch `master` → `main`, pushed with upstream tracking. The old repo was renamed remote `origin` → `legacy` and left as a read-only reference. | all checkpoint-1 files; `.gitignore` | `.gitignore` extended to exclude `research/_real_work/`, `research/_realfast_work/`, `*.exe`, `*.pdb`, `*.o`, `*.obj` (build scratch). Push verified: remote `main` = `e7be48a`, 34 files. |

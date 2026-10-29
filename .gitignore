@@ -10,7 +10,7 @@ research/_real_work/
 research/_realfast_work/
 research/dl/
 research/dl_hf/
-research/out/
+research/toolchain/
 research/*.zip
 __pycache__/
 *.pyc
