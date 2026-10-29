@@ -11,7 +11,16 @@ research/_realfast_work/
 research/dl/
 research/dl_hf/
 research/toolchain/
+research/_probe/
+research/_verify_work/
 research/*.zip
+# vendored firmware dependencies — pinned in firmware/tools/fetch_deps.sh
+firmware/third_party/
+# firmware build artefacts
+firmware/**/.pio/
+firmware/**/sdkconfig
+firmware/**/sdkconfig.old
+firmware/**/managed_components/
 __pycache__/
 *.pyc
 research/mel_c.bin

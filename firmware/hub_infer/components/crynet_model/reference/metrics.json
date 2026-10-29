@@ -1,0 +1,27 @@
+{
+  "selected": "conv_cnn",
+  "threshold": 0.9500000000000002,
+  "variants": {
+    "conv_cnn": {
+      "kind": "conv_cnn",
+      "params": 122770,
+      "val_auc": 0.9994526384142005,
+      "test_auc": 0.9994469456410713,
+      "cross_auc": 0.9982602178257973
+    },
+    "sep_cnn": {
+      "kind": "sep_cnn",
+      "params": 29839,
+      "val_auc": 0.9974100081540395,
+      "test_auc": 0.9982222999412789,
+      "cross_auc": 0.9928444442835211
+    },
+    "temporal_cnn": {
+      "kind": "temporal_cnn",
+      "params": 65154,
+      "val_auc": 0.9805173291927004,
+      "test_auc": 0.9805761572737636,
+      "cross_auc": 0.97135424209947
+    }
+  }
+}

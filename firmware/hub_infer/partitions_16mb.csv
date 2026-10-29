@@ -1,0 +1,8 @@
+# CryNet hub — 16 MB flash layout (ESP32-S3-DevKitC-1 N16R8)
+# factory 2 MB: app + TFLite Micro + the 135 KB INT8 model in .rodata
+# storage 6 MB: NVS for event logs and the in-domain corpus cache
+# Name,   Type, SubType, Offset,   Size,    Flags
+nvs,      data, nvs,     0x9000,   0x6000,
+phy_init, data, phy,     0xf000,   0x1000,
+factory,  app,  factory, 0x10000,  0x200000,
+storage,  data, spiffs,  0x210000, 0x600000,
