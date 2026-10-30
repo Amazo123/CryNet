@@ -32,3 +32,6 @@ research/zigcache*/
 *.pdb
 *.o
 *.obj
+
+# Arduino IDE build output inside a sketch folder
+firmware/node/*/build/
