@@ -51,12 +51,18 @@ static void report_platform(void)
     esp_chip_info_t chip;
     esp_chip_info(&chip);
 
+    /* ESP-IDF 6.x changed the flash API: esp_flash_get_size() now takes a
+     * chip handle (NULL selects the default chip) and writes the size
+     * through an out-parameter. */
+    uint32_t flash_bytes = 0;
+    esp_flash_get_size(NULL, &flash_bytes);
+
     ESP_LOGI(TAG, "chip       : rev %d, %u cores", chip.revision, chip.cores);
     ESP_LOGI(TAG, "psram      : %d bytes (%s)",
              (int)heap_caps_get_total_size(MALLOC_CAP_SPIRAM),
              heap_caps_get_total_size(MALLOC_CAP_SPIRAM) > 0 ? "present" : "ABSENT");
     ESP_LOGI(TAG, "free int   : %d bytes", (int)heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
-    ESP_LOGI(TAG, "flash      : %u bytes", (unsigned)esp_flash_get_size());
+    ESP_LOGI(TAG, "flash      : %u bytes", (unsigned)flash_bytes);
     ESP_LOGI(TAG, "model      : %u bytes (int8)", (unsigned)crynet_model_size());
     ESP_LOGI(TAG, "threshold  : %.4f    silence gate %.6f",
              (double)CRYNET_THRESHOLD, (double)CRYNET_SILENCE_RMS_GATE);

@@ -9,5 +9,5 @@
 idf_component_register(
     SRCS "main.c" "probes.c"
     INCLUDE_DIRS "."
-    REQUIRES crynet_model crynet_dsp crynet_infer esp_timer
+    REQUIRES crynet_model crynet_dsp crynet_infer esp_timer spi_flash
 )

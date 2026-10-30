@@ -9,7 +9,7 @@
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DEST="${HERE}/../third_party"
+DEST="${HERE}/../hub_infer/components"
 
 TFLM_REPO="https://github.com/espressif/esp-tflite-micro.git"
 TFLM_REV="dd4085950a119d9e33a6de1d7be1fc7fe29e0cfc"
@@ -33,6 +33,10 @@ clone_at() {
 mkdir -p "${DEST}"
 clone_at "${TFLM_REPO}" "${TFLM_REV}" "${DEST}/esp-tflite-micro"
 clone_at "${NN_REPO}" "${NN_REV}" "${DEST}/esp-nn"
+
+# Point the port at the vendored esp-nn instead of the component registry.
+# See firmware/tools/patch_deps.py for why.
+python "${HERE}/patch_deps.py"
 
 echo
 echo "Dependencies ready:"

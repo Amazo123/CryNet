@@ -21,6 +21,7 @@
 #include "crynet_infer.h"
 
 #include <new>
+#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -54,6 +55,7 @@ constexpr size_t kResolverOps = 6;
 struct crynet_infer {
     void *interp_mem = nullptr;
     void *resolver_mem = nullptr;
+    void *model_raw = nullptr;   /* unaligned base of the model allocation */
     uint8_t *arena = nullptr;
     size_t arena_bytes = 0;
     size_t arena_used = 0;
@@ -69,22 +71,31 @@ extern "C" {
 crynet_infer_t *crynet_infer_create(void)
 {
     auto *self = static_cast<crynet_infer_t *>(
-        heap_caps_calloc(1, sizeof(crynet_infer_t)));
+        heap_caps_calloc(1, sizeof(crynet_infer_t),
+                         MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL));
     if (self == nullptr) {
         return nullptr;
     }
 
     /* --- model, copied into an aligned buffer ------------------------ */
     const size_t model_len = crynet_model_size();
-    void *model_mem = heap_caps_malloc(model_len, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
-    if (model_mem == nullptr) {
-        model_mem = heap_caps_malloc(model_len, MALLOC_CAP_8BIT);
+    /* The FlatBuffer verifier wants the model buffer aligned to 16 bytes.
+     * heap_caps_malloc only guarantees 4-byte alignment, so over-allocate
+     * by 16 bytes and align the copy by hand. */
+    const size_t model_alloc = model_len + 16;
+    void *model_raw = heap_caps_malloc(model_alloc, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+    if (model_raw == nullptr) {
+        model_raw = heap_caps_malloc(model_alloc, MALLOC_CAP_8BIT);
     }
-    if (model_mem == nullptr) {
+    if (model_raw == nullptr) {
         snprintf(self->error, sizeof(self->error),
                  "cannot allocate %u bytes for the model", (unsigned)model_len);
         return self;
     }
+    self->model_raw = model_raw;
+    uint8_t *model_mem = reinterpret_cast<uint8_t *>(
+        (reinterpret_cast<uintptr_t>(model_raw) + 15u) &
+        ~static_cast<uintptr_t>(15u));
     memcpy(model_mem, crynet_model_bytes(), model_len);
 
     const tflite::Model *model = tflite::GetModel(model_mem);
@@ -110,8 +121,10 @@ crynet_infer_t *crynet_infer_create(void)
     self->arena_bytes = kArenaBytes;
 
     /* --- interpreter ------------------------------------------------- */
-    self->resolver_mem = heap_caps_calloc(1, sizeof(*self->resolver));
-    self->interp_mem = heap_caps_calloc(1, sizeof(*self->interp));
+    self->resolver_mem = heap_caps_calloc(1, sizeof(*self->resolver),
+                                          MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL);
+    self->interp_mem = heap_caps_calloc(1, sizeof(*self->interp),
+                                         MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL);
     if (self->resolver_mem == nullptr || self->interp_mem == nullptr) {
         snprintf(self->error, sizeof(self->error), "cannot allocate the interpreter");
         return self;
@@ -156,6 +169,9 @@ void crynet_infer_destroy(crynet_infer_t *inf)
     }
     if (inf->arena != nullptr) {
         heap_caps_free(inf->arena);
+    }
+    if (inf->model_raw != nullptr) {
+        heap_caps_free(inf->model_raw);
     }
     heap_caps_free(inf);
 }

@@ -24,23 +24,23 @@
 3. `git status` + `git log --oneline -5` to see what is committed vs. uncommitted.
 4. Continue from **§4 Next action**.
 
-### 0.1 Live background work (as of 2026-10-29, ~19:30)
+### 0.1 Live background work (as of 2026-10-30, ~03:00)
 
 | What | Where | How to check |
 |---|---|---|
-| PlatformIO ESP32-S3 build of `firmware/hub_infer` | background process, log at `research/toolchain/pio_build.log` | `tail -40 research/toolchain/pio_build.log`; if the process is gone, re-run `cd firmware/hub_infer && python -m platformio run` |
-| Toolchain install | `~/.platformio/packages/` (riscv32 done, xtensa-esp-elf in progress) | `ls ~/.platformio/packages/` |
+| **Nothing is running.** The ESP32-S3 firmware **compiles and links** — see §3. | — | `tail -60 research/toolchain/pio_build.log` for the last build |
+| Rebuild from scratch | `cd firmware/hub_infer && python -m platformio run` | ~7 min from clean; ~1 min incrementally |
+| Re-fetch the vendored deps | `bash firmware/tools/fetch_deps.sh` | clones the pinned commits and re-applies `patch_deps.py` |
 
 **A background build survives `/compact` and even a lost session** — it writes to the log file on disk, not to the chat. Compaction only rewrites conversation history.
 
 **What is NOT yet done — do not claim otherwise:**
-- The firmware has **never been compiled**. No build result exists yet.
-- The firmware has **never run on hardware**. The user has not connected the S3.
-- `firmware/` and `research/out/` are **not yet committed or pushed** (only `SYSTEM_UPDATE.md` was updated at the time of writing).
+- The firmware has **never run on hardware**. The user has not connected the S3, so there is no serial log, no probe comparison and no latency measurement from the chip.
+- Stage 2b (the ESP32-C3 node firmware) has not been started.
 
-**Next concrete steps after the build finishes:**
-1. Fix any compile errors (likely areas: the `esp_heap_caps.h` owning component, `tflite::MicroInterpreter` API details, the `PRIV_REQUIRES esp-tflite-micro` component name).
-2. Once it builds, ask the user to flash the S3 and read the serial log — the app prints per-probe feature deltas, P(cry), front-end and inference latency, and arena usage.
+**Next concrete steps:**
+1. **The user flashes the S3** and pastes the serial log — the app prints per-probe feature deltas against the Python reference, `P(cry)`, front-end and inference latency, and tensor-arena usage.
+2. Compare those numbers with the host reference and fix any drift.
 3. Only then move to Stage 2b (node firmware).
 
 **Tools built so far (all runnable on the host):**
@@ -132,6 +132,16 @@ The user ran `notebooks/crynet_training.ipynb` on Kaggle (GPU T4) and the artifa
   ΔAUC **−0.001373**; max |Δp| 0.182; mean |Δp| 0.0029; **decision agreement 99.956 %**. The independent float AUC (0.999299) corroborates the Kaggle figure (0.999419) from a different set of windows. Report: `research/out/verify_int8_parity.json`.
 - **Notebook fixed:** the parity cell now draws a seeded random permutation subset and warns loudly if a slice is single-class. Notebook regenerated and `nbformat.validate()`-passed.
 
+- **Firmware build — CLOSED (2026-10-30).** `firmware/hub_infer` now **compiles and links** for `esp32s3`:
+  - toolchain: PlatformIO 6.2.0, `platform-espressif32` 8.0.0, **ESP-IDF 6.1.0**, `toolchain-xtensa-esp-elf` 14.2.0 (GCC 14.2);
+  - images: `firmware.bin` **468,800 B**, `bootloader.bin` 22,560 B, `partitions.bin` 3,072 B;
+  - **RAM 52.1 %** (170,668 B of 327,680 B) and **flash 22.3 %** (468,373 B of the 2 MB factory partition);
+  - effective config: `esp32s3`, 16 MB flash, **octal PSRAM at 80 MHz**, custom 16 MB partition table, and **`CONFIG_ESP_TFLITE_MICRO_USE_ESP_NN=y`** — the ESP-NN SIMD kernels are compiled in, which is the difference between roughly 40 ms and roughly 2.3 s per convnet invoke on an S3;
+  - the whole TFLite Micro port and ESP-NN compile cleanly under GCC 14 with the port's own `-Werror`;
+  - `firmware/tools/check_artifact_drift.py` still **PASSes** (model SHA-256, threshold, quantisation, staged copies);
+  - `firmware/hub_infer/dependencies.lock` records the exact IDF version and is committed.
+  **Still unverified: anything that only happens on the chip** — the FlatBuffer alignment, the arena fitting, the probe feature agreement and the latency.
+
 ### Artifacts on disk
 `research/out/` — **the authoritative full-run artifacts**: `crynet_int8.tflite`, `crynet_float.tflite`, `crynet.keras`, `model_data.h`, `crynet_tables.h`, `dsp_crynet.c/.h`, `crynet_infer_example.c`, `deploy_config.json`, `metrics.json`, `c_parity.json`.
 `research/_realfast_out/` — the earlier subsample run, kept for comparison.
@@ -150,14 +160,13 @@ Local branch `main`, tracking `crynet/main`. Latest commit `e7be48a` = checkpoin
 **What is *not* in GitHub:** the raw datasets (5.5 GB — re-downloaded automatically by the notebook) and the `_work`/`_parity` build scratch. Everything that is source, model, exported artifact, doc or log **is** in the repo.
 
 ### Open risks
-1. The full Kaggle run has not happened — every number above is a floor, not final.
+1. **Unverified on hardware.** A successful build says nothing about the chip: the FlatBuffer alignment, whether the 256 KB arena actually fits, whether the DSP reproduces the Python features, and the real latency are all still unknown. This is the top risk, and the reason Stage 2a exists.
 2. `coughing` is the top confuser; if it survives mining, add the FSDKaggle2018 cough set.
 3. **No in-domain data** — the model has never heard the user's INMP441, room or gain. ~50 self-recorded clips (cries + room noise + speech + TV) is the single biggest remaining accuracy win.
-4. TFLM latency unmeasured. Estimate 100–300 ms per 2 s window on a 240 MHz LX7; must be measured on the real board.
-5. Tensor arena size is a hint only — verify `AllocateTensors()` succeeds.
+4. TFLM latency unmeasured. With ESP-NN enabled the expectation is tens of milliseconds per 2 s window on a 240 MHz LX7, not the 100–300 ms the un-optimised kernels would cost; it must be measured on the real board.
+5. The tensor arena is a 256 KB reservation placed in PSRAM; `AllocateTensors()` has never run. The notebook's hint was 120 KB, so it should fit — but the *actual* high-water mark is unmeasured.
 6. BLE/display policy unchanged from the old spec; it already assumes binary output.
 7. Old firmware gotchas still apply: INMP441 DC offset (~+18000 counts), ESP-NOW TX queue overflow (needs callback flow control), Arduino-3.x callback signature change, ILI9341 240 px clipping (the `HubDisplay` subclass).
-
 ---
 
 ## 4. Next action (checkpoint 2 — ESP32-S3 firmware)
@@ -204,7 +213,33 @@ Exit criteria: compiles; runs on the S3; on-board front-end deviation vs Python 
 **Stage 2d — wearable (ESP32-C3).** BLE notification client, SSD1306 OLED, DRV2605L haptic.
 
 ### 4.3 Toolchain status
-This machine originally had **no ESP-IDF, no PlatformIO, no Arduino IDE and no Xtensa compiler**. PlatformIO **6.2.0 is now installed** (`research/toolchain/pio_install.log`) so the firmware can actually be **compiled and checked** here rather than written blind; the first `pio run` for `esp32s3` downloads the Xtensa toolchain. Flashing still requires the user's physical boards.
+This machine originally had **no ESP-IDF, no PlatformIO, no Arduino IDE and no Xtensa compiler**. PlatformIO **6.2.0** is installed (`research/toolchain/pio_install.log`) so the firmware can actually be **compiled and checked** here rather than written blind. Flashing still requires the user's physical boards.
+
+**What is installed now**
+
+| Package | Version | Notes |
+|---|---|---|
+| `platform-espressif32` | **8.0.0** | pinned in `platformio.ini` |
+| `framework-espidf` | **ESP-IDF 6.1.0** (`4.60100.0`) | installed **by hand** — see below |
+| `toolchain-xtensa-esp-elf` | 14.2.0 | GCC 14.2 |
+| `toolchain-riscv32-esp`, `toolchain-esp32ulp`, gdb packages | — | for the C3 nodes and debugging |
+
+**Do not pin the framework with a `platform_packages` URL.** PlatformIO 6.2 installs a URL-specified package by treating the archive as an **npm package**: it picks the wrong `package.json` out of the tree, writes a bogus version into `.piopm`, and leaves `packages/framework-espidf` holding only a test-fixture package. CMake then fails with:
+
+```
+include could not find requested file:
+  .../packages/framework-espidf/tools/cmake/project.cmake
+```
+
+The fix that worked: delete `packages/framework-espidf`, move the fully extracted tree into its place, and write `.piopm` by hand:
+
+```json
+{"type": "tool", "name": "framework-espidf", "version": "4.60100.0",
+ "spec": {"owner": "platformio", "id": null, "name": "framework-espidf",
+          "requirements": "~4.60100.0", "uri": null}}
+```
+
+**Why ESP-IDF 6.1.0 and not 5.3.2.** 5.3.2 was the original target, but PlatformIO's registry only offers the framework as `~4.60100.0` (6.1.0) with `~3.50505.0` (5.5.0) as the alternative for this platform, and the 5.3.2 archive could not be installed through PlatformIO at all. 6.1.0 was already on disk, satisfies the port's `idf >= 5.1` requirement, and needed no further download. **Fallback if the port misbehaves under IDF 6.1/GCC 14:** install `platform-espressif32` 6.9.0 (framework `~3.50301.0` = IDF 5.3.1, toolchain 13.2.0) and let PlatformIO fetch both.
 
 ### 4.4 User-side action in parallel
 **Done:** user ran the full Kaggle notebook and dropped `out/` into `research/out/`. Next user-side action is to connect the ESP32-S3 for the Stage 2a on-device verification once the build passes.
@@ -215,6 +250,9 @@ This machine originally had **no ESP-IDF, no PlatformIO, no Arduino IDE and no X
 
 | Date | Change | Files touched | Notes |
 |---|---|---|---|
+| 2026-10-30 | **The Stage 2a firmware builds.** `firmware/hub_infer` compiles and links for the ESP32-S3: `firmware.bin` 468,800 B, RAM 52.1 %, flash 22.3 %, ESP-NN enabled, octal PSRAM at 80 MHz. Getting there meant fixing six separate things: (1) PlatformIO 6.2 installs a URL-pinned `framework-espidf` as if it were an **npm package**, so it read the wrong `package.json` and left `packages/framework-espidf` holding only a test fixture — CMake then failed with *"include could not find requested file: tools/cmake/project.cmake"*; fixed by installing the platform's own framework (**ESP-IDF 6.1.0**) by hand and dropping the `platform_packages` pin; (2) the top-level `CMakeLists.txt` **assigned** `EXTRA_COMPONENT_DIRS`, shadowing the `-DEXTRA_COMPONENT_DIRS:PATH=<src>` that PlatformIO passes for the application component, and pointed at a component instead of a directory that contains components; (3) the vendored components sat **outside** the project directory, and PlatformIO re-compiles IDF components with SCons using the *source basename* for object names — the TFLite Micro port has twelve basename collisions, so the build died with *"Multiple ways to build the same target were specified for …/circular_buffer.cc.o"*; moving the vendored components into `firmware/hub_infer/components/` makes the paths relative and distinct; (4) the port was wired to the registry copy of `esp-nn` while `esp-nn` was also vendored locally — a duplicate-component error — so `firmware/tools/patch_deps.py` now drops the registry dependency and adds `esp-nn` to the port's own requirements, keeping the build offline and pinned; (5) IDF 6.x moved `esp_flash.h` into the `spi_flash` component, changed `esp_flash_get_size()` to take a chip handle and an out-parameter, and requires an explicit capability argument on `heap_caps_calloc`; (6) the model copy is now aligned to 16 bytes by hand, because `heap_caps_malloc` only guarantees 4-byte alignment and the FlatBuffer verifier wants 16. | `firmware/hub_infer/*`, `firmware/tools/patch_deps.py`, `firmware/tools/fetch_deps.sh`, `.gitignore` | **`CONFIG_DDSP` no longer exists in IDF 6.x** and was dropped from `sdkconfig.defaults`. **The firmware has still never run on hardware** — there is no serial log yet, so the FlatBuffer alignment, the arena fit, the probe feature agreement and the latency are all still unverified. |
+| 2026-10-30 | **The build finally configures — four real bugs found and fixed.** Diagnosis: PlatformIO 6.2 installs a URL-pinned `framework-espidf` by treating the archive as an npm package, so it read the wrong `package.json` out of the tree and left `packages/framework-espidf` holding only a test-fixture package — hence CMake's *"include could not find requested file: tools/cmake/project.cmake"*. Fixed by installing the platform's own framework by hand (**ESP-IDF 6.1.0**, `platform-espressif32` 8.0.0) and dropping the `platform_packages` URL pin. Also fixed: (1) the top-level `CMakeLists.txt` **assigned** `EXTRA_COMPONENT_DIRS`, shadowing the `-DEXTRA_COMPONENT_DIRS:PATH=<src>` that PlatformIO passes for the application component — it now *appends*, and points at `third_party/` (a directory that **contains** components) rather than at the component itself; (2) the vendored TFLM port was wired to the registry copy of `esp-nn` while `esp-nn` was also vendored locally — a duplicate-component error; `firmware/tools/patch_deps.py` now removes the registry dependency and adds `esp-nn` to the port's own requirements, keeping the build **offline and pinned**; (3) IDF 6.x moved `esp_flash.h` into the `spi_flash` component and changed `esp_flash_get_size()` to take a chip handle and an out-parameter; (4) `CONFIG_DDSP` no longer exists in IDF 6.x and was dropped from `sdkconfig.defaults`. | `firmware/hub_infer/CMakeLists.txt`, `firmware/hub_infer/platformio.ini`, `firmware/hub_infer/sdkconfig.defaults`, `firmware/hub_infer/src/main.c`, `firmware/hub_infer/src/CMakeLists.txt`, `firmware/tools/patch_deps.py`, `firmware/tools/fetch_deps.sh` | IDF 6.1 gives every component `freertos esp_hw_support heap log soc hal esp_rom esp_common esp_system` automatically, so the earlier `esp_heap_caps.h` ownership worry is moot. ESP-NN is worth keeping: on an S3 it is the difference between ~40 ms and ~2.3 s per convnet invoke. **The firmware has still never been compiled or run.** |---|
+| 2026-10-29 | **Toolchain recovery documented.** The first ESP-IDF 5.3.2 install was killed mid-unpack by the background task's 30-minute limit, leaving a partial `framework-espidf` tree (no `tools/`, `main/`, `examples/`, `version.txt`). The partial tree was deleted and the build restarted; the 933 MB archive was already cached in `~/.platformio/.cache/downloads/`, so **no re-download was needed**. §4.3 now records the pin and a 3-step idempotent recovery. | `SYSTEM_UPDATE.md` | Restarted as background process `blewy4qwx` with a 2-hour limit. Still **NOT yet compiled**. |
 | 2026-10-29 | **INT8-vs-float parity gap closed.** `research/verify_int8_parity.py` rebuilt the ICD validation fold (fold 4, 5,693 clips → 11,386 centre-cropped windows) from the cached archives with the notebook's own front end and ran the exported INT8 model and the float32 Keras model over it. **INT8 AUC 0.997926 vs float32 0.999299, ΔAUC −0.001373, decision agreement 99.956 %**; recall 0.9780 vs 0.9782 and FPR 0.0036 vs 0.0036 at the 0.95 threshold. The independently computed float AUC corroborates the Kaggle figure. Report: `research/out/verify_int8_parity.json`. | `research/verify_int8_parity.py`, `research/out/verify_int8_parity.json`, `SYSTEM_UPDATE.md` | Root cause of the NaN documented: the parity cell took a *prefix* of a label-sorted array, so the slice was 100 % cry and its AUC was undefined. The model was never affected. |
 | 2026-10-29 | **Full Kaggle outputs received and staged.** `research/out/` contains the full run. Model `conv_cnn`, 137,384 bytes, SHA-256 `4aef55d8…126bc11`, threshold 0.95, input scale 0.060125612 / zp −4. `firmware/tools/check_artifact_drift.py` verifies the outputs and the staged copies against `deploy_config.json` — **PASS**. On-device probe references generated by `firmware/tools/gen_probe_refs.py` from the notebook's own front end. | `research/out/*`, `firmware/hub_infer/components/*`, `firmware/tools/*` | Val AUC 0.9994, test AUC 0.9995, cross AUC 0.9973. C/Python parity 6.905 × 10⁻⁵. **Gap:** `int8_val_auc` and `float_val_auc` are NaN in the full-run config; parity needs to be re-measured. |
 | 2026-10-29 | **Stage 2a (hub inference core) scaffolded.** New ESP-IDF project with `crynet_model`, `crynet_dsp` (PSRAM-aware, reference FFT), `crynet_infer` (TFLM INT8), and the four on-device verification probes. PlatformIO espressif32 toolchain download/build in progress (`research/toolchain/pio_build.log`). | `firmware/hub_infer/*`, `firmware/tools/*` | **NOT yet compiled or run on hardware.** The user has not connected the board. TFLM port is checked out under `firmware/third_party/esp-tflite-micro` for testing but is not yet vendored/pinned; dependency wiring still needs completion. |

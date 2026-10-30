@@ -15,10 +15,12 @@ research/_probe/
 research/_verify_work/
 research/*.zip
 # vendored firmware dependencies — pinned in firmware/tools/fetch_deps.sh
-firmware/third_party/
+firmware/hub_infer/components/esp-tflite-micro/
+firmware/hub_infer/components/esp-nn/
 # firmware build artefacts
 firmware/**/.pio/
 firmware/**/sdkconfig
+firmware/**/sdkconfig.*
 firmware/**/sdkconfig.old
 firmware/**/managed_components/
 __pycache__/
