@@ -83,7 +83,24 @@ static const uint16_t FRAG_COUNT   = (BURST_BYTES + FRAG_PAYLOAD - 1) / FRAG_PAY
 /* The hub starts classifying at an RMS of 0.03 (frozen decision 5).  The
  * node uses a higher level to decide that something worth uploading is
  * happening: a cry is well above 0.03, room noise is not. */
-static const float EVENT_RMS = 0.10f;
+/* The level at which the node freezes its two-second window.  It is the
+ * same number as the hub's trigger (CRYNET_TRIGGER_RMS): the hub asks for
+ * a window when the node says it is this loud, and the window it gets must
+ * be the loud one.  When this was 0.10 the node almost never froze
+ * anything, so the hub was served the live two seconds — whose average is
+ * mostly the gaps between cries — and real cries were classified as
+ * silence. */
+static const float EVENT_RMS = 0.030f;
+
+/* How long after the loudest moment the window is frozen, so the two
+ * seconds the hub classifies are centred on the cry rather than ending
+ * at it.  The ring holds two seconds, so the peak has to be frozen
+ * within PEAK_EXPIRE_MS of the moment it was heard. */
+static const uint32_t PEAK_DELAY_MS = 1000;
+static const uint32_t PEAK_EXPIRE_MS = 2000;
+
+/* How long a frozen window may sit unserved before it is dropped. */
+static const uint32_t FROZEN_EXPIRE_MS = 5000;
 
 /* ----------------------------------------------------------------- state -- */
 
@@ -96,6 +113,10 @@ static uint32_t  g_filled = 0;          /* valid samples, up to 32000     */
 static uint32_t  g_frozen_fill = 0;     /* valid samples in g_frozen      */
 
 static bool      g_frozen_valid = false;
+static bool      g_peak_pending = false;   /* a loud moment is waiting to
+                                            * be frozen, one second late */
+static uint32_t  g_peak_ms = 0;
+static uint32_t  g_frozen_ms = 0;
 static uint32_t  g_frozen_crc = 0;    /* CRC-32 of the frozen window's bytes */
 static uint16_t  g_burst_seq = 0;
 static uint8_t   g_node_id = 1;
@@ -238,6 +259,7 @@ static void freeze_window(void) {
     }
     g_frozen_fill = WINDOW_SAMPLES;
     g_frozen_valid = true;
+    g_frozen_ms = millis();
     /* The checksum of the exact bytes that will be uploaded.  The hub
      * computes the same value over the window it reassembles, so the two
      * agreeing is the proof that the radio delivered the audio intact. */
@@ -711,6 +733,44 @@ void loop() {
             uint32_t n = (g_filled < RMS_SAMPLES) ? g_filled : RMS_SAMPLES;
             g_rms = rms_of_last(g_mean, n);
 
+            /* Freeze first, announce second.  The telemetry has to carry
+             * the sequence number and the CRC-32 of the window the hub is
+             * about to ask for; if the freeze happened after the frame
+             * was sent, the hub had nothing to check the window it
+             * reassembled against. */
+            if (!g_frozen_valid && g_filled == WINDOW_SAMPLES) {
+                if (!g_peak_pending && g_rms >= EVENT_RMS) {
+                    /* A loud moment: remember it, and freeze a second
+                     * later, when the ring holds the second that follows
+                     * it as well.  The two seconds the hub classifies are
+                     * then centred on the cry instead of ending at it. */
+                    g_peak_pending = true;
+                    g_peak_ms = now;
+                } else if (g_peak_pending) {
+                    const uint32_t age = now - g_peak_ms;
+                    if (age >= PEAK_DELAY_MS) {
+                        if (age < PEAK_EXPIRE_MS) {
+                            freeze_window();
+                            if (!g_dump_active && Serial) {
+                                Serial.printf("froze window, burst seq %u\n",
+                                              g_burst_seq);
+                            }
+                        }
+                        g_peak_pending = false;
+                    }
+                }
+            }
+
+            /* A frozen window that nobody asked for must not block the
+             * next one.  The microphone's DC drift can cross the event
+             * level for a single reading, and the hub's trigger needs two
+             * of them, so that window would sit here unused and the next
+             * real cry would be served the stale, quiet one. */
+            if (g_frozen_valid && (now - g_frozen_ms) > FROZEN_EXPIRE_MS) {
+                g_frozen_valid = false;
+                g_peak_pending = false;
+            }
+
             send_telemetry();
 
             if (!g_dump_active && Serial) {
@@ -720,14 +780,6 @@ void loop() {
                  * its own loop and stopped pumping the microphone. */
                 Serial.printf("rms %.4f  mean %d  %s\n", g_rms, (int)g_mean,
                               g_rms >= EVENT_RMS ? "EVENT" : "");
-            }
-
-            if (g_rms >= EVENT_RMS && !g_frozen_valid &&
-                g_filled == WINDOW_SAMPLES) {
-                freeze_window();
-                if (!g_dump_active && Serial) {
-                    Serial.printf("froze window, burst seq %u\n", g_burst_seq);
-                }
             }
         }
     }
@@ -772,6 +824,7 @@ void loop() {
             if (count > 1) {
                 g_filled = 0;
                 g_frozen_valid = false;
+                g_peak_pending = false;
             }
         }
     }

@@ -1,0 +1,9 @@
+port: COM30
+sample_rate: 16000
+channels: 1
+bits: 16
+seconds: 329.000
+records: 3290
+clips: 65 x 5.0 s
+note: cry from a phone speaker: 90 s at the cot, 90 s from the far side of the room, then household noise, then quiet
+recorded: 2026-10-30 22:09:06

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CryNet — Cot Monitor</title>
+<style>
+  :root {
+    --bg: #0d1117; --panel: #161b22; --line: #262d36;
+    --ink: #e6edf3; --dim: #8b949e; --ok: #2ea043; --bad: #f85149;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.45 -apple-system, "Segoe UI", Roboto, sans-serif;
+    min-height: 100vh; display: flex; flex-direction: column;
+  }
+  header {
+    padding: 18px 18px 10px; border-bottom: 1px solid var(--line);
+  }
+  h1 { margin: 0; font-size: 19px; font-weight: 650; letter-spacing: .2px; }
+  .sub { color: var(--dim); font-size: 13px; margin-top: 3px; }
+  main { flex: 1; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+  .card {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 14px; padding: 18px;
+  }
+  .state {
+    text-align: center; padding: 26px 12px; border-radius: 14px;
+    background: #10161d; border: 1px solid var(--line); transition: .25s;
+  }
+  .state.crying { background: #2b0f10; border-color: var(--bad); }
+  .big { font-size: 44px; font-weight: 750; letter-spacing: 1px; }
+  .state.crying .big { color: var(--bad); }
+  .state.quiet .big { color: var(--ok); }
+  .detail { color: var(--dim); font-size: 13px; margin-top: 6px; }
+  button {
+    width: 100%; padding: 15px; font-size: 16px; font-weight: 620;
+    border-radius: 12px; border: 1px solid var(--line);
+    background: #1f6feb; color: #fff; cursor: pointer;
+  }
+  button.ghost { background: transparent; color: var(--ink); }
+  button:disabled { opacity: .5; cursor: default; }
+  .row { display: flex; gap: 10px; }
+  .row button { flex: 1; }
+  #log {
+    font: 12.5px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: var(--dim); max-height: 34vh; overflow: auto; white-space: pre-wrap;
+  }
+  #log b { color: var(--ink); }
+  .pill {
+    display: inline-block; padding: 2px 9px; border-radius: 999px;
+    font-size: 12px; border: 1px solid var(--line); color: var(--dim);
+  }
+  .pill.on { color: var(--ok); border-color: #1d4429; }
+  .pill.off { color: var(--bad); border-color: #55241f; }
+</style>
+</head>
+<body>
+<header>
+  <h1>CryNet <span class="sub">· cot monitor</span></h1>
+  <div class="sub" id="status">not connected</div>
+</header>
+
+<main>
+  <div class="state quiet" id="state">
+    <div class="big" id="verdict">—</div>
+    <div class="detail" id="detail">waiting for the hub</div>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <button id="connect">Connect to the hub</button>
+      <button id="disconnect" class="ghost" disabled>Disconnect</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="sub" style="margin-bottom:8px">events</div>
+    <div id="log">—</div>
+  </div>
+</main>
+
+<script>
+const SERVICE = "19b10000-e8f2-537e-4f6c-d104768a1214";
+const ALERT   = "19b10001-e8f2-537e-4f6c-d104768a1214";
+const STATE   = "19b10002-e8f2-537e-4f6c-d104768a1214";
+
+let device = null, server = null;
+const $ = (id) => document.getElementById(id);
+
+function log(text) {
+  const el = $("log");
+  if (el.textContent === "—") el.textContent = "";
+  const t = new Date().toLocaleTimeString();
+  el.textContent = `[${t}] ${text}\n` + el.textContent;
+}
+
+function setState(crying, detail) {
+  const s = $("state");
+  s.className = "state " + (crying ? "crying" : "quiet");
+  $("verdict").textContent = crying ? "CRY" : "quiet";
+  $("detail").textContent = detail || "";
+}
+
+function decodeAlert(dv) {
+  const v = new DataView(dv.buffer, dv.byteOffset, dv.byteLength);
+  if (dv.byteLength < 6) return null;
+  return {
+    cot: v.getUint8(0),
+    kind: v.getUint8(1),
+    confidence: v.getUint16(2, true),
+    event: v.getUint16(4, true),
+  };
+}
+
+function decodeState(dv) {
+  const v = new DataView(dv.buffer, dv.byteOffset, dv.byteLength);
+  if (dv.byteLength < 8) return null;
+  return {
+    cots: v.getUint8(0),
+    mask: v.getUint8(1),
+    confidence: v.getUint8(3),
+    started: v.getUint32(4, true),
+  };
+}
+
+async function connect() {
+  if (!navigator.bluetooth) {
+    $("status").textContent = "this browser has no Web Bluetooth (Chrome on Android or desktop)";
+    log("no Web Bluetooth in this browser");
+    return;
+  }
+  try {
+    $("status").textContent = "looking for the hub ...";
+    device = await navigator.bluetooth.requestDevice({
+      filters: [{ services: [SERVICE] }],
+      optionalServices: [SERVICE],
+    });
+    device.addEventListener("gattserverdisconnected", onDisconnected);
+    $("status").textContent = "connecting to " + device.name + " ...";
+    server = await device.gatt.connect();
+    const svc = await server.getPrimaryService(SERVICE);
+
+    const alert = await svc.getCharacteristic(ALERT);
+    await alert.startNotifications();
+    alert.addEventListener("characteristicvaluechanged", (e) => {
+      const a = decodeAlert(e.target.value);
+      if (!a) return;
+      if (a.kind === 1) {
+        setState(true, `cot ${a.cot} · ${a.confidence}% confidence · event ${a.event}`);
+        log(`<b>CRY</b> on cot ${a.cot} at ${a.confidence}% (event ${a.event})`);
+      } else {
+        setState(false, `cot ${a.cot} · the cry has stopped`);
+        log(`the cry on cot ${a.cot} has stopped (event ${a.event})`);
+      }
+    });
+
+    try {
+      const state = await svc.getCharacteristic(STATE);
+      await state.startNotifications();
+      state.addEventListener("characteristicvaluechanged", (e) => {
+        const s = decodeState(e.target.value);
+        if (!s) return;
+        log(`state: ${s.cots} cot(s), crying mask 0b${s.mask.toString(2)}, ${s.confidence}%`);
+      });
+    } catch (err) {
+      log("the state characteristic is not available: " + err);
+    }
+
+    $("status").textContent = "connected to " + device.name;
+    $("connect").disabled = true;
+    $("disconnect").disabled = false;
+    setState(false, "connected · listening");
+    log("connected");
+  } catch (err) {
+    $("status").textContent = "not connected";
+    log("the connection failed: " + err);
+  }
+}
+
+function onDisconnected() {
+  server = null;
+  $("status").textContent = "the hub disconnected";
+  $("connect").disabled = false;
+  $("disconnect").disabled = true;
+  setState(false, "the hub disconnected");
+  log("the hub disconnected");
+}
+
+$("connect").addEventListener("click", connect);
+$("disconnect").addEventListener("click", async () => {
+  if (device && device.gatt) { try { await device.gatt.disconnect(); } catch (e) {} }
+});
+
+// Chrome only allows the chooser from a user gesture, so the button stays
+// the entry point; auto-connecting on load is not allowed.
+</script>
+</body>
+</html>

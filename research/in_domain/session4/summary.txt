@@ -1,0 +1,41 @@
+session: research\in_domain\session4
+records: 3290  (329.0 s)
+threshold: 0.01200  (floor p10 = 0.00300, max = 0.51800)
+percentiles: p10 0.00300  p50 0.01700  p90 0.20300  p99 0.37911
+clips: 130  (87 cry, 29 no_cry, 14 uncertain)
+clip length: 5.0 s, stride 2.5 s
+
+timeline (every 10 s: mean RMS, peak RMS, [S]ignal share)
+       0s  mean 0.0127  peak 0.1310  [s]
+      10s  mean 0.0728  peak 0.2050  [S]
+      20s  mean 0.0885  peak 0.2920  [S]
+      30s  mean 0.1032  peak 0.2270  [S]
+      40s  mean 0.1022  peak 0.2760  [S]
+      50s  mean 0.0811  peak 0.2290  [S]
+      60s  mean 0.0416  peak 0.1840  [S]
+      70s  mean 0.0824  peak 0.3570  [S]
+      80s  mean 0.1291  peak 0.2940  [S]
+      90s  mean 0.1052  peak 0.3730  [S]
+     100s  mean 0.1283  peak 0.2850  [S]
+     110s  mean 0.1145  peak 0.3230  [S]
+     120s  mean 0.0928  peak 0.2680  [S]
+     130s  mean 0.0439  peak 0.1760  [s]
+     140s  mean 0.0711  peak 0.2710  [S]
+     150s  mean 0.0803  peak 0.1960  [S]
+     160s  mean 0.0463  peak 0.2950  [s]
+     170s  mean 0.1255  peak 0.2760  [S]
+     180s  mean 0.1144  peak 0.2570  [S]
+     190s  mean 0.1568  peak 0.5180  [S]
+     200s  mean 0.1020  peak 0.4300  [S]
+     210s  mean 0.0902  peak 0.4390  [S]
+     220s  mean 0.1903  peak 0.4940  [S]
+     230s  mean 0.0418  peak 0.4130  [s]
+     240s  mean 0.0045  peak 0.0200  [s]
+     250s  mean 0.0064  peak 0.0350  [s]
+     260s  mean 0.0034  peak 0.0220  [s]
+     270s  mean 0.0071  peak 0.0140  [s]
+     280s  mean 0.0066  peak 0.0120  [s]
+     290s  mean 0.0054  peak 0.0110  [.]
+     300s  mean 0.0064  peak 0.0100  [.]
+     310s  mean 0.0068  peak 0.0100  [.]
+     320s  mean 0.0069  peak 0.0100  [.]

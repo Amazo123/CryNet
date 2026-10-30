@@ -35,3 +35,10 @@ research/zigcache*/
 
 # Arduino IDE build output inside a sketch folder
 firmware/node/*/build/
+
+# in-domain recordings: the audio is large, the manifests are kept
+research/in_domain/**/*.wav
+
+# The demo page's self-signed TLS key — a throwaway for the local HTTPS
+# server, never a repository file.
+research/web/.cert/

@@ -132,7 +132,7 @@ def patch_wav_size(path: Path) -> None:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--port", help="serial port; auto-detected if omitted")
-    ap.add_argument("--out", required=True, help="output directory")
+    ap.add_argument("--out", help="output directory")
     ap.add_argument("--seconds", type=float, default=0.0,
                     help="stop after this many seconds (0 = until Ctrl-C)")
     ap.add_argument("--clip-seconds", type=float, default=5.0,
@@ -153,6 +153,10 @@ def main() -> int:
         for p in list_ports.comports():
             print(f"{p.device:<10} {p.description}")
         return 0
+
+    if not args.out:
+        ap.error("--out is required (it is the directory the session is "
+                 "written to)")
 
     port = args.port or find_port()
     if not port:

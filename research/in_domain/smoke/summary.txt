@@ -1,0 +1,10 @@
+session: research\in_domain\smoke
+records: 140  (14.0 s)
+threshold: 0.01200  (floor p10 = 0.00100, max = 0.01500)
+percentiles: p10 0.00100  p50 0.00200  p90 0.00600  p99 0.01000
+signal: 0.1 s of 14.0 s (0.7%)
+clips: 4 (0 cry, 4 no_cry)
+
+timeline (every 10 s: mean RMS, peak RMS, [S]ignal share)
+       0s  mean 0.0024  peak 0.0100  [.]
+      10s  mean 0.0043  peak 0.0150  [s]

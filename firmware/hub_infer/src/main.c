@@ -28,12 +28,15 @@
 #include "esp_log.h"
 #include "esp_flash.h"
 #include "esp_timer.h"
+#include "nvs_flash.h"
 
 #include "crynet_model.h"
 #include "crynet_dsp.h"
 #include "crynet_infer.h"
 #include "probes.h"
 #include "link_stage.h"
+#include "ble_alert.h"
+#include "hub_display.h"
 
 static const char *TAG = "crynet";
 
@@ -43,9 +46,35 @@ static const char *TAG = "crynet";
  * transcendental function, so a handful of LSBs may differ. */
 #define FEATURE_TOLERANCE 1
 
-static int16_t s_pcm[CRYNET_PROBE_SAMPLES];
-static float s_mel[CRYNET_FEATURE_COUNT];
-static int8_t s_q[CRYNET_FEATURE_COUNT];
+/* The probe buffers: 90 KB in all.  They are only needed while the
+ * probes run, but as file-scope statics they would sit in internal RAM
+ * for the life of the program — and the Bluetooth stack needs that RAM
+ * far more than the probes do (NimBLE's store configuration was
+ * failing to allocate on a board whose radio worked perfectly).  So
+ * they live in PSRAM and are handed back when the probes are done. */
+static int16_t *s_pcm = NULL;
+static float   *s_mel = NULL;
+static int8_t  *s_q = NULL;
+
+/* PSRAM if it is there, internal SRAM if it is not. */
+static void *alloc_probe_buffer(size_t bytes)
+{
+    void *p = heap_caps_malloc(bytes, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+    if (p == NULL) {
+        p = heap_caps_malloc(bytes, MALLOC_CAP_8BIT);
+    }
+    return p;
+}
+
+static void free_probe_buffers(void)
+{
+    heap_caps_free(s_pcm);
+    heap_caps_free(s_mel);
+    heap_caps_free(s_q);
+    s_pcm = NULL;
+    s_mel = NULL;
+    s_q = NULL;
+}
 
 static void report_platform(void)
 {
@@ -105,6 +134,16 @@ void app_main(void)
     ESP_LOGI(TAG, "=================================================");
     report_platform();
 
+    /* The Bluetooth stack keeps its keys in NVS, and the store has to be
+     * there before the host starts. */
+    esp_err_t nvs_err = nvs_flash_init();
+    if (nvs_err == ESP_ERR_NVS_NO_FREE_PAGES ||
+        nvs_err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+        ESP_ERROR_CHECK(nvs_flash_erase());
+        nvs_err = nvs_flash_init();
+    }
+    ESP_ERROR_CHECK(nvs_err);
+
     /* ---------------- front end ---------------- */
     static crynet_dsp_ctx_t dsp;
     if (!crynet_dsp_init(&dsp)) {
@@ -127,6 +166,14 @@ void app_main(void)
              (unsigned)crynet_infer_arena_used(infer));
 
     /* ---------------- probes ---------------- */
+    s_pcm = alloc_probe_buffer(CRYNET_PROBE_SAMPLES * sizeof(int16_t));
+    s_mel = alloc_probe_buffer(CRYNET_FEATURE_COUNT * sizeof(float));
+    s_q = alloc_probe_buffer(CRYNET_FEATURE_COUNT * sizeof(int8_t));
+    if (s_pcm == NULL || s_mel == NULL || s_q == NULL) {
+        ESP_LOGE(TAG, "the probe buffers could not be allocated");
+        return;
+    }
+
     int failures = 0;
 
     for (int p = 0; p < CRYNET_PROBE_COUNT; p++) {
@@ -179,16 +226,45 @@ void app_main(void)
                  alert ? "ALERT" : "no alert");
     }
 
+    /* The probes are done with their buffers; hand them back so the
+     * radio and the Bluetooth stack have the whole internal heap. */
+    free_probe_buffers();
+    ESP_LOGI(TAG, "free int   : %d bytes after the probes",
+             (int)heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
+
     ESP_LOGI(TAG, "=================================================");
     if (failures == 0) {
         ESP_LOGI(TAG, "RESULT: PASS — %d probes, front end and model agree "
                       "with the host", CRYNET_PROBE_COUNT);
         ESP_LOGI(TAG, "=================================================");
 
-        /* The probes are the hub's own regression check, and they run on
-         * every boot.  When they pass, the hub goes on to the radio: it
-         * listens to the nodes and runs the windows they send through the
-         * same front end and the same model that were just verified. */
+        /* The caregiver's phone connects to the hub over BLE and is told
+         * when a cot hears a cry.  The hub's own link to the nodes is
+         * ESP-NOW, so the two radios coexist — and the radio comes up
+         * before the Bluetooth stack on purpose: NimBLE's pools and the
+         * Wi-Fi driver's buffers come out of the same internal RAM, and
+         * when BLE claimed its memory first the Wi-Fi driver ran out
+         * mid-init and the ESP-NOW link never started.  The radio takes
+         * what it needs while the heap is whole, and BLE lives on what
+         * is left. */
+        if (!link_stage_radio_start()) {
+            ESP_LOGW(TAG, "the radio could not be started; "
+                          "the hub carries on without it");
+        }
+        ESP_LOGI(TAG, "free int   : %d bytes with the radio up",
+                 (int)heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
+        if (!ble_alert_start()) {
+            ESP_LOGW(TAG, "the Bluetooth alert server could not be started; "
+                          "the hub carries on without it");
+        }
+        ESP_LOGI(TAG, "free int   : %d bytes with Bluetooth up",
+                 (int)heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
+        /* The panel is optional too: a dead display does not stop the
+         * monitoring, it only stops the showing. */
+        if (!hub_display_start()) {
+            ESP_LOGW(TAG, "the display could not be started; "
+                          "the hub carries on without it");
+        }
         link_stage_run(&dsp, infer);
     } else {
         ESP_LOGE(TAG, "RESULT: FAIL — %d check(s) failed", failures);

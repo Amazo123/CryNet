@@ -1,0 +1,14 @@
+session: research\in_domain\session1
+records: 550  (55.0 s)
+threshold: 0.01200  (floor p10 = 0.00211, max = 0.25905)
+percentiles: p10 0.00211  p50 0.02474  p90 0.15910  p99 0.21003
+clips: 21  (15 cry, 6 no_cry, 0 uncertain)
+clip length: 5.0 s, stride 2.5 s
+
+timeline (every 10 s: mean RMS, peak RMS, [S]ignal share)
+       0s  mean 0.0843  peak 0.2201  [S]
+      10s  mean 0.0775  peak 0.2590  [S]
+      20s  mean 0.0948  peak 0.2128  [S]
+      30s  mean 0.0401  peak 0.2105  [S]
+      40s  mean 0.0034  peak 0.0078  [.]
+      50s  mean 0.0029  peak 0.0065  [.]

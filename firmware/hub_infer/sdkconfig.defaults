@@ -37,3 +37,22 @@ CONFIG_FREERTOS_HZ=1000
 
 # Logging
 CONFIG_LOG_DEFAULT_LEVEL_INFO=y
+
+# Bluetooth — the caregiver's phone connects to the hub over BLE.  NimBLE
+# rather than Bluedroid: the hub is already using the Wi-Fi radio for
+# ESP-NOW and the internal RAM for the front end's working buffers, and
+# NimBLE is the smaller stack.
+CONFIG_BT_ENABLED=y
+CONFIG_BT_NIMBLE_ENABLED=y
+CONFIG_BT_BLUEDROID_ENABLED=n
+CONFIG_BT_NIMBLE_ROLE_CENTRAL=n
+CONFIG_BT_NIMBLE_ROLE_OBSERVER=n
+CONFIG_BT_NIMBLE_ROLE_PERIPHERAL=y
+CONFIG_BT_NIMBLE_ROLE_BROADCASTER=y
+CONFIG_BT_NIMBLE_MAX_CONNECTIONS=1
+CONFIG_BT_NIMBLE_ATT_PREFERRED_MTU=247
+CONFIG_BT_NIMBLE_LOG_LEVEL=3
+
+# BLE and Wi-Fi share the one radio, so software coexistence arbitrates
+# the airtime between the ESP-NOW link and the BLE connection.
+CONFIG_ESP_COEX_SW_COEXIST_ENABLE=y

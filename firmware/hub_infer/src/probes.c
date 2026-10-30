@@ -11,6 +11,8 @@
 #include "probes.h"
 #include "crynet_probe_refs.h"   /* generated: expected features */
 
+#include "esp_heap_caps.h"
+
 static const char *const kProbeNames[CRYNET_PROBE_COUNT] = {
     "silence",
     "dc_bias",
@@ -100,12 +102,26 @@ static uint32_t crc32_buf(const void *data, size_t len)
 
 uint32_t crynet_probe_pcm_crc(int index)
 {
-    static int16_t pcm[CRYNET_PROBE_SAMPLES];
     if (index < 0 || index >= CRYNET_PROBE_COUNT) {
         return 0;
     }
+    /* A 64 KB buffer, needed only for the four probe CRCs at boot.  As
+     * a function-local static it would hold 64 KB of internal RAM for
+     * the life of the program, so it is borrowed from PSRAM and given
+     * straight back. */
+    int16_t *pcm = heap_caps_malloc(CRYNET_PROBE_SAMPLES * sizeof(int16_t),
+                                     MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+    if (pcm == NULL) {
+        pcm = heap_caps_malloc(CRYNET_PROBE_SAMPLES * sizeof(int16_t),
+                                MALLOC_CAP_8BIT);
+    }
+    if (pcm == NULL) {
+        return 0;
+    }
     crynet_probe_pcm(index, pcm);
-    return crc32_buf(pcm, CRYNET_PROBE_SAMPLES * sizeof(int16_t));
+    const uint32_t crc = crc32_buf(pcm, CRYNET_PROBE_SAMPLES * sizeof(int16_t));
+    heap_caps_free(pcm);
+    return crc;
 }
 
 const int8_t *crynet_probe_expected(int index)

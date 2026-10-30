@@ -1,0 +1,816 @@
+{
+  "source": "research/eval_indomain.py",
+  "session": "research\\in_domain\\session4",
+  "clips": 130,
+  "windows": 260,
+  "cry_windows": 174,
+  "threshold": 0.95,
+  "trigger_rms": 0.03,
+  "auc_int8": 0.9282611601176156,
+  "int8": {
+    "tp": 126,
+    "fn": 48,
+    "fp": 0,
+    "tn": 86,
+    "accuracy": 0.8153846153846154,
+    "recall": 0.7241379310344828,
+    "fpr": 0.0
+  },
+  "float32": {
+    "tp": 126,
+    "fn": 48,
+    "fp": 0,
+    "tn": 86,
+    "accuracy": 0.8153846153846154,
+    "recall": 0.7241379310344828,
+    "fpr": 0.0
+  },
+  "trigger": {
+    "cry_clips_above_trigger": 86,
+    "cry_clips": 87,
+    "no_cry_clips_above_trigger": 1,
+    "no_cry_clips": 43
+  },
+  "per_clip": [
+    {
+      "file": "cry_clip_0000.wav",
+      "label": 1,
+      "rms_mean": 0.01454,
+      "rms_peak": 0.043
+    },
+    {
+      "file": "cry_clip_0001.wav",
+      "label": 0,
+      "rms_mean": 0.00834,
+      "rms_peak": 0.035
+    },
+    {
+      "file": "cry_clip_0002.wav",
+      "label": 0,
+      "rms_mean": 0.0109,
+      "rms_peak": 0.131
+    },
+    {
+      "file": "cry_clip_0003.wav",
+      "label": 1,
+      "rms_mean": 0.0446,
+      "rms_peak": 0.166
+    },
+    {
+      "file": "cry_clip_0004.wav",
+      "label": 1,
+      "rms_mean": 0.07214,
+      "rms_peak": 0.166
+    },
+    {
+      "file": "cry_clip_0005.wav",
+      "label": 1,
+      "rms_mean": 0.0732,
+      "rms_peak": 0.18
+    },
+    {
+      "file": "cry_clip_0006.wav",
+      "label": 1,
+      "rms_mean": 0.07356,
+      "rms_peak": 0.205
+    },
+    {
+      "file": "cry_clip_0007.wav",
+      "label": 1,
+      "rms_mean": 0.09922,
+      "rms_peak": 0.205
+    },
+    {
+      "file": "cry_clip_0008.wav",
+      "label": 1,
+      "rms_mean": 0.07998,
+      "rms_peak": 0.193
+    },
+    {
+      "file": "cry_clip_0009.wav",
+      "label": 1,
+      "rms_mean": 0.06638,
+      "rms_peak": 0.234
+    },
+    {
+      "file": "cry_clip_0010.wav",
+      "label": 1,
+      "rms_mean": 0.09694,
+      "rms_peak": 0.292
+    },
+    {
+      "file": "cry_clip_0011.wav",
+      "label": 1,
+      "rms_mean": 0.09258,
+      "rms_peak": 0.292
+    },
+    {
+      "file": "cry_clip_0012.wav",
+      "label": 1,
+      "rms_mean": 0.1058,
+      "rms_peak": 0.216
+    },
+    {
+      "file": "cry_clip_0013.wav",
+      "label": 1,
+      "rms_mean": 0.12028,
+      "rms_peak": 0.227
+    },
+    {
+      "file": "cry_clip_0014.wav",
+      "label": 1,
+      "rms_mean": 0.10054,
+      "rms_peak": 0.227
+    },
+    {
+      "file": "cry_clip_0015.wav",
+      "label": 1,
+      "rms_mean": 0.07764,
+      "rms_peak": 0.201
+    },
+    {
+      "file": "cry_clip_0016.wav",
+      "label": 1,
+      "rms_mean": 0.09676,
+      "rms_peak": 0.276
+    },
+    {
+      "file": "cry_clip_0017.wav",
+      "label": 1,
+      "rms_mean": 0.14038,
+      "rms_peak": 0.276
+    },
+    {
+      "file": "cry_clip_0018.wav",
+      "label": 1,
+      "rms_mean": 0.10756,
+      "rms_peak": 0.218
+    },
+    {
+      "file": "cry_clip_0019.wav",
+      "label": 1,
+      "rms_mean": 0.06692,
+      "rms_peak": 0.216
+    },
+    {
+      "file": "cry_clip_0020.wav",
+      "label": 1,
+      "rms_mean": 0.10048,
+      "rms_peak": 0.229
+    },
+    {
+      "file": "cry_clip_0021.wav",
+      "label": 1,
+      "rms_mean": 0.0954,
+      "rms_peak": 0.229
+    },
+    {
+      "file": "cry_clip_0022.wav",
+      "label": 1,
+      "rms_mean": 0.06178,
+      "rms_peak": 0.193
+    },
+    {
+      "file": "cry_clip_0023.wav",
+      "label": 1,
+      "rms_mean": 0.04894,
+      "rms_peak": 0.193
+    },
+    {
+      "file": "cry_clip_0024.wav",
+      "label": 1,
+      "rms_mean": 0.05862,
+      "rms_peak": 0.184
+    },
+    {
+      "file": "cry_clip_0025.wav",
+      "label": 1,
+      "rms_mean": 0.03834,
+      "rms_peak": 0.184
+    },
+    {
+      "file": "cry_clip_0026.wav",
+      "label": 0,
+      "rms_mean": 0.02458,
+      "rms_peak": 0.173
+    },
+    {
+      "file": "cry_clip_0027.wav",
+      "label": 1,
+      "rms_mean": 0.06612,
+      "rms_peak": 0.269
+    },
+    {
+      "file": "cry_clip_0028.wav",
+      "label": 1,
+      "rms_mean": 0.08262,
+      "rms_peak": 0.274
+    },
+    {
+      "file": "cry_clip_0029.wav",
+      "label": 1,
+      "rms_mean": 0.05054,
+      "rms_peak": 0.274
+    },
+    {
+      "file": "cry_clip_0030.wav",
+      "label": 1,
+      "rms_mean": 0.08222,
+      "rms_peak": 0.357
+    },
+    {
+      "file": "cry_clip_0031.wav",
+      "label": 1,
+      "rms_mean": 0.14532,
+      "rms_peak": 0.357
+    },
+    {
+      "file": "cry_clip_0032.wav",
+      "label": 1,
+      "rms_mean": 0.12382,
+      "rms_peak": 0.294
+    },
+    {
+      "file": "cry_clip_0033.wav",
+      "label": 1,
+      "rms_mean": 0.10002,
+      "rms_peak": 0.243
+    },
+    {
+      "file": "cry_clip_0034.wav",
+      "label": 1,
+      "rms_mean": 0.13448,
+      "rms_peak": 0.288
+    },
+    {
+      "file": "cry_clip_0035.wav",
+      "label": 1,
+      "rms_mean": 0.1161,
+      "rms_peak": 0.288
+    },
+    {
+      "file": "cry_clip_0036.wav",
+      "label": 1,
+      "rms_mean": 0.11714,
+      "rms_peak": 0.373
+    },
+    {
+      "file": "cry_clip_0037.wav",
+      "label": 1,
+      "rms_mean": 0.13476,
+      "rms_peak": 0.373
+    },
+    {
+      "file": "cry_clip_0038.wav",
+      "label": 1,
+      "rms_mean": 0.09326,
+      "rms_peak": 0.282
+    },
+    {
+      "file": "cry_clip_0039.wav",
+      "label": 1,
+      "rms_mean": 0.12612,
+      "rms_peak": 0.269
+    },
+    {
+      "file": "cry_clip_0040.wav",
+      "label": 1,
+      "rms_mean": 0.1633,
+      "rms_peak": 0.285
+    },
+    {
+      "file": "cry_clip_0041.wav",
+      "label": 1,
+      "rms_mean": 0.12974,
+      "rms_peak": 0.285
+    },
+    {
+      "file": "cry_clip_0042.wav",
+      "label": 1,
+      "rms_mean": 0.0933,
+      "rms_peak": 0.26
+    },
+    {
+      "file": "cry_clip_0043.wav",
+      "label": 1,
+      "rms_mean": 0.11052,
+      "rms_peak": 0.323
+    },
+    {
+      "file": "cry_clip_0044.wav",
+      "label": 1,
+      "rms_mean": 0.16642,
+      "rms_peak": 0.323
+    },
+    {
+      "file": "cry_clip_0045.wav",
+      "label": 1,
+      "rms_mean": 0.13358,
+      "rms_peak": 0.266
+    },
+    {
+      "file": "cry_clip_0046.wav",
+      "label": 1,
+      "rms_mean": 0.06268,
+      "rms_peak": 0.198
+    },
+    {
+      "file": "cry_clip_0047.wav",
+      "label": 1,
+      "rms_mean": 0.11038,
+      "rms_peak": 0.253
+    },
+    {
+      "file": "cry_clip_0048.wav",
+      "label": 1,
+      "rms_mean": 0.1263,
+      "rms_peak": 0.253
+    },
+    {
+      "file": "cry_clip_0049.wav",
+      "label": 1,
+      "rms_mean": 0.08358,
+      "rms_peak": 0.268
+    },
+    {
+      "file": "cry_clip_0050.wav",
+      "label": 1,
+      "rms_mean": 0.05924,
+      "rms_peak": 0.268
+    },
+    {
+      "file": "cry_clip_0051.wav",
+      "label": 1,
+      "rms_mean": 0.06832,
+      "rms_peak": 0.176
+    },
+    {
+      "file": "cry_clip_0052.wav",
+      "label": 1,
+      "rms_mean": 0.04834,
+      "rms_peak": 0.176
+    },
+    {
+      "file": "cry_clip_0053.wav",
+      "label": 0,
+      "rms_mean": 0.01054,
+      "rms_peak": 0.121
+    },
+    {
+      "file": "cry_clip_0054.wav",
+      "label": 1,
+      "rms_mean": 0.03938,
+      "rms_peak": 0.157
+    },
+    {
+      "file": "cry_clip_0055.wav",
+      "label": 1,
+      "rms_mean": 0.0755,
+      "rms_peak": 0.227
+    },
+    {
+      "file": "cry_clip_0056.wav",
+      "label": 1,
+      "rms_mean": 0.0484,
+      "rms_peak": 0.227
+    },
+    {
+      "file": "cry_clip_0057.wav",
+      "label": 1,
+      "rms_mean": 0.04748,
+      "rms_peak": 0.271
+    },
+    {
+      "file": "cry_clip_0058.wav",
+      "label": 1,
+      "rms_mean": 0.0938,
+      "rms_peak": 0.271
+    },
+    {
+      "file": "cry_clip_0059.wav",
+      "label": 1,
+      "rms_mean": 0.08972,
+      "rms_peak": 0.213
+    },
+    {
+      "file": "cry_clip_0060.wav",
+      "label": 1,
+      "rms_mean": 0.06764,
+      "rms_peak": 0.157
+    },
+    {
+      "file": "cry_clip_0061.wav",
+      "label": 1,
+      "rms_mean": 0.08586,
+      "rms_peak": 0.187
+    },
+    {
+      "file": "cry_clip_0062.wav",
+      "label": 1,
+      "rms_mean": 0.09302,
+      "rms_peak": 0.196
+    },
+    {
+      "file": "cry_clip_0063.wav",
+      "label": 1,
+      "rms_mean": 0.0795,
+      "rms_peak": 0.254
+    },
+    {
+      "file": "cry_clip_0064.wav",
+      "label": 1,
+      "rms_mean": 0.04676,
+      "rms_peak": 0.254
+    },
+    {
+      "file": "cry_clip_0065.wav",
+      "label": 0,
+      "rms_mean": 0.00438,
+      "rms_peak": 0.011
+    },
+    {
+      "file": "cry_clip_0066.wav",
+      "label": 1,
+      "rms_mean": 0.04586,
+      "rms_peak": 0.295
+    },
+    {
+      "file": "cry_clip_0067.wav",
+      "label": 1,
+      "rms_mean": 0.09518,
+      "rms_peak": 0.295
+    },
+    {
+      "file": "cry_clip_0068.wav",
+      "label": 1,
+      "rms_mean": 0.10556,
+      "rms_peak": 0.276
+    },
+    {
+      "file": "cry_clip_0069.wav",
+      "label": 1,
+      "rms_mean": 0.12464,
+      "rms_peak": 0.25
+    },
+    {
+      "file": "cry_clip_0070.wav",
+      "label": 1,
+      "rms_mean": 0.14546,
+      "rms_peak": 0.255
+    },
+    {
+      "file": "cry_clip_0071.wav",
+      "label": 1,
+      "rms_mean": 0.11732,
+      "rms_peak": 0.255
+    },
+    {
+      "file": "cry_clip_0072.wav",
+      "label": 1,
+      "rms_mean": 0.08566,
+      "rms_peak": 0.233
+    },
+    {
+      "file": "cry_clip_0073.wav",
+      "label": 1,
+      "rms_mean": 0.10284,
+      "rms_peak": 0.257
+    },
+    {
+      "file": "cry_clip_0074.wav",
+      "label": 1,
+      "rms_mean": 0.1432,
+      "rms_peak": 0.257
+    },
+    {
+      "file": "cry_clip_0075.wav",
+      "label": 1,
+      "rms_mean": 0.1143,
+      "rms_peak": 0.239
+    },
+    {
+      "file": "cry_clip_0076.wav",
+      "label": 1,
+      "rms_mean": 0.08864,
+      "rms_peak": 0.367
+    },
+    {
+      "file": "cry_clip_0077.wav",
+      "label": 1,
+      "rms_mean": 0.17328,
+      "rms_peak": 0.379
+    },
+    {
+      "file": "cry_clip_0078.wav",
+      "label": 1,
+      "rms_mean": 0.225,
+      "rms_peak": 0.518
+    },
+    {
+      "file": "cry_clip_0079.wav",
+      "label": 1,
+      "rms_mean": 0.16396,
+      "rms_peak": 0.518
+    },
+    {
+      "file": "cry_clip_0080.wav",
+      "label": 1,
+      "rms_mean": 0.11358,
+      "rms_peak": 0.43
+    },
+    {
+      "file": "cry_clip_0081.wav",
+      "label": 1,
+      "rms_mean": 0.14788,
+      "rms_peak": 0.38
+    },
+    {
+      "file": "cry_clip_0082.wav",
+      "label": 1,
+      "rms_mean": 0.0905,
+      "rms_peak": 0.38
+    },
+    {
+      "file": "cry_clip_0083.wav",
+      "label": 0,
+      "rms_mean": 0.05046,
+      "rms_peak": 0.334
+    },
+    {
+      "file": "cry_clip_0084.wav",
+      "label": 1,
+      "rms_mean": 0.11968,
+      "rms_peak": 0.439
+    },
+    {
+      "file": "cry_clip_0085.wav",
+      "label": 1,
+      "rms_mean": 0.1169,
+      "rms_peak": 0.439
+    },
+    {
+      "file": "cry_clip_0086.wav",
+      "label": 1,
+      "rms_mean": 0.0608,
+      "rms_peak": 0.384
+    },
+    {
+      "file": "cry_clip_0087.wav",
+      "label": 1,
+      "rms_mean": 0.11798,
+      "rms_peak": 0.494
+    },
+    {
+      "file": "cry_clip_0088.wav",
+      "label": 1,
+      "rms_mean": 0.21442,
+      "rms_peak": 0.494
+    },
+    {
+      "file": "cry_clip_0089.wav",
+      "label": 1,
+      "rms_mean": 0.19276,
+      "rms_peak": 0.412
+    },
+    {
+      "file": "cry_clip_0090.wav",
+      "label": 1,
+      "rms_mean": 0.16616,
+      "rms_peak": 0.394
+    },
+    {
+      "file": "cry_clip_0091.wav",
+      "label": 1,
+      "rms_mean": 0.15908,
+      "rms_peak": 0.413
+    },
+    {
+      "file": "cry_clip_0092.wav",
+      "label": 1,
+      "rms_mean": 0.07582,
+      "rms_peak": 0.413
+    },
+    {
+      "file": "cry_clip_0093.wav",
+      "label": 0,
+      "rms_mean": 0.00404,
+      "rms_peak": 0.013
+    },
+    {
+      "file": "cry_clip_0094.wav",
+      "label": 0,
+      "rms_mean": 0.00784,
+      "rms_peak": 0.035
+    },
+    {
+      "file": "cry_clip_0095.wav",
+      "label": 0,
+      "rms_mean": 0.00728,
+      "rms_peak": 0.035
+    },
+    {
+      "file": "cry_clip_0096.wav",
+      "label": 0,
+      "rms_mean": 0.00496,
+      "rms_peak": 0.02
+    },
+    {
+      "file": "cry_clip_0097.wav",
+      "label": 0,
+      "rms_mean": 0.0043,
+      "rms_peak": 0.02
+    },
+    {
+      "file": "cry_clip_0098.wav",
+      "label": 0,
+      "rms_mean": 0.00402,
+      "rms_peak": 0.013
+    },
+    {
+      "file": "cry_clip_0099.wav",
+      "label": 0,
+      "rms_mean": 0.00512,
+      "rms_peak": 0.035
+    },
+    {
+      "file": "cry_clip_0100.wav",
+      "label": 0,
+      "rms_mean": 0.00424,
+      "rms_peak": 0.035
+    },
+    {
+      "file": "cry_clip_0101.wav",
+      "label": 0,
+      "rms_mean": 0.00592,
+      "rms_peak": 0.017
+    },
+    {
+      "file": "cry_clip_0102.wav",
+      "label": 0,
+      "rms_mean": 0.00854,
+      "rms_peak": 0.017
+    },
+    {
+      "file": "cry_clip_0103.wav",
+      "label": 0,
+      "rms_mean": 0.00522,
+      "rms_peak": 0.014
+    },
+    {
+      "file": "cry_clip_0104.wav",
+      "label": 0,
+      "rms_mean": 0.00248,
+      "rms_peak": 0.006
+    },
+    {
+      "file": "cry_clip_0105.wav",
+      "label": 0,
+      "rms_mean": 0.00362,
+      "rms_peak": 0.009
+    },
+    {
+      "file": "cry_clip_0106.wav",
+      "label": 0,
+      "rms_mean": 0.00436,
+      "rms_peak": 0.022
+    },
+    {
+      "file": "cry_clip_0107.wav",
+      "label": 0,
+      "rms_mean": 0.0059,
+      "rms_peak": 0.022
+    },
+    {
+      "file": "cry_clip_0108.wav",
+      "label": 0,
+      "rms_mean": 0.0076,
+      "rms_peak": 0.014
+    },
+    {
+      "file": "cry_clip_0109.wav",
+      "label": 0,
+      "rms_mean": 0.00732,
+      "rms_peak": 0.011
+    },
+    {
+      "file": "cry_clip_0110.wav",
+      "label": 0,
+      "rms_mean": 0.00658,
+      "rms_peak": 0.011
+    },
+    {
+      "file": "cry_clip_0111.wav",
+      "label": 0,
+      "rms_mean": 0.0064,
+      "rms_peak": 0.01
+    },
+    {
+      "file": "cry_clip_0112.wav",
+      "label": 0,
+      "rms_mean": 0.00638,
+      "rms_peak": 0.011
+    },
+    {
+      "file": "cry_clip_0113.wav",
+      "label": 0,
+      "rms_mean": 0.00672,
+      "rms_peak": 0.012
+    },
+    {
+      "file": "cry_clip_0114.wav",
+      "label": 0,
+      "rms_mean": 0.00688,
+      "rms_peak": 0.012
+    },
+    {
+      "file": "cry_clip_0115.wav",
+      "label": 0,
+      "rms_mean": 0.0061,
+      "rms_peak": 0.012
+    },
+    {
+      "file": "cry_clip_0116.wav",
+      "label": 0,
+      "rms_mean": 0.00532,
+      "rms_peak": 0.01
+    },
+    {
+      "file": "cry_clip_0117.wav",
+      "label": 0,
+      "rms_mean": 0.00542,
+      "rms_peak": 0.011
+    },
+    {
+      "file": "cry_clip_0118.wav",
+      "label": 0,
+      "rms_mean": 0.0054,
+      "rms_peak": 0.011
+    },
+    {
+      "file": "cry_clip_0119.wav",
+      "label": 0,
+      "rms_mean": 0.0057,
+      "rms_peak": 0.01
+    },
+    {
+      "file": "cry_clip_0120.wav",
+      "label": 0,
+      "rms_mean": 0.006,
+      "rms_peak": 0.01
+    },
+    {
+      "file": "cry_clip_0121.wav",
+      "label": 0,
+      "rms_mean": 0.00624,
+      "rms_peak": 0.01
+    },
+    {
+      "file": "cry_clip_0122.wav",
+      "label": 0,
+      "rms_mean": 0.00678,
+      "rms_peak": 0.01
+    },
+    {
+      "file": "cry_clip_0123.wav",
+      "label": 0,
+      "rms_mean": 0.00658,
+      "rms_peak": 0.01
+    },
+    {
+      "file": "cry_clip_0124.wav",
+      "label": 0,
+      "rms_mean": 0.00656,
+      "rms_peak": 0.01
+    },
+    {
+      "file": "cry_clip_0125.wav",
+      "label": 0,
+      "rms_mean": 0.0067,
+      "rms_peak": 0.01
+    },
+    {
+      "file": "cry_clip_0126.wav",
+      "label": 0,
+      "rms_mean": 0.00702,
+      "rms_peak": 0.01
+    },
+    {
+      "file": "cry_clip_0127.wav",
+      "label": 0,
+      "rms_mean": 0.00672,
+      "rms_peak": 0.01
+    },
+    {
+      "file": "cry_clip_0128.wav",
+      "label": 0,
+      "rms_mean": 0.00654,
+      "rms_peak": 0.01
+    },
+    {
+      "file": "cry_clip_0129.wav",
+      "label": 0,
+      "rms_mean": 0.00722,
+      "rms_peak": 0.01
+    }
+  ]
+}
