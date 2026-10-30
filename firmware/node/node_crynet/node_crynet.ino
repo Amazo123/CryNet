@@ -235,8 +235,20 @@ static int16_t burst_sample(uint16_t i, bool from_frozen) {
 static bool i2s_start(void) {
     g_i2s.setPins(PIN_SCK, PIN_WS, -1, PIN_DIN);
     g_i2s.setTimeout(500);
+    /* STEREO with both slots — the peripheral must be given the whole
+     * 64-bit frame.
+     *
+     * The INMP441 drives a 64-bit I2S frame of two 32-bit slots and puts
+     * its 24-bit sample, left-justified, in the left one.  Asking for
+     * I2S_SLOT_MODE_MONO halves the frame to 32 bits, the microphone's
+     * framing breaks and the samples come out misaligned: measured on the
+     * real board, -3500 counts with the full frame against -620 with the
+     * halved one.  Asking for stereo also makes the Arduino library force
+     * the both-slots mask whatever mask is given, so the DMA delivers the
+     * left and the right slot interleaved either way; the right one is
+     * dropped in i2s_pump().  node_diag prints both side by side. */
     if (!g_i2s.begin(I2S_MODE_STD, SAMPLE_RATE, I2S_DATA_BIT_WIDTH_32BIT,
-                     I2S_SLOT_MODE_MONO, I2S_STD_SLOT_LEFT)) {
+                     I2S_SLOT_MODE_STEREO, I2S_STD_SLOT_BOTH)) {
         return false;
     }
     return true;
@@ -245,12 +257,13 @@ static bool i2s_start(void) {
 /* Read whatever the microphone has produced and append it to the window. */
 static size_t i2s_pump(void) {
     size_t got = g_i2s.readBytes((char *)g_raw, sizeof(g_raw));
-    got -= got % 4;                 /* whole 32-bit slots only */
-    size_t samples = got / 4;
-    for (size_t i = 0; i < samples; i++) {
-        /* The microphone's 24 bits sit left-justified in the 32-bit slot;
-         * the top 16 bits are the full-scale int16 value. */
-        int16_t s = (int16_t)(g_raw[i] >> 16);
+    got -= got % 8;                 /* whole stereo frames only */
+    size_t frames = got / 8;
+    for (size_t f = 0; f < frames; f++) {
+        /* The left slot holds the microphone's 24-bit sample, left
+         * justified, so the top 16 bits are the full-scale int16 value.
+         * The right slot is a constant and is dropped. */
+        int16_t s = (int16_t)(g_raw[f * 2] >> 16);
         g_window[g_write] = s;
         g_write++;
         if (g_write == WINDOW_SAMPLES) {
@@ -260,7 +273,7 @@ static size_t i2s_pump(void) {
             g_filled++;
         }
     }
-    return samples;
+    return frames;
 }
 
 /* ---------------------------------------------------------------- radio -- */

@@ -178,13 +178,23 @@ def main() -> int:
 
     parser = FrameParser()
 
+    def drain() -> str:
+        """Read whatever the device has sent, without ever waiting long.
+
+        The node's CDC transmit buffer is small, so a reader that waits
+        for a fixed block size will let the device overflow it and lose
+        bytes.  Asking for exactly what has arrived keeps the link drained.
+        """
+        waiting = ser.in_waiting
+        chunk = ser.read(waiting if waiting else 1)
+        return parser.feed(chunk) if chunk else ""
+
     def pump(seconds: float) -> str:
         deadline = time.time() + seconds
+        out = ""
         while time.time() < deadline:
-            chunk = ser.read(8192)
-            if chunk:
-                parser.feed(chunk)
-        return ""
+            out += drain()
+        return out
 
     print(f"Connected to {port}. Waiting {args.settle:.0f} s for the node to boot "
           f"and its window to fill ...")
@@ -210,13 +220,11 @@ def main() -> int:
 
     deadline = time.time() + args.timeout
     while time.time() < deadline:
-        chunk = ser.read(8192)
-        if chunk:
-            text = parser.feed(chunk)
-            # The node prints BURST-END once it has sent every fragment, so
-            # there is no point waiting for the timeout after that.
-            if "BURST-END" in text:
-                break
+        text = drain()
+        # The node prints BURST-END once it has sent every fragment, so
+        # there is no point waiting for the timeout after that.
+        if "BURST-END" in text:
+            break
         if parser.done():
             break
 

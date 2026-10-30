@@ -101,7 +101,9 @@ static void report(const char *label, const SlotStats *st) {
 }
 
 /* Open the I2S on a given set of pins.  Returns false if it fails. */
-static bool open_i2s(int8_t sck, int8_t ws, int8_t din) {
+/* Open the I2S on a given set of pins and with a given slot mode. */
+static bool open_i2s_mode(int8_t sck, int8_t ws, int8_t din, i2s_slot_mode_t mode,
+                          int8_t mask) {
     g_i2s.end();
     /* The peripheral and the DMA buffer have to be fully torn down and
      * given time to settle, or the next reading comes from the previous
@@ -110,7 +112,7 @@ static bool open_i2s(int8_t sck, int8_t ws, int8_t din) {
     g_i2s.setPins(sck, ws, -1, din);
     g_i2s.setTimeout(2000);
     if (!g_i2s.begin(I2S_MODE_STD, SAMPLE_RATE, I2S_DATA_BIT_WIDTH_32BIT,
-                     I2S_SLOT_MODE_STEREO, I2S_STD_SLOT_BOTH)) {
+                     mode, mask)) {
         return false;
     }
     delay(150);
@@ -118,6 +120,37 @@ static bool open_i2s(int8_t sck, int8_t ws, int8_t din) {
     delay(60);
     g_i2s.readBytes((char *)g_raw, sizeof(g_raw));   /* and another */
     return true;
+}
+
+static bool open_i2s(int8_t sck, int8_t ws, int8_t din) {
+    return open_i2s_mode(sck, ws, din, I2S_SLOT_MODE_STEREO, I2S_STD_SLOT_BOTH);
+}
+
+/* Print what the running node firmware would see under a given
+ * configuration: the raw words and the int16 values the node keeps. */
+static double measure(uint32_t frames, SlotStats *ls, SlotStats *rs,
+                      double *left_rms16, double *right_rms16);
+
+static void show_mode(const char *label, i2s_slot_mode_t mode, int8_t mask) {
+    Serial.printf("\n=== %s ===\n", label);
+    if (!open_i2s_mode(PIN_SCK, PIN_WS, PIN_DIN, mode, mask)) {
+        Serial.println("  (I2S could not be opened)");
+        return;
+    }
+    size_t got = g_i2s.readBytes((char *)g_raw, 256);
+    got -= got % 4;
+    Serial.println("  raw 32-bit words            as int16 (>>16)");
+    for (size_t i = 0; i < got / 4 && i < 8; i++) {
+        int32_t v = g_raw[i];
+        Serial.printf("  %08lX                  %8ld\n", (unsigned long)(uint32_t)v,
+                      (long)(v >> 16));
+    }
+    /* How many words did one frame produce?  In stereo with both slots
+     * the DMA delivers two words per frame; in true mono, one. */
+    SlotStats ls, rs;
+    double l16 = 0.0, r16 = 0.0;
+    measure(FRAMES, &ls, &rs, &l16, &r16);
+    Serial.printf("  left rms16 %.2f   right rms16 %.2f\n", l16, r16);
 }
 
 /* Measure the two slots.  The RMS is reported in int16 units (the value
@@ -268,6 +301,12 @@ void setup() {
                    "reaches its WS pin, and\nthat the module has VCC and GND. The "
                    "INMP441 will not drive its data\nline unless it is powered and sees "
                    "a proper clock and word select.");
+    /* What the node firmware actually sees, in each slot mode. */
+    show_mode("STEREO + SLOT_BOTH (what the diagnostic used)",
+              I2S_SLOT_MODE_STEREO, I2S_STD_SLOT_BOTH);
+    show_mode("MONO + SLOT_LEFT (true mono, one word per frame)",
+              I2S_SLOT_MODE_MONO, I2S_STD_SLOT_LEFT);
+
     Serial.println("\nCRY-DIAG-DONE");
 }
 

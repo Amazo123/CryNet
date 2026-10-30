@@ -121,8 +121,15 @@ void setup() {
 
     g_i2s.setPins(PIN_SCK, PIN_WS, -1, PIN_DIN);
     g_i2s.setTimeout(500);
+    /* STEREO with both slots: the INMP441 drives a 64-bit I2S frame of two
+     * 32-bit slots and puts its 24-bit sample, left-justified, in the left
+     * one.  The peripheral has to be given the whole frame —
+     * I2S_SLOT_MODE_MONO halves it to 32 bits and the microphone's data
+     * comes out misaligned — and the right slot is dropped in loop().
+     * Asking for stereo also makes the Arduino library force the
+     * both-slots mask whatever mask is given. */
     if (!g_i2s.begin(I2S_MODE_STD, SAMPLE_RATE, I2S_DATA_BIT_WIDTH_32BIT,
-                     I2S_SLOT_MODE_MONO, I2S_STD_SLOT_LEFT)) {
+                     I2S_SLOT_MODE_STEREO, I2S_STD_SLOT_BOTH)) {
         Serial.println("FATAL: I2S init failed");
         while (true) {
             delay(1000);
@@ -150,11 +157,13 @@ void loop() {
     }
 
     size_t got = g_i2s.readBytes((char *)g_raw, sizeof(g_raw));
-    got -= got % 4;
-    size_t samples = got / 4;
+    got -= got % 8;                     /* whole stereo frames only */
+    size_t frames = got / 8;
 
-    for (size_t i = 0; i < samples; i++) {
-        g_record[g_total_samples % REC_SAMPLES] = (int16_t)(g_raw[i] >> 16);
+    for (size_t f = 0; f < frames; f++) {
+        /* The left slot holds the microphone's 24-bit sample, left
+         * justified; the right slot is a constant and is dropped. */
+        g_record[g_total_samples % REC_SAMPLES] = (int16_t)(g_raw[f * 2] >> 16);
         g_total_samples++;
         if (g_total_samples % REC_SAMPLES == 0) {
             send_record(g_record, REC_SAMPLES);

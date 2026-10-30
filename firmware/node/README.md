@@ -34,12 +34,34 @@ unsynchronised data.
 The pins are at the top of `node_crynet.ino` and `node_capture.ino`; change
 them there if your breadboard is wired differently.
 
-### Why the I2S peripheral is 32-bit
+### Why the I2S peripheral is 32-bit *and* stereo
 
-The INMP441 puts 24 bits of data into a standard I2S frame of two 32-bit
-slots, so the peripheral is configured for 32-bit slots and the samples are
-narrowed to int16 in software by keeping the top 16 bits. Narrowing it any
-other way would shift the audio by a byte.
+Two things about this peripheral are not what you would guess, and both
+were measured on the real board rather than reasoned out:
+
+**32-bit slots.** The INMP441 puts 24 bits of data into a standard I2S
+frame of two 32-bit slots, so the peripheral is configured for 32-bit
+slots and the samples are narrowed to int16 in software by keeping the top
+16 bits. Narrowing it any other way would shift the audio by a byte.
+
+**Stereo, with the right slot dropped.** Asking the peripheral for mono
+*halves the frame* to 32 bits, which breaks the INMP441's framing: the
+same microphone read the same way produced −3500 counts of DC with the
+full frame and −620 with the halved one. With the frame intact the DMA
+delivers the left and the right slot interleaved, and both sketches take
+every other word — the left slot, which is where L/R grounded puts the
+microphone. Asking for stereo also makes the Arduino library force the
+both-slots mask whatever mask is passed, so the mask argument is not doing
+what it appears to do either.
+
+`node_diag/` prints both configurations side by side; that is where this
+was settled.
+
+The INMP441's DC output also **drifts for a while after power-up** — about
+−700 counts in the first seconds, settling towards −50. The hub's front
+end removes the mean of each two-second window, so it does not matter, but
+it is why a freshly-booted node reads a different DC offset from one that
+has been running.
 
 ---
 

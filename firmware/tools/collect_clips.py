@@ -169,7 +169,7 @@ def main() -> int:
     meta_path = out / "session.txt"
 
     print(f"Listening on {port} at {args.baud} baud ...")
-    ser = serial.Serial(port, args.baud, timeout=0.2)
+    ser = serial.Serial(port, args.baud, timeout=0.1)
     ser.dtr = False
     ser.rts = False
 
@@ -191,7 +191,11 @@ def main() -> int:
 
         try:
             while True:
-                chunk = ser.read(4096)
+                # Drain everything the node has sent.  Waiting for a fixed
+                # block size lets the device's small CDC transmit buffer
+                # overflow, and the bytes are lost for good.
+                waiting = ser.in_waiting
+                chunk = ser.read(waiting if waiting else 1)
                 if chunk:
                     new_records, text = parser.feed(chunk)
                     if "CRY-CAPTURE-LIVE" in text and not live:
