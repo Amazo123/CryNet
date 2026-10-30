@@ -2,9 +2,9 @@
 
 > **This file is the recovery layer.** It is rewritten/appended by the agent **after every project update or edit** (code, notebook, config, decision, or a completed run). If the chat dies, is compacted into garbage, or hits "400 Context Limit Exceeded", a fresh chat reads this file first and is immediately back up to speed.
 >
-> **Repo:** `C:\Users\HP\.t3\projects\fp-2` (branch `master`)
+> **Repo:** `C:\Users\HP\.t3\projects\fp-2` (branch `main`)
 > **Deep briefing (static, rarely changes):** `PROJECT_HANDOFF.md`
-> **Last updated:** 2026-10-29
+> **Last updated:** 2026-10-30
 
 ---
 
@@ -32,18 +32,20 @@
 | Rebuild from scratch | `cd firmware/hub_infer && python -m platformio run` | ~8 min from clean; ~1 min incrementally |
 | Flash + read the log | `python firmware/tools/flash_hub.py` | finds the board, writes it, prints the report |
 | Re-fetch the vendored deps | `bash firmware/tools/fetch_deps.sh` | clones the pinned commits and re-applies `patch_deps.py` |
+| Install the node sketches into the Arduino IDE | `python firmware/tools/install_sketches.py` | copies `firmware/node/*` into `~/Documents/Arduino` |
+| Build a node sketch without the IDE | `arduino-cli compile --fqbn esp32:esp32:esp32c3 firmware/node/node_crynet` | `arduino-cli.exe` ships inside the Arduino IDE |
 
 **A background build survives `/compact` and even a lost session** — it writes to the log file on disk, not to the chat. Compaction only rewrites conversation history.
 
 **What is NOT yet done — do not claim otherwise:**
 - Stage 2a is complete *for the inference core*: the front end and the model are verified against the host reference on real hardware. Nothing else exists yet — no radio, no display, no BLE.
-- Stage 2b (the ESP32-C3 node firmware) has not been started.
+- Stage 2b is **written and compiles** for the ESP32-C3, but **has never run on the board**: the wiring is untested and the INMP441's actual level, DC offset and sample-rate accuracy are unmeasured.
 - The inference is 101.8 ms per window. That is 5 % of the 2 s window and fine for a triggered monitor, but the tensor arena is still in PSRAM; moving it into internal SRAM is the obvious next optimisation.
 - **No in-domain data yet** — the model has never heard the user's INMP441, room or gain.
 
 **Next concrete steps:**
-1. **Stage 2b — the ESP32-C3 node firmware as an Arduino `.ino`** (I2S INMP441 capture at 16 kHz, DC-offset removal, 100 ms RMS telemetry, on-demand 64 KB burst with CRC). The Arduino IDE 2.x and the ESP32 core 3.3.12 are already installed, and `ESP_I2S`, `ESP_NOW` and `BLE` are all in that core.
-2. Alongside it, an **Arduino sketch that streams INMP441 audio to the PC**, so ~50 real clips can be collected in the user's room and the model can be fine-tuned on them. This is the single biggest remaining accuracy win and needs no firmware work at all.
+1. **Put the node on the board.** Upload `node_crynet` to the C3, wire the INMP441, and run `firmware/tools/verify_burst.py` — it checks the capture, the framing and the CRC on the real device and writes the two-second window out as a WAV. The node's I2S configuration (32-bit slots, left channel) has been compiled but never seen a microphone.
+2. **Collect in-domain audio.** Upload `node_capture` and run `firmware/tools/collect_clips.py` to record the room, then ~50 real cry clips. This is the single biggest remaining accuracy win.
 3. Then Stage 2c (the hub's radio, display and BLE) and Stage 2d (the wearable).
 
 **Tools built so far (all runnable on the host):**
@@ -174,8 +176,43 @@ The user ran `notebooks/crynet_training.ipynb` on Kaggle (GPU T4) and the artifa
   with QIO flash mode makes the chip watchdog-reset in a loop** (`rst:0x7
   TG0WDT_SYS_RST` repeating, no application output). The ROM cannot read this
   board's flash in QIO before the bootloader has configured its own timing. The
-  combined image must use **DIO**; the bootloader switches the chip to QIO by
-  itself afterwards. See `firmware/README.md`.
+  combined image must use **DIO**. In fact the whole build is DIO — the effective
+  config is `CONFIG_ESPTOOLPY_FLASHMODE "dio"` and both `bootloader.bin` and
+  `firmware.bin` carry flash-mode byte `0x02` — so the application runs in DIO as
+  well, which costs nothing at this workload. See `firmware/README.md`.
+
+- **Stage 2b — the node firmware is written and compiles (2026-10-30), but has
+  not run on the board.** Two Arduino sketches for the ESP32-C3, built with the
+  Arduino IDE's own `arduino-cli` against core 3.3.12, **zero warnings**:
+
+  | Sketch | Flash | Static RAM | What it does |
+  |---|---|---|---|
+  | `firmware/node/node_crynet/` | 977,617 B (74 %) | 165,972 B (50 %) | the node: I2S capture, a 2 s rolling window, 100 ms RMS telemetry over ESP-NOW, the 64 KB burst in 286 CRC-framed fragments |
+  | `firmware/node/node_capture/` | 311,120 B (23 %) | 18,592 B (5 %) | streams the microphone to the PC so in-domain audio can be recorded |
+
+  The I2S setup is Espressif's own recipe for this microphone — **32-bit slots**
+  (the INMP441 puts 24 bits into a 64-bit frame, so 16-bit slots would misalign
+  the data), `I2S_SLOT_MODE_MONO` with `I2S_STD_SLOT_LEFT`, and the narrowing to
+  int16 done in software by keeping the top 16 bits. The ESP32-C3 is I2S
+  hardware v2, so the left-channel slot is selected in hardware, with no
+  software decimation.
+
+  The node repeats the hub's DC lesson: the mean is an exact **integer** sum,
+  and the 100 ms RMS is computed with the mean of the **whole 2 s window**
+  removed, so the number the node reports is the same quantity the hub's front
+  end will compute for that window — otherwise the hub's 0.03 trigger threshold
+  means nothing.
+
+  Two host tools came with it: `firmware/tools/verify_burst.py` asks the node
+  for its window over the serial console, checks every frame's CRC and writes
+  the result as a WAV; `firmware/tools/collect_clips.py` records the session and
+  cuts it into 5 s clips. `firmware/tools/install_sketches.py` copies the
+  sketches into the Arduino sketchbook.
+
+  **Not yet proven:** that the wiring is right, that the INMP441's actual level
+  and DC offset land in a sensible range, and that the effective sample rate is
+  within tolerance of 16 kHz. All three are measured by `verify_burst.py` the
+  first time the node runs.
 
 - **Firmware build — CLOSED (2026-10-30).** `firmware/hub_infer` now **compiles and links** for `esp32s3`:
   - toolchain: PlatformIO 6.2.0, `platform-espressif32` 8.0.0, **ESP-IDF 6.1.0**, `toolchain-xtensa-esp-elf` 14.2.0 (GCC 14.2);
@@ -252,6 +289,7 @@ Minimal ESP-IDF app that links `model_data.h` + `crynet_tables.h`, runs the DSP 
 Exit criteria: compiles; runs on the S3; on-board front-end deviation vs Python < 1 × 10⁻³; latency and arena measured and logged; arena moved to PSRAM if it does not fit in internal SRAM.
 
 **Stage 2b — node firmware (ESP32-C3).** I2S INMP441 capture at 16 kHz, DC-offset removal, 100 ms RMS telemetry, on-demand 64 KB audio burst with fragmentation + CRC + retry.
+*Status (2026-10-30): written, compiles with zero warnings, **not yet run on the board**.* See §3. The hub's radio side of the protocol is Stage 2c.
 
 **Stage 2c — hub system.** ESP-NOW receive, RMS trigger, audio assembly across 320 fragments, inference, TFT display, BLE GATT server, alert packet.
 
@@ -268,6 +306,26 @@ This machine originally had **no ESP-IDF, no PlatformIO, no Arduino IDE and no X
 | `framework-espidf` | **ESP-IDF 6.1.0** (`4.60100.0`) | installed **by hand** — see below |
 | `toolchain-xtensa-esp-elf` | 14.2.0 | GCC 14.2 |
 | `toolchain-riscv32-esp`, `toolchain-esp32ulp`, gdb packages | — | for the C3 nodes and debugging |
+| `arduino:esp32` (Arduino core) | **3.3.12** | the node sketches. `ESP_I2S`, `ESP_NOW` and `BLE` are all present in it |
+| `arduino-cli` | **1.5.1** | ships *inside* the Arduino IDE (`resources/app/lib/backend/resources/arduino-cli.exe`) — it is how the node sketches are compiled and checked here, without opening the IDE |
+| PlatformIO IDE (VS Code extension) | 3.3.4 | pointed at the **pip-installed** Core 6.2.0 (see below), so it drives the same toolchain every build in this repo came from and needs no network |
+
+**The PlatformIO IDE in VS Code.** The extension is installed and works with
+the toolchain that is already here. `.vscode/settings.json` (at the repo
+root and in `firmware/hub_infer/`) sets:
+
+```json
+"platformio-ide.useBuiltinPython": false,
+"platformio-ide.useBuiltinPIOCore": false,
+"platformio-ide.customPATH": "C:\\Users\\HP\\AppData\\Roaming\\Python\\Python311\\Scripts"
+```
+
+so the extension runs the **existing** PlatformIO Core 6.2.0 in the system
+Python instead of bootstrapping a second copy into `~/.platformio/penv`.
+Both share the same core directory, so ESP-IDF 6.1.0, the Xtensa toolchain
+and esptool are the ones that are already installed and nothing is
+downloaded. Open `firmware/hub_infer` as the folder and use the toolbar:
+**✓ build**, **→ upload**, **plug serial monitor**.
 
 **Do not pin the framework with a `platform_packages` URL.** PlatformIO 6.2 installs a URL-specified package by treating the archive as an **npm package**: it picks the wrong `package.json` out of the tree, writes a bogus version into `.piopm`, and leaves `packages/framework-espidf` holding only a test-fixture package. CMake then fails with:
 
@@ -287,7 +345,12 @@ The fix that worked: delete `packages/framework-espidf`, move the fully extracte
 **Why ESP-IDF 6.1.0 and not 5.3.2.** 5.3.2 was the original target, but PlatformIO's registry only offers the framework as `~4.60100.0` (6.1.0) with `~3.50505.0` (5.5.0) as the alternative for this platform, and the 5.3.2 archive could not be installed through PlatformIO at all. 6.1.0 was already on disk, satisfies the port's `idf >= 5.1` requirement, and needed no further download. **Fallback if the port misbehaves under IDF 6.1/GCC 14:** install `platform-espressif32` 6.9.0 (framework `~3.50301.0` = IDF 5.3.1, toolchain 13.2.0) and let PlatformIO fetch both.
 
 ### 4.4 User-side action in parallel
-**Done:** user ran the full Kaggle notebook and dropped `out/` into `research/out/`. Next user-side action is to connect the ESP32-S3 for the Stage 2a on-device verification once the build passes.
+**Done:** the user ran the full Kaggle notebook and dropped `out/` into `research/out/`; the user connected the ESP32-S3 and the Stage 2a on-device verification **passed**.
+
+**Now, in order:**
+1. Upload `node_crynet` to the C3 (Arduino IDE → ESP32C3 Dev Module → the C3's COM port) with the INMP441 wired as in `firmware/node/README.md`, then run `python firmware/tools/verify_burst.py --port <C3 port>`. It writes the node's two-second window out as a WAV and reports the mean, the RMS and the peak — that is what tells us the wiring is right and what the microphone's DC offset and level actually are.
+2. Upload `node_capture` and run `python firmware/tools/collect_clips.py --out research/in_domain/session1` to record the room, then ~50 real cry clips.
+3. The hub's radio (Stage 2c) can then be written against a node that is known to be producing correct audio.
 
 ---
 
@@ -295,6 +358,7 @@ The fix that worked: delete `packages/framework-espidf`, move the fully extracte
 
 | Date | Change | Files touched | Notes |
 |---|---|---|---|
+| 2026-10-30 | **Stage 2b: the node firmware is written and compiles, and the offline GUI path is set up.** Two Arduino sketches for the ESP32-C3 — `node_crynet` (I2S capture, a 2 s rolling window, 100 ms RMS telemetry over ESP-NOW, the 64 KB burst as 286 CRC-framed fragments, a serial console) and `node_capture` (streams the microphone to the PC for in-domain data). Both build for `esp32:esp32:esp32c3` against the installed core 3.3.12 with **zero warnings**: 977,617 B / 165,972 B and 311,120 B / 18,592 B. The I2S setup follows Espressif's own recipe for this microphone — **32-bit slots** (the INMP441 puts 24 bits in a 64-bit frame, so 16-bit slots would misalign the data), `I2S_SLOT_MODE_MONO` + `I2S_STD_SLOT_LEFT`, narrowed to int16 in software by keeping the top 16 bits; the C3 is I2S hardware v2, so the left slot is chosen in hardware. The node repeats the hub's DC lesson: an exact **integer** mean, and the 100 ms RMS computed with the mean of the **whole 2 s window** removed, so the node's RMS is the same quantity the hub's front end will compute — otherwise the hub's 0.03 trigger threshold means nothing. Two host tools came with it: `verify_burst.py` (asks the node for its window over the serial console, checks every frame's CRC, writes the WAV) and `collect_clips.py` (records a session and cuts it into 5 s clips), plus `install_sketches.py` to copy the sketches into the Arduino sketchbook. Separately, the **PlatformIO IDE in VS Code** was pointed at the pip-installed Core 6.2.0 (`useBuiltinPython: false`, `useBuiltinPIOCore: false`, `customPATH` at the Python `Scripts` folder) so it drives the toolchain that is already installed and needs no network. Also corrected a claim: the build is DIO throughout (`CONFIG_ESPTOOLPY_FLASHMODE "dio"`, flash-mode byte `0x02` in both images), so the application runs in DIO — the bootloader does *not* switch it back to QIO. | `firmware/node/node_crynet/node_crynet.ino`, `firmware/node/node_capture/node_capture.ino`, `firmware/node/README.md`, `firmware/tools/verify_burst.py`, `firmware/tools/collect_clips.py`, `firmware/tools/install_sketches.py`, `firmware/README.md`, `.vscode/settings.json`, `firmware/hub_infer/.vscode/settings.json`, `SYSTEM_UPDATE.md` | One real API error was caught by compiling: IDF 5.x/6.x changed `esp_now_recv_cb_t` to take an `esp_now_recv_info_t *` first argument. **The node has still never run on the board** — the wiring, the INMP441's actual level and DC offset, and the effective sample rate are all unmeasured. |
 | 2026-10-30 | **Stage 2a closed: the firmware runs on the real chip and all four probes pass.** The user's ESP32-S3-DevKitC-1 (COM32) now reports `RESULT: PASS — 4 probes, front end and model agree with the host`, with the device's quantised features matching the host reference exactly on three probes and to within 1 LSB on three values of the fourth. Measured on the chip: PSRAM 8 MB present, flash 16 MB, front-end working set 5,380 B in internal SRAM, tensor arena 262,144 B reserved / **108,328 B used**, front end **41.7 ms**, inference **101.8 ms**. Five defects were only findable by running it: the **DC-removal mean accumulated in float32** (32,000 samples of 18,000 summed to 575,726,660 instead of 576,000,000, so 8.5 counts of DC survived and the per-window standardisation turned them into a completely different feature vector — the DC-offset probe failed with a max delta of 131; the sum is now an exact `int32`); the build was at **`-Og`** because `-DCOMPILER_OPTIMIZATION_PERF` is an Arduino macro PlatformIO's ESP-IDF builder ignores (`CONFIG_COMPILER_OPTIMIZATION_PERF=y` now); the CPU ran at **160 MHz** (`CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ_240=y`); the front end kept a **128 KB padded copy of the signal in PSRAM**, which is uncached external memory on the S3 and was streamed through 81 times per window (the copy is gone — each frame is built straight from the caller's int16 PCM — and the working set is 5.4 KB in internal SRAM, 135 ms → 41.7 ms); and a **combined flash image built with QIO flash mode makes the chip watchdog-reset in a loop** because the ROM cannot read this board's flash in QIO before the bootloader configures its own timing (the combined image must use DIO; the bootloader switches to QIO itself afterwards). Added `firmware/tools/flash_hub.py` (finds the board, flashes it, prints the log — nothing to download), `firmware/tools/capture_serial.py` and `firmware/README.md` documenting the build and the three offline flash routes. | `firmware/hub_infer/components/crynet_dsp/*`, `firmware/hub_infer/sdkconfig.defaults`, `firmware/hub_infer/platformio.ini`, `firmware/tools/flash_hub.py`, `firmware/tools/capture_serial.py`, `firmware/README.md`, `SYSTEM_UPDATE.md` | ESP-NN's SIMD kernels are linked in (`esp_nn_conv_s8_esp32s3`, `esp_nn_conv_s8_1x1`, `esp_nn_conv_s8_3x3_opt`). The FPU **is** used (`madd.s` in the disassembly) — an earlier check that appeared to show software float was run against the wrong compiler binary. The inference at 101.8 ms is 5 % of the 2 s window and acceptable for a triggered monitor, but the arena is still in PSRAM. |
 | 2026-10-30 | **The Stage 2a firmware builds.** `firmware/hub_infer` compiles and links for the ESP32-S3: `firmware.bin` 468,800 B, RAM 52.1 %, flash 22.3 %, ESP-NN enabled, octal PSRAM at 80 MHz. Getting there meant fixing six separate things: (1) PlatformIO 6.2 installs a URL-pinned `framework-espidf` as if it were an **npm package**, so it read the wrong `package.json` and left `packages/framework-espidf` holding only a test fixture — CMake then failed with *"include could not find requested file: tools/cmake/project.cmake"*; fixed by installing the platform's own framework (**ESP-IDF 6.1.0**) by hand and dropping the `platform_packages` pin; (2) the top-level `CMakeLists.txt` **assigned** `EXTRA_COMPONENT_DIRS`, shadowing the `-DEXTRA_COMPONENT_DIRS:PATH=<src>` that PlatformIO passes for the application component, and pointed at a component instead of a directory that contains components; (3) the vendored components sat **outside** the project directory, and PlatformIO re-compiles IDF components with SCons using the *source basename* for object names — the TFLite Micro port has twelve basename collisions, so the build died with *"Multiple ways to build the same target were specified for …/circular_buffer.cc.o"*; moving the vendored components into `firmware/hub_infer/components/` makes the paths relative and distinct; (4) the port was wired to the registry copy of `esp-nn` while `esp-nn` was also vendored locally — a duplicate-component error — so `firmware/tools/patch_deps.py` now drops the registry dependency and adds `esp-nn` to the port's own requirements, keeping the build offline and pinned; (5) IDF 6.x moved `esp_flash.h` into the `spi_flash` component, changed `esp_flash_get_size()` to take a chip handle and an out-parameter, and requires an explicit capability argument on `heap_caps_calloc`; (6) the model copy is now aligned to 16 bytes by hand, because `heap_caps_malloc` only guarantees 4-byte alignment and the FlatBuffer verifier wants 16. | `firmware/hub_infer/*`, `firmware/tools/patch_deps.py`, `firmware/tools/fetch_deps.sh`, `.gitignore` | **`CONFIG_DDSP` no longer exists in IDF 6.x** and was dropped from `sdkconfig.defaults`. **The firmware has still never run on hardware** — there is no serial log yet, so the FlatBuffer alignment, the arena fit, the probe feature agreement and the latency are all still unverified. |
 | 2026-10-30 | **The build finally configures — four real bugs found and fixed.** Diagnosis: PlatformIO 6.2 installs a URL-pinned `framework-espidf` by treating the archive as an npm package, so it read the wrong `package.json` out of the tree and left `packages/framework-espidf` holding only a test-fixture package — hence CMake's *"include could not find requested file: tools/cmake/project.cmake"*. Fixed by installing the platform's own framework by hand (**ESP-IDF 6.1.0**, `platform-espressif32` 8.0.0) and dropping the `platform_packages` URL pin. Also fixed: (1) the top-level `CMakeLists.txt` **assigned** `EXTRA_COMPONENT_DIRS`, shadowing the `-DEXTRA_COMPONENT_DIRS:PATH=<src>` that PlatformIO passes for the application component — it now *appends*, and points at `third_party/` (a directory that **contains** components) rather than at the component itself; (2) the vendored TFLM port was wired to the registry copy of `esp-nn` while `esp-nn` was also vendored locally — a duplicate-component error; `firmware/tools/patch_deps.py` now removes the registry dependency and adds `esp-nn` to the port's own requirements, keeping the build **offline and pinned**; (3) IDF 6.x moved `esp_flash.h` into the `spi_flash` component and changed `esp_flash_get_size()` to take a chip handle and an out-parameter; (4) `CONFIG_DDSP` no longer exists in IDF 6.x and was dropped from `sdkconfig.defaults`. | `firmware/hub_infer/CMakeLists.txt`, `firmware/hub_infer/platformio.ini`, `firmware/hub_infer/sdkconfig.defaults`, `firmware/hub_infer/src/main.c`, `firmware/hub_infer/src/CMakeLists.txt`, `firmware/tools/patch_deps.py`, `firmware/tools/fetch_deps.sh` | IDF 6.1 gives every component `freertos esp_hw_support heap log soc hal esp_rom esp_common esp_system` automatically, so the earlier `esp_heap_caps.h` ownership worry is moot. ESP-NN is worth keeping: on an S3 it is the difference between ~40 ms and ~2.3 s per convnet invoke. **The firmware has still never been compiled or run.** |---|
@@ -333,13 +397,13 @@ Same 3× ESP32-C3 cot nodes → ESP32-S3 hub → ESP32-C3 wearable; same ESP-NOW
 | Trigger | hard-coded `RMS_TRIGGER_THRESHOLD 0.18` + `CONFIRMATION_PROB 0.65` | trigger ~0.03 + silence gate 0.0015 + **threshold calibrated on data** (0.23 at ≥ 95 % recall) with the whole recall/FPR curve reported |
 | Training | 35-epoch SpeechBrain/PyTorch run, artifacts in a 105 MB LFS tarball; no recorded per-class false-alarm analysis | Keras/TFLite notebook, **hard-example mining**, **per-category FPR breakdown**, cross-corpus evaluation on corpora never trained on |
 | Verification | `verify_dsp_parity.py` existed as a simulation script | **automated** C↔Python parity (max deviation 7.06 × 10⁻⁵), INT8↔float parity (AUC delta −0.00007), TFLM kernel assertion at export, manifest↔archive 1:1 corpus check |
-| Claimed latency | "≈ 40 ms" (never measured on the board) | unmeasured — to be measured in checkpoint 2 (est. 100–300 ms) |
+| Claimed latency | "≈ 40 ms" (never measured on the board) | **measured on the chip**: front end **41.7 ms**, inference **101.8 ms** per 2 s window, CPU 240 MHz |
 
 ### Why the legacy system failed — and what that means
 The legacy repo's **last commit** is `fix(firmware): resolve false cry detection, packet loss, and full-screen landscape display` — i.e. the system was still being debugged on the hardware when it was abandoned, and the failures it was chasing were *system-level* (ESP-NOW packet loss, TFT layout, false triggers), not dataset-level. With `RMS_TRIGGER_THRESHOLD 0.18`, a soft cry (ICD cries sit at RMS ≈ 0.006) **never reached the classifier at all**, so the old model was never fairly tested on the real hardware. The rebuild therefore changed the model, the features, the trigger and the threshold — but the *dataset* was kept, because the evidence points at the firmware and the trigger logic, not at ICD.
 
 ### What is still not new / not proven yet
-- **Checkpoint 2 (firmware) has not been written.** The deployed code is still the legacy Arduino firmware. The "brand new working system" is currently half-built: the model half is new and validated, the firmware half is pending.
+- **Checkpoint 2 (firmware) is half written.** The hub's inference core (Stage 2a) is new, verified on the real chip, and committed. The node firmware (Stage 2b) is new and compiles but has never run. The hub's radio, display and BLE (Stage 2c) and the wearable (Stage 2d) do not exist yet. The "brand new working system" is still half-built: the model half is new and validated, the firmware half is in progress.
 - **No in-domain data.** The model has never heard the user's INMP441, room or gain. ~50 self-recorded clips remain the single biggest accuracy win, and they are also the honest test of whether the new system actually works in the real room.
 
 ---

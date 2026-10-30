@@ -1,0 +1,28 @@
+{
+  // PlatformIO IDE — the hub project.
+  //
+  // These mirror firmware/hub_infer/.vscode/settings.json so that opening
+  // the repository root works as well as opening firmware/hub_infer.
+  //
+  // The extension is pointed at the PlatformIO Core that is already
+  // installed on this machine (6.2.0, in the system Python) rather than
+  // bootstrapping its own copy. It is the same core every build in this
+  // repository came from, it shares the core directory ~/.platformio where
+  // ESP-IDF 6.1.0 and the Xtensa toolchain already live, and it means the
+  // IDE needs no network at all.
+  "platformio-ide.useBuiltinPython": false,
+  "platformio-ide.useBuiltinPIOCore": false,
+  "platformio-ide.customPATH": "C:\\Users\\HP\\AppData\\Roaming\\Python\\Python311\\Scripts",
+  "platformio-ide.autoOpenPlatformIOIniFile": false,
+  "platformio-ide.monitorBaudRate": 115200,
+
+  // The training notebook and the research scripts.
+  "python.analysis.typeCheckingMode": "basic",
+  "files.exclude": {
+    "**/.pio": true,
+    "**/__pycache__": true
+  },
+  "files.associations": {
+    "*.ino": "cpp"
+  }
+}

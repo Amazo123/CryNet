@@ -1,0 +1,21 @@
+{
+  // PlatformIO IDE — the hub project.
+  //
+  // Drive the PlatformIO Core that is already installed on this machine
+  // (6.2.0, in the system Python) instead of letting the extension
+  // bootstrap its own copy. That copy is the one every build in this
+  // repository has been produced with, it shares the same core directory
+  // (~/.platformio, where ESP-IDF 6.1.0 and the Xtensa toolchain already
+  // live), and it means the IDE works with no network at all.
+  //
+  // "customPATH" is where platformio.exe lives.
+  "platformio-ide.useBuiltinPython": false,
+  "platformio-ide.useBuiltinPIOCore": false,
+  "platformio-ide.customPATH": "C:\\Users\\HP\\AppData\\Roaming\\Python\\Python311\\Scripts",
+
+  // Do not pop the platformio.ini open every time the project is opened.
+  "platformio-ide.autoOpenPlatformIOIniFile": false,
+
+  // The serial monitor opens at the speed the firmware uses.
+  "platformio-ide.monitorBaudRate": 115200
+}
