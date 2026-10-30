@@ -46,11 +46,18 @@
  *     0  0xC3  1 0x7E  2 type=3  3 node id
  *     4  u16 burst seq   6 u16 first fragment   8 u16 fragment count
  *    10  u16 CRC-16/CCITT-FALSE
+ *
+ * The telemetry payload is 12 bytes: u32 rms x 1000, u16 window ms,
+ * u8 flags, u8 reserved, u32 CRC-32 of the frozen window (0 when there is
+ * none).  The hub recomputes that CRC over the window it reassembles from
+ * the radio, so the two agreeing proves the audio crossed the link intact.
  */
 
 #include <Arduino.h>
 #include <WiFi.h>
+#include <esp_timer.h>
 #include <esp_now.h>
+#include <esp_mac.h>
 #include <ESP_I2S.h>
 
 /* ------------------------------------------------------------------ pins -- */
@@ -89,6 +96,7 @@ static uint32_t  g_filled = 0;          /* valid samples, up to 32000     */
 static uint32_t  g_frozen_fill = 0;     /* valid samples in g_frozen      */
 
 static bool      g_frozen_valid = false;
+static uint32_t  g_frozen_crc = 0;    /* CRC-32 of the frozen window's bytes */
 static uint16_t  g_burst_seq = 0;
 static uint8_t   g_node_id = 1;
 
@@ -100,6 +108,7 @@ static int32_t   g_mean = 0;
 static uint32_t  g_frames_sent = 0;
 static uint32_t  g_frames_lost = 0;
 static uint32_t  g_requests = 0;
+static uint32_t  g_heartbeats = 0;
 static uint32_t  g_freezes = 0;
 
 static bool      g_dump_active = false;  /* suppress text while dumping */
@@ -124,6 +133,21 @@ static uint16_t crc16(const uint8_t *data, size_t len) {
         }
     }
     return crc;
+}
+
+/* CRC-32 (the IEEE 802.3 one: reflected, polynomial 0xEDB88320, the
+ * final XOR of 0xFFFFFFFF that zlib's crc32 applies).  The hub computes
+ * the same value over the window it reassembles from the radio, so the two
+ * agreeing proves the audio crossed the link unchanged. */
+static uint32_t crc32(const uint8_t *data, size_t len) {
+    uint32_t crc = 0xFFFFFFFFu;
+    for (size_t i = 0; i < len; i++) {
+        crc ^= data[i];
+        for (int bit = 0; bit < 8; bit++) {
+            crc = (crc & 1u) ? ((crc >> 1) ^ 0xEDB88320u) : (crc >> 1);
+        }
+    }
+    return crc ^ 0xFFFFFFFFu;
 }
 
 /* ---------------------------------------------------------------- frames -- */
@@ -214,6 +238,10 @@ static void freeze_window(void) {
     }
     g_frozen_fill = WINDOW_SAMPLES;
     g_frozen_valid = true;
+    /* The checksum of the exact bytes that will be uploaded.  The hub
+     * computes the same value over the window it reassembles, so the two
+     * agreeing is the proof that the radio delivered the audio intact. */
+    g_frozen_crc = crc32((const uint8_t *)g_frozen, BURST_BYTES);
     g_burst_seq++;
     g_freezes++;
 }
@@ -269,8 +297,26 @@ static bool i2s_start(void) {
 }
 
 /* Read whatever the microphone has produced and append it to the window. */
+static uint32_t g_loop_iters = 0;
+static uint32_t g_loop_max_us = 0;
+static uint64_t g_t_pump = 0, g_t_tick = 0, g_t_req = 0, g_t_rest = 0;
+static uint32_t g_pump_calls = 0;
+static uint32_t g_pump_empty = 0;   /* calls that returned no whole frame */
+static uint32_t g_pump_frames = 0;
+static uint32_t g_pump_max_us = 0;
 static size_t i2s_pump(void) {
+    const int64_t t0 = esp_timer_get_time();
     size_t got = g_i2s.readBytes((char *)g_raw, sizeof(g_raw));
+    const int64_t dt = esp_timer_get_time() - t0;
+    g_t_pump += (uint64_t)dt;
+    if (dt > (int64_t)g_pump_max_us) {
+        g_pump_max_us = (uint32_t)dt;
+    }
+    g_pump_calls++;
+    if (got < 8) {
+        g_pump_empty++;
+    }
+    g_pump_frames += got / 8;
     got -= got % 8;                 /* whole stereo frames only */
     size_t frames = got / 8;
     for (size_t f = 0; f < frames; f++) {
@@ -294,9 +340,66 @@ static size_t i2s_pump(void) {
 
 static uint8_t g_bcast[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 
-static void on_recv(const esp_now_recv_info_t *info, const uint8_t *data, int len) {
+/* The hub's address, learned from the request the node receives: the hub
+ * broadcasts its requests, and the node replies to the address they came
+ * from.  Unicast is used once the hub is known, because a broadcast
+ * destination is filtered more aggressively by the receiver's radio. */
+static uint8_t g_hub_mac[6] = {0};
+static bool     g_hub_known = false;
+/* Set from the receive callback, acted on in the loop: the callback
+ * runs in the WiFi task, and esp_now_add_peer() waits for that very
+ * task, which wedged the radio — the send callback stopped firing and
+ * every radio_send burned its two-second cap.  The hub's node_link
+ * carries the same rule: peers are added from a normal task. */
+static volatile bool g_hub_peer_pending = false;
+static uint8_t       g_pending_mac[6];
+
+/* The radio's transmit callback.  It fires when a frame has actually left
+ * the queue, and the sender waits for it before queueing the next one:
+ * ESP-NOW's queue is ten frames deep, so a 286-fragment burst sent back to
+ * back overflows it and every frame past the tenth is lost for good. */
+static volatile uint32_t g_tx_acks = 0;
+
+/* How long the sender waits for the radio to take each frame.  A frame
+ * that is acknowledged in a millisecond was handed to the driver, not put
+ * on the air; a frame that takes a hundred milliseconds was transmitted
+ * and acknowledged. */
+static uint32_t g_send_max_us = 0;   /* time inside esp_now_send() */
+static uint32_t g_send_calls = 0;
+static uint32_t g_tx_wait_us = 0;
+static uint32_t g_tx_wait_n = 0;
+static uint32_t g_tx_wait_max = 0;
+
+static void on_send(const esp_now_send_info_t *info, esp_now_send_status_t status) {
     (void)info;
-    if (len < 12 || data[0] != 0xC3 || data[1] != 0x7E || data[2] != 3) {
+    (void)status;
+    g_tx_acks++;
+}
+
+static void on_recv(const esp_now_recv_info_t *info, const uint8_t *data, int len) {
+    if (len < 12 || data[0] != 0xC3 || data[1] != 0x7E) {
+        return;
+    }
+    /* A heartbeat (type 4) is the hub keeping its radio awake.  It asks
+     * for nothing, so the node's window is left alone. */
+    /* Learn the hub's address from any frame it sends — requests and
+     * heartbeats both — and add it as a peer so the reply can be
+     * unicast to it.  The heartbeat arrives every 100 ms, so the
+     * address is learned within a tenth of a second of boot; waiting
+     * for a request meant that a hub which had already heard the node
+     * (and so had stopped probing) never told the node where to send. */
+    if (!g_hub_known && !g_hub_peer_pending && info != NULL &&
+        (data[2] == 3 || data[2] == 4)) {
+        memcpy(g_pending_mac, info->src_addr, 6);
+        g_hub_peer_pending = true;
+    }
+    /* A heartbeat (type 4) is the hub keeping its radio awake.  It asks
+     * for nothing, so the node's window is left alone. */
+    if (data[2] == 4) {
+        g_heartbeats++;
+        return;
+    }
+    if (data[2] != 3) {
         return;
     }
     uint16_t want = (uint16_t)data[10] | ((uint16_t)data[11] << 8);
@@ -311,6 +414,11 @@ static void on_recv(const esp_now_recv_info_t *info, const uint8_t *data, int le
     g_request_seq   = (uint16_t)data[4] | ((uint16_t)data[5] << 8);
     g_request_first = (uint16_t)data[6] | ((uint16_t)data[7] << 8);
     g_request_count = (uint16_t)data[8] | ((uint16_t)data[9] << 8);
+    if (Serial) {
+        Serial.printf("request: seq %u first %u count %u\n",
+                      (unsigned)g_request_seq, (unsigned)g_request_first,
+                  (unsigned)g_request_count);
+    }
 }
 
 static bool radio_start(void) {
@@ -323,10 +431,17 @@ static bool radio_start(void) {
         return false;
     }
     esp_now_register_recv_cb(on_recv);
+    esp_now_register_send_cb(on_send);
 
     esp_now_peer_info_t peer = {};
     memcpy(peer.peer_addr, g_bcast, 6);
-    peer.channel = 0;               /* use the current channel */
+    /* The channel is set explicitly rather than left at 0.  With 0 the
+     * peer is supposed to follow the interface's current channel, but on
+     * this driver the frame never left the node: the send callback fired
+     * and nothing arrived at the hub, on any of the thirteen channels.
+     * The hub's peer has always had the channel set, and the hub's
+     * transmissions arrive perfectly. */
+    peer.channel = 1;
     peer.ifidx   = WIFI_IF_STA;
     peer.encrypt = false;
     if (esp_now_add_peer(&peer) != ESP_OK) {
@@ -336,11 +451,42 @@ static bool radio_start(void) {
 }
 
 static bool radio_send(const uint8_t *data, size_t len) {
-    if (esp_now_send(g_bcast, data, len) != ESP_OK) {
+    /* Wait for the previous frame to leave the queue before adding this
+     * one.  ESP-NOW's transmit queue holds ten frames; a burst is 286 of
+     * them, so without this the queue overflows, esp_now_send() fails with
+     * ESP_ERR_NO_MEM, and the burst never gets reassembled on the hub. */
+    const uint32_t before = g_tx_acks;
+    /* Broadcast.  Unicast to the learned hub address wedged the send
+     * path: the frame was accepted, never transmitted, and the send
+     * callback never fired, so every send burned its wait cap and the
+     * loop starved the microphone.  Broadcast callbacks fire in
+     * milliseconds; revisit unicast only with a passing dedicated
+     * test. */
+    const uint8_t *dest = g_bcast;
+    const int64_t st0 = esp_timer_get_time();
+    const esp_err_t serr = esp_now_send(dest, data, len);
+    const int64_t sdt = esp_timer_get_time() - st0;
+    g_send_calls++;
+    if (sdt > (int64_t)g_send_max_us) {
+        g_send_max_us = (uint32_t)sdt;
+    }
+    if (serr != ESP_OK) {
         g_frames_lost++;
         return false;
     }
     g_frames_sent++;
+    uint32_t waited = 0;
+    const uint32_t t0 = micros();
+    while (g_tx_acks == before && waited < 50) {
+        delay(1);
+        waited++;
+    }
+    const uint32_t waited_us = micros() - t0;
+    g_tx_wait_us += waited_us;
+    g_tx_wait_n++;
+    if (waited_us > g_tx_wait_max) {
+        g_tx_wait_max = waited_us;
+    }
     return true;
 }
 
@@ -369,7 +515,7 @@ static void send_fragment(uint16_t index, bool from_frozen, bool over_serial) {
 
 static void send_telemetry(void) {
     int32_t rms_milli = (int32_t)(g_rms * 1000.0f + (g_rms >= 0 ? 0.5f : -0.5f));
-    uint8_t payload[8];
+    uint8_t payload[12];
     payload[0] = (uint8_t)(rms_milli & 0xFF);
     payload[1] = (uint8_t)((rms_milli >> 8) & 0xFF);
     payload[2] = (uint8_t)((rms_milli >> 16) & 0xFF);
@@ -389,6 +535,13 @@ static void send_telemetry(void) {
     }
     payload[6] = flags;
     payload[7] = 0;
+    /* The CRC-32 of the frozen window, so the hub can check the window it
+     * reassembles against the one the node actually froze. */
+    uint32_t crc = g_frozen_valid ? g_frozen_crc : 0u;
+    payload[8]  = (uint8_t)(crc & 0xFF);
+    payload[9]  = (uint8_t)((crc >> 8) & 0xFF);
+    payload[10] = (uint8_t)((crc >> 16) & 0xFF);
+    payload[11] = (uint8_t)((crc >> 24) & 0xFF);
 
     size_t total = build_frame(1, g_burst_seq, 0, 0, payload, sizeof(payload));
     radio_send(g_frame, total);
@@ -398,15 +551,38 @@ static void send_telemetry(void) {
 /* ---------------------------------------------------------------- console -- */
 
 static void print_status(void) {
+    /* The radio's own address, which the hub needs in its table of node
+     * addresses.  WiFi.macAddress() reports a different one on this
+     * board, so it is read from the chip directly. */
+    uint8_t sta[6] = {0};
+    esp_read_mac(sta, ESP_MAC_WIFI_STA);
     Serial.printf("node %u  mac %02X:%02X:%02X:%02X:%02X:%02X\n", g_node_id,
-                  WiFi.macAddress()[0], WiFi.macAddress()[1], WiFi.macAddress()[2],
-                  WiFi.macAddress()[3], WiFi.macAddress()[4], WiFi.macAddress()[5]);
+                  sta[0], sta[1], sta[2], sta[3], sta[4], sta[5]);
+    Serial.printf("esp_now_send calls=%u max_us=%u\n",
+                  (unsigned)g_send_calls, (unsigned)g_send_max_us);
+    Serial.printf("time pump=%llu tick=%llu req=%llu rest=%llu ms\n",
+                  (unsigned long long)(g_t_pump / 1000),
+                  (unsigned long long)(g_t_tick / 1000),
+                  (unsigned long long)(g_t_req / 1000),
+                  (unsigned long long)(g_t_rest / 1000));
+    Serial.printf("pump calls=%u empty=%u frames=%u max_us=%u loops=%u loop_max_us=%u\n",
+                  (unsigned)g_pump_calls, (unsigned)g_pump_empty,
+                  (unsigned)g_pump_frames, (unsigned)g_pump_max_us,
+                  (unsigned)g_loop_iters, (unsigned)g_loop_max_us);
     Serial.printf("window %u/%u samples   frozen=%u seq=%u\n", (unsigned)g_filled,
                   (unsigned)WINDOW_SAMPLES, g_frozen_valid ? 1 : 0,
                   (unsigned)g_burst_seq);
+    if (g_frozen_valid) {
+        Serial.printf("frozen crc32 0x%08X\n", (unsigned)g_frozen_crc);
+    }
     Serial.printf("rms %.4f  mean %d  fragments=%u\n", g_rms, (int)g_mean,
                   (unsigned)FRAG_COUNT);
     Serial.printf("heap %u bytes\n", (unsigned)ESP.getFreeHeap());
+    Serial.printf("channel %d\n", (int)WiFi.channel());
+    uint32_t ver = 0;
+    esp_now_get_version(&ver);
+    Serial.printf("ESP-NOW version %u, hub %s\n", (unsigned)ver,
+                  g_hub_known ? "known" : "unknown");
 }
 
 static void print_stats(void) {
@@ -414,6 +590,9 @@ static void print_stats(void) {
                   (unsigned)g_telemetry_seq, (unsigned)g_frames_sent,
                   (unsigned)g_frames_lost, (unsigned)g_requests,
                   (unsigned)g_freezes);
+    Serial.printf("tx wait: avg %u us, max %u us, over %u frames\n",
+                  (unsigned)(g_tx_wait_n ? g_tx_wait_us / g_tx_wait_n : 0),
+                  (unsigned)g_tx_wait_max, (unsigned)g_tx_wait_n);
 }
 
 static void handle_command(char *line) {
@@ -460,6 +639,12 @@ static void handle_command(char *line) {
 
 void setup() {
     Serial.begin(115200);
+    /* A closed serial port must never cost the loop time: the HWCDC
+     * write path waits up to two seconds per print when the host is not
+     * reading, and an unattended node printing its rms every hundred
+     * milliseconds starved its own loop into a crawl.  Zero timeout
+     * makes prints drop instead of block. */
+    Serial.setTxTimeoutMs(0);
     delay(200);
 
     uint8_t mac[6];
@@ -484,17 +669,40 @@ void setup() {
             delay(1000);
         }
     }
+    uint32_t now_version = 0;
+    if (esp_now_get_version(&now_version) == ESP_OK) {
+        Serial.printf("ESP-NOW protocol version %u\n", (unsigned)now_version);
+    }
     Serial.println("ESP-NOW ready on channel 1");
 
     Serial.println("commands: status | stats | freeze | burst | id <n> | help");
 }
 
 void loop() {
+    const int64_t lt0 = esp_timer_get_time();
+    g_loop_iters++;
+    if (g_hub_peer_pending) {
+        g_hub_peer_pending = false;
+        esp_now_peer_info_t hub = {};
+        memcpy(g_hub_mac, g_pending_mac, 6);
+        memcpy(hub.peer_addr, g_hub_mac, 6);
+        hub.channel = 1;
+        hub.ifidx = WIFI_IF_STA;
+        hub.encrypt = false;
+        if (esp_now_add_peer(&hub) == ESP_OK) {
+            g_hub_known = true;
+            if (Serial)
+                Serial.printf("hub is %02X:%02X:%02X:%02X:%02X:%02X\n",
+                          g_hub_mac[0], g_hub_mac[1], g_hub_mac[2],
+                          g_hub_mac[3], g_hub_mac[4], g_hub_mac[5]);
+        }
+    }
     i2s_pump();
 
     /* The window is only worth measuring once it holds a full 100 ms: the
      * hub's front end removes the mean of the whole two seconds, and a
      * partial window would not match it. */
+    const int64_t tk0 = esp_timer_get_time();
     if (g_filled >= RMS_SAMPLES) {
         uint32_t now = millis();
         if (now - g_last_tick >= TELEMETRY_MS) {
@@ -505,7 +713,11 @@ void loop() {
 
             send_telemetry();
 
-            if (!g_dump_active) {
+            if (!g_dump_active && Serial) {
+                /* Serial here is USB-CDC: with no host reading the
+                 * port, a write blocks — and this print runs every
+                 * hundred milliseconds, so an unattended node starved
+                 * its own loop and stopped pumping the microphone. */
                 Serial.printf("rms %.4f  mean %d  %s\n", g_rms, (int)g_mean,
                               g_rms >= EVENT_RMS ? "EVENT" : "");
             }
@@ -513,15 +725,17 @@ void loop() {
             if (g_rms >= EVENT_RMS && !g_frozen_valid &&
                 g_filled == WINDOW_SAMPLES) {
                 freeze_window();
-                if (!g_dump_active) {
+                if (!g_dump_active && Serial) {
                     Serial.printf("froze window, burst seq %u\n", g_burst_seq);
                 }
             }
         }
     }
+    g_t_tick += (uint64_t)(esp_timer_get_time() - tk0);
 
     /* A request from the hub is served from the frozen snapshot when it
      * matches, and from the live window otherwise. */
+    const int64_t rq0 = esp_timer_get_time();
     if (g_request_pending) {
         g_request_pending = false;
         g_requests++;
@@ -530,7 +744,7 @@ void loop() {
             /* The live window is still refilling after the last upload,
              * so its chronological order is not known.  Wait. */
             from_frozen = false;
-            if (!g_dump_active) {
+            if (!g_dump_active && Serial) {
                 Serial.println("request ignored: the live window is not complete");
             }
         } else {
@@ -549,14 +763,19 @@ void loop() {
                 }
                 send_fragment(index, from_frozen, false);
             }
+            /* A one-fragment probe costs a few milliseconds of air, not
+             * a burst, so the live window keeps its value.  A real burst
+             * took seconds to send and the microphone kept running into
+             * a DMA buffer that was not being read, so the live window
+             * has holes in it: drop it and refill; the write cursor
+             * stays where it is so the valid region keeps moving. */
+            if (count > 1) {
+                g_filled = 0;
+                g_frozen_valid = false;
+            }
         }
-        /* The fragments took time to send and the microphone kept running
-         * into a DMA buffer that was not being read, so the live window
-         * now has holes in it.  Drop it and refill; the write cursor
-         * stays where it is so the valid region keeps moving forward. */
-        g_filled = 0;
-        g_frozen_valid = false;
     }
+    g_t_req += (uint64_t)(esp_timer_get_time() - rq0);
 
     /* The console. */
     static char line[64];
@@ -572,5 +791,10 @@ void loop() {
         } else if (len < sizeof(line) - 1) {
             line[len++] = c;
         }
+    }
+    const int64_t ldt = esp_timer_get_time() - lt0;
+    g_t_rest += (uint64_t)ldt;
+    if (ldt > (int64_t)g_loop_max_us) {
+        g_loop_max_us = (uint32_t)ldt;
     }
 }

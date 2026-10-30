@@ -33,6 +33,7 @@
 #include "crynet_dsp.h"
 #include "crynet_infer.h"
 #include "probes.h"
+#include "link_stage.h"
 
 static const char *TAG = "crynet";
 
@@ -182,11 +183,17 @@ void app_main(void)
     if (failures == 0) {
         ESP_LOGI(TAG, "RESULT: PASS — %d probes, front end and model agree "
                       "with the host", CRYNET_PROBE_COUNT);
+        ESP_LOGI(TAG, "=================================================");
+
+        /* The probes are the hub's own regression check, and they run on
+         * every boot.  When they pass, the hub goes on to the radio: it
+         * listens to the nodes and runs the windows they send through the
+         * same front end and the same model that were just verified. */
+        link_stage_run(&dsp, infer);
     } else {
         ESP_LOGE(TAG, "RESULT: FAIL — %d check(s) failed", failures);
+        ESP_LOGE(TAG, "=================================================");
+        crynet_infer_destroy(infer);
+        crynet_dsp_free(&dsp);
     }
-    ESP_LOGI(TAG, "=================================================");
-
-    crynet_infer_destroy(infer);
-    crynet_dsp_free(&dsp);
 }
