@@ -10,8 +10,8 @@ the circular window, the framing and the CRCs are all correct on the
 device — which is the part that cannot be checked on the host.
 
 Usage:
-    python firmware/tools/verify_burst.py --port COM32
-    python firmware/tools/verify_burst.py --port COM32 --out burst.wav
+    python firmware/tools/verify_burst.py --port COM30
+    python firmware/tools/verify_burst.py --port COM30 --out burst.wav
 """
 
 from __future__ import annotations
@@ -33,7 +33,7 @@ ESP32_VID_PIDS = {
     (0x1A86, 0x7523): "CH340",
     (0x10C4, 0xEA60): "CP210x",
     (0x0403, 0x6001): "FTDI",
-    (0x303A, 0x1001): "Espressif native USB",
+    (0x303A, 0x1001): "Espressif native USB (the C3 SuperMini's own USB)",
 }
 
 
@@ -44,6 +44,92 @@ def crc16(data: bytes) -> int:
         for _ in range(8):
             crc = ((crc << 1) ^ 0x1021) & 0xFFFF if crc & 0x8000 else (crc << 1) & 0xFFFF
     return crc
+
+
+def build_frame(node_id: int, ftype: int, seq: int, frag: int, count: int,
+                payload: bytes) -> bytes:
+    """The same layout the firmware's build_frame() produces."""
+    frame = bytearray(14 + len(payload) + 2)
+    frame[0], frame[1], frame[2], frame[3] = 0xC3, 0x7E, ftype, node_id
+    frame[4:6] = struct.pack("<H", seq)
+    frame[6:8] = struct.pack("<H", frag)
+    frame[8:10] = struct.pack("<H", count)
+    frame[10:12] = struct.pack("<H", len(payload))
+    frame[12:14] = struct.pack("<H", crc16(payload) if payload else 0)
+    frame[14:14 + len(payload)] = payload
+    frame[14 + len(payload):] = struct.pack(
+        "<H", crc16(bytes(frame[:14 + len(payload)])))
+    return bytes(frame)
+
+
+class FrameParser:
+    """Pulls burst fragments out of a byte stream, checking every CRC.
+
+    The node's console mixes text and binary frames, so the parser has to
+    resynchronise on the magic.  A frame that fails its CRC is skipped
+    one byte at a time, which is what lets it recover from a dropped
+    byte instead of giving up.
+    """
+
+    def __init__(self) -> None:
+        self.buf = bytearray()
+        self.fragments: dict[int, bytes] = {}
+        self.frag_count = None
+        self.burst_seq = None
+        self.node_id = None
+        self.bad_crc = 0
+
+    def feed(self, data: bytes) -> str:
+        """Add bytes and return whatever text was in between the frames."""
+        self.buf += data
+        out = ""
+        while True:
+            start = self.buf.find(MAGIC)
+            if start < 0:
+                # Keep the last byte: a magic may straddle two reads.
+                if len(self.buf) > 1:
+                    out += self.buf[:-1].decode("utf-8", "replace")
+                    del self.buf[:-1]
+                break
+            if start:
+                out += self.buf[:start].decode("utf-8", "replace")
+                del self.buf[:start]
+            if len(self.buf) < FIXED.size:
+                break
+
+            _, _, ftype, fid, seq, frag, count, plen, pcrc = FIXED.unpack(
+                self.buf[:FIXED.size])
+            if ftype != 2 or plen > 4096:
+                del self.buf[:1]
+                continue
+            total = FIXED.size + plen + TRAILER.size
+            if len(self.buf) < total:
+                break
+
+            payload = bytes(self.buf[FIXED.size:FIXED.size + plen])
+            fcrc = TRAILER.unpack(self.buf[FIXED.size + plen:total])[0]
+            if (crc16(bytes(self.buf[:FIXED.size + plen])) != fcrc
+                    or crc16(payload) != pcrc):
+                self.bad_crc += 1
+                del self.buf[:1]
+                continue
+
+            del self.buf[:total]
+            self.frag_count = count
+            self.burst_seq = seq
+            self.node_id = fid
+            self.fragments[frag] = payload
+        return out
+
+    def done(self) -> bool:
+        return (self.frag_count is not None
+                and len(self.fragments) >= self.frag_count)
+
+    def assemble(self) -> bytes:
+        if self.frag_count is None:
+            return b""
+        return b"".join(self.fragments[i] for i in range(self.frag_count)
+                         if i in self.fragments)
 
 
 def find_port() -> str | None:
@@ -71,6 +157,8 @@ def main() -> int:
     ap.add_argument("--out", default="burst.wav", help="where to write the WAV")
     ap.add_argument("--baud", type=int, default=115200)
     ap.add_argument("--timeout", type=float, default=90.0)
+    ap.add_argument("--settle", type=float, default=5.0,
+                    help="seconds to wait before asking for the window")
     args = ap.parse_args()
 
     try:
@@ -88,27 +176,35 @@ def main() -> int:
     ser.dtr = False
     ser.rts = False
 
-    buf = bytearray()
-    fragments = {}          # index -> payload
-    frag_count = None
-    burst_seq = None
-    node_id = None
-    bad_crc = 0
-    text = ""
+    parser = FrameParser()
 
-    def pump(seconds: float) -> None:
-        nonlocal buf
+    def pump(seconds: float) -> str:
         deadline = time.time() + seconds
         while time.time() < deadline:
             chunk = ser.read(8192)
             if chunk:
-                buf += chunk
+                parser.feed(chunk)
+        return ""
 
-    print(f"Connected to {port}. Waiting 3 s for the window to fill ...")
-    pump(3.0)
+    print(f"Connected to {port}. Waiting {args.settle:.0f} s for the node to boot "
+          f"and its window to fill ...")
+    pump(args.settle)
 
-    ser.write(b"freeze\n")
-    time.sleep(0.5)
+    # The node refuses to freeze until its two-second window is complete,
+    # so ask again until it answers.
+    frozen = False
+    for _ in range(12):
+        ser.write(b"freeze\n")
+        text = pump(1.0)
+        if text.strip():
+            print(text.strip()[-300:])
+        if "frozen seq=" in text:
+            frozen = True
+            break
+    if not frozen:
+        print("The node never froze its window — is it running node_crynet?",
+              file=sys.stderr)
+
     ser.write(b"burst\n")
     print("Requested the burst; reading ...")
 
@@ -116,68 +212,35 @@ def main() -> int:
     while time.time() < deadline:
         chunk = ser.read(8192)
         if chunk:
-            buf += chunk
-
-        while True:
-            start = buf.find(MAGIC)
-            if start < 0:
-                if len(buf) > 1:
-                    text += buf[:-1].decode("utf-8", "replace")
-                    del buf[:-1]
+            text = parser.feed(chunk)
+            # The node prints BURST-END once it has sent every fragment, so
+            # there is no point waiting for the timeout after that.
+            if "BURST-END" in text:
                 break
-            if start:
-                text += buf[:start].decode("utf-8", "replace")
-                del buf[:start]
-            if len(buf) < FIXED.size:
-                break
-
-            m0, m1, ftype, fid, seq, frag, count, plen, pcrc = FIXED.unpack(buf[:FIXED.size])
-            if ftype != 2 or plen > 4096:
-                del buf[:1]
-                continue
-            total = FIXED.size + plen + TRAILER.size
-            if len(buf) < total:
-                break
-
-            payload = bytes(buf[FIXED.size:FIXED.size + plen])
-            fcrc = TRAILER.unpack(buf[FIXED.size + plen:total])[0]
-            if crc16(bytes(buf[:FIXED.size + plen])) != fcrc or crc16(payload) != pcrc:
-                bad_crc += 1
-                del buf[:1]
-                continue
-
-            del buf[:total]
-            frag_count = count
-            burst_seq = seq
-            node_id = fid
-            fragments[frag] = payload
-
-        if frag_count is not None and len(fragments) >= frag_count:
+        if parser.done():
             break
 
     ser.close()
 
-    print("\n--- node output ---")
-    print(text.strip()[-2000:])
-    print("--- end ---\n")
-
-    if frag_count is None:
+    if parser.frag_count is None:
         print("FAIL: no burst fragment received.", file=sys.stderr)
         return 1
 
-    missing = [i for i in range(frag_count) if i not in fragments]
-    pcm = b"".join(fragments[i] for i in range(frag_count) if i in fragments)
+    missing = [i for i in range(parser.frag_count) if i not in parser.fragments]
+    pcm = parser.assemble()
 
-    print(f"node id      {node_id}")
-    print(f"burst seq    {burst_seq}")
-    print(f"fragments    {len(fragments)}/{frag_count}  (bad CRC {bad_crc})")
+    print()
+    print(f"node id      {parser.node_id}")
+    print(f"burst seq    {parser.burst_seq}")
+    print(f"fragments    {len(parser.fragments)}/{parser.frag_count}  "
+          f"(bad CRC {parser.bad_crc})")
     print(f"payload      {len(pcm)} bytes (expected {BURST_BYTES})")
 
     if missing:
         print(f"FAIL: missing fragments {missing[:20]}", file=sys.stderr)
         return 1
-    if bad_crc:
-        print(f"FAIL: {bad_crc} frames failed their CRC", file=sys.stderr)
+    if parser.bad_crc:
+        print(f"FAIL: {parser.bad_crc} frames failed their CRC", file=sys.stderr)
         return 1
     if len(pcm) != BURST_BYTES:
         print(f"FAIL: reassembled {len(pcm)} bytes, expected {BURST_BYTES}",

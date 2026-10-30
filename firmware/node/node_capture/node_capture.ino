@@ -14,10 +14,15 @@
  *     4  u16 sequence
  *     6  u16 sample count
  *     8  u32 rms x 1000
- *    12  int16 samples, little endian
+ *    12  u16 CRC-16/CCITT-FALSE over the first 12 header bytes and the payload
+ *    14  int16 samples, little endian
  *
- * One record is 100 ms.  `firmware/tools/collect_clips.py` reads the
- * stream, writes a continuous WAV, and cuts it into clips.
+ * One record is 100 ms.  The CRC is what makes the recording trustworthy:
+ * a dropped byte on the USB link would otherwise shift every sample after
+ * it, and a dataset of quietly misaligned audio is worse than no dataset.
+ * `firmware/tools/collect_clips.py` reads the stream, rejects any record
+ * whose CRC does not check out, writes a continuous WAV, and cuts it into
+ * clips.
  *
  * Wiring — INMP441 to ESP32-C3 SuperMini:
  *     VCC -> 3V3   GND -> GND   L/R -> GND
@@ -49,7 +54,20 @@ static uint16_t g_seq = 0;
 static uint32_t g_total_samples = 0;
 static bool     g_streaming = true;
 
-static uint8_t  g_header[12];
+static uint8_t  g_header[14];
+
+/* CRC-16/CCITT-FALSE — the same function the node firmware uses, so
+ * there is one checksum in the project rather than three. */
+static uint16_t crc16_update(uint16_t crc, const uint8_t *data, size_t len) {
+    for (size_t i = 0; i < len; i++) {
+        crc ^= (uint16_t)data[i] << 8;
+        for (int bit = 0; bit < 8; bit++) {
+            crc = (crc & 0x8000u) ? (uint16_t)((crc << 1) ^ 0x1021u)
+                                  : (uint16_t)(crc << 1);
+        }
+    }
+    return crc;
+}
 
 static void send_record(const int16_t *samples, uint16_t count) {
     /* The RMS of the record, computed with an exact integer mean, so the
@@ -79,6 +97,14 @@ static void send_record(const int16_t *samples, uint16_t count) {
     g_header[9] = (uint8_t)((rms_milli >> 8) & 0xFF);
     g_header[10] = (uint8_t)((rms_milli >> 16) & 0xFF);
     g_header[11] = (uint8_t)((rms_milli >> 24) & 0xFF);
+
+    /* The checksum covers the header prefix and the payload, so a dropped
+     * byte on the link is caught instead of quietly shifting every
+     * sample after it. */
+    uint16_t crc = crc16_update(0xFFFF, g_header, 12);
+    crc = crc16_update(crc, (const uint8_t *)samples, (size_t)count * 2);
+    g_header[12] = (uint8_t)(crc & 0xFF);
+    g_header[13] = (uint8_t)(crc >> 8);
 
     Serial.write(g_header, sizeof(g_header));
     Serial.write((const uint8_t *)samples, (size_t)count * 2);

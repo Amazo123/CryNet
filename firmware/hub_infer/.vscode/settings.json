@@ -1,17 +1,20 @@
 {
   // PlatformIO IDE — the hub project.
   //
-  // Drive the PlatformIO Core that is already installed on this machine
-  // (6.2.0, in the system Python) instead of letting the extension
-  // bootstrap its own copy. That copy is the one every build in this
-  // repository has been produced with, it shares the same core directory
-  // (~/.platformio, where ESP-IDF 6.1.0 and the Xtensa toolchain already
-  // live), and it means the IDE works with no network at all.
+  // The extension looks for a PlatformIO Core in its own virtual
+  // environment (~/.platformio/penv) and drives the build through it. That
+  // Core is version 6.2.0 — the same version the command line uses — and
+  // it shares the core directory (~/.platformio), so ESP-IDF 6.1.0, the
+  // Xtensa toolchain and esptool are the ones already installed here and
+  // nothing is downloaded again.
   //
-  // "customPATH" is where platformio.exe lives.
+  // "useBuiltinPython" is off so the extension uses the system Python
+  // (3.11) rather than downloading its own portable copy; "useBuiltinPIOCore"
+  // is on because that is the only place the extension looks for a Core
+  // that satisfies its version check.
   "platformio-ide.useBuiltinPython": false,
-  "platformio-ide.useBuiltinPIOCore": false,
-  "platformio-ide.customPATH": "C:\\Users\\HP\\AppData\\Roaming\\Python\\Python311\\Scripts",
+  "platformio-ide.useBuiltinPIOCore": true,
+  "platformio-ide.customPATH": "C:\\Users\\HP\\.platformio\\penv\\Scripts",
 
   // Do not pop the platformio.ini open every time the project is opened.
   "platformio-ide.autoOpenPlatformIOIniFile": false,

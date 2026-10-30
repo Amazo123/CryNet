@@ -54,17 +54,38 @@ This copies both sketches into the Arduino sketchbook
 the Arduino IDE:
 
 1. **File → Open** → `node_crynet` (or `node_capture`).
-2. **Tools → Board → ESP32C3 Dev Module**.
-3. **Tools → Port** → the CH340's COM port.
+2. **Tools → Board → WeAct Studio ESP32C3** — this is the exact board
+   (the ESP32-C3 SuperMini) and its entry already has the right flash
+   size and the right USB settings.
+3. **Tools → Port** → the node's port. It enumerates as
+   `USB Serial Device (COM30)`, VID:PID `303a:1001`.
 4. **Tools → Upload**.
 
-Both sketches were compiled for `esp32:esp32:esp32c3` with the core
-3.3.12 that is installed here, and they build with no warnings:
+### "USB CDC On Boot" must be enabled
+
+This board's USB connector is wired to the **ESP32-C3's own native USB**
+(`303a:1001`), not to a CH340. So `Serial` — UART0 on GPIO20/GPIO21 —
+goes nowhere: those pins are not connected to the connector. With
+**Tools → USB CDC On Boot: Enabled**, `Serial` becomes the USB CDC
+device and everything works.
+
+The WeAct board entry has this **on by default**, so choosing the right
+board is enough. If you select "ESP32C3 Dev Module" instead, you must
+set *USB CDC On Boot* to *Enabled* yourself, or the sketch will build
+and upload but the console will be silent and the port will disappear
+when the application starts.
+
+The baud rate is then nominal — USB CDC is not a real UART — but the
+tools still open the port at the rate the sketch names, so use the
+rates given below.
+
+Both sketches were compiled for `esp32:esp32:weact_studio_esp32c3` with
+the core 3.3.12 that is installed here, and they build with no warnings:
 
 | Sketch | Flash | Static RAM |
 |---|---|---|
-| `node_crynet` | 977,617 B (74 %) | 165,972 B (50 %) |
-| `node_capture` | 311,120 B (23 %) | 18,592 B (5 %) |
+| `node_crynet` | 975,557 B (74 %) | 166,148 B (50 %) |
+| `node_capture` | 308,808 B (23 %) | 18,760 B (5 %) |
 
 The node firmware's RAM is two 64 KB windows: the live one and the frozen
 snapshot that gets uploaded.
@@ -79,7 +100,8 @@ board reappears as a CDC port.
 
 ### Console
 
-115200 baud. One command per line:
+115200 baud — nominal, because the console is a USB CDC device rather
+than a real UART. One command per line:
 
 | Command | What it does |
 |---|---|
@@ -186,6 +208,23 @@ python firmware/tools/collect_clips.py --out research/in_domain/session1
 | `session.wav` | the whole session, 16 kHz mono 16-bit |
 | `records.csv` | the RMS of every 100 ms record, so the loud parts can be found |
 | `clips/clip_NNNN.wav` | the session cut into 5 s clips, the format the training corpus uses |
+
+Each 100 ms record carries its own CRC-16/CCITT-FALSE, over its header
+and its payload:
+
+```
+ 0  'C' 'R' 'Y' '1'   magic
+ 4  u16 sequence
+ 6  u16 sample count
+ 8  u32 rms x 1000
+12  u16 CRC-16/CCITT-FALSE over bytes 0..11 and the payload
+14  int16 samples, little endian
+```
+
+A record whose checksum does not check out is **dropped** and counted,
+rather than written into the WAV. Without it, one dropped byte on the USB
+link would shift every sample after it, and a dataset of quietly
+misaligned audio is worse than no dataset.
 
 The PC can stop and resume the stream while it runs: it sends `S` or `R`
 back to the node, which is a separate wire from the audio, so nothing the

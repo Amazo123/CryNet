@@ -33,7 +33,8 @@
 | Flash + read the log | `python firmware/tools/flash_hub.py` | finds the board, writes it, prints the report |
 | Re-fetch the vendored deps | `bash firmware/tools/fetch_deps.sh` | clones the pinned commits and re-applies `patch_deps.py` |
 | Install the node sketches into the Arduino IDE | `python firmware/tools/install_sketches.py` | copies `firmware/node/*` into `~/Documents/Arduino` |
-| Build a node sketch without the IDE | `arduino-cli compile --fqbn esp32:esp32:esp32c3 firmware/node/node_crynet` | `arduino-cli.exe` ships inside the Arduino IDE |
+| Build a node sketch without the IDE | `arduino-cli compile --fqbn esp32:esp32:weact_studio_esp32c3 firmware/node/node_crynet` | `arduino-cli.exe` ships inside the Arduino IDE |
+| Ports | the hub on **COM32** (CH343), the node on **COM30** (`303a:1001`, the C3's own USB) | `python firmware/tools/collect_clips.py --list` |
 
 **A background build survives `/compact` and even a lost session** — it writes to the log file on disk, not to the chat. Compaction only rewrites conversation history.
 
@@ -236,7 +237,7 @@ The user ran `notebooks/crynet_training.ipynb` on Kaggle (GPU T4) and the artifa
 Logs: `research/real_fast.log`, `research/stub_run.log`.
 
 ### Git state and remotes
-Local branch `main`, tracking `crynet/main`. Latest commit `1635f3a` = **Stage 2b, the node firmware** (all of it committed — nothing uncommitted).
+Local branch `main`, tracking `crynet/main`. Latest commit `bb89503` = **Stage 2b, the node firmware** (all of it committed — nothing uncommitted).
 
 | Remote | Points at | Purpose |
 |---|---|---|
@@ -322,16 +323,26 @@ root and in `firmware/hub_infer/`) sets:
 
 ```json
 "platformio-ide.useBuiltinPython": false,
-"platformio-ide.useBuiltinPIOCore": false,
-"platformio-ide.customPATH": "C:\\Users\\HP\\AppData\\Roaming\\Python\\Python311\\Scripts"
+"platformio-ide.useBuiltinPIOCore": true,
+"platformio-ide.customPATH": "C:\\Users\\HP\\.platformio\\penv\\Scripts"
 ```
 
-so the extension runs the **existing** PlatformIO Core 6.2.0 in the system
-Python instead of bootstrapping a second copy into `~/.platformio/penv`.
-Both share the same core directory, so ESP-IDF 6.1.0, the Xtensa toolchain
-and esptool are the ones that are already installed and nothing is
-downloaded. Open `firmware/hub_infer` as the folder and use the toolbar:
-**✓ build**, **→ upload**, **plug serial monitor**.
+**`useBuiltinPIOCore` must be `true`.** The extension's compatibility
+check is `get-platformio.py check core --version-spec ">=6.1.6"`, and it
+looks for a Core in `~/.platformio/penv/Scripts` — nowhere else. With the
+setting off it reports *"Could not find compatible PlatformIO Core.
+Please enable `platformio-ide.useBuiltinPIOCore`"*. The Core was
+installed there with PlatformIO's own bootstrap script:
+
+```bash
+python ~/.platformio/.cache/tmp/get-platformio-1.2.2.py
+```
+
+It is **6.2.0**, the same version the command line uses, and it shares
+`~/.platformio`, so ESP-IDF 6.1.0, the Xtensa toolchain and esptool are
+the ones already installed and **nothing is re-downloaded**. The hub
+builds through it in **99.3 s**. Open `firmware/hub_infer` as the folder
+and use the toolbar: **✓ build**, **→ upload**, **plug serial monitor**.
 
 **Do not pin the framework with a `platform_packages` URL.** PlatformIO 6.2 installs a URL-specified package by treating the archive as an **npm package**: it picks the wrong `package.json` out of the tree, writes a bogus version into `.piopm`, and leaves `packages/framework-espidf` holding only a test-fixture package. CMake then fails with:
 
@@ -354,9 +365,11 @@ The fix that worked: delete `packages/framework-espidf`, move the fully extracte
 **Done:** the user ran the full Kaggle notebook and dropped `out/` into `research/out/`; the user connected the ESP32-S3 and the Stage 2a on-device verification **passed**.
 
 **Now, in order:**
-1. Upload `node_crynet` to the C3 (Arduino IDE → ESP32C3 Dev Module → the C3's COM port) with the INMP441 wired as in `firmware/node/README.md`, then run `python firmware/tools/verify_burst.py --port <C3 port>`. It writes the node's two-second window out as a WAV and reports the mean, the RMS and the peak — that is what tells us the wiring is right and what the microphone's DC offset and level actually are.
-2. Upload `node_capture` and run `python firmware/tools/collect_clips.py --out research/in_domain/session1` to record the room, then ~50 real cry clips.
+1. Upload `node_crynet` to the C3 — Arduino IDE → board **WeAct Studio ESP32C3** → port **COM30** — with the INMP441 wired as in `firmware/node/README.md`, then run `python firmware/tools/verify_burst.py --port COM30`. It writes the node's two-second window out as a WAV and reports the mean, the RMS and the peak — that is what tells us the wiring is right and what the microphone's DC offset and level actually are.
+2. Upload `node_capture` and run `python firmware/tools/collect_clips.py --port COM30 --out research/in_domain/session1` to record the room, then ~50 real cry clips.
 3. The hub's radio (Stage 2c) can then be written against a node that is known to be producing correct audio.
+
+**Both boards are already connected:** the ESP32-S3 on COM32, the ESP32-C3 SuperMini (with the INMP441 on the breadboard) on COM30. The C3's USB is its own native USB, so *"USB CDC On Boot"* must be **Enabled** — the WeAct board entry has it on by default.
 
 ---
 
@@ -364,6 +377,7 @@ The fix that worked: delete `packages/framework-espidf`, move the fully extracte
 
 | Date | Change | Files touched | Notes |
 |---|---|---|---|
+| 2026-10-30 | **The PlatformIO IDE works now, and the node's real hardware is identified.** (1) The VS Code extension refused to start with *"Could not find compatible PlatformIO Core"* — caused by my own setting. The extension's check is `get-platformio.py check core --version-spec ">=6.1.6"`, and with `useBuiltinPIOCore: false` it looked for a Core in `~/.platformio/penv/Scripts` and found none. The fix: `useBuiltinPIOCore: true` (the extension's own advice) and the Core installed into the penv by PlatformIO's own bootstrap script. The penv Core is **6.2.0** — the same version the command line uses — it shares `~/.platformio`, so ESP-IDF 6.1.0 and the Xtensa toolchain were reused and **nothing was re-downloaded**; the hub builds through it in **99.3 s**, RAM 52.0 %, flash 22.0 %. (2) The user's node is a **WeAct Studio ESP32-C3 SuperMini**, and its USB is the **ESP32-C3's own native USB** (`303a:1001` on **COM30**), *not* a CH340 — so UART0 on GPIO20/21 goes nowhere and **"USB CDC On Boot" must be Enabled** or the console is silent and the port vanishes when the app starts. The Arduino core has an exact board entry for it (`weact_studio_esp32c3`) with CDC-on-boot already on; both sketches were recompiled for it with zero warnings. (3) The **capture records now carry a CRC-16** over their header and payload, and the collector drops any record that fails it — without it a single dropped byte on the USB link would shift every later sample and quietly ruin the dataset. Both stream parsers were rewritten as testable classes and checked against synthetic streams: the burst parser finds 285 of 286 fragments and flags exactly the corrupted one; the capture parser accepts 19 of 20 records and rejects exactly the corrupted one, with every surviving payload byte-exact. | `.vscode/settings.json`, `firmware/hub_infer/.vscode/settings.json`, `firmware/node/node_capture/node_capture.ino`, `firmware/node/README.md`, `firmware/tools/collect_clips.py`, `firmware/tools/verify_burst.py`, `SYSTEM_UPDATE.md` | The tools also had to stop depending on the sketch's text banner: a USB CDC port can enumerate *after* the sketch has already printed it, so the parsers resynchronise on their own magic and the banner is only informational. `verify_burst.py` now also retries the `freeze` command, because the node refuses to freeze until its two-second window is full. |
 | 2026-10-30 | **Node window bug found by reading the code before the hardware did.** After a burst is sent the live window is dropped and refills, so for two seconds the newest samples are not at the start of the array — but the mean summed from index 0, averaging the stale tail with the fresh head and making the reported RMS meaningless for exactly as long as the window was invalid. The valid region is now walked **backwards from the write cursor**, which is right whether the window is full or refilling, the cursor is no longer reset, and a request arriving while the window is incomplete is refused rather than answered with a window whose order is unknown. | `firmware/node/node_crynet/node_crynet.ino`, `firmware/node/README.md` | Both sketches recompiled clean. The wire format was also validated numerically: CRC-16/CCITT-FALSE matches the standard check vector `0x29B1`, and the C frame builder and the Python parser agree on every header offset and both CRCs. |
 | 2026-10-30 | **Stage 2b: the node firmware is written and compiles, and the offline GUI path is set up.** Two Arduino sketches for the ESP32-C3 — `node_crynet` (I2S capture, a 2 s rolling window, 100 ms RMS telemetry over ESP-NOW, the 64 KB burst as 286 CRC-framed fragments, a serial console) and `node_capture` (streams the microphone to the PC for in-domain data). Both build for `esp32:esp32:esp32c3` against the installed core 3.3.12 with **zero warnings**: 977,617 B / 165,972 B and 311,120 B / 18,592 B. The I2S setup follows Espressif's own recipe for this microphone — **32-bit slots** (the INMP441 puts 24 bits in a 64-bit frame, so 16-bit slots would misalign the data), `I2S_SLOT_MODE_MONO` + `I2S_STD_SLOT_LEFT`, narrowed to int16 in software by keeping the top 16 bits; the C3 is I2S hardware v2, so the left slot is chosen in hardware. The node repeats the hub's DC lesson: an exact **integer** mean, and the 100 ms RMS computed with the mean of the **whole 2 s window** removed, so the node's RMS is the same quantity the hub's front end will compute — otherwise the hub's 0.03 trigger threshold means nothing. Two host tools came with it: `verify_burst.py` (asks the node for its window over the serial console, checks every frame's CRC, writes the WAV) and `collect_clips.py` (records a session and cuts it into 5 s clips), plus `install_sketches.py` to copy the sketches into the Arduino sketchbook. Separately, the **PlatformIO IDE in VS Code** was pointed at the pip-installed Core 6.2.0 (`useBuiltinPython: false`, `useBuiltinPIOCore: false`, `customPATH` at the Python `Scripts` folder) so it drives the toolchain that is already installed and needs no network. Also corrected a claim: the build is DIO throughout (`CONFIG_ESPTOOLPY_FLASHMODE "dio"`, flash-mode byte `0x02` in both images), so the application runs in DIO — the bootloader does *not* switch it back to QIO. | `firmware/node/node_crynet/node_crynet.ino`, `firmware/node/node_capture/node_capture.ino`, `firmware/node/README.md`, `firmware/tools/verify_burst.py`, `firmware/tools/collect_clips.py`, `firmware/tools/install_sketches.py`, `firmware/README.md`, `.vscode/settings.json`, `firmware/hub_infer/.vscode/settings.json`, `SYSTEM_UPDATE.md` | One real API error was caught by compiling: IDF 5.x/6.x changed `esp_now_recv_cb_t` to take an `esp_now_recv_info_t *` first argument. **The node has still never run on the board** — the wiring, the INMP441's actual level and DC offset, and the effective sample rate are all unmeasured. |
 | 2026-10-30 | **Stage 2a closed: the firmware runs on the real chip and all four probes pass.** The user's ESP32-S3-DevKitC-1 (COM32) now reports `RESULT: PASS — 4 probes, front end and model agree with the host`, with the device's quantised features matching the host reference exactly on three probes and to within 1 LSB on three values of the fourth. Measured on the chip: PSRAM 8 MB present, flash 16 MB, front-end working set 5,380 B in internal SRAM, tensor arena 262,144 B reserved / **108,328 B used**, front end **41.7 ms**, inference **101.8 ms**. Five defects were only findable by running it: the **DC-removal mean accumulated in float32** (32,000 samples of 18,000 summed to 575,726,660 instead of 576,000,000, so 8.5 counts of DC survived and the per-window standardisation turned them into a completely different feature vector — the DC-offset probe failed with a max delta of 131; the sum is now an exact `int32`); the build was at **`-Og`** because `-DCOMPILER_OPTIMIZATION_PERF` is an Arduino macro PlatformIO's ESP-IDF builder ignores (`CONFIG_COMPILER_OPTIMIZATION_PERF=y` now); the CPU ran at **160 MHz** (`CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ_240=y`); the front end kept a **128 KB padded copy of the signal in PSRAM**, which is uncached external memory on the S3 and was streamed through 81 times per window (the copy is gone — each frame is built straight from the caller's int16 PCM — and the working set is 5.4 KB in internal SRAM, 135 ms → 41.7 ms); and a **combined flash image built with QIO flash mode makes the chip watchdog-reset in a loop** because the ROM cannot read this board's flash in QIO before the bootloader configures its own timing (the combined image must use DIO; the bootloader switches to QIO itself afterwards). Added `firmware/tools/flash_hub.py` (finds the board, flashes it, prints the log — nothing to download), `firmware/tools/capture_serial.py` and `firmware/README.md` documenting the build and the three offline flash routes. | `firmware/hub_infer/components/crynet_dsp/*`, `firmware/hub_infer/sdkconfig.defaults`, `firmware/hub_infer/platformio.ini`, `firmware/tools/flash_hub.py`, `firmware/tools/capture_serial.py`, `firmware/README.md`, `SYSTEM_UPDATE.md` | ESP-NN's SIMD kernels are linked in (`esp_nn_conv_s8_esp32s3`, `esp_nn_conv_s8_1x1`, `esp_nn_conv_s8_3x3_opt`). The FPU **is** used (`madd.s` in the disassembly) — an earlier check that appeared to show software float was run against the wrong compiler binary. The inference at 101.8 ms is 5 % of the 2 s window and acceptable for a triggered monitor, but the arena is still in PSRAM. |

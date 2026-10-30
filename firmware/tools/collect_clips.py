@@ -9,12 +9,14 @@ training format (16 kHz, mono, 16-bit).
 
 Usage:
     python firmware/tools/collect_clips.py --out research/in_domain/session1
-    python firmware/tools/collect_clips.py --port COM32 --seconds 60 \
+    python firmware/tools/collect_clips.py --port COM30 --seconds 60 \
         --out research/in_domain/session1 --note "cot, baby crying"
     python firmware/tools/collect_clips.py --list
 
-The node prints `CRY-CAPTURE-LIVE` when it is ready; the tool waits for it
-so the banner never ends up inside the audio.
+The node prints `CRY-CAPTURE-LIVE` when it is ready, but the tool does not
+depend on seeing it: a USB CDC port can enumerate after the sketch has
+already printed its banner, and every record carries its own magic, so the
+stream resynchronises on its own.
 """
 
 from __future__ import annotations
@@ -27,16 +29,73 @@ import time
 from pathlib import Path
 
 MAGIC = b"CRY1"
-HEADER = struct.Struct("<4sHHI")
+HEADER = struct.Struct("<4sHHIH")
 SAMPLE_RATE = 16000
+
+
+def crc16(data: bytes) -> int:
+    crc = 0xFFFF
+    for byte in data:
+        crc ^= byte << 8
+        for _ in range(8):
+            crc = ((crc << 1) ^ 0x1021) & 0xFFFF if crc & 0x8000 else (crc << 1) & 0xFFFF
+    return crc
 
 ESP32_VID_PIDS = {
     (0x1A86, 0x55D3): "CH343",
     (0x1A86, 0x7523): "CH340",
     (0x10C4, 0xEA60): "CP210x",
     (0x0403, 0x6001): "FTDI",
-    (0x303A, 0x1001): "Espressif native USB",
+    (0x303A, 0x1001): "Espressif native USB (the C3 SuperMini's own USB)",
 }
+
+
+class RecordParser:
+    """Pulls capture records out of the byte stream.
+
+    The stream is the sketch's binary records, possibly preceded by its text
+    banner.  Each record carries its own magic and its own length, so the
+    parser resynchronises after the banner and after a lost byte.
+    """
+
+    def __init__(self) -> None:
+        self.buf = bytearray()
+        self.bad_crc = 0
+
+    def feed(self, data: bytes) -> tuple[list[tuple[int, int, int, bytes]], str]:
+        """Return the complete records and any text that was skipped."""
+        self.buf += data
+        records: list[tuple[int, int, int, bytes]] = []
+        text = ""
+        while True:
+            start = self.buf.find(MAGIC)
+            if start < 0:
+                # Keep the last 3 bytes: a magic may straddle two reads.
+                if len(self.buf) > 3:
+                    text += self.buf[:-3].decode("utf-8", "replace")
+                    del self.buf[:-3]
+                break
+            if start:
+                text += self.buf[:start].decode("utf-8", "replace")
+                del self.buf[:start]
+            if len(self.buf) < HEADER.size:
+                break
+            header = bytes(self.buf[:HEADER.size])
+            magic, seq, nsamples, rms_milli, pcrc = HEADER.unpack(header)
+            if magic != MAGIC or nsamples == 0 or nsamples > 4096:
+                del self.buf[:1]
+                continue
+            need = HEADER.size + nsamples * 2
+            if len(self.buf) < need:
+                break
+            payload = bytes(self.buf[HEADER.size:need])
+            del self.buf[:need]
+            # The checksum covers the first 12 header bytes and the payload.
+            if crc16(header[:12] + payload) != pcrc:
+                self.bad_crc += 1
+                continue
+            records.append((seq, nsamples, rms_milli, payload))
+        return records, text
 
 
 def find_port() -> str | None:
@@ -44,7 +103,8 @@ def find_port() -> str | None:
 
     for p in list_ports.comports():
         if (p.vid, p.pid) in ESP32_VID_PIDS:
-            print(f"  found {p.device}: {p.description} ({ESP32_VID_PIDS[(p.vid, p.pid)]})")
+            print(f"  found {p.device}: {p.description} "
+                  f"({ESP32_VID_PIDS[(p.vid, p.pid)]})")
             return p.device
     return None
 
@@ -113,7 +173,7 @@ def main() -> int:
     ser.dtr = False
     ser.rts = False
 
-    buf = bytearray()
+    parser = RecordParser()
     total_samples = 0
     total_bytes = 0
     clip_index = 0
@@ -122,7 +182,7 @@ def main() -> int:
     clip_target = int(args.clip_seconds * SAMPLE_RATE)
     records = 0
     started = time.time()
-    ready = False
+    live = False
 
     with wav_path.open("wb") as wav, csv_path.open("w", newline="") as csvf:
         wav.write(write_wav_header(wav, 0))
@@ -133,69 +193,38 @@ def main() -> int:
             while True:
                 chunk = ser.read(4096)
                 if chunk:
-                    buf += chunk
-
-                # The banner is plain text; wait for the ready marker so it
-                # never lands inside the audio.
-                if not ready:
-                    if b"CRY-CAPTURE-LIVE" in buf:
-                        ready = True
-                        buf = bytearray()
+                    new_records, text = parser.feed(chunk)
+                    if "CRY-CAPTURE-LIVE" in text and not live:
+                        live = True
                         print("node is live")
-                    elif b"FATAL" in buf:
-                        print("the node reported a fatal error:\n"
-                              + buf.decode("utf-8", "replace"), file=sys.stderr)
+                    if "FATAL" in text and not live:
+                        print("the node reported a fatal error:\n" + text,
+                              file=sys.stderr)
                         return 1
-                    else:
-                        if len(buf) > 4096:
-                            buf = buf[-64:]
-                        continue
 
-                # Pull records out of the buffer.
-                while True:
-                    start = buf.find(MAGIC)
-                    if start < 0:
-                        # Keep the last 3 bytes: a magic may straddle two
-                        # reads.
-                        if len(buf) > 3:
-                            del buf[:-3]
-                        break
-                    if start:
-                        del buf[:start]
-                    if len(buf) < HEADER.size:
-                        break
-                    magic, seq, nsamples, rms_milli = HEADER.unpack(buf[:HEADER.size])
-                    if magic != MAGIC or nsamples == 0 or nsamples > 4096:
-                        del buf[:1]
-                        continue
-                    need = HEADER.size + nsamples * 2
-                    if len(buf) < need:
-                        break
-                    payload = bytes(buf[HEADER.size:need])
-                    del buf[:need]
+                    for seq, nsamples, rms_milli, payload in new_records:
+                        wav.write(payload)
+                        total_bytes += len(payload)
+                        total_samples += nsamples
+                        records += 1
+                        writer.writerow([seq, f"{total_samples / SAMPLE_RATE:.3f}",
+                                         f"{rms_milli / 1000.0:.5f}", rms_milli])
 
-                    wav.write(payload)
-                    total_bytes += len(payload)
-                    total_samples += nsamples
-                    records += 1
-                    writer.writerow([seq, f"{total_samples / SAMPLE_RATE:.3f}",
-                                     f"{rms_milli / 1000.0:.5f}", rms_milli])
+                        clip_buf += payload
+                        clip_samples += nsamples
+                        while clip_samples >= clip_target:
+                            take = clip_target * 2
+                            chunk_bytes = bytes(clip_buf[:take])
+                            del clip_buf[:take]
+                            clip_samples -= clip_target
+                            clip_path = clips_dir / f"clip_{clip_index:04d}.wav"
+                            with clip_path.open("wb") as cf:
+                                cf.write(write_wav_header(cf, 0))
+                                cf.write(chunk_bytes)
+                            patch_wav_size(clip_path)
+                            clip_index += 1
 
-                    clip_buf += payload
-                    clip_samples += nsamples
-                    while clip_samples >= clip_target:
-                        take = clip_target * 2
-                        chunk_bytes = bytes(clip_buf[:take])
-                        del clip_buf[:take]
-                        clip_samples -= clip_target
-                        clip_path = clips_dir / f"clip_{clip_index:04d}.wav"
-                        with clip_path.open("wb") as cf:
-                            cf.write(write_wav_header(cf, 0))
-                            cf.write(chunk_bytes)
-                        patch_wav_size(clip_path)
-                        clip_index += 1
-
-                    if records % 50 == 0:
+                    if records and records % 50 == 0:
                         wav.flush()
                         print(f"  {total_samples / SAMPLE_RATE:7.1f} s "
                               f"({total_bytes / 1024:.0f} KiB, {clip_index} clips)")
@@ -224,6 +253,9 @@ def main() -> int:
     print(f"wrote {csv_path} ({records} records)")
     print(f"wrote {clips_dir} ({clip_index} clips of {args.clip_seconds} s)")
     print(f"wrote {meta_path}")
+    if parser.bad_crc:
+        print(f"\n{parser.bad_crc} record(s) failed their CRC and were dropped. "
+              f"The audio around them is still good.")
     return 0
 
 
