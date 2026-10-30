@@ -232,6 +232,30 @@ PC sends can corrupt the recording.
 
 ---
 
+## Bringing the microphone up
+
+`node_diag/` is a bring-up tool, not part of the running system. It reads
+the I2S stream in **stereo** — both slots, 32 bits each — and prints what
+is actually on the wire, then scans every exposed GPIO to find where the
+microphone's data really is.
+
+```bash
+python firmware/tools/install_sketches.py
+# upload node_diag, then read the console at 115200
+```
+
+The INMP441 puts its 24-bit sample in the **left** slot of a 64-bit I2S
+frame and leaves the **right** slot silent, so a healthy reading is a real
+DC bias and a noise floor on the left and exactly zero on the right. The
+diagnostic prints that comparison and ends with a verdict.
+
+It matters that the reading is **repeatable**. The peripheral's start-up
+transient looks like a signal for the first buffer or two, so the tool
+measures the original configuration a second time at the end and says
+whether the two agree.
+
+---
+
 ## Layout
 
 ```
@@ -240,6 +264,8 @@ firmware/node/
 │   └── node_crynet.ino    the node firmware
 ├── node_capture/
 │   └── node_capture.ino   the PC data collector
+├── node_diag/
+│   └── node_diag.ino      the microphone bring-up diagnostic
 └── README.md
 ```
 

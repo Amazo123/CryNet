@@ -23,5 +23,6 @@
   },
   "files.associations": {
     "*.ino": "cpp"
-  }
+  },
+  "cmake.sourceDirectory": "C:/Users/HP/.t3/projects/fp-2/firmware/hub_infer"
 }
