@@ -230,7 +230,7 @@ The user ran `notebooks/crynet_training.ipynb` on Kaggle (GPU T4) and the artifa
 Logs: `research/real_fast.log`, `research/stub_run.log`.
 
 ### Git state and remotes
-Local branch `main`, tracking `crynet/main`. Latest commit `e7be48a` = checkpoint 1 (all of it now committed — nothing uncommitted).
+Local branch `main`, tracking `crynet/main`. Latest commit `9caa2a3` = **Stage 2b, the node firmware** (all of it committed — nothing uncommitted).
 
 | Remote | Points at | Purpose |
 |---|---|---|
