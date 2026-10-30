@@ -145,6 +145,10 @@ fragments. Requests from the hub are 12 bytes:
 10  u16 CRC-16/CCITT-FALSE
 ```
 
+The request's CRC covers its **first 10 bytes**; a frame's own CRC covers
+its header *and* its payload. A request for a node id of `0xFF` is for
+every node.
+
 The hub's radio side is Stage 2c.
 
 ### Checking it without the hub

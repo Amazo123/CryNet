@@ -163,11 +163,21 @@ static size_t build_frame(uint8_t type, uint16_t seq, uint16_t frag,
 /* Exact mean over the valid part of the live window.  The sum is an
  * integer: a float accumulator loses a few counts on 32000 samples and
  * the residual DC is what the front end's standardisation then amplifies
- * (this is exactly the bug the hub's on-device probes caught). */
+ * (this is exactly the bug the hub's on-device probes caught).
+ *
+ * The valid region is the newest `valid` samples, so it is walked
+ * backwards from the write cursor.  That matters after a burst: the live
+ * window is dropped and refilled, and until it is full again the newest
+ * samples are not at the start of the array. */
 static int32_t window_mean(uint32_t valid) {
     int64_t sum = 0;
-    for (uint32_t i = 0; i < valid; i++) {
-        sum += (int64_t)g_window[i];
+    uint32_t idx = g_write;
+    for (uint32_t k = 0; k < valid; k++) {
+        if (idx == 0) {
+            idx = WINDOW_SAMPLES;
+        }
+        idx--;
+        sum += (int64_t)g_window[idx];
     }
     return (int32_t)(sum / (int64_t)valid);
 }
@@ -364,8 +374,9 @@ static void print_status(void) {
     Serial.printf("node %u  mac %02X:%02X:%02X:%02X:%02X:%02X\n", g_node_id,
                   WiFi.macAddress()[0], WiFi.macAddress()[1], WiFi.macAddress()[2],
                   WiFi.macAddress()[3], WiFi.macAddress()[4], WiFi.macAddress()[5]);
-    Serial.printf("window %u/%u samples   frozen=%u seq=%u\n", g_filled,
-                  (unsigned)WINDOW_SAMPLES, g_frozen_valid ? 1 : 0, g_burst_seq);
+    Serial.printf("window %u/%u samples   frozen=%u seq=%u\n", (unsigned)g_filled,
+                  (unsigned)WINDOW_SAMPLES, g_frozen_valid ? 1 : 0,
+                  (unsigned)g_burst_seq);
     Serial.printf("rms %.4f  mean %d  fragments=%u\n", g_rms, (int)g_mean,
                   (unsigned)FRAG_COUNT);
     Serial.printf("heap %u bytes\n", (unsigned)ESP.getFreeHeap());
@@ -454,10 +465,10 @@ void setup() {
 void loop() {
     i2s_pump();
 
-    /* The window is only worth measuring once it is full: the hub's front
-     * end removes the mean of the whole two seconds, and a partial window
-     * would not match it. */
-    if (g_filled == WINDOW_SAMPLES) {
+    /* The window is only worth measuring once it holds a full 100 ms: the
+     * hub's front end removes the mean of the whole two seconds, and a
+     * partial window would not match it. */
+    if (g_filled >= RMS_SAMPLES) {
         uint32_t now = millis();
         if (now - g_last_tick >= TELEMETRY_MS) {
             g_last_tick = now;
@@ -472,7 +483,8 @@ void loop() {
                               g_rms >= EVENT_RMS ? "EVENT" : "");
             }
 
-            if (g_rms >= EVENT_RMS && !g_frozen_valid) {
+            if (g_rms >= EVENT_RMS && !g_frozen_valid &&
+                g_filled == WINDOW_SAMPLES) {
                 freeze_window();
                 if (!g_dump_active) {
                     Serial.printf("froze window, burst seq %u\n", g_burst_seq);
@@ -487,26 +499,35 @@ void loop() {
         g_request_pending = false;
         g_requests++;
         bool from_frozen = (g_request_seq == g_burst_seq) && g_frozen_valid;
-        uint16_t first = g_request_first;
-        uint16_t count = g_request_count;
-        if (count == 0 || count > FRAG_COUNT) {
-            count = FRAG_COUNT;
-        }
-        if (first >= FRAG_COUNT) {
-            first = 0;
-        }
-        for (uint16_t i = 0; i < count; i++) {
-            uint16_t index = (uint16_t)(first + i);
-            if (index >= FRAG_COUNT) {
-                break;
+        if (!from_frozen && g_filled < WINDOW_SAMPLES) {
+            /* The live window is still refilling after the last upload,
+             * so its chronological order is not known.  Wait. */
+            from_frozen = false;
+            if (!g_dump_active) {
+                Serial.println("request ignored: the live window is not complete");
             }
-            send_fragment(index, from_frozen, false);
+        } else {
+            uint16_t first = g_request_first;
+            uint16_t count = g_request_count;
+            if (count == 0 || count > FRAG_COUNT) {
+                count = FRAG_COUNT;
+            }
+            if (first >= FRAG_COUNT) {
+                first = 0;
+            }
+            for (uint16_t i = 0; i < count; i++) {
+                uint16_t index = (uint16_t)(first + i);
+                if (index >= FRAG_COUNT) {
+                    break;
+                }
+                send_fragment(index, from_frozen, false);
+            }
         }
         /* The fragments took time to send and the microphone kept running
          * into a DMA buffer that was not being read, so the live window
-         * now has holes in it.  Drop it and refill. */
+         * now has holes in it.  Drop it and refill; the write cursor
+         * stays where it is so the valid region keeps moving forward. */
         g_filled = 0;
-        g_write = 0;
         g_frozen_valid = false;
     }
 
