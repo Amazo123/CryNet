@@ -22,6 +22,16 @@ CONFIG_SPIRAM_TRY_ALLOCATE_WIFI_LWIP=y
 CONFIG_PARTITION_TABLE_CUSTOM=y
 CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions_16mb.csv"
 
+# Optimisation — ESP-IDF defaults to -Og (debug) and the front end, the
+# FFT and the convnet are all compute-bound. -O2 with assertions still on.
+CONFIG_COMPILER_OPTIMIZATION_PERF=y
+CONFIG_COMPILER_OPTIMIZATION_ASSERTIONS_ENABLE=y
+
+# CPU clock — the ESP-IDF default for the S3 is 160 MHz here, but the
+# DevKitC-1 runs the LX7 at 240 MHz and every stage of this firmware is
+# compute-bound (the front end, the FFT and the convnet).
+CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ_240=y
+
 # FreeRTOS — 2 timers extra, larger task stack for the inference task
 CONFIG_FREERTOS_HZ=1000
 

@@ -24,24 +24,27 @@
 3. `git status` + `git log --oneline -5` to see what is committed vs. uncommitted.
 4. Continue from **§4 Next action**.
 
-### 0.1 Live background work (as of 2026-10-30, ~03:00)
+### 0.1 Live background work (as of 2026-10-30, ~06:00)
 
 | What | Where | How to check |
 |---|---|---|
-| **Nothing is running.** The ESP32-S3 firmware **compiles and links** — see §3. | — | `tail -60 research/toolchain/pio_build.log` for the last build |
-| Rebuild from scratch | `cd firmware/hub_infer && python -m platformio run` | ~7 min from clean; ~1 min incrementally |
+| **Nothing is running.** The ESP32-S3 firmware **compiles, flashes and passes its on-device verification** — see §3. | — | `tail -60 research/toolchain/pio_build.log` for the last build |
+| Rebuild from scratch | `cd firmware/hub_infer && python -m platformio run` | ~8 min from clean; ~1 min incrementally |
+| Flash + read the log | `python firmware/tools/flash_hub.py` | finds the board, writes it, prints the report |
 | Re-fetch the vendored deps | `bash firmware/tools/fetch_deps.sh` | clones the pinned commits and re-applies `patch_deps.py` |
 
 **A background build survives `/compact` and even a lost session** — it writes to the log file on disk, not to the chat. Compaction only rewrites conversation history.
 
 **What is NOT yet done — do not claim otherwise:**
-- The firmware has **never run on hardware**. The user has not connected the S3, so there is no serial log, no probe comparison and no latency measurement from the chip.
+- Stage 2a is complete *for the inference core*: the front end and the model are verified against the host reference on real hardware. Nothing else exists yet — no radio, no display, no BLE.
 - Stage 2b (the ESP32-C3 node firmware) has not been started.
+- The inference is 101.8 ms per window. That is 5 % of the 2 s window and fine for a triggered monitor, but the tensor arena is still in PSRAM; moving it into internal SRAM is the obvious next optimisation.
+- **No in-domain data yet** — the model has never heard the user's INMP441, room or gain.
 
 **Next concrete steps:**
-1. **The user flashes the S3** and pastes the serial log — the app prints per-probe feature deltas against the Python reference, `P(cry)`, front-end and inference latency, and tensor-arena usage.
-2. Compare those numbers with the host reference and fix any drift.
-3. Only then move to Stage 2b (node firmware).
+1. **Stage 2b — the ESP32-C3 node firmware as an Arduino `.ino`** (I2S INMP441 capture at 16 kHz, DC-offset removal, 100 ms RMS telemetry, on-demand 64 KB burst with CRC). The Arduino IDE 2.x and the ESP32 core 3.3.12 are already installed, and `ESP_I2S`, `ESP_NOW` and `BLE` are all in that core.
+2. Alongside it, an **Arduino sketch that streams INMP441 audio to the PC**, so ~50 real clips can be collected in the user's room and the model can be fine-tuned on them. This is the single biggest remaining accuracy win and needs no firmware work at all.
+3. Then Stage 2c (the hub's radio, display and BLE) and Stage 2d (the wearable).
 
 **Tools built so far (all runnable on the host):**
 - `firmware/tools/check_artifact_drift.py` — verifies `research/out/` against `deploy_config.json` and the staged firmware copies. Currently **PASS**.
@@ -131,6 +134,48 @@ The user ran `notebooks/crynet_training.ipynb` on Kaggle (GPU T4) and the artifa
 
   ΔAUC **−0.001373**; max |Δp| 0.182; mean |Δp| 0.0029; **decision agreement 99.956 %**. The independent float AUC (0.999299) corroborates the Kaggle figure (0.999419) from a different set of windows. Report: `research/out/verify_int8_parity.json`.
 - **Notebook fixed:** the parity cell now draws a seeded random permutation subset and warns loudly if a slice is single-class. Notebook regenerated and `nbformat.validate()`-passed.
+
+- **On-device verification — CLOSED (2026-10-30).** The Stage 2a firmware runs on the
+  user's ESP32-S3-DevKitC-1 (COM32, CH343 USB-serial) and **all four probes pass**:
+  the device's quantised features match the host reference exactly for silence, DC
+  bias and the two-tone signal, and to within 1 LSB on 3 of 5,184 values for the
+  noise probe. `RESULT: PASS — 4 probes, front end and model agree with the host`.
+
+  | | value |
+  |---|---|
+  | PSRAM | 8,388,608 bytes, present |
+  | flash | 16,777,216 bytes |
+  | model | 137,384 bytes int8 |
+  | front-end working set | 5,380 bytes, internal SRAM |
+  | tensor arena | 262,144 reserved, **108,328 used** |
+  | front end | **41.7 ms** per 2 s window (was 135 ms before optimisation) |
+  | inference | **101.8 ms** per window (ESP-NN SIMD kernels linked in) |
+  | CPU | 240 MHz, `-O2` |
+
+  Four real bugs were found *only* by running it on the chip:
+  1. **The DC-removal mean was accumulated in float32.** Summing 32,000 samples of
+     18,000 in float32 gives 575,726,660 instead of 576,000,000, so the mean came
+     out 8.5 counts low and 8.5 counts of DC survived. On the DC-offset probe that
+     leaves a constant residual which the per-window standardisation blows up into
+     a completely different feature vector — the probe failed with a max delta of
+     131. The sum is now accumulated in `int32`, which holds it exactly.
+  2. **The build was at `-Og`.** `build_flags = -DCOMPILER_OPTIMIZATION_PERF` is an
+     *Arduino* macro that means nothing to PlatformIO's ESP-IDF builder, so
+     ESP-IDF's debug default applied. The optimisation level is now set the
+     ESP-IDF way, `CONFIG_COMPILER_OPTIMIZATION_PERF=y`.
+  3. **The CPU ran at 160 MHz**, not 240. `CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ_240=y`.
+  4. **The front end kept a 128 KB padded copy of the signal in PSRAM.** PSRAM on
+     the S3 is uncached external memory, and the FFT and the Mel filterbank stream
+     through the working set 81 times per window. The padded copy is gone — each
+     frame is now built straight from the caller's int16 PCM — and the working set
+     is 5.4 KB in internal SRAM. Front end 135 ms → 41.7 ms.
+
+  A fifth trap is not a firmware bug but a flashing one: **a combined image built
+  with QIO flash mode makes the chip watchdog-reset in a loop** (`rst:0x7
+  TG0WDT_SYS_RST` repeating, no application output). The ROM cannot read this
+  board's flash in QIO before the bootloader has configured its own timing. The
+  combined image must use **DIO**; the bootloader switches the chip to QIO by
+  itself afterwards. See `firmware/README.md`.
 
 - **Firmware build — CLOSED (2026-10-30).** `firmware/hub_infer` now **compiles and links** for `esp32s3`:
   - toolchain: PlatformIO 6.2.0, `platform-espressif32` 8.0.0, **ESP-IDF 6.1.0**, `toolchain-xtensa-esp-elf` 14.2.0 (GCC 14.2);
@@ -250,6 +295,7 @@ The fix that worked: delete `packages/framework-espidf`, move the fully extracte
 
 | Date | Change | Files touched | Notes |
 |---|---|---|---|
+| 2026-10-30 | **Stage 2a closed: the firmware runs on the real chip and all four probes pass.** The user's ESP32-S3-DevKitC-1 (COM32) now reports `RESULT: PASS — 4 probes, front end and model agree with the host`, with the device's quantised features matching the host reference exactly on three probes and to within 1 LSB on three values of the fourth. Measured on the chip: PSRAM 8 MB present, flash 16 MB, front-end working set 5,380 B in internal SRAM, tensor arena 262,144 B reserved / **108,328 B used**, front end **41.7 ms**, inference **101.8 ms**. Five defects were only findable by running it: the **DC-removal mean accumulated in float32** (32,000 samples of 18,000 summed to 575,726,660 instead of 576,000,000, so 8.5 counts of DC survived and the per-window standardisation turned them into a completely different feature vector — the DC-offset probe failed with a max delta of 131; the sum is now an exact `int32`); the build was at **`-Og`** because `-DCOMPILER_OPTIMIZATION_PERF` is an Arduino macro PlatformIO's ESP-IDF builder ignores (`CONFIG_COMPILER_OPTIMIZATION_PERF=y` now); the CPU ran at **160 MHz** (`CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ_240=y`); the front end kept a **128 KB padded copy of the signal in PSRAM**, which is uncached external memory on the S3 and was streamed through 81 times per window (the copy is gone — each frame is built straight from the caller's int16 PCM — and the working set is 5.4 KB in internal SRAM, 135 ms → 41.7 ms); and a **combined flash image built with QIO flash mode makes the chip watchdog-reset in a loop** because the ROM cannot read this board's flash in QIO before the bootloader configures its own timing (the combined image must use DIO; the bootloader switches to QIO itself afterwards). Added `firmware/tools/flash_hub.py` (finds the board, flashes it, prints the log — nothing to download), `firmware/tools/capture_serial.py` and `firmware/README.md` documenting the build and the three offline flash routes. | `firmware/hub_infer/components/crynet_dsp/*`, `firmware/hub_infer/sdkconfig.defaults`, `firmware/hub_infer/platformio.ini`, `firmware/tools/flash_hub.py`, `firmware/tools/capture_serial.py`, `firmware/README.md`, `SYSTEM_UPDATE.md` | ESP-NN's SIMD kernels are linked in (`esp_nn_conv_s8_esp32s3`, `esp_nn_conv_s8_1x1`, `esp_nn_conv_s8_3x3_opt`). The FPU **is** used (`madd.s` in the disassembly) — an earlier check that appeared to show software float was run against the wrong compiler binary. The inference at 101.8 ms is 5 % of the 2 s window and acceptable for a triggered monitor, but the arena is still in PSRAM. |
 | 2026-10-30 | **The Stage 2a firmware builds.** `firmware/hub_infer` compiles and links for the ESP32-S3: `firmware.bin` 468,800 B, RAM 52.1 %, flash 22.3 %, ESP-NN enabled, octal PSRAM at 80 MHz. Getting there meant fixing six separate things: (1) PlatformIO 6.2 installs a URL-pinned `framework-espidf` as if it were an **npm package**, so it read the wrong `package.json` and left `packages/framework-espidf` holding only a test fixture — CMake then failed with *"include could not find requested file: tools/cmake/project.cmake"*; fixed by installing the platform's own framework (**ESP-IDF 6.1.0**) by hand and dropping the `platform_packages` pin; (2) the top-level `CMakeLists.txt` **assigned** `EXTRA_COMPONENT_DIRS`, shadowing the `-DEXTRA_COMPONENT_DIRS:PATH=<src>` that PlatformIO passes for the application component, and pointed at a component instead of a directory that contains components; (3) the vendored components sat **outside** the project directory, and PlatformIO re-compiles IDF components with SCons using the *source basename* for object names — the TFLite Micro port has twelve basename collisions, so the build died with *"Multiple ways to build the same target were specified for …/circular_buffer.cc.o"*; moving the vendored components into `firmware/hub_infer/components/` makes the paths relative and distinct; (4) the port was wired to the registry copy of `esp-nn` while `esp-nn` was also vendored locally — a duplicate-component error — so `firmware/tools/patch_deps.py` now drops the registry dependency and adds `esp-nn` to the port's own requirements, keeping the build offline and pinned; (5) IDF 6.x moved `esp_flash.h` into the `spi_flash` component, changed `esp_flash_get_size()` to take a chip handle and an out-parameter, and requires an explicit capability argument on `heap_caps_calloc`; (6) the model copy is now aligned to 16 bytes by hand, because `heap_caps_malloc` only guarantees 4-byte alignment and the FlatBuffer verifier wants 16. | `firmware/hub_infer/*`, `firmware/tools/patch_deps.py`, `firmware/tools/fetch_deps.sh`, `.gitignore` | **`CONFIG_DDSP` no longer exists in IDF 6.x** and was dropped from `sdkconfig.defaults`. **The firmware has still never run on hardware** — there is no serial log yet, so the FlatBuffer alignment, the arena fit, the probe feature agreement and the latency are all still unverified. |
 | 2026-10-30 | **The build finally configures — four real bugs found and fixed.** Diagnosis: PlatformIO 6.2 installs a URL-pinned `framework-espidf` by treating the archive as an npm package, so it read the wrong `package.json` out of the tree and left `packages/framework-espidf` holding only a test-fixture package — hence CMake's *"include could not find requested file: tools/cmake/project.cmake"*. Fixed by installing the platform's own framework by hand (**ESP-IDF 6.1.0**, `platform-espressif32` 8.0.0) and dropping the `platform_packages` URL pin. Also fixed: (1) the top-level `CMakeLists.txt` **assigned** `EXTRA_COMPONENT_DIRS`, shadowing the `-DEXTRA_COMPONENT_DIRS:PATH=<src>` that PlatformIO passes for the application component — it now *appends*, and points at `third_party/` (a directory that **contains** components) rather than at the component itself; (2) the vendored TFLM port was wired to the registry copy of `esp-nn` while `esp-nn` was also vendored locally — a duplicate-component error; `firmware/tools/patch_deps.py` now removes the registry dependency and adds `esp-nn` to the port's own requirements, keeping the build **offline and pinned**; (3) IDF 6.x moved `esp_flash.h` into the `spi_flash` component and changed `esp_flash_get_size()` to take a chip handle and an out-parameter; (4) `CONFIG_DDSP` no longer exists in IDF 6.x and was dropped from `sdkconfig.defaults`. | `firmware/hub_infer/CMakeLists.txt`, `firmware/hub_infer/platformio.ini`, `firmware/hub_infer/sdkconfig.defaults`, `firmware/hub_infer/src/main.c`, `firmware/hub_infer/src/CMakeLists.txt`, `firmware/tools/patch_deps.py`, `firmware/tools/fetch_deps.sh` | IDF 6.1 gives every component `freertos esp_hw_support heap log soc hal esp_rom esp_common esp_system` automatically, so the earlier `esp_heap_caps.h` ownership worry is moot. ESP-NN is worth keeping: on an S3 it is the difference between ~40 ms and ~2.3 s per convnet invoke. **The firmware has still never been compiled or run.** |---|
 | 2026-10-29 | **Toolchain recovery documented.** The first ESP-IDF 5.3.2 install was killed mid-unpack by the background task's 30-minute limit, leaving a partial `framework-espidf` tree (no `tools/`, `main/`, `examples/`, `version.txt`). The partial tree was deleted and the build restarted; the 933 MB archive was already cached in `~/.platformio/.cache/downloads/`, so **no re-download was needed**. §4.3 now records the pin and a 3-step idempotent recovery. | `SYSTEM_UPDATE.md` | Restarted as background process `blewy4qwx` with a 2-hour limit. Still **NOT yet compiled**. |

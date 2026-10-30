@@ -9,9 +9,9 @@
  * reference implementation in research/out/dsp_crynet.c. This component
  * differs from that reference in three ways that matter on the target:
  *
- *   - no 130 KB file-scope static buffers; the working memory is allocated
- *     once, from PSRAM when the board has it, so it does not eat the hub's
- *     512 KB of internal SRAM;
+ *   - no 130 KB file-scope static buffers and no padded copy of the
+ *     signal; the working memory is 5.4 KB, allocated once in internal
+ *     SRAM, so it costs the hub's 512 KB of internal SRAM almost nothing;
  *   - the working set is owned by a context, so the inference task and the
  *     radio task cannot corrupt each other's state;
  *   - the decision rule (silence gate + calibrated threshold) lives next to
@@ -47,17 +47,19 @@ extern "C" {
 
 /* Working memory for the front end. Opaque; call crynet_dsp_init first. */
 typedef struct {
-    float *window;     /* padded, mean-removed input   (32768 floats) */
-    float *power;      /* 257 power-spectrum bins                   */
-    float *mel;        /* 64 mel bands                              */
-    void  *fft;        /* 512 complex bins                          */
-    bool   from_psram; /* true if the buffers live in PSRAM          */
-    size_t bytes;      /* total bytes allocated                     */
+    void  *base;       /* the single allocation the rest point into   */
+    float *power;      /* 257 power-spectrum bins                    */
+    float *mel;        /* 64 mel bands                               */
+    void  *fft;        /* 512 complex bins                           */
+    bool   from_psram; /* true if the buffers live in PSRAM           */
+    size_t bytes;      /* total bytes allocated                      */
 } crynet_dsp_ctx_t;
 
 /*
- * Allocate the working buffers. Prefers PSRAM (the S3 has 8 MB of it) and
- * falls back to internal SRAM. Returns false if allocation failed.
+ * Allocate the working buffers. Prefers internal SRAM, because the FFT
+ * and the Mel filterbank stream through them 81 times per window and
+ * PSRAM is uncached external memory on the ESP32-S3. Falls back to PSRAM
+ * if internal SRAM is unavailable. Returns false if allocation failed.
  */
 bool crynet_dsp_init(crynet_dsp_ctx_t *ctx);
 

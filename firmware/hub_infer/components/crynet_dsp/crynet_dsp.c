@@ -102,31 +102,36 @@ bool crynet_dsp_init(crynet_dsp_ctx_t *ctx)
     }
     memset(ctx, 0, sizeof(*ctx));
 
-    const size_t win_floats = CRYNET_N_SAMPLES + CRYNET_CENTER_PAD + CRYNET_TAIL_PAD;
-    const size_t total = win_floats * sizeof(float)      /* window */
-                         + (CRYNET_N_FFT / 2 + 1) * sizeof(float) /* power */
-                         + CRYNET_N_MELS * sizeof(float)  /* mel    */
-                         + CRYNET_N_FFT * sizeof(cpx_t);  /* fft    */
-
     /*
-     * PSRAM first: the hub's internal SRAM is 512 KB and the radio, TFT
-     * and BLE stacks all want it. The front end's 130 KB window buffer is
-     * the single largest allocation in the firmware, so it belongs in the
-     * 8 MB of PSRAM the S3-DevKitC-1 N16R8 has.
+     * The working set is only the spectrum scratch now: the padded copy of
+     * the signal is not materialised any more (each frame is built
+     * straight from the caller's int16 PCM), so what is left is 5.4 KB.
+     *
+     * It lives in internal SRAM rather than PSRAM on purpose. PSRAM on the
+     * ESP32-S3 is external memory and is not cached by default, so every
+     * access is a SPI round trip; the FFT's butterfly passes and the Mel
+     * filterbank's bin loop both stream through these buffers 81 times per
+     * window, and leaving them in PSRAM made the front end cost 135 ms
+     * instead of a few milliseconds. Internal SRAM is plentiful once the
+     * 128 KB padded-signal buffer is gone.
      */
-    uint8_t *mem = heap_caps_malloc(total, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
-    ctx->from_psram = (mem != NULL);
+    const size_t total = (CRYNET_N_FFT / 2 + 1) * sizeof(float) /* power */
+                         + CRYNET_N_MELS * sizeof(float)         /* mel    */
+                         + CRYNET_N_FFT * sizeof(cpx_t);         /* fft    */
+
+    uint8_t *mem = heap_caps_malloc(total, MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
+    ctx->from_psram = false;
     if (mem == NULL) {
         mem = heap_caps_malloc(total, MALLOC_CAP_8BIT);
-        ctx->from_psram = false;
+        ctx->from_psram = true;
     }
     if (mem == NULL) {
         return false;
     }
 
     ctx->bytes = total;
-    ctx->window = (float *)mem;
-    ctx->power = ctx->window + win_floats;
+    ctx->base = mem;
+    ctx->power = (float *)mem;
     ctx->mel = ctx->power + (CRYNET_N_FFT / 2 + 1);
     ctx->fft = ctx->mel + CRYNET_N_MELS;
     return true;
@@ -134,13 +139,13 @@ bool crynet_dsp_init(crynet_dsp_ctx_t *ctx)
 
 void crynet_dsp_free(crynet_dsp_ctx_t *ctx)
 {
-    if (ctx == NULL || ctx->window == NULL) {
+    if (ctx == NULL || ctx->base == NULL) {
         return;
     }
     if (ctx->from_psram) {
-        heap_caps_free(ctx->window);
+        heap_caps_free(ctx->base);
     } else {
-        free(ctx->window);
+        free(ctx->base);
     }
     memset(ctx, 0, sizeof(*ctx));
 }
@@ -149,31 +154,48 @@ void crynet_dsp_features(const crynet_dsp_ctx_t *ctx,
                           const int16_t *pcm,
                           float *mel_out)
 {
-    const size_t win_floats = CRYNET_N_SAMPLES + CRYNET_CENTER_PAD + CRYNET_TAIL_PAD;
-    float *x = ctx->window;
     cpx_t *spec = (cpx_t *)ctx->fft;
     float *power = ctx->power;
     float *mel = ctx->mel;
 
     /* 1. DC removal + normalise to [-1, 1]. The INMP441 sits at roughly
-     *    +18000 counts, so this step is not optional. */
-    float mean = 0.0f;
+     *    +18000 counts, so this step is not optional.
+     *
+     *    The sum is accumulated in an integer on purpose. A float32
+     *    accumulator loses the low bits badly at this magnitude: summing
+     *    32,000 samples of 18000 in float32 gives 575,726,660 instead of
+     *    576,000,000, so the "mean" comes out 8.5 counts low and 8.5
+     *    counts of DC survive. That is invisible in a normal signal but
+     *    fatal for the DC-offset probe, where it leaves a constant
+     *    residual that the per-window standardisation then blows up into a
+     *    completely different feature vector. int32 holds the sum of
+     *    32,000 int16 samples exactly (at most 1,048,576,000), so the
+     *    mean is the correctly rounded value the host reference computes
+     *    — and integer adds are far cheaper than the double-precision
+     *    ones the ESP32-S3 has to emulate in software. */
+    int32_t sum = 0;
     for (int i = 0; i < CRYNET_N_SAMPLES; i++) {
-        mean += (float)pcm[i];
+        sum += (int32_t)pcm[i];
     }
-    mean /= (float)CRYNET_N_SAMPLES;
+    const float mean = (float)((double)sum / (double)CRYNET_N_SAMPLES);
 
-    memset(x, 0, win_floats * sizeof(float));
-    for (int i = 0; i < CRYNET_N_SAMPLES; i++) {
-        x[CRYNET_CENTER_PAD + i] = ((float)pcm[i] - mean) / 32768.0f;
-    }
-
-    /* 2. frames -> FFT -> power -> mel -> dB */
+    /* 2. frames -> FFT -> power -> mel -> dB
+     *
+     *    Each frame is built directly from the caller's PCM rather than
+     *    from a padded copy of the whole signal: the copy was 128 KB of
+     *    the working set and bought nothing. Frame f covers padded
+     *    samples [f * HOP, f * HOP + N_FFT), and padded sample p holds
+     *    PCM sample p - CENTER_PAD, with zeros outside the signal. */
     for (int fr = 0; fr < CRYNET_N_FRAMES; fr++) {
-        const float *w = x + fr * CRYNET_HOP;
+        const int start = fr * CRYNET_HOP - CRYNET_CENTER_PAD;
 
         for (int i = 0; i < CRYNET_N_FFT; i++) {
-            spec[i].re = w[i] * CRYNET_HANN[i];
+            const int s = start + i;
+            float v = 0.0f;
+            if (s >= 0 && s < CRYNET_N_SAMPLES) {
+                v = ((float)pcm[s] - mean) / 32768.0f;
+            }
+            spec[i].re = v * CRYNET_HANN[i];
             spec[i].im = 0.0f;
         }
         fft512(spec);
@@ -246,11 +268,13 @@ void crynet_dsp_quantise(const float *mel, int8_t *q)
 
 float crynet_dsp_rms(const int16_t *pcm)
 {
-    float mean = 0.0f;
+    /* Same double-precision accumulation as the front end — see the note
+     * in crynet_dsp_features(). */
+    int32_t sum = 0;
     for (int i = 0; i < CRYNET_N_SAMPLES; i++) {
-        mean += (float)pcm[i];
+        sum += (int32_t)pcm[i];
     }
-    mean /= (float)CRYNET_N_SAMPLES;
+    const float mean = (float)((double)sum / (double)CRYNET_N_SAMPLES);
 
     float acc = 0.0f;
     for (int i = 0; i < CRYNET_N_SAMPLES; i++) {
