@@ -135,6 +135,19 @@ void setup() {
             delay(1000);
         }
     }
+    /* The INMP441's first samples are garbage: measured on the real board,
+     * the first 100 ms record after begin() is a full-scale burst (its own
+     * RMS field reads 656 milli against the room's 6-11) and it decays over
+     * about half a second.  Discard 500 ms here so no clip ever contains
+     * the power-on transient; the slower DC drift that remains is removed
+     * by the per-window mean. */
+    static const uint32_t WARMUP_FRAMES = SAMPLE_RATE / 2;   /* 500 ms */
+    uint32_t warmed = 0;
+    while (warmed < WARMUP_FRAMES) {
+        size_t got = g_i2s.readBytes((char *)g_raw, sizeof(g_raw));
+        got -= got % 8;                 /* whole stereo frames only */
+        warmed += got / 8;
+    }
     Serial.println("CRY-CAPTURE-LIVE");
 }
 

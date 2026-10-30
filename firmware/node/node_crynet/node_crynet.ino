@@ -251,6 +251,20 @@ static bool i2s_start(void) {
                      I2S_SLOT_MODE_STEREO, I2S_STD_SLOT_BOTH)) {
         return false;
     }
+    /* The INMP441's first samples are garbage: measured on the real board,
+     * the first 100 ms window after begin() is a full-scale burst (the
+     * capture node's RMS field reads 656 milli against the room's 6-11)
+     * and it decays over about half a second.  Without this, every boot
+     * would freeze a garbage window the moment the burst crossed the EVENT
+     * level and hand the hub a spurious upload.  Discard 500 ms; the
+     * slower DC drift that remains is removed by the mean. */
+    static const uint32_t WARMUP_FRAMES = SAMPLE_RATE / 2;   /* 500 ms */
+    uint32_t warmed = 0;
+    while (warmed < WARMUP_FRAMES) {
+        size_t got = g_i2s.readBytes((char *)g_raw, sizeof(g_raw));
+        got -= got % 8;                 /* whole stereo frames only */
+        warmed += got / 8;
+    }
     return true;
 }
 
