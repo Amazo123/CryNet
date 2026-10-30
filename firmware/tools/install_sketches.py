@@ -65,8 +65,11 @@ def main() -> int:
         shutil.copytree(src, dst)
         print(f"installed {dst}")
 
-    print("\nIn the Arduino IDE: File > Open, pick the sketch, then select the "
-          "board\n(ESP32C3 Dev Module), the right COM port, and press Upload.")
+    print("\nIn the Arduino IDE: File > Open, pick the sketch, then set\n"
+          "  Tools > Board            WeAct Studio ESP32C3\n"
+          "  Tools > Port             the node's port (COM30)\n"
+          "  Tools > USB CDC On Boot  Enabled\n"
+          "and press Upload.")
     return 0
 
 
