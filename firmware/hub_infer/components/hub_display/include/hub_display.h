@@ -59,6 +59,7 @@ typedef struct {
     float    level;         /* that cot's last RMS */
     uint8_t  node_count;    /* how many cots the hub knows about */
     bool     ble_ready;     /* the Bluetooth server is advertising */
+    uint8_t  ble_clients;   /* caregiver devices connected and subscribed */
     uint32_t uptime_s;      /* how long the hub has been up */
     hub_display_node_t nodes[HUB_DISPLAY_MAX_NODES];
 } hub_display_state_t;

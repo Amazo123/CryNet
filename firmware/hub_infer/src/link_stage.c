@@ -644,6 +644,7 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
         memset(&ds, 0, sizeof ds);
         ds.node_count = HUB_DISPLAY_MAX_NODES;
         ds.ble_ready = ble_alert_is_running();
+        ds.ble_clients = (uint8_t)ble_alert_clients();
         ds.uptime_s = (uint32_t)((esp_timer_get_time() - s_boot_us) / 1000000);
         if (show != NULL) {
             ds.linked = true;

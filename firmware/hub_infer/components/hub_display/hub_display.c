@@ -67,7 +67,7 @@ static const char *TAG = "hub_display";
 #define C_SURFACE    DISPLAY_RGB(21, 32, 45)
 #define C_SURFACE_HI DISPLAY_RGB(29, 42, 57)
 /* The border is a UI component, so it has to clear 3:1 against the
- * card it sits on � the first choice (40,57,76) measured 1.40:1 and
+ * card it sits on — the first choice (40,57,76) measured 1.40:1 and
  * was effectively invisible. */
 #define C_BORDER     DISPLAY_RGB(88, 112, 136)
 #define C_TEXT       DISPLAY_RGB(228, 236, 245)
@@ -395,6 +395,15 @@ static void draw_pill(int x, int y, const char *label, bool good)
     fb_text(x + 10, y, label, col, 1);
 }
 
+/* The same, but with the colour chosen by the caller — the caregiver's
+ * device has three states, not two: attached, waiting to be attached,
+ * and the Bluetooth stack itself down. */
+static void draw_pill_col(int x, int y, const char *label, uint16_t col)
+{
+    fb_fill(x, y + 2, 6, 6, col);
+    fb_text(x + 10, y, label, col, 1);
+}
+
 static void draw_level_bar(int x, int y, int w, int h, float level, bool crying)
 {
     fb_fill(x, y, w, h, C_SURFACE_HI);
@@ -427,7 +436,14 @@ static void draw_dashboard(const hub_display_state_t *st)
     fb_text(12, 8, "CRYNET", C_ACCENT, 2);
     fb_text(90, 12, "S3 HUB", C_DIM, 1);
     draw_pill(196, 11, "RADIO", st->linked);
-    draw_pill(258, 11, "BLE", st->ble_ready);
+    /* The caregiver's device — the phone, or the wearable, which uses the
+     * same GATT service — is the other half of the system, so its state
+     * belongs on the panel: green when one is connected and subscribed,
+     * amber when the stack is up but nobody has attached yet, dim when
+     * Bluetooth itself is down. */
+    const uint16_t phone_col = (st->ble_clients > 0) ? C_GREEN
+                             : (st->ble_ready ? C_AMBER : C_DIM);
+    draw_pill_col(258, 11, "PHONE", phone_col);
     fb_fill(0, HEADER_H, FB_W, 2, C_ACCENT_DIM);
 
     /* ---- the banner: what the system is doing ---- */
@@ -459,6 +475,14 @@ static void draw_dashboard(const hub_display_state_t *st)
     }
     fb_text(BANNER_X + BANNER_W - 12 - fb_text_w(right, 1), BANNER_Y + 26,
             right, C_DIM, 1);
+
+    /* A cry that nobody is attached to hear goes nowhere, and the
+     * caregiver has to know that before they go looking for their
+     * phone. */
+    if (st->crying && st->ble_clients == 0) {
+        fb_text(BANNER_X + 16, BANNER_Y + 26, "ALERT NOT DELIVERED",
+                C_AMBER, 1);
+    }
 
     /* ---- a card for every cot ---- */
     const int count = st->node_count > HUB_DISPLAY_MAX_NODES
