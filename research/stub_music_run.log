@@ -1,0 +1,170 @@
+
+======================================================================
+== CELL 1
+======================================================================
+========================================================================
+CryNet — infant cry detection for ESP32-S3
+========================================================================
+  mode          : FAST (local smoke test)
+  signal        : 16000 Hz mono, 2.0 s window (32000 samples)
+  log-mel       : 81 frames x 64 bands, n_fft=512, hop=400
+  dB floor      : -80.0 dB   CMVN: True
+  cache / work  : C:\Users\HP\.t3\projects\fp-2\research\_stub_cache  |  C:\Users\HP\.t3\projects\fp-2\research\_stub_work
+  artifacts     : C:\Users\HP\.t3\projects\fp-2\research\_stub_out
+========================================================================
+-- cell 1 ok (0.3s)
+
+======================================================================
+== CELL 2
+======================================================================
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1793453017.615515   15044 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1793453021.462445   15044 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+WARNING:tensorflow:TensorFlow GPU support is not available on native Windows for TensorFlow >= 2.11. Even if CUDA/cuDNN are installed, GPU will not be used. Please use WSL2 or the TensorFlow-DirectML plugin.
+tensorflow 2.21.0 | librosa 0.11.0
+GPU: none (CPU mode — expect it to be slower)
+-- cell 2 ok (7.7s)
+
+======================================================================
+== CELL 3
+======================================================================
+Acquiring corpora ...
+  cached     icd_meta       0.0 MB
+  cached     icd_pos       36.9 MB
+  cached     icd_neg       35.5 MB
+  [optional] icd_rir unavailable (icd_rir missing at C:\Users\HP\.t3\projects\fp-2\research\_stub_cache\rir.zip (CRYNET_OFFLINE=1)) — continuing without it
+  cached     cry4         494.6 MB
+  cached     esc50        646.2 MB
+  cached     snore        118.2 MB
+  cached     gtzan         12.0 MB
+ICD manifest: 500 clips
+-- cell 3 ok (0.0s)
+
+======================================================================
+== CELL 4
+======================================================================
+log_mel shape : (81, 64)  (expect (81, 64))
+value range   : [-0.33, 5.51]
+mean / std    : +0.0000 / 1.0000   (CMVN -> ~0 / ~1)
+mel bank      : (64, 257), non-zero weights 497
+-- cell 4 ok (0.5s)
+
+======================================================================
+== CELL 5
+======================================================================
+ZipReader ready.
+-- cell 5 ok (0.0s)
+
+======================================================================
+== CELL 6
+======================================================================
+ICD      :    500  (cry=250)
+cry4     :   4871  (cry=4871)
+ESC-50   :   2000  (cry=40)
+snoring  :   1001
+GTZAN    :     80  (music, all negative)
+-- cell 6 ok (0.2s)
+
+======================================================================
+== CELL 7
+======================================================================
+noise pool : 250 x 32000 samples
+RIRs       : 0
+(0.3s)
+-- cell 7 ok (0.3s)
+
+======================================================================
+== CELL 8
+======================================================================
+augment_window ready
+-- cell 8 ok (0.0s)
+
+======================================================================
+== CELL 9
+======================================================================
+  ICD base windows : (1000, 81, 64)  (1s)
+-- cell 9 ok (1.2s)
+
+======================================================================
+== CELL 10
+======================================================================
+  cry4   (2500, 81, 64)
+  esc50  (2000, 81, 64)
+  snore  (1000, 81, 64)
+  gtzan  (160, 81, 64)
+  (18s)
+-- cell 10 ok (17.8s)
+
+======================================================================
+== CELL 11
+======================================================================
+ICD training windows: 606
+ICD training clips: 303  (windows: 606)
+  augmented views : (303, 81, 64)  (1s)
+-- cell 11 ok (0.6s)
+
+======================================================================
+== CELL 12
+======================================================================
+TRAIN      (4923, 81, 64)  cry=2196  non-cry=2727   (dropped 79 duplicate windows)
+VAL         (202, 81, 64)  cry=102
+TEST        (192, 81, 64)  cry=96
+CROSS      (1567, 81, 64)  cry=790   [cry4 + ESC-50 + snoring + music — unseen corpora, unseen babies]
+class weights: {0: 0.9026402640264026, 1: 1.1209016393442623}
+-- cell 12 ok (0.6s)
+
+======================================================================
+== CELL 13
+======================================================================
+E0000 00:00:1793453044.529264   15044 util.cc:131] oneDNN supports DT_HALF only on platforms with AVX-512. Falling back to the default Eigen-based implementation if present.
+WARNING:tensorflow:AutoGraph could not transform <function make_ds.<locals>.<lambda> at 0x000001F6FDA89DA0> and will run it as-is.
+Cause: could not parse the source code of <function make_ds.<locals>.<lambda> at 0x000001F6FDA89DA0>: no matching AST found among candidates:
+
+To silence this warning, decorate the function with @tf.autograph.experimental.do_not_convert
+WARNING:tensorflow:AutoGraph could not transform <function make_ds.<locals>.<lambda> at 0x000001F6FDA8BCE0> and will run it as-is.
+Cause: could not parse the source code of <function make_ds.<locals>.<lambda> at 0x000001F6FDA8BCE0>: no matching AST found among candidates:
+
+To silence this warning, decorate the function with @tf.autograph.experimental.do_not_convert
+WARNING:tensorflow:AutoGraph could not transform <function make_ds.<locals>.<lambda> at 0x000001F6F257ADE0> and will run it as-is.
+Cause: could not parse the source code of <function make_ds.<locals>.<lambda> at 0x000001F6F257ADE0>: no matching AST found among candidates:
+
+To silence this warning, decorate the function with @tf.autograph.experimental.do_not_convert
+WARNING:tensorflow:AutoGraph could not transform <function make_ds.<locals>.<lambda> at 0x000001F6FDA8B740> and will run it as-is.
+Cause: could not parse the source code of <function make_ds.<locals>.<lambda> at 0x000001F6FDA8B740>: no matching AST found among candidates:
+
+To silence this warning, decorate the function with @tf.autograph.experimental.do_not_convert
+tf.data ready: (4923, 81, 64) -> 64 x 81 x 64
+training windows: 4923  (2196 cry / 2727 non-cry)
+-- cell 13 ok (0.3s)
+
+======================================================================
+== CELL 14
+======================================================================
+conv_cnn       params=  122,770  in=(None, 81, 64, 1)  out=(None, 2)
+temporal_cnn   params=   65,154  in=(None, 81, 64, 1)  out=(None, 2)
+-- cell 14 ok (0.3s)
+
+======================================================================
+== CELL 15
+======================================================================
+
+========================================================================
+TRAINING conv_cnn   (3 epochs)
+========================================================================
+Epoch 1/3
+76/76 - 19s - 252ms/step - accuracy: 0.8925 - loss: 0.2638 - val_accuracy: 0.8762 - val_loss: 0.3877 - learning_rate: 0.0010
+Epoch 2/3
+76/76 - 16s - 206ms/step - accuracy: 0.9546 - loss: 0.1237 - val_accuracy: 0.9950 - val_loss: 0.0957 - learning_rate: 0.0010
+Epoch 3/3
+76/76 - 16s - 207ms/step - accuracy: 0.9653 - loss: 0.1076 - val_accuracy: 0.9950 - val_loss: 0.1270 - learning_rate: 0.0010
+  params=122,770  val_auc=0.9998  test_auc=1.0000  cross_auc=0.9531
+
+========================================================================
+TRAINING temporal_cnn   (3 epochs)
+========================================================================
+Epoch 1/3
+76/76 - 101s - 1s/step - accuracy: 0.8084 - loss: 0.4253 - val_accuracy: 0.5050 - val_loss: 0.4995 - learning_rate: 0.0010
+Epoch 2/3
+76/76 - 105s - 1s/step - accuracy: 0.8742 - loss: 0.2944 - val_accuracy: 0.7921 - val_loss: 0.3504 - learning_rate: 0.0010
+Epoch 3/3

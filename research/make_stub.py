@@ -62,10 +62,39 @@ with open(STUB / "metadata" / "all28479.csv", "w", newline="", encoding="utf-8")
 print("stub manifest rows:", len(pos) + len(neg))
 
 # reuse the real Kaggle corpora
+# reuse the real Kaggle corpora
 for src, dst in ((ROOT / "_cache" / "cry4__karimeletriby_infant-cry-classification-4-classes.zip",
                   STUB / "cry4__karimeletriby_infant-cry-classification-4-classes.zip"),
                  (ROOT / "_cache" / "esc50__akaliutau_esc-50.zip", STUB / "esc50__akaliutau_esc-50.zip"),
                  (ROOT / "_cache" / "snore__tareqkhanemu_snoring.zip", STUB / "snore__tareqkhanemu_snoring.zip")):
     if src.exists() and not dst.exists():
         shutil.copyfile(src, dst)
+
+
+def synth_music(dur=5.0):
+    '''A stand-in for music: a chord with a rhythm under it.'''
+    n = int(SR * dur)
+    t = np.arange(n) / SR
+    root = rng.uniform(110, 320)
+    sig = np.zeros(n)
+    for ratio in (1.0, 1.26, 1.5, 2.0):
+        sig += (1.0 / 4) * np.sin(2 * np.pi * root * ratio * t + rng.uniform(0, 6))
+    beat = (np.sin(2 * np.pi * 2.0 * t) > 0).astype(np.float32)
+    sig = sig * (0.6 + 0.4 * beat)
+    sig += 0.05 * rng.standard_normal(n)
+    return np.clip(sig * 0.35, -1, 1).astype(np.float32)
+
+
+# the music corpus, in the same shape as the real one: one folder per genre,
+# and the same clip name in every folder (which is what the path index is for)
+GENRES = ("blues", "classical", "country", "disco", "hiphop",
+          "jazz", "metal", "pop", "rock", "reggae")
+out = STUB / "gtzan__carlthome_gtzan-genre-collection.zip"
+if not out.exists():
+    with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as zf:
+        for genre in GENRES:
+            for i in range(8):
+                write_wav(zf, f"genres/{genre}/{i:05d}.wav", synth_music())
+    print("gtzan stub", out.stat().st_size // 1024, "KB", len(GENRES) * 8, "clips")
+
 print("stub cache ready:", sorted(p.name for p in STUB.iterdir()))

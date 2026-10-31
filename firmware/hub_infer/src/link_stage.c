@@ -614,12 +614,18 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
 
         /* ---------------- the display ---------------- */
         /* One snapshot per loop: the crying cot if there is one,
-         * otherwise the loudest node the hub has heard from. */
+         * otherwise the loudest node the hub has heard from.
+         *
+         * When two cots hear the same cry — they are in the same room,
+         * so they all hear it — the one that hears it *loudest* is the
+         * one the baby is in.  So the display names the loudest crying
+         * cot, not the first one the hub happens to have heard from. */
         node_state_t *show = NULL;
         for (int i = 0; i < NODE_LINK_MAX_NODES; i++) {
             if (state[i].heard && link_stage_crying(state[i].node_id)) {
-                show = &state[i];
-                break;
+                if (show == NULL || state[i].rms > show->rms) {
+                    show = &state[i];
+                }
             }
         }
         if (show == NULL) {
