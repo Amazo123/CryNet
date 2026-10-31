@@ -10,7 +10,6 @@
 #include <stdint.h>
 
 #include "driver/spi_master.h"
-#include "font5x7.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,9 +33,12 @@ bool ili9341_init(ili9341_t *dev, int mosi, int sclk, int cs, int dc,
 /* Fill a rectangle with one colour. */
 void ili9341_fill(ili9341_t *dev, int x, int y, int w, int h, uint16_t colour);
 
-/* Draw a line of text.  The scale multiplies the 5x7 glyphs. */
-void ili9341_text(ili9341_t *dev, int x, int y, const char *text,
-                  uint16_t colour, uint8_t scale);
+/* Push a rectangle of RGB565 pixels to the panel.  The pixels are in
+ * the host's byte order and are swapped on the way out; `stride` is the
+ * distance between one row and the next, in pixels — so a whole screen
+ * can be sent in one call. */
+void ili9341_blit(ili9341_t *dev, int x, int y, int w, int h,
+                   const uint16_t *pixels, size_t stride);
 
 /* The backlight. */
 void ili9341_backlight(ili9341_t *dev, bool on);

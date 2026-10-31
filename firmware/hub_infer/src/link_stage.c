@@ -107,6 +107,9 @@ typedef struct {
 /* One entry per node the hub has heard from. */
 static node_state_t state[NODE_LINK_MAX_NODES];
 
+/* When the hub came up, for the uptime on the display. */
+static int64_t s_boot_us = 0;
+
 /* The window the hub analyses.  64 KB, so it lives in PSRAM. */
 static int16_t *s_window = NULL;
 static float    *s_mel = NULL;
@@ -219,6 +222,7 @@ bool link_stage_crying(uint8_t node_id)
 
 bool link_stage_radio_start(void)
 {
+    s_boot_us = esp_timer_get_time();
     /* The Wi-Fi driver opens the NVS partition during esp_wifi_init(), so
      * it has to be initialised first. */
     const esp_err_t nv = nvs_flash_init();
@@ -638,12 +642,32 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
         }
         hub_display_state_t ds;
         memset(&ds, 0, sizeof ds);
+        ds.node_count = HUB_DISPLAY_MAX_NODES;
+        ds.ble_ready = ble_alert_is_running();
+        ds.uptime_s = (uint32_t)((esp_timer_get_time() - s_boot_us) / 1000000);
         if (show != NULL) {
             ds.linked = true;
             ds.crying = link_stage_crying(show->node_id);
             ds.cot_id = show->node_id;
             ds.confidence = show->last_confidence;
             ds.level = show->rms;
+        }
+        /* Every cot the hub has heard from, so the dashboard can show
+         * them one by one.  The slot is the cot number, so the cards
+         * are always in the same order. */
+        for (int i = 0; i < NODE_LINK_MAX_NODES; i++) {
+            if (!state[i].heard) {
+                continue;
+            }
+            const int slot = (int)state[i].node_id - 1;
+            if (slot < 0 || slot >= HUB_DISPLAY_MAX_NODES) {
+                continue;
+            }
+            ds.nodes[slot].id = state[i].node_id;
+            ds.nodes[slot].online = true;
+            ds.nodes[slot].crying = link_stage_crying(state[i].node_id);
+            ds.nodes[slot].level = state[i].rms;
+            ds.nodes[slot].confidence = state[i].last_confidence;
         }
         hub_display_update(&ds);
 

@@ -10,6 +10,10 @@
  * ESP-IDF ships drivers for the ST7789 and the SSD1306, not for this
  * one), and the text uses the classic 5x7 font Adafruit's GFX library
  * has used since 1.0, so the display looks the way the legacy one did.
+ *
+ * The screen has two faces.  A short animated splash runs first — the
+ * waveform, the name, the boot steps — and then the dashboard: the
+ * hub's own state at the top, and a card for every cot.
  */
 
 #ifndef HUB_DISPLAY_H
@@ -34,13 +38,29 @@ extern "C" {
 #define DISPLAY_COLOUR_AMBER  DISPLAY_RGB(230, 160, 30)
 #define DISPLAY_COLOUR_BLUE   DISPLAY_RGB(30, 90, 200)
 
+/* How many cots the hub knows about. */
+#define HUB_DISPLAY_MAX_NODES 3
+
+/* One cot, as the dashboard shows it. */
+typedef struct {
+    uint8_t id;            /* 1..3 */
+    bool    online;        /* the hub has heard from it */
+    bool    crying;        /* the hub is announcing a cry from it */
+    float   level;         /* its last RMS */
+    uint8_t confidence;    /* the last confirmed confidence, in percent */
+} hub_display_node_t;
+
 /* The display's own state. */
 typedef struct {
     bool     linked;        /* a node has been heard from */
     bool     crying;        /* the hub is announcing a cry */
-    uint8_t  cot_id;        /* which cot */
+    uint8_t  cot_id;        /* which cot — the loudest one */
     uint8_t  confidence;    /* the last confirmed confidence, in percent */
-    float    level;         /* the node's last RMS, 0..1 */
+    float    level;         /* that cot's last RMS */
+    uint8_t  node_count;    /* how many cots the hub knows about */
+    bool     ble_ready;     /* the Bluetooth server is advertising */
+    uint32_t uptime_s;      /* how long the hub has been up */
+    hub_display_node_t nodes[HUB_DISPLAY_MAX_NODES];
 } hub_display_state_t;
 
 /* Start the display and its refresh task.  Returns false if the panel

@@ -46,6 +46,7 @@ static uint16_t s_alert_handle;
 static uint16_t s_state_handle;
 
 static uint16_t s_conn_handle = BLE_HS_CONN_HANDLE_NONE;
+static bool     s_running = false;
 static bool     s_alert_notify = false;
 static bool     s_state_notify = false;
 static uint16_t s_event_id = 0;
@@ -263,6 +264,11 @@ int ble_alert_clients(void)
     return (s_conn_handle == BLE_HS_CONN_HANDLE_NONE) ? 0 : 1;
 }
 
+bool ble_alert_is_running(void)
+{
+    return s_running;
+}
+
 static void host_task(void *param)
 {
     (void)param;
@@ -296,6 +302,7 @@ bool ble_alert_start(void)
     ble_store_config_init();
 
     nimble_port_freertos_init(host_task);
+    s_running = true;
     ESP_LOGI(TAG, "the Bluetooth host is starting");
     return true;
 }

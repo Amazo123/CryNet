@@ -1,6 +1,6 @@
 {
   "model": "crynet_int8.tflite",
-  "model_sha256": "d6d1dc4ff33b0f28fc10d63fe304bc1aabce97398a4bc66a51d8d47408485ef0",
+  "model_sha256": "448d75981af42283112e5fb766ab45cdd0a6bb49b5eb31742a1519f336bc13cb",
   "model_bytes": 138312,
   "input": {
     "name": "mel",
@@ -11,8 +11,8 @@
       1
     ],
     "dtype": "int8",
-    "scale": 0.07170649617910385,
-    "zero_point": -37,
+    "scale": 0.07464767247438431,
+    "zero_point": -59,
     "preprocessing": [
       "int16 PCM, 16000 Hz mono, 32000 samples (2.0s)",
       "subtract mean (DC removal)",
@@ -46,7 +46,7 @@
   ],
   "tflm_kernel_check": "ok",
   "decision": {
-    "threshold": 0.23000000000000004,
+    "threshold": 0.7800000000000001,
     "silence_rms_gate": 0.0015,
     "rule": "P(cry) >= threshold  ->  ALERT"
   },
@@ -57,15 +57,15 @@
   "metrics": {
     "selected_model": "conv_cnn",
     "parameters": 122770,
-    "val_auc": 0.980694214876033,
-    "test_auc": 0.9838989441930618,
-    "cross_auc": 0.9886919831223627,
-    "val_f1": 0.9145129224652088,
-    "test_f1": 0.9131455399061033,
-    "cross_f1": 0.9413233458177278,
+    "val_auc": 0.9943264462809918,
+    "test_auc": 0.9951923076923077,
+    "cross_auc": 0.9964170778802832,
+    "val_f1": 0.9623430962343096,
+    "test_f1": 0.969097651421508,
+    "cross_f1": 0.9672447013487476,
     "val_recall": 0.9504132231404959,
-    "val_precision": 0.8812260536398467,
-    "int8_val_auc": 0.9806239669421487,
-    "float_val_auc": 0.980694214876033
+    "val_precision": 0.9745762711864406,
+    "int8_val_auc": 0.9943946280991736,
+    "float_val_auc": 0.9943264462809918
   }
 }

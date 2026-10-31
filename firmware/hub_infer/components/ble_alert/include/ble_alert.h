@@ -62,6 +62,9 @@ void ble_alert_publish_state(const ble_state_packet_t *state);
 /* How many clients are connected and subscribed. */
 int ble_alert_clients(void);
 
+/* Whether the Bluetooth stack came up at all. */
+bool ble_alert_is_running(void);
+
 #ifdef __cplusplus
 }
 #endif

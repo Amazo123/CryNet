@@ -6,10 +6,6 @@
  * SPI master driver: the address window and the pixel stream are the
  * only two things it has to do.
  *
- * The init sequence and the rotation values are the ones Adafruit's
- * ILI9341 library uses, which is what the legacy firmware drove the
- * panel with.
- *
  * Three things about the ILI9341's serial interface are easy to get
  * wrong, and all three of them are fixed here:
  *
@@ -29,6 +25,13 @@
  *      address twice — once for the start and once for the end —
  *      instead re-sets the start, and the panel ends up with a window
  *      of one pixel and displays uninitialised memory.
+ *
+ * The orientation is a property of *this* panel, not of the chip: it is
+ * a "landscape-first" 320x240 glass, so the upright landscape setting
+ * is `MADCTL_MY` with a 320x240 logical framebuffer — the same thing
+ * the legacy firmware used, via Adafruit's rotation 2 with its 240 px
+ * clipping overridden.  Getting this wrong rotates the whole picture
+ * by a quarter turn, which is exactly what happened the first time.
  */
 
 #include "ili9341.h"
@@ -188,13 +191,14 @@ bool ili9341_init(ili9341_t *dev, int mosi, int sclk, int cs, int dc,
         i += count;
     }
 
-    /* The rotation.  One is landscape, which is how the panel is mounted
-     * on the hub. */
+    /* The rotation.  On this panel the upright landscape setting is
+     * MADCTL_MY with a 320x240 logical framebuffer — see the note at
+     * the top of this file. */
     uint8_t madctl;
     switch (rotation & 3) {
     case 0:  madctl = MADCTL_MX | MADCTL_BGR; dev->width = 240; dev->height = 320; break;
     case 1:  madctl = MADCTL_MV | MADCTL_BGR; dev->width = 320; dev->height = 240; break;
-    case 2:  madctl = MADCTL_MY | MADCTL_BGR; dev->width = 240; dev->height = 320; break;
+    case 2:  madctl = MADCTL_MY | MADCTL_BGR; dev->width = 320; dev->height = 240; break;
     default: madctl = MADCTL_MX | MADCTL_MY | MADCTL_MV | MADCTL_BGR;
              dev->width = 320; dev->height = 240; break;
     }
@@ -206,8 +210,8 @@ bool ili9341_init(ili9341_t *dev, int mosi, int sclk, int cs, int dc,
     dev->rotation = rotation;
 
     ili9341_backlight(dev, true);
-    ESP_LOGI(TAG, "the panel is up: %d x %d, rotation %d",
-             dev->width, dev->height, rotation);
+    ESP_LOGI(TAG, "the panel is up: %d x %d, rotation %d (madctl 0x%02X)",
+             dev->width, dev->height, rotation, madctl);
     return true;
 }
 
@@ -227,18 +231,10 @@ void ili9341_backlight(ili9341_t *dev, bool on)
     gpio_set_level((gpio_num_t)dev->backlight_pin, on ? 1 : 0);
 }
 
-void ili9341_fill(ili9341_t *dev, int x, int y, int w, int h, uint16_t colour)
+/* Point the panel's address window at a rectangle.  The caller must be
+ * holding the bus. */
+static void set_window(ili9341_t *dev, int x, int y, int w, int h)
 {
-    if (x < 0) { w += x; x = 0; }
-    if (y < 0) { h += y; y = 0; }
-    if (x + w > dev->width)  { w = dev->width - x; }
-    if (y + h > dev->height) { h = dev->height - y; }
-    if (w <= 0 || h <= 0) {
-        return;
-    }
-
-    /* The address window: four bytes per axis, big-endian, one command
-     * for the columns and one for the rows. */
     const uint16_t x0 = (uint16_t)x;
     const uint16_t x1 = (uint16_t)(x + w - 1);
     const uint16_t y0 = (uint16_t)y;
@@ -251,16 +247,23 @@ void ili9341_fill(ili9341_t *dev, int x, int y, int w, int h, uint16_t colour)
         (uint8_t)(y0 >> 8), (uint8_t)(y0 & 0xFF),
         (uint8_t)(y1 >> 8), (uint8_t)(y1 & 0xFF),
     };
-
-    spi_device_acquire_bus(dev->spi, portMAX_DELAY);
-
     const uint8_t cmd_caset = ILI9341_CASET;
     const uint8_t cmd_paset = ILI9341_PASET;
-    const uint8_t cmd_ramwr = ILI9341_RAMWR;
     tx(dev, 0, &cmd_caset, 1, true);
     tx(dev, 1, cols, 4, true);
     tx(dev, 0, &cmd_paset, 1, true);
     tx(dev, 1, rows, 4, true);
+}
+
+void ili9341_fill(ili9341_t *dev, int x, int y, int w, int h, uint16_t colour)
+{
+    if (x < 0) { w += x; x = 0; }
+    if (y < 0) { h += y; y = 0; }
+    if (x + w > dev->width)  { w = dev->width - x; }
+    if (y + h > dev->height) { h = dev->height - y; }
+    if (w <= 0 || h <= 0) {
+        return;
+    }
 
     /* The pixel stream: the same colour, over and over, in one
      * transfer with CS down the whole way. */
@@ -273,6 +276,9 @@ void ili9341_fill(ili9341_t *dev, int x, int y, int w, int h, uint16_t colour)
     const size_t pixels = (size_t)w * h;
     const size_t chunk_pixels = sizeof chunk / 2;
 
+    spi_device_acquire_bus(dev->spi, portMAX_DELAY);
+    set_window(dev, x, y, w, h);
+    const uint8_t cmd_ramwr = ILI9341_RAMWR;
     tx(dev, 0, &cmd_ramwr, 1, true);
     for (size_t sent = 0; sent < pixels; sent += chunk_pixels) {
         size_t n = pixels - sent;
@@ -282,44 +288,46 @@ void ili9341_fill(ili9341_t *dev, int x, int y, int w, int h, uint16_t colour)
         const bool last = (sent + n >= pixels);
         tx(dev, 1, chunk, n * 2, !last);
     }
-
     spi_device_release_bus(dev->spi);
 }
 
-void ili9341_text(ili9341_t *dev, int x, int y, const char *text,
-                  uint16_t colour, uint8_t scale)
+void ili9341_blit(ili9341_t *dev, int x, int y, int w, int h,
+                   const uint16_t *pixels, size_t stride)
 {
-    if (scale == 0) {
-        scale = 1;
+    if (x < 0) { w += x; x = 0; }
+    if (y < 0) { h += y; y = 0; }
+    if (x + w > dev->width)  { w = dev->width - x; }
+    if (y + h > dev->height) { h = dev->height - y; }
+    if (w <= 0 || h <= 0) {
+        return;
     }
-    int cursor = x;
-    for (const char *p = text; *p; p++) {
-        unsigned char c = (unsigned char)*p;
-        if (c < FONT5X7_FIRST || c > FONT5X7_LAST) {
-            c = '?';
-        }
-        const uint8_t *glyph = s_font5x7[c - FONT5X7_FIRST];
 
-        /* Each glyph row is a run of lit columns, and a run is one
-         * rectangle.  Drawing it pixel by pixel would be sixty times
-         * the work for the same picture. */
-        for (int row = 0; row < FONT5X7_HEIGHT; row++) {
-            int col = 0;
-            while (col < FONT5X7_WIDTH) {
-                if (!(glyph[col] & (1 << row))) {
-                    col++;
-                    continue;
-                }
-                int run = 0;
-                while (col + run < FONT5X7_WIDTH &&
-                       (glyph[col + run] & (1 << row))) {
-                    run++;
-                }
-                ili9341_fill(dev, cursor + col * scale, y + row * scale,
-                             run * scale, scale, colour);
-                col += run;
+    spi_device_acquire_bus(dev->spi, portMAX_DELAY);
+    set_window(dev, x, y, w, h);
+    const uint8_t cmd_ramwr = ILI9341_RAMWR;
+    tx(dev, 0, &cmd_ramwr, 1, true);
+
+    /* The panel wants RGB565 big endian; the framebuffer holds it in
+     * the host's order, so each pixel is swapped on the way out. */
+    const size_t row_px = (size_t)w;
+    uint8_t chunk[512];
+    for (int row = 0; row < h; row++) {
+        const uint16_t *src = pixels + (size_t)row * stride;
+        size_t done = 0;
+        while (done < row_px) {
+            size_t n = row_px - done;
+            if (n * 2 > sizeof chunk) {
+                n = sizeof chunk / 2;
             }
+            for (size_t i = 0; i < n; i++) {
+                const uint16_t px = src[done + i];
+                chunk[i * 2] = (uint8_t)(px >> 8);
+                chunk[i * 2 + 1] = (uint8_t)(px & 0xFF);
+            }
+            const bool last = (row == h - 1) && (done + n >= row_px);
+            tx(dev, 1, chunk, n * 2, !last);
+            done += n;
         }
-        cursor += (FONT5X7_WIDTH + 1) * scale;
     }
+    spi_device_release_bus(dev->spi);
 }
