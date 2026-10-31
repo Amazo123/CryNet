@@ -5,5 +5,5 @@ idf_component_register(
     SRCS "ili9341.c" "hub_display.c"
     INCLUDE_DIRS "include"
     PRIV_INCLUDE_DIRS "."
-    REQUIRES esp_driver_spi esp_driver_gpio esp_timer
+    REQUIRES esp_driver_spi esp_driver_gpio esp_driver_ledc esp_timer
 )

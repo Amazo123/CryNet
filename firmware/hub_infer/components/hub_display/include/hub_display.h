@@ -11,9 +11,13 @@
  * one), and the text uses the classic 5x7 font Adafruit's GFX library
  * has used since 1.0, so the display looks the way the legacy one did.
  *
- * The screen has two faces.  A short animated splash runs first — the
+ * The screen has three faces.  A short animated splash runs first — the
  * waveform, the name, the boot steps — and then the dashboard: the
- * hub's own state at the top, and a card for every cot.
+ * hub's own state at the top, and a card for every cot.  The BOOT
+ * button opens and closes a third: the colour check, a grid of the
+ * palette's swatches, which is how the panel's own colours are judged
+ * (a photograph of a glowing screen in a dark room is not a colour
+ * measurement).
  */
 
 #ifndef HUB_DISPLAY_H
@@ -70,6 +74,15 @@ bool hub_display_start(void);
 
 /* Give the display something new to show. */
 void hub_display_update(const hub_display_state_t *state);
+
+/* The backlight's brightness, as a percentage: 0 is off, 100 is full.
+ * The panel is not meant to be looked at at full brightness in a dark
+ * room — the glare is what makes a colour look like the wrong colour.
+ * The default is set at boot; this changes it. */
+void hub_display_set_brightness(uint8_t percent);
+
+/* The backlight's brightness, as a percentage. */
+uint8_t hub_display_brightness(void);
 
 #ifdef __cplusplus
 }

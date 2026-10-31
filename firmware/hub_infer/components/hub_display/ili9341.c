@@ -44,6 +44,7 @@
 #include <string.h>
 
 #include "driver/gpio.h"
+#include "driver/ledc.h"
 #include "driver/spi_master.h"
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
@@ -67,6 +68,19 @@ static const char *TAG = "ili9341";
 #define MADCTL_MY  0x80
 #define MADCTL_MV  0x20
 #define MADCTL_BGR 0x08
+
+/* The backlight.  It used to be a plain on/off pin, and the panel was
+ * left at full brightness.  A TFT at full brightness in a dark room
+ * glares: the picture is blown out, the dark navy background reads as a
+ * bright blue, and the teal accent is washed out with it.  The pin is
+ * now a LEDC output, so the brightness is a number that can be turned
+ * down.  5 kHz is above anything the eye can notice as a flicker. */
+#define BL_MODE      LEDC_LOW_SPEED_MODE
+#define BL_TIMER     LEDC_TIMER_0
+#define BL_CHANNEL   LEDC_CHANNEL_0
+#define BL_FREQ_HZ   5000
+#define BL_RES       LEDC_TIMER_10_BIT
+#define BL_STEPS     (1u << BL_RES)
 
 /* The init sequence, in Adafruit's "command, count, data" format. */
 static const uint8_t s_init[] = {
@@ -236,18 +250,65 @@ bool ili9341_init(ili9341_t *dev, int mosi, int sclk, int cs, int dc,
 
 void ili9341_backlight(ili9341_t *dev, bool on)
 {
+    ili9341_backlight_set(dev, on ? 100 : 0);
+}
+
+void ili9341_backlight_set(ili9341_t *dev, uint8_t percent)
+{
     if (dev->backlight_pin < 0) {
         return;
     }
-    gpio_config_t out = {
-        .pin_bit_mask = 1ULL << dev->backlight_pin,
-        .mode = GPIO_MODE_OUTPUT,
-    };
-    gpio_config(&out);
+    if (percent > 100) {
+        percent = 100;
+    }
+
+    /* The first call sets the pin up as a LEDC output; after that the
+     * duty alone sets the brightness.  If the LEDC cannot be had the
+     * pin stays a plain output, so the panel is still lit. */
+    static bool configured = false;
+    if (!configured) {
+        configured = true;
+        ledc_timer_config_t timer = {
+            .speed_mode = BL_MODE,
+            .duty_resolution = BL_RES,
+            .timer_num = BL_TIMER,
+            .freq_hz = BL_FREQ_HZ,
+            .clk_cfg = LEDC_USE_APB_CLK,
+        };
+        ledc_channel_config_t channel = {
+            .gpio_num = dev->backlight_pin,
+            .speed_mode = BL_MODE,
+            .channel = BL_CHANNEL,
+            .timer_sel = BL_TIMER,
+            .duty = 0,
+            .hpoint = 0,
+            .sleep_mode = LEDC_SLEEP_MODE_NO_ALIVE_NO_PD,
+        };
+        if (ledc_timer_config(&timer) != ESP_OK) {
+            ESP_LOGE(TAG, "the backlight timer could not be set up");
+            configured = false;
+        } else if (ledc_channel_config(&channel) != ESP_OK) {
+            ESP_LOGE(TAG, "the backlight channel could not be set up");
+            configured = false;
+        }
+        if (!configured) {
+            gpio_config_t out = {
+                .pin_bit_mask = 1ULL << dev->backlight_pin,
+                .mode = GPIO_MODE_OUTPUT,
+            };
+            gpio_config(&out);
+            gpio_set_level((gpio_num_t)dev->backlight_pin, percent ? 1 : 0);
+            return;
+        }
+    }
+
     /* The backlight's polarity was never settled in the legacy firmware:
      * its diagnostic toggled the pin and asked the user which way was
-     * right.  Driving it high is the usual wiring. */
-    gpio_set_level((gpio_num_t)dev->backlight_pin, on ? 1 : 0);
+     * right.  Driving it high is the usual wiring, and the panel was
+     * lit when the pin was high. */
+    const uint32_t duty = (percent == 0) ? 0 : (BL_STEPS * percent) / 100;
+    ledc_set_duty(BL_MODE, BL_CHANNEL, duty);
+    ledc_update_duty(BL_MODE, BL_CHANNEL);
 }
 
 /* Point the panel's address window at a rectangle.  The caller must be

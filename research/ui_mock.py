@@ -262,6 +262,46 @@ def splash(path: Path, frame: int = 6):
     return path
 
 
+def colour_check(path: Path):
+    """The colour check, mirroring draw_colour_check() in hub_display.c."""
+    C = load_palette()
+    L = load_layout()
+    header_h = L.get("HEADER_H", 30)
+
+    img = Image.new("RGB", (W, H), C["C_BG"])
+    d = ImageDraw.Draw(img)
+
+    fill(d, 0, 0, W, header_h, C["C_SURFACE"])
+    draw_text(d, 12, 8, "COLOUR CHECK", C["C_TEXT"], 2)
+    fill(d, 0, header_h, W, 2, C["C_ACCENT_DIM"])
+
+    swatches = [
+        ("BLACK", (0, 0, 0)),
+        ("WHITE", (255, 255, 255)),
+        ("TEAL", C["C_ACCENT"]),
+        ("NAVY", C["C_BG"]),
+        ("GREEN", C["C_GREEN"]),
+        ("AMBER", C["C_AMBER"]),
+        ("ROSE", C["C_ALERT"]),
+        ("GREY", C["C_DIM"]),
+    ]
+    cols, w, h, gap = 4, 74, 62, 6
+    x0 = (W - (cols * w + (cols - 1) * gap)) // 2
+    for i, (name, colour) in enumerate(swatches):
+        cx = x0 + (i % cols) * (w + gap)
+        cy = 46 + (i // cols) * (h + 22)
+        fill(d, cx, cy, w, h, colour)
+        rect(d, cx, cy, w, h, C["C_BORDER"])
+        draw_text(d, cx + (w - text_width(name, 1)) // 2, cy + h + 5,
+                  name, C["C_DIM"], 1)
+
+    foot = "backlight 55%  -  press BOOT to go back"
+    draw_text_centre(d, H - 16, foot, C["C_DIM"], 1)
+
+    img.save(path)
+    return path
+
+
 COTS_QUIET = [
     {"online": True, "crying": False, "rms": 0.084, "conf": 0},
     {"online": True, "crying": False, "rms": 0.012, "conf": 0},
@@ -285,6 +325,7 @@ def main() -> int:
         dashboard(OUT / "ui_dashboard_alert_nophone.png", COTS_CRYING, True,
                   True, 1, 97, 0.284, 0, True, 12 * 60 + 4),
         splash(OUT / "ui_splash.png"),
+        colour_check(OUT / "ui_colour_check.png"),
     ]
     for p in paths:
         print(f"wrote {p}")

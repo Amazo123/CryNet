@@ -16,6 +16,12 @@
  *     uptime), a banner that says what the system is doing, and a card
  *     for every cot: its name, whether it is online, and its level.
  *
+ * A third face can be summoned with the BOOT button: the colour check,
+ * a grid of the palette's swatches.  It exists because a photograph of
+ * a glowing panel in a dark room is not a colour measurement — the
+ * camera opens up, the highlights clip and the white balance drifts —
+ * so the swatches are how the panel's own colours are judged.
+ *
  * The palette is a calm dark navy with a teal accent.  Red is kept for
  * one thing only — a confirmed cry — because a panel that is red all
  * the time stops meaning anything.
@@ -35,6 +41,8 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
+#include "driver/gpio.h"
+
 #include "font5x7.h"
 #include "ili9341.h"
 
@@ -48,6 +56,10 @@ static const char *TAG = "hub_display";
 #define PIN_DC   13
 #define PIN_RST  14
 #define PIN_BL   4
+
+/* The BOOT button on the devkit is GPIO0, and it is active low.  It
+ * opens and closes the colour check. */
+#define PIN_BUTTON 0
 
 /* This panel is "landscape-first": the upright landscape setting is
  * MADCTL_MY with a 320x240 framebuffer, which is what the legacy
@@ -98,12 +110,25 @@ static const char *TAG = "hub_display";
 #define FADE_MS      600
 #define SPLASH_TICK  100        /* ms between frames: ten a second */
 
+/* The backlight, as a percentage.  Full brightness glares in a dark
+ * room, and a glare is what makes a colour look like the wrong colour:
+ * the photograph of the panel came out blue because the panel was
+ * brighter than the room and the camera's white balance went with it.
+ * 55 % is the level that keeps a dark navy background dark and lets
+ * the teal read as teal; it can be changed at run time. */
+#define BACKLIGHT_DEFAULT  55
+
 static ili9341_t s_dev;
 static uint16_t *s_fb;          /* 320 x 240 RGB565, in PSRAM */
 
 static hub_display_state_t s_state;   /* guarded by s_lock */
 static portMUX_TYPE s_lock = portMUX_INITIALIZER_UNLOCKED;
 static volatile uint32_t s_version;   /* bumped on every update */
+
+/* The backlight's brightness, and whether the colour check is up.  Both
+ * are read by the display task and written by the API. */
+static volatile uint8_t s_brightness = BACKLIGHT_DEFAULT;
+static volatile bool s_colour_check = false;
 
 /* The region of the panel that has changed and still has to be pushed. */
 static int s_dirty_x0, s_dirty_y0, s_dirty_x1, s_dirty_y1;
@@ -551,6 +576,64 @@ static void draw_dashboard(const hub_display_state_t *st)
 }
 
 /* ------------------------------------------------------------------ */
+/* The colour check                                                      */
+/* ------------------------------------------------------------------ */
+
+/* The palette, as swatches.
+ *
+ * A photograph of the panel cannot settle whether a colour is right:
+ * the camera opens up for a glowing screen in a dark room, the
+ * highlights clip, and the white balance drifts with what it sees.  The
+ * first photograph of this panel came out with every colour exchanged
+ * and the second came out blue, and neither could be trusted without
+ * the swatches below to say what the panel was actually asked to draw.
+ *
+ * The grid is ordered so that the answers are unambiguous: black and
+ * white at the ends of the first row, the accent in the middle, and
+ * the alert colour last, where a red that is really a swapped blue
+ * cannot hide. */
+static void draw_colour_check(void)
+{
+    fb_fill(0, 0, FB_W, FB_H, C_BG);
+
+    fb_fill(0, 0, FB_W, HEADER_H, C_SURFACE);
+    fb_text(12, 8, "COLOUR CHECK", C_TEXT, 2);
+    fb_fill(0, HEADER_H, FB_W, 2, C_ACCENT_DIM);
+
+    static const struct {
+        const char *name;
+        uint16_t colour;
+    } swatches[] = {
+        {"BLACK",  DISPLAY_RGB(0, 0, 0)},
+        {"WHITE",  DISPLAY_RGB(255, 255, 255)},
+        {"TEAL",   C_ACCENT},
+        {"NAVY",   C_BG},
+        {"GREEN",  C_GREEN},
+        {"AMBER",  C_AMBER},
+        {"ROSE",   C_ALERT},
+        {"GREY",   C_DIM},
+    };
+    const int n = (int)(sizeof swatches / sizeof swatches[0]);
+    const int cols = 4;
+    const int w = 74, h = 62, gap = 6;
+    const int x0 = (FB_W - (cols * w + (cols - 1) * gap)) / 2;
+
+    for (int i = 0; i < n; i++) {
+        const int cx = x0 + (i % cols) * (w + gap);
+        const int cy = 46 + (i / cols) * (h + 22);
+        fb_fill(cx, cy, w, h, swatches[i].colour);
+        fb_rect(cx, cy, w, h, C_BORDER);
+        fb_text(cx + (w - fb_text_w(swatches[i].name, 1)) / 2, cy + h + 5,
+                swatches[i].name, C_DIM, 1);
+    }
+
+    char foot[48];
+    snprintf(foot, sizeof foot, "backlight %u%%  -  press BOOT to go back",
+             (unsigned)s_brightness);
+    fb_text_centre(FB_H - 16, foot, C_DIM, 1);
+}
+
+/* ------------------------------------------------------------------ */
 /* The task                                                             */
 /* ------------------------------------------------------------------ */
 
@@ -573,9 +656,20 @@ static void display_task(void *arg)
     uint32_t seen = 0;
     int frame = 0;
     TickType_t last_dash = 0;
+    int button = 1;
 
     for (;;) {
         vTaskDelay(pdMS_TO_TICKS(SPLASH_TICK));
+
+        /* The BOOT button opens and closes the colour check.  It is
+         * active low, so the press is the edge from high to low. */
+        const int pressed = gpio_get_level(PIN_BUTTON);
+        if (button == 1 && pressed == 0) {
+            s_colour_check = !s_colour_check;
+            ESP_LOGI(TAG, "the button was pressed: %s",
+                     s_colour_check ? "the colour check" : "the dashboard");
+        }
+        button = pressed;
 
         hub_display_state_t st;
         uint32_t version;
@@ -598,6 +692,9 @@ static void display_task(void *arg)
             draw_dashboard(&st);
             fb_fade(C_BG, 1.0f - (float)(ms - SPLASH_MS - FADE_MS) /
                             (float)FADE_MS);
+            flush_dirty();
+        } else if (s_colour_check) {
+            draw_colour_check();
             flush_dirty();
         } else if (version != seen ||
                    ((now - last_dash) * portTICK_PERIOD_MS) > 1000) {
@@ -629,6 +726,19 @@ bool hub_display_start(void)
     s_dirty_x0 = FB_W; s_dirty_y0 = FB_H;
     s_dirty_x1 = -1; s_dirty_y1 = -1;
 
+    /* The BOOT button, which opens the colour check.  It is pulled up
+     * here: if the board has no button on it the pin simply stays
+     * high, and the dashboard carries on as before. */
+    gpio_config_t button = {
+        .pin_bit_mask = 1ULL << PIN_BUTTON,
+        .mode = GPIO_MODE_INPUT,
+        .pull_up_en = GPIO_PULLUP_ENABLE,
+    };
+    gpio_config(&button);
+
+    /* The backlight, at the level that does not glare. */
+    ili9341_backlight_set(&s_dev, s_brightness);
+
     /* Core 1: the link loop and both radio stacks run on core 0, and a
      * 30 ms SPI burst must not delay a window analysis. */
     if (xTaskCreatePinnedToCore(display_task, "hubdisp", 4096, NULL,
@@ -645,4 +755,19 @@ void hub_display_update(const hub_display_state_t *state)
     s_state = *state;
     s_version++;
     portEXIT_CRITICAL(&s_lock);
+}
+
+void hub_display_set_brightness(uint8_t percent)
+{
+    if (percent > 100) {
+        percent = 100;
+    }
+    s_brightness = percent;
+    ili9341_backlight_set(&s_dev, percent);
+    ESP_LOGI(TAG, "the backlight is at %u%%", (unsigned)percent);
+}
+
+uint8_t hub_display_brightness(void)
+{
+    return s_brightness;
 }

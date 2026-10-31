@@ -43,6 +43,11 @@ void ili9341_blit(ili9341_t *dev, int x, int y, int w, int h,
 /* The backlight. */
 void ili9341_backlight(ili9341_t *dev, bool on);
 
+/* The backlight's brightness, as a percentage: 0 is off, 100 is full.
+ * The pin is a LEDC output, so the panel can be turned down instead of
+ * only being on or off - see the note in ili9341.c. */
+void ili9341_backlight_set(ili9341_t *dev, uint8_t percent);
+
 #ifdef __cplusplus
 }
 #endif
