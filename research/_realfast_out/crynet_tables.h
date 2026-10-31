@@ -14,11 +14,11 @@
 #define CRYNET_DB_FLOOR      (-80.0f)
 #define CRYNET_LOG_EPS       (0.0000000001f)
 #define CRYNET_CMVN          1
-#define CRYNET_IN_SCALE      0.074647672f
-#define CRYNET_IN_ZP         -59
+#define CRYNET_IN_SCALE      0.124126837f
+#define CRYNET_IN_ZP         -80
 #define CRYNET_OUT_SCALE     0.003906250f
 #define CRYNET_OUT_ZP        -128
-#define CRYNET_THRESHOLD     0.7800f
+#define CRYNET_THRESHOLD     0.5100f
 #define CRYNET_SILENCE_RMS   0.001500f
 
 /* Sparse Mel filterbank: band m uses FFT bins
