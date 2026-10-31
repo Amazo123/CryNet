@@ -181,6 +181,10 @@ bool hub_display_start(void)
     /* The static parts: a black screen, the title, the bar's track. */
     ili9341_fill(&s_dev, 0, 0, s_dev.width, s_dev.height, DISPLAY_COLOUR_BLACK);
     ili9341_text(&s_dev, 8, 8, "CryNet hub", DISPLAY_COLOUR_WHITE, 3);
+    /* A marker in the top-right corner.  It says which way round the
+     * panel is: whatever corner of the glass it lands in is the panel's
+     * top right, so the layout can be fixed from one photograph. */
+    ili9341_fill(&s_dev, s_dev.width - 22, 10, 12, 12, DISPLAY_COLOUR_BLUE);
     s_bar_w = -1;
     draw_bar(0.0f);
 

@@ -1,0 +1,387 @@
+esptool v5.4.0
+Serial port COM32:
+Connecting...
+Connected to ESP32-S3 on COM32:
+Chip type:          ESP32-S3 (QFN56) (revision v0.2)
+Features:           Wi-Fi, BT 5 (LE), Dual Core + LP Core, 240MHz, Embedded PSRAM 8MB (AP_3v3)
+Crystal frequency:  40MHz
+MAC:                30:30:f9:17:2f:80
+
+Uploading stub flasher...
+Running stub flasher...
+Stub flasher running.
+Changing baud rate to 921600...
+Changed.
+
+Configuring flash size...
+
+Writing 'C:\Users\HP\.t3\projects\fp-2\firmware\hub_infer\.pio\build\esp32s3\bootloader.bin' at 0x00000000...
+Flash will be erased from 0x00000000 to 0x00005fff...
+Compressed 22560 bytes to 14444...
+Writing at 0x00005820 ============================== 100.0% 14.11kB/14.11kB [0s] 
+Wrote 22560 bytes (14444 compressed) at 0x00000000 in 0.4 seconds (430.3 kbit/s).
+Verifying written data...
+Hash of data verified.
+
+Writing 'C:\Users\HP\.t3\projects\fp-2\firmware\hub_infer\.pio\build\esp32s3\partitions.bin' at 0x00008000...
+Flash will be erased from 0x00008000 to 0x00008fff...
+Compressed 3072 bytes to 119...
+Writing at 0x00008c00 ============================== 100.0% 119B/119B [0s] 
+Wrote 3072 bytes (119 compressed) at 0x00008000 in 0.0 seconds (603.8 kbit/s).
+Verifying written data...
+Hash of data verified.
+
+Writing 'C:\Users\HP\.t3\projects\fp-2\firmware\hub_infer\.pio\build\esp32s3\firmware.bin' at 0x00010000...
+Flash will be erased from 0x00010000 to 0x0014cfff...
+Compressed 1297968 bytes to 898654...
+Writing at 0x0001ca82 >                                1.8% 16.00kB/877.59kB [0s] 
+Writing at 0x0002a0c6 =                                3.6% 32.00kB/877.59kB [0s] 
+Writing at 0x0002e58f =>                               5.5% 48.00kB/877.59kB [0s] 
+Writing at 0x00032a98 ==                               7.3% 64.00kB/877.59kB [1s] 
+Writing at 0x00036fff ==>                              9.1% 80.00kB/877.59kB [1s] 
+Writing at 0x0003b621 ===                             10.9% 96.00kB/877.59kB [1s] 
+Writing at 0x0003fb1f ===>                            12.8% 112.00kB/877.59kB [1s] 
+Writing at 0x00044115 ====                            14.6% 128.00kB/877.59kB [2s] 
+Writing at 0x0004850a ====>                           16.4% 144.00kB/877.59kB [2s] 
+Writing at 0x00051e8c =====                           18.2% 160.00kB/877.59kB [2s] 
+Writing at 0x00059278 ======                          20.1% 176.00kB/877.59kB [2s] 
+Writing at 0x00063f41 ======>                         21.9% 192.00kB/877.59kB [3s] 
+Writing at 0x0006a52d =======                         23.7% 208.00kB/877.59kB [3s] 
+Writing at 0x0006f94b =======>                        25.5% 224.00kB/877.59kB [3s] 
+Writing at 0x000755ec ========                        27.3% 240.00kB/877.59kB [4s] 
+Writing at 0x0007ad19 ========>                       29.2% 256.00kB/877.59kB [4s] 
+Writing at 0x0008027e =========                       31.0% 272.00kB/877.59kB [4s] 
+Writing at 0x000859db =========>                      32.8% 288.00kB/877.59kB [4s] 
+Writing at 0x0008b256 ==========                      34.6% 304.00kB/877.59kB [5s] 
+Writing at 0x000910a4 ==========>                     36.5% 320.00kB/877.59kB [5s] 
+Writing at 0x00096a60 ===========                     38.3% 336.00kB/877.59kB [5s] 
+Writing at 0x0009bc32 ============                    40.1% 352.00kB/877.59kB [5s] 
+Writing at 0x000a0e26 ============>                   41.9% 368.00kB/877.59kB [6s] 
+Writing at 0x000a5f4d =============                   43.8% 384.00kB/877.59kB [6s] 
+Writing at 0x000ab3f5 =============>                  45.6% 400.00kB/877.59kB [6s] 
+Writing at 0x000b0c54 ==============                  47.4% 416.00kB/877.59kB [6s] 
+Writing at 0x000b5e4e ==============>                 49.2% 432.00kB/877.59kB [7s] 
+Writing at 0x000baf64 ===============                 51.0% 448.00kB/877.59kB [7s] 
+Writing at 0x000c0284 ===============>                52.9% 464.00kB/877.59kB [7s] 
+Writing at 0x000c58ae ================                54.7% 480.00kB/877.59kB [7s] 
+Writing at 0x000cad13 ================>               56.5% 496.00kB/877.59kB [8s] 
+Writing at 0x000d03e4 =================>              58.3% 512.00kB/877.59kB [8s] 
+Writing at 0x000d5cae ==================              60.2% 528.00kB/877.59kB [8s] 
+Writing at 0x000db66f ==================>             62.0% 544.00kB/877.59kB [8s] 
+Writing at 0x000e1197 ===================             63.8% 560.00kB/877.59kB [8s] 
+Writing at 0x000e68ae ===================>            65.6% 576.00kB/877.59kB [9s] 
+Writing at 0x000ec0b2 ====================            67.5% 592.00kB/877.59kB [9s] 
+Writing at 0x000f11f9 ====================>           69.3% 608.00kB/877.59kB [9s] 
+Writing at 0x000f6443 =====================           71.1% 624.00kB/877.59kB [9s] 
+Writing at 0x000fbaa7 =====================>          72.9% 640.00kB/877.59kB [9s] 
+Writing at 0x0010124b ======================          74.8% 656.00kB/877.59kB [10s] 
+Writing at 0x001065b1 ======================>         76.6% 672.00kB/877.59kB [10s] 
+Writing at 0x0010bc6b =======================>        78.4% 688.00kB/877.59kB [10s] 
+Writing at 0x00111933 ========================        80.2% 704.00kB/877.59kB [10s] 
+Writing at 0x00116dc2 ========================>       82.0% 720.00kB/877.59kB [11s] 
+Writing at 0x0011bfd0 =========================       83.9% 736.00kB/877.59kB [11s] 
+Writing at 0x0012125d =========================>      85.7% 752.00kB/877.59kB [11s] 
+Writing at 0x00126173 ==========================      87.5% 768.00kB/877.59kB [11s] 
+Writing at 0x0012b103 ==========================>     89.3% 784.00kB/877.59kB [11s] 
+Writing at 0x00131183 ===========================     91.2% 800.00kB/877.59kB [12s] 
+Writing at 0x001369f0 ===========================>    93.0% 816.00kB/877.59kB [12s] 
+Writing at 0x0013c9ca ============================    94.8% 832.00kB/877.59kB [12s] 
+Writing at 0x00142fa7 ============================>   96.6% 848.00kB/877.59kB [12s] 
+Writing at 0x0014802d =============================>  98.5% 864.00kB/877.59kB [12s] 
+Writing at 0x0014ce30 ============================== 100.0% 877.59kB/877.59kB [13s] 
+Wrote 1297968 bytes (898654 compressed) at 0x00010000 in 13.2 seconds (783.7 kbit/s).
+Verifying written data...
+Hash of data verified.
+
+Hard resetting via RTS pin...
+Flashing COM32 at 921600 baud:
+   0x000000  bootloader.bin
+   0x008000  partitions.bin
+   0x010000  firmware.bin
+Flash OK.
+
+Listening on COM32 for 45 s ...
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0x1 (POWERON),boot:0x8 (SPI_FAST_FLASH_BOOT)
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2820,len:0x1664
+load:0x403c8700,len:0xf7c
+load:0x403cb700,len:0x31ec
+entry 0x403c8924
+I (25) boot: ESP-IDF 6.1.0 2nd stage bootloader
+I (25) boot: compile time Oct 30 2026 14:23:58
+I (25) boot: Multicore bootloader
+I (25) boot: chip revision: v0.2
+I (28) boot: efuse block revision: v1.3
+I (31) qio_mode: Enabling default flash chip QIO
+I (36) boot.esp32s3: Boot SPI Speed : 80MHz
+I (40) boot.esp32s3: SPI Mode       : QIO
+I (43) boot.esp32s3: SPI Flash Size : 16MB
+I (47) boot: Enabling RNG early entropy source...
+I (52) boot: Partition Table:
+I (54) boot: ## Label            Usage          Type ST Offset   Length
+I (61) boot:  0 nvs              WiFi data        01 02 00009000 00006000
+I (67) boot:  1 phy_init         RF data          01 01 0000f000 00001000
+I (74) boot:  2 factory          factory app      00 00 00010000 00200000
+I (80) boot:  3 storage          Unknown data     01 82 00210000 00600000
+I (87) boot: End of partition table
+I (90) esp_image: segment 0: paddr=00010020 vaddr=3c0d0020 size=50380h (328576) map
+I (148) esp_image: segment 1: paddr=000603a8 vaddr=3fca0800 size=05bbch ( 23484) load
+I (153) esp_image: segment 2: paddr=00065f6c vaddr=40374000 size=0a0ach ( 41132) load
+I (161) esp_image: segment 3: paddr=00070020 vaddr=42000020 size=ca748h (829256) map
+I (290) esp_image: segment 4: paddr=0013a770 vaddr=4037e0ac size=1266ch ( 75372) load
+I (305) esp_image: segment 5: paddr=0014cde4 vaddr=50000000 size=00024h (    36) load
+I (317) boot: Loaded app from partition at offset 0x10000
+I (318) boot: Disabling RNG early entropy source...
+I (328) octal_psram: vendor id    : 0x0d (AP)
+I (328) octal_psram: dev id       : 0x02 (generation 3)
+I (328) octal_psram: density      : 0x03 (64 Mbit)
+I (330) octal_psram: good-die     : 0x01 (Pass)
+I (334) octal_psram: Latency      : 0x01 (Fixed)
+I (339) octal_psram: VCC          : 0x01 (3V)
+I (343) octal_psram: SRF          : 0x01 (Fast Refresh)
+I (348) octal_psram: BurstType    : 0x01 (Hybrid Wrap)
+I (353) octal_psram: BurstLen     : 0x01 (32 Byte)
+I (357) octal_psram: Readlatency  : 0x02 (10 cycles@Fixed)
+I (362) octal_psram: DriveStrength: 0x00 (1/1)
+I (366) MSPI Timing: Enter psram timing tuning
+I (371) esp_psram: Found 8MB PSRAM device
+I (374) esp_psram: Speed: 80MHz
+I (377) cpu_start: Multicore app
+I (793) esp_psram: SPI SRAM memory test OK
+I (802) cpu_start: GPIO 44 and 43 are used as console UART I/O pins
+I (802) cpu_start: Pro cpu start user code
+I (802) cpu_start: cpu freq: 240000000 Hz
+I (804) app_init: Application information:
+I (808) app_init: Project name:     crynet_hub
+I (812) app_init: App version:      cd85b4b-dirty
+I (816) app_init: Compile time:     Oct 31 2026 01:12:18
+I (821) app_init: ELF file SHA256:  38566a41a...
+I (826) app_init: ESP-IDF:          6.1.0
+I (829) efuse_init: Min chip rev:     v0.0
+I (833) efuse_init: Max chip rev:     v0.99 
+I (837) efuse_init: Chip rev:         v0.2
+I (841) heap_init: Initializing. RAM available for dynamic allocation:
+I (847) heap_init: At 3FCAAD80 len 0003E990 (250 KiB): RAM
+I (852) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM
+I (858) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM
+I (863) heap_init: At 600FE000 len 00001FE8 (7 KiB): RTCRAM
+I (868) esp_psram: Adding pool of 8192K of PSRAM memory to heap allocator
+I (875) spi_flash: detected chip: boya
+I (878) spi_flash: flash io: qio
+I (881) sleep_gpio: Configure to isolate all GPIO pins in sleep state
+I (887) sleep_gpio: Enable automatic switching of GPIO sleep configuration
+I (894) coexist: coex firmware version: a830d28
+I (898) coexist: coexist rom version e7ae62f
+I (903) main_task: Started on CPU0
+I (919) esp_psram: Reserving pool of 32K of internal memory for DMA/internal allocations
+I (919) main_task: Calling app_main()
+I (919) crynet: =================================================
+I (925) crynet: CryNet hub — inference core (Stage 2a)
+I (930) crynet: =================================================
+I (935) crynet: chip       : rev 2, 2 cores
+I (939) crynet: psram      : 8388608 bytes (present)
+I (944) crynet: free int   : 298123 bytes
+I (948) crynet: flash      : 16777216 bytes
+I (952) crynet: model      : 137384 bytes (int8)
+I (956) crynet: threshold  : 0.9500    silence gate 0.001500
+I (961) crynet: input quant: scale 0.060125612  zero point -4
+I (973) crynet: front end  : 5380 bytes of working memory (internal SRAM)
+I (985) crynet: interpreter: ready, arena 262144 bytes reserved, 108328 used
+I (986) crynet: --- probe 0: silence ---
+I (1003) crynet:   pcm       : CRC 0x7dc291ab matches the host
+I (1050) crynet:   front end : 43.70 ms  (quantise 2.94 ms)
+I (1050) crynet:   features  : max delta 0, 5184/5184 exact, 0 differing -> PASS
+I (1157) crynet:   inference : 101.84 ms   P(no_cry)=0.8750  P(cry)=0.1250
+I (1157) crynet:   decision  : rms 0.000000  below the silence gate -> no alert
+I (1159) crynet: --- probe 1: dc_bias ---
+I (1180) crynet:   pcm       : CRC 0xaadbb9ed matches the host
+I (1227) crynet:   front end : 43.69 ms  (quantise 2.94 ms)
+I (1228) crynet:   features  : max delta 0, 5184/5184 exact, 0 differing -> PASS
+I (1334) crynet:   inference : 101.85 ms   P(no_cry)=0.8750  P(cry)=0.1250
+I (1334) crynet:   decision  : rms 0.000000  below the silence gate -> no alert
+I (1337) crynet: --- probe 2: tone ---
+I (2997) crynet:   pcm       : CRC 0xa363136b matches the host
+I (3045) crynet:   front end : 43.90 ms  (quantise 3.83 ms)
+I (3046) crynet:   features  : max delta 0, 5184/5184 exact, 0 differing -> PASS
+I (3152) crynet:   inference : 101.84 ms   P(no_cry)=0.9961  P(cry)=0.0000
+I (3153) crynet:   decision  : rms 0.261608  above the silence gate -> no alert
+I (3155) crynet: --- probe 3: noise ---
+I (3330) crynet:   pcm       : CRC 0x39a53ceb matches the host
+I (3378) crynet:   front end : 43.91 ms  (quantise 3.83 ms)
+I (3379) crynet:   features  : max delta 1, 5181/5184 exact, 3 differing -> PASS
+I (3485) crynet:   inference : 101.82 ms   P(no_cry)=0.0000  P(cry)=0.9961
+I (3485) crynet:   decision  : rms 0.028780  above the silence gate -> ALERT
+I (3487) crynet: free int   : 290151 bytes after the probes
+I (3493) crynet: =================================================
+I (3499) crynet: RESULT: PASS — 4 probes, front end and model agree with the host
+I (3506) crynet: =================================================
+I (3513) pp: pp rom version: e7ae62f
+I (3515) net80211: net80211 rom version: e7ae62f
+I (3521) wifi:wifi driver task: 3fcee704, prio:23, stack:6656, core=0
+I (3528) wifi:wifi firmware version: e12a754
+I (3530) wifi:wifi certification version: v7.0
+I (3534) wifi:config NVS flash: enabled
+I (3537) wifi:config nano formatting: disabled
+I (3542) wifi:Init data frame dynamic rx buffer num: 64
+I (3547) wifi:Init static rx mgmt buffer num: 5
+I (3551) wifi:Init management short buffer num: 32
+I (3556) wifi:Init static tx buffer num: 16
+I (3560) wifi:Init tx cache buffer num: 32
+I (3563) wifi:Init static tx FG buffer num: 2
+I (3567) wifi:Init static rx buffer size: 1600
+I (3571) wifi:Init static rx buffer num: 16
+I (3575) wifi:Init dynamic rx buffer num: 64
+I (3580) wifi_init: rx ba win: 16
+I (3582) wifi_init: accept mbox: 6
+I (3585) wifi_init: tcpip mbox: 32
+I (3588) wifi_init: udp mbox: 6
+I (3591) wifi_init: tcp mbox: 6
+I (3594) wifi_init: tcp tx win: 5760
+I (3597) wifi_init: tcp rx win: 5760
+I (3601) wifi_init: tcp mss: 1440
+I (3604) wifi_init: WiFi/LWIP prefer SPIRAM
+I (3608) wifi_init: WiFi IRAM OP enabled
+I (3611) wifi_init: WiFi RX IRAM OP enabled
+I (3615) phy_init: phy_version 712,87e8c20e,Apr 13 2026,18:51:10
+I (3656) wifi:mode : sta (30:30:f9:17:2f:80)
+I (3656) wifi:enable tsf
+I (3657) wifi:Set ps type: 0, coexist: 0
+
+I (3659) ESPNOW: espnow [version: 2.0] init
+I (3659) node_link: node 1 peer E0:72:A1:72:AC:14 added
+I (3664) node_link: promiscuous mode is off (the air counters are idle)
+I (3670) node_link: ESP-NOW protocol version 2
+I (3674) node_link: the hub's STA address is 30:30:F9:17:2F:80
+I (3680) node_link: the radio is on channel 6
+I (3684) node_link: ESP-NOW ready on channel 6
+I (3688) link: listening on ESP-NOW; asking for audio at RMS >= 0.030
+I (3694) crynet: free int   : 214499 bytes with the radio up
+I (3700) BLE_INIT: BT controller compile version [51d9dfd]
+I (3705) BLE_INIT: Using main XTAL as clock source
+I (3710) BLE_INIT: Feature Config, ADV:1, BLE_50:1, DTM:1, SCAN:1, CCA:0, SMP:1, CONNECT:1
+I (3718) BLE_INIT: Bluetooth MAC: 30:30:f9:17:2f:82
+I (3723) wifi:Coexist!!! Wi-Fi station would only keep waked when available
+
+I (3731) ble_alert: the GATT server registered (operation 1)
+I (3734) ble_alert: the GATT server registered (operation 2)
+I (3740) ble_alert: the GATT server registered (operation 2)
+I (3745) ble_alert: the GATT server registered (operation 1)
+I (3750) ble_alert: the GATT server registered (operation 2)
+I (3756) ble_alert: the GATT server registered (operation 2)
+I (3761) ble_alert: the GATT server registered (operation 2)
+I (3767) ble_alert: the GATT server registered (operation 1)
+I (3772) ble_alert: the GATT server registered (operation 2)
+I (3777) ble_alert: the GATT server registered (operation 2)
+I (3753) node_link: raw frame 28 bytes from E0:72:A1:72:AC:14 (first bytes C3 7E 01 01)
+I (3791) node_link: node 1 heard for the first time
+I (3798) NimBLE: GAP procedure initiated: stop advertising.
+
+I (3802) NimBLE: GAP procedure initiated: advertise; 
+I (3805) NimBLE: disc_mode=2
+I (3808) NimBLE:  adv_channel_map=0 own_addr_type=0 adv_filter_policy=0 adv_itvl_min=0 adv_itvl_max=0
+I (3817) NimBLE: 
+
+I (3820) ble_alert: advertising as "INFANT_MONITOR_HUB"
+I (3824) ble_alert: the Bluetooth host is starting
+I (3828) crynet: free int   : 148615 bytes with Bluetooth up
+I (3858) node_link: raw frame 28 bytes from E0:72:A1:72:AC:14 (first bytes C3 7E 01 01)
+I (3963) node_link: raw frame 28 bytes from E0:72:A1:72:AC:14 (first bytes C3 7E 01 01)
+I (4068) node_link: raw frame 28 bytes from E0:72:A1:72:AC:14 (first bytes C3 7E 01 01)
+I (4173) node_link: raw frame 28 bytes from E0:72:A1:72:AC:14 (first bytes C3 7E 01 01)
+I (4255) ili9341: the panel is up: 320 x 240, rotation 1
+I (4304) link: node 1: rms 0.0130  seq 96  flags 0x05  crc 0x208E490E
+I (4604) link: node 1: rms 0.0300  seq 96  flags 0x07  crc 0x208E490E
+I (4854) link: node 1: asking for the window (seq 96, rms 0.0370)
+I (5904) link: link: 79 frames off the air, 79 parsed, 0 bad, 0 bad payload, 1 requests sent, 0 failed
+I (8704) link: node 1: rms 0.0040  seq 96  flags 0x01  crc 0x208E490E
+I (9754) link: node 1: rms 0.0090  seq 96  flags 0x01  crc 0x208E490E
+W (10394) link: node 1: the burst stalled with 255 of 286 fragments; asking for the 31 that are missing
+I (10794) link: node 1: rms 0.0140  seq 96  flags 0x01  crc 0x208E490E
+I (10944) link: link: 312 frames off the air, 312 parsed, 0 bad, 0 bad payload, 2 requests sent, 0 failed
+I (11044) link: node 1: rms 0.0040  seq 96  flags 0x05  crc 0x208E490E
+W (12084) link: node 1: the burst stalled with 285 of 286 fragments; asking for the 1 that are missing
+I (12134) link: node 1: rms 0.0190  seq 96  flags 0x05  crc 0x208E490E
+I (12151) link: node 1: 286/286 fragments in 7.28 s
+I (12151) link: node 1: window crc32 0x208E490E, the node advertised 0x208E490E -> MATCH
+I (12158) link: node 1: window rms 0.022666  mean -154  peak 1760
+I (12309) link: node 1: front end 47.9 ms, inference 103.0 ms, P(no_cry)=0.9961 P(cry)=0.0000
+I (12310) link: node 1: no cry
+I (12360) link: node 1: rms 0.0730  seq 96  flags 0x07  crc 0x208E490E
+I (12410) link: node 1: asking for the window (seq 96, rms 0.0850)
+I (15960) link: link: 562 frames off the air, 562 parsed, 0 bad, 0 bad payload, 4 requests sent, 0 failed
+I (16310) link: node 1: rms 0.0030  seq 96  flags 0x01  crc 0x208E490E
+I (17360) link: node 1: rms 0.0360  seq 96  flags 0x03  crc 0x208E490E
+I (17560) link: node 1: rms 0.0210  seq 96  flags 0x01  crc 0x208E490E
+I (17910) link: node 1: rms 0.0320  seq 96  flags 0x03  crc 0x208E490E
+W (18000) link: node 1: the burst stalled with 255 of 286 fragments; asking for the 31 that are missing
+I (18500) link: node 1: rms 0.0290  seq 96  flags 0x01  crc 0x208E490E
+I (18650) link: node 1: rms 0.0310  seq 96  flags 0x07  crc 0x208E490E
+I (18750) link: node 1: rms 0.0160  seq 96  flags 0x05  crc 0x208E490E
+I (19250) link: node 1: rms 0.0390  seq 96  flags 0x07  crc 0x208E490E
+I (19600) link: node 1: rms 0.0170  seq 96  flags 0x05  crc 0x208E490E
+W (19740) link: node 1: the burst stalled with 281 of 286 fragments; asking for the 5 that are missing
+W (19790) link: node 1: the node moved to window 97 while window 96 was in flight; asking for the new one
+I (19790) link: node 1: rms 0.0080  seq 97  flags 0x05  crc 0x7A9CC2F9
+I (20794) link: node 1: rms 0.0120  seq 97  flags 0x05  crc 0x7A9CC2F9
+I (20994) link: link: 649 frames off the air, 649 parsed, 0 bad, 0 bad payload, 6 requests sent, 0 failed
+I (21844) link: node 1: rms 0.0210  seq 97  flags 0x05  crc 0x7A9CC2F9
+I (22494) link: node 1: rms 0.0400  seq 97  flags 0x07  crc 0x7A9CC2F9
+I (22594) link: node 1: rms 0.0230  seq 97  flags 0x05  crc 0x7A9CC2F9
+I (23594) link: node 1: rms 0.0050  seq 98  flags 0x05  crc 0x3F94D5A4
+I (24744) link: node 1: rms 0.0090  seq 98  flags 0x05  crc 0x3F94D5A4
+I (25044) link: node 1: rms 0.0330  seq 98  flags 0x07  crc 0x3F94D5A4
+I (25144) link: node 1: asking for the window (seq 98, rms 0.0340)
+I (26044) link: link: 750 frames off the air, 750 parsed, 0 bad, 0 bad payload, 7 requests sent, 0 failed
+I (29044) link: node 1: rms 0.0030  seq 98  flags 0x01  crc 0x3F94D5A4
+I (29794) link: node 1: rms 0.0450  seq 98  flags 0x03  crc 0x3F94D5A4
+I (29894) link: node 1: rms 0.0160  seq 98  flags 0x01  crc 0x3F94D5A4
+I (30244) link: node 1: rms 0.0310  seq 98  flags 0x03  crc 0x3F94D5A4
+I (30444) link: node 1: rms 0.0220  seq 98  flags 0x01  crc 0x3F94D5A4
+W (30884) link: node 1: the burst stalled with 243 of 286 fragments; asking for the 43 that are missing
+I (31084) link: link: 962 frames off the air, 962 parsed, 0 bad, 0 bad payload, 8 requests sent, 0 failed
+I (31484) link: node 1: rms 0.0310  seq 98  flags 0x03  crc 0x3F94D5A4
+I (31584) link: node 1: rms 0.0140  seq 98  flags 0x05  crc 0x3F94D5A4
+I (32034) link: node 1: rms 0.0390  seq 98  flags 0x07  crc 0x3F94D5A4
+I (32334) link: node 1: rms 0.0290  seq 98  flags 0x05  crc 0x3F94D5A4
+W (32724) link: node 1: the burst stalled with 284 of 286 fragments; asking for the 2 that are missing
+I (32774) link: node 1: rms 0.0350  seq 98  flags 0x07  crc 0x3F94D5A4
+I (32791) link: node 1: 286/286 fragments in 7.63 s
+I (32791) link: node 1: window crc32 0x3F94D5A4, the node advertised 0x3F94D5A4 -> MATCH
+I (32798) link: node 1: window rms 0.014429  mean 30  peak 10185
+I (32949) link: node 1: front end 48.2 ms, inference 102.9 ms, P(no_cry)=0.9961 P(cry)=0.0000
+I (32950) link: node 1: no cry
+I (33000) link: node 1: asking for the window (seq 98, rms 0.0350)
+I (36100) link: link: 1213 frames off the air, 1213 parsed, 0 bad, 0 bad payload, 10 requests sent, 0 failed
+I (36900) link: node 1: rms 0.0070  seq 98  flags 0x01  crc 0x3F94D5A4
+I (37250) link: node 1: rms 0.0340  seq 98  flags 0x03  crc 0x3F94D5A4
+I (37350) link: node 1: rms 0.0190  seq 98  flags 0x01  crc 0x3F94D5A4
+I (37750) link: node 1: rms 0.0360  seq 98  flags 0x03  crc 0x3F94D5A4
+I (37850) link: node 1: rms 0.0230  seq 98  flags 0x01  crc 0x3F94D5A4
+I (38050) link: node 1: rms 0.0480  seq 98  flags 0x03  crc 0x3F94D5A4
+I (38400) link: node 1: rms 0.0140  seq 98  flags 0x01  crc 0x3F94D5A4
+W (38440) link: node 1: the burst stalled with 263 of 286 fragments; asking for the 23 that are missing
+I (38756) link: node 1: 286/286 fragments in 5.74 s
+I (38757) link: node 1: window crc32 0x3F94D5A4, the node advertised 0x3F94D5A4 -> MATCH
+I (38764) link: node 1: window rms 0.014429  mean 30  peak 10185
+I (38914) link: node 1: front end 47.8 ms, inference 102.9 ms, P(no_cry)=0.9961 P(cry)=0.0000
+I (38915) link: node 1: no cry
+I (38965) link: node 1: rms 0.0500  seq 98  flags 0x03  crc 0x3F94D5A4
+I (39065) link: node 1: rms 0.0740  seq 98  flags 0x07  crc 0x3F94D5A4
+I (39065) link: node 1: asking for the window (seq 98, rms 0.0740)
+I (41116) link: link: 1442 frames off the air, 1442 parsed, 0 bad, 0 bad payload, 12 requests sent, 0 failed
+I (42966) link: node 1: rms 0.0290  seq 98  flags 0x01  crc 0x3F94D5A4
+I (43166) link: node 1: rms 0.0320  seq 98  flags 0x03  crc 0x3F94D5A4
+I (43366) link: node 1: rms 0.0220  seq 98  flags 0x01  crc 0x3F94D5A4
+I (43466) link: node 1: rms 0.0330  seq 98  flags 0x03  crc 0x3F94D5A4
+I (43566) link: node 1: rms 0.0460  seq 98  flags 0x02  crc 0x00000000
+I (43816) link: node 1: rms 0.0170  seq 98  flags 0x00  crc 0x00000000
+I (44016) link: node 1: rms 0.0310  seq 98  flags 0x02  crc 0x00000000
+I (44416) link: node 1: rms 0.0110  seq 98  flags 0x00  crc 0x00000000
+I (44566) link: node 1: rms 0.0320  seq 98  flags 0x02  crc 0x00000000
+I (44866) link: node 1: rms 0.0800  seq 98  flags 0x06  crc 0x00000000
+W (45056) link: node 1: the burst stalled with 227 of 286 fragments; asking for the 59 that are missing
+
+--- done ---

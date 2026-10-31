@@ -13,6 +13,7 @@
 #define FONT5X7_FIRST 0x20
 #define FONT5X7_LAST  0x7E
 #define FONT5X7_WIDTH 5
+#define FONT5X7_HEIGHT 7
 
 static const uint8_t s_font5x7[][5] = {
     {0x00, 0x00, 0x00, 0x00, 0x00},   /*   */

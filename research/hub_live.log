@@ -1,0 +1,824 @@
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0x1 (POWERON),boot:0x8 (SPI_FAST_FLASH_BOOT)
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2820,len:0x1664
+load:0x403c8700,len:0xf7c
+load:0x403cb700,len:0x31ec
+entry 0x403c8924
+I (25) boot: ESP-IDF 6.1.0 2nd stage bootloader
+I (25) boot: compile time Oct 30 2026 14:23:58
+I (25) boot: Multicore bootloader
+I (25) boot: chip revision: v0.2
+I (28) boot: efuse block revision: v1.3
+I (31) qio_mode: Enabling default flash chip QIO
+I (36) boot.esp32s3: Boot SPI Speed : 80MHz
+I (40) boot.esp32s3: SPI Mode       : QIO
+I (43) boot.esp32s3: SPI Flash Size : 16MB
+I (47) boot: Enabling RNG early entropy source...
+I (52) boot: Partition Table:
+I (54) boot: ## Label            Usage          Type ST Offset   Length
+I (61) boot:  0 nvs              WiFi data        01 02 00009000 00006000
+I (67) boot:  1 phy_init         RF data          01 01 0000f000 00001000
+I (74) boot:  2 factory          factory app      00 00 00010000 00200000
+I (80) boot:  3 storage          Unknown data     01 82 00210000 00600000
+I (87) boot: End of partition table
+I (90) esp_image: segment 0: paddr=00010020 vaddr=3c0d0020 size=50350h (328528) map
+I (148) esp_image: segment 1: paddr=00060378 vaddr=3fca0600 size=05bbch ( 23484) load
+I (153) esp_image: segment 2: paddr=00065f3c vaddr=40374000 size=0a0dch ( 41180) load
+I (161) esp_image: segment 3: paddr=00070020 vaddr=42000020 size=ca7d0h (829392) map
+I (290) esp_image: segment 4: paddr=0013a7f8 vaddr=4037e0dc size=12500h ( 75008) load
+I (305) esp_image: segment 5: paddr=0014cd00 vaddr=50000000 size=00024h (    36) load
+I (317) boot: Loaded app from partition at offset 0x10000
+I (318) boot: Disabling RNG early entropy source...
+I (328) octal_psram: vendor id    : 0x0d (AP)
+I (328) octal_psram: dev id       : 0x02 (generation 3)
+I (328) octal_psram: density      : 0x03 (64 Mbit)
+I (330) octal_psram: good-die     : 0x01 (Pass)
+I (334) octal_psram: Latency      : 0x01 (Fixed)
+I (339) octal_psram: VCC          : 0x01 (3V)
+I (343) octal_psram: SRF          : 0x01 (Fast Refresh)
+I (348) octal_psram: BurstType    : 0x01 (Hybrid Wrap)
+I (352) octal_psram: BurstLen     : 0x01 (32 Byte)
+I (357) octal_psram: Readlatency  : 0x02 (10 cycles@Fixed)
+I (362) octal_psram: DriveStrength: 0x00 (1/1)
+I (366) MSPI Timing: Enter psram timing tuning
+I (371) esp_psram: Found 8MB PSRAM device
+I (374) esp_psram: Speed: 80MHz
+I (377) cpu_start: Multicore app
+I (793) esp_psram: SPI SRAM memory test OK
+I (801) cpu_start: GPIO 44 and 43 are used as console UART I/O pins
+I (802) cpu_start: Pro cpu start user code
+I (802) cpu_start: cpu freq: 240000000 Hz
+I (804) app_init: Application information:
+I (808) app_init: Project name:     crynet_hub
+I (812) app_init: App version:      cd85b4b-dirty
+I (816) app_init: Compile time:     Oct 31 2026 01:12:18
+I (821) app_init: ELF file SHA256:  3639a00a1...
+I (826) app_init: ESP-IDF:          6.1.0
+I (829) efuse_init: Min chip rev:     v0.0
+I (833) efuse_init: Max chip rev:     v0.99 
+I (837) efuse_init: Chip rev:         v0.2
+I (841) heap_init: Initializing. RAM available for dynamic allocation:
+I (847) heap_init: At 3FCAAB80 len 0003EB90 (250 KiB): RAM
+I (852) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM
+I (858) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM
+I (863) heap_init: At 600FE000 len 00001FE8 (7 KiB): RTCRAM
+I (868) esp_psram: Adding pool of 8192K of PSRAM memory to heap allocator
+I (875) spi_flash: detected chip: boya
+I (878) spi_flash: flash io: qio
+I (881) sleep_gpio: Configure to isolate all GPIO pins in sleep state
+I (887) sleep_gpio: Enable automatic switching of GPIO sleep configuration
+I (894) coexist: coex firmware version: a830d28
+I (898) coexist: coexist rom version e7ae62f
+I (903) main_task: Started on CPU0
+I (919) esp_psram: Reserving pool of 32K of internal memory for DMA/internal allocations
+I (919) main_task: Calling app_main()
+I (919) crynet: =================================================
+I (925) crynet: CryNet hub — inference core (Stage 2a)
+I (930) crynet: =================================================
+I (935) crynet: chip       : rev 2, 2 cores
+I (939) crynet: psram      : 8388608 bytes (present)
+I (944) crynet: free int   : 298635 bytes
+I (948) crynet: flash      : 16777216 bytes
+I (952) crynet: model      : 137384 bytes (int8)
+I (956) crynet: threshold  : 0.9500    silence gate 0.001500
+I (961) crynet: input quant: scale 0.060125612  zero point -4
+I (973) crynet: front end  : 5380 bytes of working memory (internal SRAM)
+I (985) crynet: interpreter: ready, arena 262144 bytes reserved, 108328 used
+I (986) crynet: --- probe 0: silence ---
+I (1003) crynet:   pcm       : CRC 0x7dc291ab matches the host
+I (1050) crynet:   front end : 43.70 ms  (quantise 2.94 ms)
+I (1050) crynet:   features  : max delta 0, 5184/5184 exact, 0 differing -> PASS
+I (1157) crynet:   inference : 101.86 ms   P(no_cry)=0.8750  P(cry)=0.1250
+I (1157) crynet:   decision  : rms 0.000000  below the silence gate -> no alert
+I (1159) crynet: --- probe 1: dc_bias ---
+I (1180) crynet:   pcm       : CRC 0xaadbb9ed matches the host
+I (1227) crynet:   front end : 43.68 ms  (quantise 2.94 ms)
+I (1228) crynet:   features  : max delta 0, 5184/5184 exact, 0 differing -> PASS
+I (1334) crynet:   inference : 101.86 ms   P(no_cry)=0.8750  P(cry)=0.1250
+I (1334) crynet:   decision  : rms 0.000000  below the silence gate -> no alert
+I (1337) crynet: --- probe 2: tone ---
+I (2998) crynet:   pcm       : CRC 0xa363136b matches the host
+I (3045) crynet:   front end : 43.90 ms  (quantise 3.83 ms)
+I (3046) crynet:   features  : max delta 0, 5184/5184 exact, 0 differing -> PASS
+I (3152) crynet:   inference : 101.87 ms   P(no_cry)=0.9961  P(cry)=0.0000
+I (3153) crynet:   decision  : rms 0.261608  above the silence gate -> no alert
+I (3155) crynet: --- probe 3: noise ---
+I (3330) crynet:   pcm       : CRC 0x39a53ceb matches the host
+I (3378) crynet:   front end : 43.91 ms  (quantise 3.84 ms)
+I (3379) crynet:   features  : max delta 1, 5181/5184 exact, 3 differing -> PASS
+I (3485) crynet:   inference : 101.83 ms   P(no_cry)=0.0000  P(cry)=0.9961
+I (3485) crynet:   decision  : rms 0.028780  above the silence gate -> ALERT
+I (3487) crynet: free int   : 290663 bytes after the probes
+I (3493) crynet: =================================================
+I (3499) crynet: RESULT: PASS — 4 probes, front end and model agree with the host
+I (3506) crynet: =================================================
+I (3513) pp: pp rom version: e7ae62f
+I (3515) net80211: net80211 rom version: e7ae62f
+I (3521) wifi:wifi driver task: 3fcee704, prio:23, stack:6656, core=0
+I (3528) wifi:wifi firmware version: e12a754
+I (3530) wifi:wifi certification version: v7.0
+I (3534) wifi:config NVS flash: enabled
+I (3537) wifi:config nano formatting: disabled
+I (3542) wifi:Init data frame dynamic rx buffer num: 64
+I (3547) wifi:Init static rx mgmt buffer num: 5
+I (3551) wifi:Init management short buffer num: 32
+I (3556) wifi:Init static tx buffer num: 16
+I (3560) wifi:Init tx cache buffer num: 32
+I (3563) wifi:Init static tx FG buffer num: 2
+I (3567) wifi:Init static rx buffer size: 1600
+I (3571) wifi:Init static rx buffer num: 16
+I (3575) wifi:Init dynamic rx buffer num: 64
+I (3580) wifi_init: rx ba win: 16
+I (3582) wifi_init: accept mbox: 6
+I (3585) wifi_init: tcpip mbox: 32
+I (3588) wifi_init: udp mbox: 6
+I (3591) wifi_init: tcp mbox: 6
+I (3594) wifi_init: tcp tx win: 5760
+I (3597) wifi_init: tcp rx win: 5760
+I (3601) wifi_init: tcp mss: 1440
+I (3604) wifi_init: WiFi/LWIP prefer SPIRAM
+I (3608) wifi_init: WiFi IRAM OP enabled
+I (3611) wifi_init: WiFi RX IRAM OP enabled
+I (3615) phy_init: phy_version 712,87e8c20e,Apr 13 2026,18:51:10
+I (3656) wifi:mode : sta (30:30:f9:17:2f:80)
+I (3656) wifi:enable tsf
+I (3657) wifi:Set ps type: 0, coexist: 0
+
+I (3658) ESPNOW: espnow [version: 2.0] init
+I (3659) node_link: node 1 peer E0:72:A1:72:AC:14 added
+I (3664) node_link: promiscuous mode is off (the air counters are idle)
+I (3670) node_link: ESP-NOW protocol version 2
+I (3674) node_link: the hub's STA address is 30:30:F9:17:2F:80
+I (3680) node_link: the radio is on channel 6
+I (3684) node_link: ESP-NOW ready on channel 6
+I (3688) link: listening on ESP-NOW; asking for audio at RMS >= 0.030
+I (3689) node_link: raw frame 28 bytes from E0:72:A1:72:AC:14 (first bytes C3 7E 01 01)
+I (3702) node_link: node 1 heard for the first time
+I (3706) crynet: free int   : 215011 bytes with the radio up
+I (3712) BLE_INIT: BT controller compile version [51d9dfd]
+I (3717) BLE_INIT: Using main XTAL as clock source
+I (3722) BLE_INIT: Feature Config, ADV:1, BLE_50:1, DTM:1, SCAN:1, CCA:0, SMP:1, CONNECT:1
+I (3730) BLE_INIT: Bluetooth MAC: 30:30:f9:17:2f:82
+I (3735) wifi:Coexist!!! Wi-Fi station would only keep waked when available
+
+I (3743) ble_alert: the GATT server registered (operation 1)
+I (3746) ble_alert: the GATT server registered (operation 2)
+I (3752) ble_alert: the GATT server registered (operation 2)
+I (3757) ble_alert: the GATT server registered (operation 1)
+I (3762) ble_alert: the GATT server registered (operation 2)
+I (3768) ble_alert: the GATT server registered (operation 2)
+I (3773) ble_alert: the GATT server registered (operation 2)
+I (3779) ble_alert: the GATT server registered (operation 1)
+I (3784) ble_alert: the GATT server registered (operation 2)
+I (3789) ble_alert: the GATT server registered (operation 2)
+I (3794) node_link: raw frame 28 bytes from E0:72:A1:72:AC:14 (first bytes C3 7E 01 01)
+I (3805) NimBLE: GAP procedure initiated: stop advertising.
+
+I (3809) NimBLE: GAP procedure initiated: advertise; 
+I (3813) NimBLE: disc_mode=2
+I (3815) NimBLE:  adv_channel_map=0 own_addr_type=0 adv_filter_policy=0 adv_itvl_min=0 adv_itvl_max=0
+I (3824) NimBLE: 
+
+I (3827) ble_alert: advertising as "INFANT_MONITOR_HUB"
+I (3831) ble_alert: the Bluetooth host is starting
+I (3836) crynet: free int   : 149127 bytes with Bluetooth up
+I (4004) node_link: raw frame 28 bytes from E0:72:A1:72:AC:14 (first bytes C3 7E 01 01)
+I (4109) node_link: raw frame 28 bytes from E0:72:A1:72:AC:14 (first bytes C3 7E 01 01)
+I (4214) node_link: raw frame 28 bytes from E0:72:A1:72:AC:14 (first bytes C3 7E 01 01)
+I (4262) ili9341: the panel is up: 320 x 240, rotation 1
+I (4329) link: node 1: rms 0.0040  seq 1  flags 0x04  crc 0x00000000
+I (5430) link: node 1: rms 0.0120  seq 1  flags 0x04  crc 0x00000000
+I (5880) link: link: 19 frames off the air, 19 parsed, 0 bad, 0 bad payload, 0 requests sent, 0 failed
+I (6480) link: node 1: rms 0.0060  seq 1  flags 0x04  crc 0x00000000
+I (7530) link: node 1: rms 0.0100  seq 1  flags 0x04  crc 0x00000000
+I (8530) link: node 1: rms 0.0070  seq 1  flags 0x04  crc 0x00000000
+I (9580) link: node 1: rms 0.0120  seq 1  flags 0x04  crc 0x00000000
+I (10630) link: node 1: rms 0.0090  seq 1  flags 0x04  crc 0x00000000
+I (10930) link: link: 64 frames off the air, 64 parsed, 0 bad, 0 bad payload, 0 requests sent, 0 failed
+I (11730) link: node 1: rms 0.0090  seq 1  flags 0x04  crc 0x00000000
+I (12880) link: node 1: rms 0.0080  seq 1  flags 0x04  crc 0x00000000
+I (13930) link: node 1: rms 0.0100  seq 1  flags 0x04  crc 0x00000000
+I (15030) link: node 1: rms 0.0080  seq 1  flags 0x04  crc 0x00000000
+I (15980) link: link: 110 frames off the air, 110 parsed, 0 bad, 0 bad payload, 0 requests sent, 0 failed
+I (16080) link: node 1: rms 0.0100  seq 1  flags 0x04  crc 0x00000000
+I (17180) link: node 1: rms 0.0100  seq 1  flags 0x04  crc 0x00000000
+I (17580) link: node 1: rms 0.0470  seq 1  flags 0x06  crc 0x00000000
+I (17680) link: node 1: rms 0.0140  seq 1  flags 0x04  crc 0x00000000
+I (18680) link: node 1: rms 0.0080  seq 2  flags 0x05  crc 0x615D19C5
+I (19730) link: node 1: rms 0.0090  seq 2  flags 0x05  crc 0x615D19C5
+I (20780) link: node 1: rms 0.0070  seq 2  flags 0x05  crc 0x615D19C5
+I (21030) link: link: 157 frames off the air, 157 parsed, 0 bad, 0 bad payload, 0 requests sent, 0 failed
+I (21830) link: node 1: rms 0.0100  seq 2  flags 0x05  crc 0x615D19C5
+I (22930) link: node 1: rms 0.0060  seq 2  flags 0x05  crc 0x615D19C5
+I (23980) link: node 1: rms 0.0070  seq 2  flags 0x05  crc 0x615D19C5
+I (25030) link: node 1: rms 0.0120  seq 2  flags 0x05  crc 0x615D19C5
+I (26030) link: node 1: rms 0.0040  seq 2  flags 0x05  crc 0x615D19C5
+I (26030) link: link: 204 frames off the air, 204 parsed, 0 bad, 0 bad payload, 0 requests sent, 0 failed
+I (27084) link: node 1: rms 0.0060  seq 2  flags 0x05  crc 0x615D19C5
+I (28134) link: node 1: rms 0.0070  seq 2  flags 0x05  crc 0x615D19C5
+I (29184) link: node 1: rms 0.0040  seq 2  flags 0x05  crc 0x615D19C5
+I (30284) link: node 1: rms 0.0040  seq 2  flags 0x05  crc 0x615D19C5
+I (31034) link: link: 249 frames off the air, 249 parsed, 0 bad, 0 bad payload, 0 requests sent, 0 failed
+I (31334) link: node 1: rms 0.0060  seq 2  flags 0x05  crc 0x615D19C5
+I (32434) link: node 1: rms 0.0090  seq 2  flags 0x05  crc 0x615D19C5
+I (33484) link: node 1: rms 0.0110  seq 2  flags 0x05  crc 0x615D19C5
+I (34534) link: node 1: rms 0.0120  seq 2  flags 0x05  crc 0x615D19C5
+I (35584) link: node 1: rms 0.0110  seq 2  flags 0x05  crc 0x615D19C5
+I (36084) link: link: 294 frames off the air, 294 parsed, 0 bad, 0 bad payload, 0 requests sent, 0 failed
+I (36684) link: node 1: rms 0.0040  seq 2  flags 0x05  crc 0x615D19C5
+I (37734) link: node 1: rms 0.0110  seq 2  flags 0x05  crc 0x615D19C5
+I (38684) link: node 1: rms 0.0120  seq 2  flags 0x04  crc 0x00000000
+I (39784) link: node 1: rms 0.0140  seq 2  flags 0x04  crc 0x00000000
+I (40834) link: node 1: rms 0.0100  seq 2  flags 0x04  crc 0x00000000
+I (41134) link: link: 341 frames off the air, 341 parsed, 0 bad, 0 bad payload, 0 requests sent, 0 failed
+I (41884) link: node 1: rms 0.0060  seq 2  flags 0x04  crc 0x00000000
+I (42984) link: node 1: rms 0.0100  seq 2  flags 0x04  crc 0x00000000
+I (44034) link: node 1: rms 0.0070  seq 2  flags 0x04  crc 0x00000000
+I (45084) link: node 1: rms 0.0100  seq 2  flags 0x04  crc 0x00000000
+I (46084) link: node 1: rms 0.0070  seq 2  flags 0x04  crc 0x00000000
+I (46184) link: link: 387 frames off the air, 387 parsed, 0 bad, 0 bad payload, 0 requests sent, 0 failed
+I (47134) link: node 1: rms 0.0080  seq 2  flags 0x04  crc 0x00000000
+I (48184) link: node 1: rms 0.0080  seq 2  flags 0x04  crc 0x00000000
+I (49234) link: node 1: rms 0.0080  seq 2  flags 0x04  crc 0x00000000
+I (50234) link: node 1: rms 0.0080  seq 2  flags 0x04  crc 0x00000000
+I (51184) link: link: 432 frames off the air, 432 parsed, 0 bad, 0 bad payload, 0 requests sent, 0 failed
+I (51284) link: node 1: rms 0.0370  seq 2  flags 0x06  crc 0x00000000
+I (51484) link: node 1: rms 0.0120  seq 2  flags 0x04  crc 0x00000000
+I (52384) link: node 1: rms 0.0080  seq 3  flags 0x05  crc 0x1FD54287
+I (53434) link: node 1: rms 0.0070  seq 3  flags 0x05  crc 0x1FD54287
+I (54484) link: node 1: rms 0.0090  seq 3  flags 0x05  crc 0x1FD54287
+I (55534) link: node 1: rms 0.0060  seq 3  flags 0x05  crc 0x1FD54287
+I (56234) link: link: 478 frames off the air, 478 parsed, 0 bad, 0 bad payload, 0 requests sent, 0 failed
+I (56534) link: node 1: rms 0.0100  seq 3  flags 0x05  crc 0x1FD54287
+I (57584) link: node 1: rms 0.0060  seq 3  flags 0x05  crc 0x1FD54287
+I (58634) link: node 1: rms 0.0050  seq 3  flags 0x05  crc 0x1FD54287
+I (59734) link: node 1: rms 0.0090  seq 3  flags 0x05  crc 0x1FD54287
+I (60784) link: node 1: rms 0.0130  seq 3  flags 0x05  crc 0x1FD54287
+I (61284) link: link: 521 frames off the air, 521 parsed, 0 bad, 0 bad payload, 0 requests sent, 0 failed
+I (61834) link: node 1: rms 0.0090  seq 3  flags 0x05  crc 0x1FD54287
+I (62884) link: node 1: rms 0.0130  seq 3  flags 0x05  crc 0x1FD54287
+I (63884) link: node 1: rms 0.0020  seq 3  flags 0x05  crc 0x1FD54287
+I (64934) link: node 1: rms 0.0040  seq 3  flags 0x05  crc 0x1FD54287
+I (66034) link: node 1: rms 0.0050  seq 3  flags 0x05  crc 0x1FD54287
+I (66334) link: link: 569 frames off the air, 569 parsed, 0 bad, 0 bad payload, 0 requests sent, 0 failed
+I (67084) link: node 1: rms 0.0040  seq 3  flags 0x05  crc 0x1FD54287
+I (68134) link: node 1: rms 0.0030  seq 3  flags 0x05  crc 0x1FD54287
+I (69184) link: node 1: rms 0.0030  seq 3  flags 0x05  crc 0x1FD54287
+I (70184) link: node 1: rms 0.0170  seq 3  flags 0x05  crc 0x1FD54287
+I (71234) link: node 1: rms 0.0110  seq 3  flags 0x05  crc 0x1FD54287
+I (71334) link: link: 613 frames off the air, 613 parsed, 0 bad, 0 bad payload, 0 requests sent, 0 failed
+I (72284) link: node 1: rms 0.0030  seq 3  flags 0x05  crc 0x1FD54287
+I (72384) link: node 1: rms 0.0110  seq 3  flags 0x04  crc 0x00000000
+I (73384) link: node 1: rms 0.0040  seq 3  flags 0x04  crc 0x00000000
+I (74434) link: node 1: rms 0.0100  seq 3  flags 0x04  crc 0x00000000
+I (75484) link: node 1: rms 0.0060  seq 3  flags 0x04  crc 0x00000000
+I (76384) link: link: 660 frames off the air, 660 parsed, 0 bad, 0 bad payload, 0 requests sent, 0 failed
+I (76584) link: node 1: rms 0.0070  seq 3  flags 0x04  crc 0x00000000
+I (77634) link: node 1: rms 0.0090  seq 3  flags 0x04  crc 0x00000000
+I (78684) link: node 1: rms 0.0070  seq 3  flags 0x04  crc 0x00000000
+I (79684) link: node 1: rms 0.0090  seq 3  flags 0x04  crc 0x00000000
+I (80734) link: node 1: rms 0.0040  seq 3  flags 0x04  crc 0x00000000
+I (81384) link: link: 707 frames off the air, 707 parsed, 0 bad, 0 bad payload, 0 requests sent, 0 failed
+I (81784) link: node 1: rms 0.0050  seq 3  flags 0x04  crc 0x00000000
+I (82834) link: node 1: rms 0.0090  seq 3  flags 0x04  crc 0x00000000
+I (83834) link: node 1: rms 0.0110  seq 3  flags 0x04  crc 0x00000000
+I (84884) link: node 1: rms 0.0070  seq 3  flags 0x04  crc 0x00000000
+I (85934) link: node 1: rms 0.0130  seq 3  flags 0x04  crc 0x00000000
+I (86384) link: link: 753 frames off the air, 753 parsed, 0 bad, 0 bad payload, 0 requests sent, 0 failed
+I (87034) link: node 1: rms 0.0100  seq 3  flags 0x04  crc 0x00000000
+I (88084) link: node 1: rms 0.0120  seq 3  flags 0x04  crc 0x00000000
+I (89134) link: node 1: rms 0.0110  seq 3  flags 0x04  crc 0x00000000
+I (90134) link: node 1: rms 0.0060  seq 3  flags 0x04  crc 0x00000000
+I (91184) link: node 1: rms 0.0080  seq 3  flags 0x04  crc 0x00000000
+I (91384) link: link: 798 frames off the air, 798 parsed, 0 bad, 0 bad payload, 0 requests sent, 0 failed
+I (92234) link: node 1: rms 0.0120  seq 3  flags 0x04  crc 0x00000000
+I (93334) link: node 1: rms 0.0120  seq 3  flags 0x04  crc 0x00000000
+I (94384) link: node 1: rms 0.0040  seq 3  flags 0x04  crc 0x00000000
+I (95434) link: node 1: rms 0.0100  seq 3  flags 0x04  crc 0x00000000
+I (96384) link: link: 842 frames off the air, 842 parsed, 0 bad, 0 bad payload, 0 requests sent, 0 failed
+I (96484) link: node 1: rms 0.0130  seq 3  flags 0x04  crc 0x00000000
+I (97484) link: node 1: rms 0.0030  seq 3  flags 0x04  crc 0x00000000
+I (98534) link: node 1: rms 0.0070  seq 3  flags 0x04  crc 0x00000000
+I (99634) link: node 1: rms 0.0040  seq 3  flags 0x04  crc 0x00000000
+I (100684) link: node 1: rms 0.0120  seq 3  flags 0x04  crc 0x00000000
+I (101434) link: link: 886 frames off the air, 886 parsed, 0 bad, 0 bad payload, 0 requests sent, 0 failed
+I (101734) link: node 1: rms 0.0060  seq 3  flags 0x04  crc 0x00000000
+I (102784) link: node 1: rms 0.0030  seq 3  flags 0x04  crc 0x00000000
+I (103784) link: node 1: rms 0.0030  seq 3  flags 0x04  crc 0x00000000
+I (104834) link: node 1: rms 0.0020  seq 3  flags 0x04  crc 0x00000000
+I (105684) link: node 1: rms 0.0320  seq 3  flags 0x06  crc 0x00000000
+I (106484) link: link: 930 frames off the air, 930 parsed, 0 bad, 0 bad payload, 0 requests sent, 0 failed
+I (106784) link: node 1: rms 0.0510  seq 4  flags 0x07  crc 0xD8A64F3A
+I (106784) link: node 1: asking for the window (seq 4, rms 0.0510)
+I (110685) link: node 1: rms 0.0050  seq 4  flags 0x01  crc 0xD8A64F3A
+I (111485) link: link: 1210 frames off the air, 1210 parsed, 0 bad, 0 bad payload, 1 requests sent, 0 failed
+I (111535) link: node 1: rms 0.0530  seq 4  flags 0x03  crc 0xD8A64F3A
+W (112125) link: node 1: the burst stalled with 270 of 286 fragments; asking for the 16 that are missing
+I (112325) link: node 1: rms 0.0120  seq 4  flags 0x01  crc 0xD8A64F3A
+I (112342) link: node 1: 286/286 fragments in 5.54 s
+I (112342) link: node 1: window crc32 0xD8A64F3A, the node advertised 0xD8A64F3A -> MATCH
+I (112349) link: node 1: window rms 0.113541  mean -68  peak 20452
+I (112500) link: node 1: front end 47.9 ms, inference 103.0 ms, P(no_cry)=0.9961 P(cry)=0.0000
+I (112500) link: node 1: no cry
+I (112551) link: node 1: rms 0.0730  seq 4  flags 0x03  crc 0xD8A64F3A
+I (112751) link: node 1: rms 0.0350  seq 4  flags 0x07  crc 0xD8A64F3A
+I (112751) link: node 1: asking for the window (seq 4, rms 0.0350)
+I (116502) link: link: 1468 frames off the air, 1468 parsed, 0 bad, 0 bad payload, 3 requests sent, 0 failed
+I (116702) link: node 1: rms 0.0230  seq 4  flags 0x01  crc 0xD8A64F3A
+I (117752) link: node 1: rms 0.0090  seq 4  flags 0x01  crc 0xD8A64F3A
+I (118602) link: node 1: rms 0.0030  seq 4  flags 0x05  crc 0xD8A64F3A
+W (118642) link: node 1: the burst stalled with 239 of 286 fragments; asking for the 47 that are missing
+I (119692) link: node 1: rms 0.0050  seq 4  flags 0x05  crc 0xD8A64F3A
+W (120532) link: node 1: the burst stalled with 283 of 286 fragments; asking for the 3 that are missing
+I (120599) link: node 1: 286/286 fragments in 7.83 s
+I (120599) link: node 1: window crc32 0xD8A64F3A, the node advertised 0xD8A64F3A -> MATCH
+I (120606) link: node 1: window rms 0.113541  mean -68  peak 20452
+I (120757) link: node 1: front end 47.9 ms, inference 103.0 ms, P(no_cry)=0.9961 P(cry)=0.0000
+I (120758) link: node 1: no cry
+I (121508) link: link: 1562 frames off the air, 1562 parsed, 0 bad, 0 bad payload, 5 requests sent, 0 failed
+I (121858) link: node 1: rms 0.0090  seq 4  flags 0x05  crc 0xD8A64F3A
+I (122908) link: node 1: rms 0.0070  seq 4  flags 0x05  crc 0xD8A64F3A
+I (123908) link: node 1: rms 0.0040  seq 4  flags 0x05  crc 0xD8A64F3A
+I (124958) link: node 1: rms 0.0070  seq 4  flags 0x05  crc 0xD8A64F3A
+I (126008) link: node 1: rms 0.0070  seq 4  flags 0x05  crc 0xD8A64F3A
+I (126558) link: link: 1606 frames off the air, 1606 parsed, 0 bad, 0 bad payload, 5 requests sent, 0 failed
+I (126758) link: node 1: rms 0.0030  seq 4  flags 0x04  crc 0x00000000
+I (127808) link: node 1: rms 0.0090  seq 4  flags 0x04  crc 0x00000000
+I (128908) link: node 1: rms 0.0090  seq 4  flags 0x04  crc 0x00000000
+I (129958) link: node 1: rms 0.0110  seq 4  flags 0x04  crc 0x00000000
+I (131008) link: node 1: rms 0.0070  seq 4  flags 0x04  crc 0x00000000
+I (131608) link: link: 1652 frames off the air, 1652 parsed, 0 bad, 0 bad payload, 5 requests sent, 0 failed
+I (132008) link: node 1: rms 0.0120  seq 4  flags 0x04  crc 0x00000000
+I (133058) link: node 1: rms 0.0090  seq 4  flags 0x04  crc 0x00000000
+I (134108) link: node 1: rms 0.0150  seq 4  flags 0x04  crc 0x00000000
+I (134258) link: node 1: rms 0.0370  seq 4  flags 0x06  crc 0x00000000
+I (135358) link: node 1: rms 0.0490  seq 5  flags 0x07  crc 0x067D00AB
+I (135358) link: node 1: asking for the window (seq 5, rms 0.0490)
+I (136609) link: link: 1771 frames off the air, 1771 parsed, 0 bad, 0 bad payload, 6 requests sent, 0 failed
+I (139259) link: node 1: rms 0.0040  seq 5  flags 0x01  crc 0x067D00AB
+I (140309) link: node 1: rms 0.0080  seq 5  flags 0x01  crc 0x067D00AB
+W (140799) link: node 1: the burst stalled with 264 of 286 fragments; asking for the 22 that are missing
+I (141399) link: node 1: rms 0.0080  seq 5  flags 0x05  crc 0x067D00AB
+I (141649) link: link: 1991 frames off the air, 1991 parsed, 0 bad, 0 bad payload, 7 requests sent, 0 failed
+W (142389) link: node 1: the burst stalled with 285 of 286 fragments; asking for the 1 that are missing
+I (142456) link: node 1: 286/286 fragments in 7.08 s
+I (142456) link: node 1: window crc32 0x067D00AB, the node advertised 0x067D00AB -> MATCH
+I (142463) link: node 1: window rms 0.211942  mean 289  peak 33027
+I (142614) link: node 1: front end 47.7 ms, inference 103.3 ms, P(no_cry)=0.9961 P(cry)=0.0000
+I (142615) link: node 1: no cry
+I (143665) link: node 1: rms 0.0120  seq 5  flags 0x05  crc 0x067D00AB
+I (144715) link: node 1: rms 0.0100  seq 5  flags 0x05  crc 0x067D00AB
+I (145765) link: node 1: rms 0.0100  seq 5  flags 0x05  crc 0x067D00AB
+I (146665) link: link: 2039 frames off the air, 2039 parsed, 0 bad, 0 bad payload, 8 requests sent, 0 failed
+I (146765) link: node 1: rms 0.0020  seq 5  flags 0x05  crc 0x067D00AB
+I (147815) link: node 1: rms 0.0090  seq 5  flags 0x05  crc 0x067D00AB
+I (148865) link: node 1: rms 0.0020  seq 5  flags 0x05  crc 0x067D00AB
+I (149965) link: node 1: rms 0.0050  seq 5  flags 0x05  crc 0x067D00AB
+I (151015) link: node 1: rms 0.0100  seq 5  flags 0x05  crc 0x067D00AB
+I (151665) link: link: 2086 frames off the air, 2086 parsed, 0 bad, 0 bad payload, 8 requests sent, 0 failed
+I (152065) link: node 1: rms 0.0120  seq 5  flags 0x05  crc 0x067D00AB
+I (153165) link: node 1: rms 0.0090  seq 5  flags 0x05  crc 0x067D00AB
+I (154215) link: node 1: rms 0.0080  seq 5  flags 0x05  crc 0x067D00AB
+I (155265) link: node 1: rms 0.0030  seq 5  flags 0x05  crc 0x067D00AB
+I (155365) link: node 1: rms 0.0130  seq 5  flags 0x04  crc 0x00000000
+I (156465) link: node 1: rms 0.0080  seq 5  flags 0x04  crc 0x00000000
+I (156715) link: link: 2131 frames off the air, 2131 parsed, 0 bad, 0 bad payload, 8 requests sent, 0 failed
+I (157515) link: node 1: rms 0.0040  seq 5  flags 0x04  crc 0x00000000
+I (158565) link: node 1: rms 0.0080  seq 5  flags 0x04  crc 0x00000000
+I (159565) link: node 1: rms 0.0090  seq 5  flags 0x04  crc 0x00000000
+I (160615) link: node 1: rms 0.0090  seq 5  flags 0x04  crc 0x00000000
+I (161665) link: node 1: rms 0.0030  seq 5  flags 0x04  crc 0x00000000
+I (161765) link: link: 2177 frames off the air, 2177 parsed, 0 bad, 0 bad payload, 8 requests sent, 0 failed
+I (162765) link: node 1: rms 0.0070  seq 5  flags 0x04  crc 0x00000000
+I (163815) link: node 1: rms 0.0070  seq 5  flags 0x04  crc 0x00000000
+I (164865) link: node 1: rms 0.0060  seq 5  flags 0x04  crc 0x00000000
+I (165965) link: node 1: rms 0.0090  seq 5  flags 0x04  crc 0x00000000
+I (166815) link: link: 2222 frames off the air, 2222 parsed, 0 bad, 0 bad payload, 8 requests sent, 0 failed
+I (167015) link: node 1: rms 0.0050  seq 5  flags 0x04  crc 0x00000000
+I (168065) link: node 1: rms 0.0040  seq 5  flags 0x04  crc 0x00000000
+I (169165) link: node 1: rms 0.0080  seq 5  flags 0x04  crc 0x00000000
+I (170215) link: node 1: rms 0.0050  seq 5  flags 0x04  crc 0x00000000
+I (171265) link: node 1: rms 0.0060  seq 5  flags 0x04  crc 0x00000000
+I (171815) link: link: 2268 frames off the air, 2268 parsed, 0 bad, 0 bad payload, 8 requests sent, 0 failed
+I (172365) link: node 1: rms 0.0070  seq 5  flags 0x04  crc 0x00000000
+I (173415) link: node 1: rms 0.0110  seq 5  flags 0x04  crc 0x00000000
+I (174465) link: node 1: rms 0.0050  seq 5  flags 0x04  crc 0x00000000
+I (175565) link: node 1: rms 0.0080  seq 5  flags 0x04  crc 0x00000000
+I (176615) link: node 1: rms 0.0110  seq 5  flags 0x04  crc 0x00000000
+I (176865) link: link: 2313 frames off the air, 2313 parsed, 0 bad, 0 bad payload, 8 requests sent, 0 failed
+I (177665) link: node 1: rms 0.0080  seq 5  flags 0x04  crc 0x00000000
+I (178665) link: node 1: rms 0.0040  seq 5  flags 0x04  crc 0x00000000
+I (179715) link: node 1: rms 0.0070  seq 5  flags 0x04  crc 0x00000000
+I (180765) link: node 1: rms 0.0060  seq 5  flags 0x04  crc 0x00000000
+I (181865) link: node 1: rms 0.0070  seq 5  flags 0x04  crc 0x00000000
+I (181865) link: link: 2358 frames off the air, 2358 parsed, 0 bad, 0 bad payload, 8 requests sent, 0 failed
+I (182919) link: node 1: rms 0.0100  seq 5  flags 0x04  crc 0x00000000
+I (183969) link: node 1: rms 0.0130  seq 5  flags 0x04  crc 0x00000000
+I (185019) link: node 1: rms 0.0050  seq 5  flags 0x04  crc 0x00000000
+I (186119) link: node 1: rms 0.0050  seq 5  flags 0x04  crc 0x00000000
+I (186869) link: link: 2405 frames off the air, 2405 parsed, 0 bad, 0 bad payload, 8 requests sent, 0 failed
+I (187169) link: node 1: rms 0.0120  seq 5  flags 0x04  crc 0x00000000
+I (188219) link: node 1: rms 0.0110  seq 5  flags 0x04  crc 0x00000000
+I (189219) link: node 1: rms 0.0030  seq 5  flags 0x04  crc 0x00000000
+I (190269) link: node 1: rms 0.0130  seq 5  flags 0x04  crc 0x00000000
+I (191319) link: node 1: rms 0.0080  seq 5  flags 0x04  crc 0x00000000
+I (191869) link: link: 2446 frames off the air, 2446 parsed, 0 bad, 0 bad payload, 8 requests sent, 0 failed
+I (192419) link: node 1: rms 0.0090  seq 5  flags 0x04  crc 0x00000000
+I (193469) link: node 1: rms 0.0110  seq 5  flags 0x04  crc 0x00000000
+I (194519) link: node 1: rms 0.0090  seq 5  flags 0x04  crc 0x00000000
+I (195619) link: node 1: rms 0.0110  seq 5  flags 0x04  crc 0x00000000
+I (196669) link: node 1: rms 0.0100  seq 5  flags 0x04  crc 0x00000000
+I (196869) link: link: 2492 frames off the air, 2492 parsed, 0 bad, 0 bad payload, 8 requests sent, 0 failed
+I (197719) link: node 1: rms 0.0050  seq 5  flags 0x04  crc 0x00000000
+I (198819) link: node 1: rms 0.0090  seq 5  flags 0x04  crc 0x00000000
+I (199869) link: node 1: rms 0.0080  seq 5  flags 0x04  crc 0x00000000
+I (200919) link: node 1: rms 0.0030  seq 5  flags 0x04  crc 0x00000000
+I (201919) link: link: 2536 frames off the air, 2536 parsed, 0 bad, 0 bad payload, 8 requests sent, 0 failed
+I (202019) link: node 1: rms 0.0020  seq 5  flags 0x04  crc 0x00000000
+I (203069) link: node 1: rms 0.0030  seq 5  flags 0x04  crc 0x00000000
+I (204119) link: node 1: rms 0.0040  seq 5  flags 0x04  crc 0x00000000
+I (205219) link: node 1: rms 0.0050  seq 5  flags 0x04  crc 0x00000000
+I (206269) link: node 1: rms 0.0070  seq 5  flags 0x04  crc 0x00000000
+I (206919) link: link: 2580 frames off the air, 2580 parsed, 0 bad, 0 bad payload, 8 requests sent, 0 failed
+I (207319) link: node 1: rms 0.0080  seq 5  flags 0x04  crc 0x00000000
+I (208419) link: node 1: rms 0.0030  seq 5  flags 0x04  crc 0x00000000
+I (209469) link: node 1: rms 0.0110  seq 5  flags 0x04  crc 0x00000000
+I (210519) link: node 1: rms 0.0080  seq 5  flags 0x04  crc 0x00000000
+I (211619) link: node 1: rms 0.0100  seq 5  flags 0x04  crc 0x00000000
+I (211919) link: link: 2626 frames off the air, 2626 parsed, 0 bad, 0 bad payload, 8 requests sent, 0 failed
+I (212669) link: node 1: rms 0.0040  seq 5  flags 0x04  crc 0x00000000
+I (213719) link: node 1: rms 0.0030  seq 5  flags 0x04  crc 0x00000000
+I (214819) link: node 1: rms 0.0140  seq 5  flags 0x04  crc 0x00000000
+I (215969) link: node 1: rms 0.0140  seq 5  flags 0x04  crc 0x00000000
+I (216919) link: link: 2668 frames off the air, 2668 parsed, 0 bad, 0 bad payload, 8 requests sent, 0 failed
+I (217019) link: node 1: rms 0.0130  seq 5  flags 0x04  crc 0x00000000
+I (218019) link: node 1: rms 0.0030  seq 5  flags 0x04  crc 0x00000000
+I (219069) link: node 1: rms 0.0100  seq 5  flags 0x04  crc 0x00000000
+I (220119) link: node 1: rms 0.0030  seq 5  flags 0x04  crc 0x00000000
+I (221219) link: node 1: rms 0.0110  seq 5  flags 0x04  crc 0x00000000
+I (221969) link: link: 2713 frames off the air, 2713 parsed, 0 bad, 0 bad payload, 8 requests sent, 0 failed
+I (222269) link: node 1: rms 0.0080  seq 5  flags 0x04  crc 0x00000000
+I (223319) link: node 1: rms 0.0040  seq 5  flags 0x04  crc 0x00000000
+I (224319) link: node 1: rms 0.0130  seq 5  flags 0x04  crc 0x00000000
+I (225369) link: node 1: rms 0.0060  seq 5  flags 0x04  crc 0x00000000
+I (226419) link: node 1: rms 0.0120  seq 5  flags 0x04  crc 0x00000000
+I (226969) link: link: 2758 frames off the air, 2758 parsed, 0 bad, 0 bad payload, 8 requests sent, 0 failed
+I (227469) link: node 1: rms 0.0110  seq 5  flags 0x04  crc 0x00000000
+I (228469) link: node 1: rms 0.0030  seq 5  flags 0x04  crc 0x00000000
+I (229519) link: node 1: rms 0.0060  seq 5  flags 0x04  crc 0x00000000
+I (230569) link: node 1: rms 0.0130  seq 5  flags 0x04  crc 0x00000000
+I (231669) link: node 1: rms 0.0060  seq 5  flags 0x04  crc 0x00000000
+I (231969) link: link: 2803 frames off the air, 2803 parsed, 0 bad, 0 bad payload, 8 requests sent, 0 failed
+I (232719) link: node 1: rms 0.0110  seq 5  flags 0x04  crc 0x00000000
+I (233769) link: node 1: rms 0.0130  seq 5  flags 0x04  crc 0x00000000
+I (234869) link: node 1: rms 0.0100  seq 5  flags 0x04  crc 0x00000000
+I (235919) link: node 1: rms 0.0090  seq 5  flags 0x04  crc 0x00000000
+I (236969) link: node 1: rms 0.0100  seq 5  flags 0x04  crc 0x00000000
+I (236969) link: link: 2848 frames off the air, 2848 parsed, 0 bad, 0 bad payload, 8 requests sent, 0 failed
+I (237973) link: node 1: rms 0.0120  seq 5  flags 0x04  crc 0x00000000
+I (239023) link: node 1: rms 0.0060  seq 5  flags 0x04  crc 0x00000000
+I (240073) link: node 1: rms 0.0090  seq 5  flags 0x04  crc 0x00000000
+I (241123) link: node 1: rms 0.0050  seq 5  flags 0x04  crc 0x00000000
+I (241973) link: link: 2893 frames off the air, 2893 parsed, 0 bad, 0 bad payload, 8 requests sent, 0 failed
+I (242223) link: node 1: rms 0.0100  seq 5  flags 0x04  crc 0x00000000
+I (243273) link: node 1: rms 0.0070  seq 5  flags 0x04  crc 0x00000000
+I (244273) link: node 1: rms 0.0080  seq 5  flags 0x04  crc 0x00000000
+I (245423) link: node 1: rms 0.0070  seq 5  flags 0x04  crc 0x00000000
+I (246473) link: node 1: rms 0.0080  seq 5  flags 0x04  crc 0x00000000
+I (247023) link: link: 2939 frames off the air, 2939 parsed, 0 bad, 0 bad payload, 8 requests sent, 0 failed
+I (247573) link: node 1: rms 0.0080  seq 5  flags 0x04  crc 0x00000000
+I (248623) link: node 1: rms 0.0110  seq 5  flags 0x04  crc 0x00000000
+I (249673) link: node 1: rms 0.0110  seq 5  flags 0x04  crc 0x00000000
+I (250723) link: node 1: rms 0.0090  seq 5  flags 0x04  crc 0x00000000
+I (251823) link: node 1: rms 0.0140  seq 5  flags 0x04  crc 0x00000000
+I (252023) link: link: 2983 frames off the air, 2983 parsed, 0 bad, 0 bad payload, 8 requests sent, 0 failed
+I (252873) link: node 1: rms 0.0080  seq 5  flags 0x04  crc 0x00000000
+I (253973) link: node 1: rms 0.0160  seq 5  flags 0x04  crc 0x00000000
+I (255023) link: node 1: rms 0.0110  seq 5  flags 0x04  crc 0x00000000
+I (256173) link: node 1: rms 0.0120  seq 5  flags 0x04  crc 0x00000000
+I (257073) link: link: 3027 frames off the air, 3027 parsed, 0 bad, 0 bad payload, 8 requests sent, 0 failed
+I (257173) link: node 1: rms 0.0050  seq 5  flags 0x04  crc 0x00000000
+I (258223) link: node 1: rms 0.0060  seq 5  flags 0x04  crc 0x00000000
+I (259273) link: node 1: rms 0.0050  seq 5  flags 0x04  crc 0x00000000
+I (260323) link: node 1: rms 0.0110  seq 5  flags 0x04  crc 0x00000000
+I (261423) link: node 1: rms 0.0130  seq 5  flags 0x04  crc 0x00000000
+I (262073) link: link: 3071 frames off the air, 3071 parsed, 0 bad, 0 bad payload, 8 requests sent, 0 failed
+I (262473) link: node 1: rms 0.0100  seq 5  flags 0x04  crc 0x00000000
+I (263673) link: node 1: rms 0.0030  seq 5  flags 0x04  crc 0x00000000
+I (264723) link: node 1: rms 0.0060  seq 5  flags 0x04  crc 0x00000000
+I (265773) link: node 1: rms 0.0110  seq 5  flags 0x04  crc 0x00000000
+I (266773) link: node 1: rms 0.0100  seq 5  flags 0x04  crc 0x00000000
+I (267123) link: link: 3116 frames off the air, 3116 parsed, 0 bad, 0 bad payload, 8 requests sent, 0 failed
+I (267823) link: node 1: rms 0.0050  seq 5  flags 0x04  crc 0x00000000
+I (268873) link: node 1: rms 0.0120  seq 5  flags 0x04  crc 0x00000000
+I (269923) link: node 1: rms 0.0060  seq 5  flags 0x04  crc 0x00000000
+I (270923) link: node 1: rms 0.0090  seq 5  flags 0x04  crc 0x00000000
+I (271973) link: node 1: rms 0.0060  seq 5  flags 0x04  crc 0x00000000
+I (272123) link: link: 3159 frames off the air, 3159 parsed, 0 bad, 0 bad payload, 8 requests sent, 0 failed
+I (273073) link: node 1: rms 0.0110  seq 5  flags 0x04  crc 0x00000000
+I (274123) link: node 1: rms 0.0060  seq 5  flags 0x04  crc 0x00000000
+I (275173) link: node 1: rms 0.0030  seq 5  flags 0x04  crc 0x00000000
+I (276223) link: node 1: rms 0.0090  seq 5  flags 0x04  crc 0x00000000
+I (277123) link: link: 3202 frames off the air, 3202 parsed, 0 bad, 0 bad payload, 8 requests sent, 0 failed
+I (277323) link: node 1: rms 0.0030  seq 5  flags 0x04  crc 0x00000000
+I (278373) link: node 1: rms 0.0060  seq 5  flags 0x04  crc 0x00000000
+I (279423) link: node 1: rms 0.0050  seq 5  flags 0x04  crc 0x00000000
+I (280523) link: node 1: rms 0.0120  seq 5  flags 0x04  crc 0x00000000
+I (281573) link: node 1: rms 0.0100  seq 5  flags 0x04  crc 0x00000000
+I (282123) link: link: 3247 frames off the air, 3247 parsed, 0 bad, 0 bad payload, 8 requests sent, 0 failed
+I (282673) link: node 1: rms 0.0070  seq 5  flags 0x04  crc 0x00000000
+I (283723) link: node 1: rms 0.0100  seq 5  flags 0x04  crc 0x00000000
+I (284773) link: node 1: rms 0.0080  seq 5  flags 0x04  crc 0x00000000
+I (285823) link: node 1: rms 0.0120  seq 5  flags 0x04  crc 0x00000000
+I (286923) link: node 1: rms 0.0130  seq 5  flags 0x04  crc 0x00000000
+I (287123) link: link: 3291 frames off the air, 3291 parsed, 0 bad, 0 bad payload, 8 requests sent, 0 failed
+I (287973) link: node 1: rms 0.0040  seq 5  flags 0x04  crc 0x00000000
+I (289023) link: node 1: rms 0.0100  seq 5  flags 0x04  crc 0x00000000
+I (290023) link: node 1: rms 0.0120  seq 5  flags 0x04  crc 0x00000000
+I (291073) link: node 1: rms 0.0080  seq 5  flags 0x04  crc 0x00000000
+I (292123) link: node 1: rms 0.0030  seq 5  flags 0x04  crc 0x00000000
+I (292123) link: link: 3336 frames off the air, 3336 parsed, 0 bad, 0 bad payload, 8 requests sent, 0 failed
+I (293227) link: node 1: rms 0.0020  seq 5  flags 0x04  crc 0x00000000
+I (294277) link: node 1: rms 0.0050  seq 5  flags 0x04  crc 0x00000000
+I (295327) link: node 1: rms 0.0040  seq 5  flags 0x04  crc 0x00000000
+I (296427) link: node 1: rms 0.0060  seq 5  flags 0x04  crc 0x00000000
+I (297127) link: link: 3381 frames off the air, 3381 parsed, 0 bad, 0 bad payload, 8 requests sent, 0 failed
+I (297477) link: node 1: rms 0.0110  seq 5  flags 0x04  crc 0x00000000
+I (298527) link: node 1: rms 0.0050  seq 5  flags 0x04  crc 0x00000000
+I (299577) link: node 1: rms 0.0080  seq 5  flags 0x04  crc 0x00000000
+I (300577) link: node 1: rms 0.0050  seq 5  flags 0x04  crc 0x00000000
+I (301627) link: node 1: rms 0.0120  seq 5  flags 0x04  crc 0x00000000
+I (302127) link: link: 3427 frames off the air, 3427 parsed, 0 bad, 0 bad payload, 8 requests sent, 0 failed
+I (302677) link: node 1: rms 0.0060  seq 5  flags 0x04  crc 0x00000000
+I (303777) link: node 1: rms 0.0100  seq 5  flags 0x04  crc 0x00000000
+I (304827) link: node 1: rms 0.0120  seq 5  flags 0x04  crc 0x00000000
+I (305877) link: node 1: rms 0.0070  seq 5  flags 0x04  crc 0x00000000
+I (306877) link: node 1: rms 0.0040  seq 5  flags 0x04  crc 0x00000000
+I (307177) link: link: 3471 frames off the air, 3471 parsed, 0 bad, 0 bad payload, 8 requests sent, 0 failed
+I (307927) link: node 1: rms 0.0040  seq 5  flags 0x04  crc 0x00000000
+I (309077) link: node 1: rms 0.0060  seq 5  flags 0x04  crc 0x00000000
+I (310177) link: node 1: rms 0.0060  seq 5  flags 0x04  crc 0x00000000
+I (311327) link: node 1: rms 0.0090  seq 5  flags 0x04  crc 0x00000000
+I (312227) link: link: 3514 frames off the air, 3514 parsed, 0 bad, 0 bad payload, 8 requests sent, 0 failed
+I (312427) link: node 1: rms 0.0100  seq 5  flags 0x04  crc 0x00000000
+I (313477) link: node 1: rms 0.0080  seq 5  flags 0x04  crc 0x00000000
+I (314627) link: node 1: rms 0.0040  seq 5  flags 0x04  crc 0x00000000
+I (315727) link: node 1: rms 0.0090  seq 5  flags 0x04  crc 0x00000000
+I (316777) link: node 1: rms 0.0040  seq 5  flags 0x04  crc 0x00000000
+I (317227) link: link: 3560 frames off the air, 3560 parsed, 0 bad, 0 bad payload, 8 requests sent, 0 failed
+I (317927) link: node 1: rms 0.0110  seq 5  flags 0x04  crc 0x00000000
+I (318927) link: node 1: rms 0.0080  seq 5  flags 0x04  crc 0x00000000
+I (319977) link: node 1: rms 0.0080  seq 5  flags 0x04  crc 0x00000000
+I (320277) link: node 1: rms 0.0340  seq 5  flags 0x06  crc 0x00000000
+I (321427) link: node 1: rms 0.2840  seq 6  flags 0x07  crc 0xE801B026
+I (321427) link: node 1: asking for the window (seq 6, rms 0.2840)
+I (322228) link: link: 3651 frames off the air, 3651 parsed, 0 bad, 0 bad payload, 9 requests sent, 0 failed
+I (325328) link: node 1: rms 0.0070  seq 6  flags 0x01  crc 0xE801B026
+I (325528) link: node 1: rms 0.0420  seq 6  flags 0x03  crc 0xE801B026
+I (326678) link: node 1: rms 0.0670  seq 6  flags 0x03  crc 0xE801B026
+W (326918) link: node 1: the burst stalled with 261 of 286 fragments; asking for the 25 that are missing
+I (327268) link: node 1: rms 0.0180  seq 6  flags 0x01  crc 0xE801B026
+I (327268) link: link: 3896 frames off the air, 3896 parsed, 0 bad, 0 bad payload, 10 requests sent, 0 failed
+I (327372) link: node 1: rms 0.0460  seq 6  flags 0x03  crc 0xE801B026
+I (327572) link: node 1: rms 0.0610  seq 6  flags 0x07  crc 0xE801B026
+I (327772) link: node 1: rms 0.0190  seq 6  flags 0x05  crc 0xE801B026
+I (328122) link: node 1: rms 0.0490  seq 6  flags 0x07  crc 0xE801B026
+W (328562) link: node 1: the burst stalled with 284 of 286 fragments; asking for the 2 that are missing
+I (328628) link: node 1: 286/286 fragments in 7.18 s
+I (328629) link: node 1: window crc32 0xE801B026, the node advertised 0xE801B026 -> MATCH
+I (328636) link: node 1: window rms 0.272217  mean 400  peak 33152
+I (328787) link: node 1: front end 48.1 ms, inference 103.2 ms, P(no_cry)=0.8516 P(cry)=0.1484
+I (328788) link: node 1: no cry
+I (328838) link: node 1: rms 0.0910  seq 7  flags 0x07  crc 0x0A1E3417
+I (328838) link: node 1: asking for the window (seq 7, rms 0.0910)
+I (332289) link: link: 4152 frames off the air, 4152 parsed, 0 bad, 0 bad payload, 12 requests sent, 0 failed
+I (332739) link: node 1: rms 0.0280  seq 7  flags 0x01  crc 0x0A1E3417
+I (332839) link: node 1: rms 0.0340  seq 7  flags 0x03  crc 0x0A1E3417
+I (333039) link: node 1: rms 0.0270  seq 7  flags 0x01  crc 0x0A1E3417
+I (333539) link: node 1: rms 0.0620  seq 7  flags 0x03  crc 0x0A1E3417
+I (333889) link: node 1: rms 0.0280  seq 7  flags 0x01  crc 0x0A1E3417
+I (333989) link: node 1: rms 0.0970  seq 7  flags 0x03  crc 0x0A1E3417
+W (334229) link: node 1: the burst stalled with 264 of 286 fragments; asking for the 22 that are missing
+I (334729) link: node 1: rms 0.0180  seq 7  flags 0x01  crc 0x0A1E3417
+I (334829) link: node 1: rms 0.0310  seq 7  flags 0x07  crc 0x0A1E3417
+W (335769) link: node 1: the burst stalled with 283 of 286 fragments; asking for the 3 that are missing
+I (335836) link: node 1: 286/286 fragments in 6.98 s
+I (335836) link: node 1: window crc32 0x0A1E3417, the node advertised 0x0A1E3417 -> MATCH
+I (335843) link: node 1: window rms 0.060723  mean 515  peak 11364
+I (335994) link: node 1: front end 47.4 ms, inference 103.0 ms, P(no_cry)=0.0000 P(cry)=0.9961
+I (335994) link: node 1: ALERT — cry
+I (335995) ble_alert: a cry on cot 1 at 100%
+I (336049) link: node 1: rms 0.1320  seq 8  flags 0x07  crc 0xDE4A5653
+I (336049) link: node 1: asking for the window (seq 8, rms 0.1320)
+I (337300) link: link: 4311 frames off the air, 4311 parsed, 0 bad, 0 bad payload, 15 requests sent, 0 failed
+I (339950) link: node 1: rms 0.0490  seq 8  flags 0x03  crc 0xDE4A5653
+I (341100) link: node 1: rms 0.0930  seq 8  flags 0x03  crc 0xDE4A5653
+I (341200) link: node 1: rms 0.0250  seq 8  flags 0x01  crc 0xDE4A5653
+I (341300) link: node 1: rms 0.0450  seq 8  flags 0x03  crc 0xDE4A5653
+I (341400) link: node 1: rms 0.0210  seq 8  flags 0x01  crc 0xDE4A5653
+I (341500) link: node 1: rms 0.1800  seq 8  flags 0x03  crc 0xDE4A5653
+W (341540) link: node 1: the burst stalled with 259 of 286 fragments; asking for the 27 that are missing
+I (342140) link: node 1: rms 0.0870  seq 8  flags 0x07  crc 0xDE4A5653
+I (342340) link: link: 4532 frames off the air, 4532 parsed, 0 bad, 0 bad payload, 16 requests sent, 0 failed
+I (342540) link: node 1: rms 0.0100  seq 8  flags 0x05  crc 0xDE4A5653
+W (343180) link: node 1: the burst stalled with 284 of 286 fragments; asking for the 2 that are missing
+W (343230) link: node 1: the node moved to window 9 while window 8 was in flight; asking for the new one
+I (343230) link: node 1: rms 0.0060  seq 9  flags 0x05  crc 0xEB8BF3B8
+I (343634) link: node 1: rms 0.0590  seq 9  flags 0x07  crc 0xEB8BF3B8
+I (343734) link: node 1: asking for the window (seq 9, rms 0.0470)
+I (344034) ble_alert: the cry on cot cot 1 at 100%
+I (347384) link: link: 4793 frames off the air, 4793 parsed, 0 bad, 0 bad payload, 18 requests sent, 0 failed
+I (347684) link: node 1: rms 0.1330  seq 9  flags 0x03  crc 0xEB8BF3B8
+I (348734) link: node 1: rms 0.1330  seq 9  flags 0x03  crc 0xEB8BF3B8
+I (349134) link: node 1: rms 0.0290  seq 9  flags 0x01  crc 0xEB8BF3B8
+W (349224) link: node 1: the burst stalled with 260 of 286 fragments; asking for the 26 that are missing
+I (349574) link: node 1: rms 0.1370  seq 9  flags 0x03  crc 0xEB8BF3B8
+I (349874) link: node 1: rms 0.0370  seq 9  flags 0x07  crc 0xEB8BF3B8
+I (350024) link: node 1: rms 0.0180  seq 9  flags 0x05  crc 0xEB8BF3B8
+I (350124) link: node 1: rms 0.0300  seq 9  flags 0x07  crc 0xEB8BF3B8
+I (350224) link: node 1: rms 0.0200  seq 9  flags 0x05  crc 0xEB8BF3B8
+I (350424) link: node 1: rms 0.0860  seq 9  flags 0x07  crc 0xEB8BF3B8
+W (350864) link: node 1: the burst stalled with 283 of 286 fragments; asking for the 3 that are missing
+I (350930) link: node 1: 286/286 fragments in 7.18 s
+I (350931) link: node 1: window crc32 0xEB8BF3B8, the node advertised 0xEB8BF3B8 -> MATCH
+I (350938) link: node 1: window rms 0.084495  mean -161  peak 20337
+I (351089) link: node 1: front end 48.2 ms, inference 102.9 ms, P(no_cry)=0.0000 P(cry)=0.9961
+I (351090) link: node 1: ALERT — cry
+I (351090) ble_alert: a cry on cot 1 at 100%
+I (351144) link: node 1: rms 0.0750  seq 10  flags 0x07  crc 0x10BDC07B
+I (351144) link: node 1: asking for the window (seq 10, rms 0.0750)
+I (352395) link: link: 4948 frames off the air, 4948 parsed, 0 bad, 0 bad payload, 21 requests sent, 0 failed
+I (355045) link: node 1: rms 0.0160  seq 10  flags 0x01  crc 0x10BDC07B
+I (355145) link: node 1: rms 0.0680  seq 10  flags 0x03  crc 0x10BDC07B
+I (355545) link: node 1: rms 0.0180  seq 10  flags 0x01  crc 0x10BDC07B
+I (355795) link: node 1: rms 0.0610  seq 10  flags 0x03  crc 0x10BDC07B
+I (355995) link: node 1: rms 0.0290  seq 10  flags 0x01  crc 0x10BDC07B
+I (356095) link: node 1: rms 0.0400  seq 10  flags 0x03  crc 0x10BDC07B
+I (356295) link: node 1: rms 0.0140  seq 10  flags 0x01  crc 0x10BDC07B
+W (356635) link: node 1: the burst stalled with 262 of 286 fragments; asking for the 24 that are missing
+I (356685) link: node 1: rms 0.0350  seq 10  flags 0x03  crc 0x10BDC07B
+I (357085) link: node 1: rms 0.0270  seq 10  flags 0x01  crc 0x10BDC07B
+I (357185) link: node 1: rms 0.0450  seq 10  flags 0x03  crc 0x10BDC07B
+I (357285) link: node 1: rms 0.0930  seq 10  flags 0x07  crc 0x10BDC07B
+I (357435) link: link: 5167 frames off the air, 5167 parsed, 0 bad, 0 bad payload, 22 requests sent, 0 failed
+W (358225) link: node 1: the burst stalled with 284 of 286 fragments; asking for the 2 that are missing
+I (358275) link: node 1: rms 0.0190  seq 10  flags 0x05  crc 0x10BDC07B
+I (358292) link: node 1: 286/286 fragments in 7.13 s
+I (358292) link: node 1: window crc32 0x10BDC07B, the node advertised 0x10BDC07B -> MATCH
+I (358299) link: node 1: window rms 0.102944  mean 39  peak 18601
+I (358451) link: node 1: front end 48.0 ms, inference 103.5 ms, P(no_cry)=0.0000 P(cry)=0.9961
+I (358451) link: node 1: ALERT — cry
+I (358502) link: node 1: rms 0.0290  seq 11  flags 0x05  crc 0x7EDB7E7A
+I (358752) link: node 1: rms 0.0300  seq 11  flags 0x07  crc 0x7EDB7E7A
+I (358852) link: node 1: asking for the window (seq 11, rms 0.1710)
+I (362452) link: link: 5426 frames off the air, 5426 parsed, 0 bad, 0 bad payload, 24 requests sent, 0 failed
+I (362752) link: node 1: rms 0.0060  seq 11  flags 0x01  crc 0x7EDB7E7A
+I (363052) link: node 1: rms 0.0320  seq 11  flags 0x03  crc 0x7EDB7E7A
+I (363802) link: node 1: rms 0.0300  seq 11  flags 0x01  crc 0x7EDB7E7A
+I (364102) link: node 1: rms 0.0900  seq 11  flags 0x03  crc 0x7EDB7E7A
+I (364202) link: node 1: rms 0.0290  seq 11  flags 0x01  crc 0x7EDB7E7A
+W (364342) link: node 1: the burst stalled with 261 of 286 fragments; asking for the 25 that are missing
+I (364392) link: node 1: rms 0.1090  seq 11  flags 0x03  crc 0x7EDB7E7A
+I (364892) link: node 1: rms 0.0170  seq 11  flags 0x01  crc 0x7EDB7E7A
+I (364992) link: node 1: rms 0.0310  seq 11  flags 0x07  crc 0x7EDB7E7A
+W (365932) link: node 1: the burst stalled with 284 of 286 fragments; asking for the 2 that are missing
+I (365999) link: node 1: 286/286 fragments in 7.13 s
+I (365999) link: node 1: window crc32 0x7EDB7E7A, the node advertised 0x7EDB7E7A -> MATCH
+I (366006) link: node 1: window rms 0.080976  mean 224  peak 16784
+I (366158) link: node 1: front end 48.1 ms, inference 103.3 ms, P(no_cry)=0.0000 P(cry)=0.9961
+I (366158) link: node 1: ALERT — cry
+I (366209) link: node 1: rms 0.0220  seq 12  flags 0x05  crc 0xE8840C99
+I (366259) link: node 1: rms 0.0420  seq 12  flags 0x07  crc 0xE8840C99
+I (366359) link: node 1: asking for the window (seq 12, rms 0.0490)
+I (367459) link: link: 5577 frames off the air, 5577 parsed, 0 bad, 0 bad payload, 27 requests sent, 0 failed
+I (370209) link: node 1: rms 0.0090  seq 12  flags 0x01  crc 0xE8840C99
+I (370409) link: node 1: rms 0.0410  seq 12  flags 0x03  crc 0xE8840C99
+I (370659) link: node 1: rms 0.0240  seq 12  flags 0x01  crc 0xE8840C99
+I (371059) link: node 1: rms 0.0770  seq 12  flags 0x03  crc 0xE8840C99
+W (371699) link: node 1: the burst stalled with 268 of 286 fragments; asking for the 18 that are missing
+I (372149) link: node 1: rms 0.1130  seq 12  flags 0x03  crc 0xE8840C99
+I (372349) link: node 1: rms 0.0350  seq 12  flags 0x07  crc 0xE8840C99
+I (372499) link: link: 5803 frames off the air, 5803 parsed, 0 bad, 0 bad payload, 28 requests sent, 0 failed
+W (373189) link: node 1: the burst stalled with 285 of 286 fragments; asking for the 1 that are missing
+I (373256) link: node 1: 286/286 fragments in 6.88 s
+I (373256) link: node 1: window crc32 0xE8840C99, the node advertised 0xE8840C99 -> MATCH
+I (373263) link: node 1: window rms 0.066900  mean -317  peak 16618
+I (373414) link: node 1: front end 47.7 ms, inference 102.6 ms, P(no_cry)=0.0000 P(cry)=0.9961
+I (373414) link: node 1: ALERT — cry
+I (373465) link: node 1: rms 0.0380  seq 13  flags 0x07  crc 0x395FB836
+I (373465) link: node 1: asking for the window (seq 13, rms 0.0380)
+I (377366) link: node 1: rms 0.0200  seq 13  flags 0x01  crc 0x395FB836
+I (377516) link: link: 6068 frames off the air, 6068 parsed, 0 bad, 0 bad payload, 30 requests sent, 0 failed
+I (377566) link: node 1: rms 0.0440  seq 13  flags 0x03  crc 0x395FB836
+I (378716) link: node 1: rms 0.1400  seq 13  flags 0x03  crc 0x395FB836
+W (379056) link: node 1: the burst stalled with 254 of 286 fragments; asking for the 32 that are missing
+I (379506) link: node 1: rms 0.0250  seq 13  flags 0x01  crc 0x395FB836
+I (379706) link: node 1: rms 0.0360  seq 13  flags 0x07  crc 0x395FB836
+I (380156) link: node 1: rms 0.0240  seq 13  flags 0x05  crc 0x395FB836
+W (380796) link: node 1: the burst stalled with 283 of 286 fragments; asking for the 3 that are missing
+W (380846) link: node 1: the node moved to window 14 while window 13 was in flight; asking for the new one
+I (380846) link: node 1: rms 0.0110  seq 14  flags 0x05  crc 0xC54BEAFD
+I (381450) ble_alert: the cry on cot cot 1 at 100%
+I (381850) link: node 1: rms 0.0220  seq 14  flags 0x05  crc 0xC54BEAFD
+I (382500) link: node 1: rms 0.0420  seq 14  flags 0x07  crc 0xC54BEAFD
+I (382550) link: link: 6139 frames off the air, 6139 parsed, 0 bad, 0 bad payload, 32 requests sent, 0 failed
+I (382600) link: node 1: asking for the window (seq 14, rms 0.0510)
+I (386500) link: node 1: rms 0.0030  seq 14  flags 0x01  crc 0xC54BEAFD
+I (386700) link: node 1: rms 0.0770  seq 14  flags 0x03  crc 0xC54BEAFD
+I (387000) link: node 1: rms 0.0200  seq 14  flags 0x01  crc 0xC54BEAFD
+I (387150) link: node 1: rms 0.1250  seq 14  flags 0x03  crc 0xC54BEAFD
+I (387550) link: link: 6416 frames off the air, 6416 parsed, 0 bad, 0 bad payload, 33 requests sent, 0 failed
+W (388040) link: node 1: the burst stalled with 265 of 286 fragments; asking for the 21 that are missing
+I (388340) link: node 1: rms 0.0350  seq 14  flags 0x03  crc 0xC54BEAFD
+I (388640) link: node 1: rms 0.1070  seq 14  flags 0x07  crc 0xC54BEAFD
+I (388840) link: node 1: rms 0.0230  seq 14  flags 0x05  crc 0xC54BEAFD
+I (389040) link: node 1: rms 0.0560  seq 14  flags 0x07  crc 0xC54BEAFD
+I (389290) link: node 1: rms 0.0280  seq 14  flags 0x05  crc 0xC54BEAFD
+I (389490) link: node 1: rms 0.0330  seq 14  flags 0x07  crc 0xC54BEAFD
+W (389580) link: node 1: the burst stalled with 284 of 286 fragments; asking for the 2 that are missing
+I (389646) link: node 1: 286/286 fragments in 7.03 s
+I (389647) link: node 1: window crc32 0xC54BEAFD, the node advertised 0xC54BEAFD -> MATCH
+I (389654) link: node 1: window rms 0.061763  mean 8  peak 20304
+I (389805) link: node 1: front end 48.0 ms, inference 103.3 ms, P(no_cry)=0.9727 P(cry)=0.0273
+I (389806) link: node 1: no cry
+I (389856) link: node 1: rms 0.0660  seq 15  flags 0x07  crc 0xDE4FA5E8
+I (389856) link: node 1: asking for the window (seq 15, rms 0.0660)
+I (392557) link: link: 6631 frames off the air, 6631 parsed, 0 bad, 0 bad payload, 36 requests sent, 0 failed
+I (393707) link: node 1: rms 0.1640  seq 15  flags 0x03  crc 0xDE4FA5E8
+I (394757) link: node 1: rms 0.1000  seq 15  flags 0x03  crc 0xDE4FA5E8
+I (395007) link: node 1: rms 0.0050  seq 15  flags 0x01  crc 0xDE4FA5E8
+W (395397) link: node 1: the burst stalled with 254 of 286 fragments; asking for the 32 that are missing
+I (395847) link: node 1: rms 0.0640  seq 15  flags 0x03  crc 0xDE4FA5E8
+I (395947) link: node 1: rms 0.0100  seq 15  flags 0x01  crc 0xDE4FA5E8
+I (396147) link: node 1: rms 0.0580  seq 15  flags 0x07  crc 0xDE4FA5E8
+W (397087) link: node 1: the burst stalled with 285 of 286 fragments; asking for the 1 that are missing
+I (397153) link: node 1: 286/286 fragments in 7.28 s
+I (397154) link: node 1: window crc32 0xDE4FA5E8, the node advertised 0xDE4FA5E8 -> MATCH
+I (397161) link: node 1: window rms 0.078320  mean 79  peak 17847
+I (397312) link: node 1: front end 47.9 ms, inference 103.2 ms, P(no_cry)=0.0117 P(cry)=0.9883
+I (397312) link: node 1: ALERT — cry
+I (397313) ble_alert: a cry on cot 1 at 99%
+I (397367) link: node 1: rms 0.1290  seq 16  flags 0x07  crc 0xB61F4CCF
+I (397367) link: node 1: asking for the window (seq 16, rms 0.1290)
+I (397568) link: link: 6784 frames off the air, 6784 parsed, 0 bad, 0 bad payload, 39 requests sent, 0 failed
+I (401318) link: node 1: rms 0.0040  seq 16  flags 0x01  crc 0xB61F4CCF
+I (401668) link: node 1: rms 0.0780  seq 16  flags 0x03  crc 0xB61F4CCF
+I (401868) link: node 1: rms 0.0110  seq 16  flags 0x01  crc 0xB61F4CCF
+I (401968) link: node 1: rms 0.0600  seq 16  flags 0x03  crc 0xB61F4CCF
+I (402618) link: link: 7046 frames off the air, 7046 parsed, 0 bad, 0 bad payload, 39 requests sent, 0 failed
+W (402758) link: node 1: the burst stalled with 263 of 286 fragments; asking for the 23 that are missing
+I (403058) link: node 1: rms 0.0340  seq 16  flags 0x03  crc 0xB61F4CCF
+I (403408) link: node 1: rms 0.1380  seq 16  flags 0x07  crc 0xB61F4CCF
+I (403508) link: node 1: rms 0.0220  seq 16  flags 0x05  crc 0xB61F4CCF
+I (403608) link: node 1: rms 0.1220  seq 16  flags 0x07  crc 0xB61F4CCF
+W (404348) link: node 1: the burst stalled with 283 of 286 fragments; asking for the 3 that are missing
+I (404414) link: node 1: 286/286 fragments in 7.03 s
+I (404415) link: node 1: window crc32 0xB61F4CCF, the node advertised 0xB61F4CCF -> MATCH
+I (404422) link: node 1: window rms 0.100313  mean 204  peak 17852
+I (404574) link: node 1: front end 48.1 ms, inference 103.5 ms, P(no_cry)=0.0000 P(cry)=0.9961
+I (404574) link: node 1: ALERT — cry
+I (404625) link: node 1: rms 0.1440  seq 17  flags 0x07  crc 0xAC5DFDC9
+I (404625) link: node 1: asking for the window (seq 17, rms 0.1440)
+I (407626) link: link: 7287 frames off the air, 7287 parsed, 0 bad, 0 bad payload, 42 requests sent, 0 failed
+I (408526) link: node 1: rms 0.0930  seq 17  flags 0x03  crc 0xAC5DFDC9
+I (408826) link: node 1: rms 0.0290  seq 17  flags 0x01  crc 0xAC5DFDC9
+I (408926) link: node 1: rms 0.0440  seq 17  flags 0x03  crc 0xAC5DFDC9
+I (409226) link: node 1: rms 0.0150  seq 17  flags 0x01  crc 0xAC5DFDC9
+I (409326) link: node 1: rms 0.0380  seq 17  flags 0x03  crc 0xAC5DFDC9
+I (409476) link: node 1: rms 0.0180  seq 17  flags 0x01  crc 0xAC5DFDC9
+I (409576) link: node 1: rms 0.1650  seq 17  flags 0x03  crc 0xAC5DFDC9
+W (410016) link: node 1: the burst stalled with 263 of 286 fragments; asking for the 23 that are missing
+I (410616) link: node 1: rms 0.0110  seq 17  flags 0x05  crc 0xAC5DFDC9
+W (411606) link: node 1: the burst stalled with 284 of 286 fragments; asking for the 2 that are missing
+I (411656) link: node 1: rms 0.0290  seq 17  flags 0x05  crc 0xAC5DFDC9
+I (411673) link: node 1: 286/286 fragments in 7.03 s
+I (411673) link: node 1: window crc32 0xAC5DFDC9, the node advertised 0xAC5DFDC9 -> MATCH
+I (411680) link: node 1: window rms 0.105046  mean -68  peak 16493
+I (411831) link: node 1: front end 47.8 ms, inference 103.0 ms, P(no_cry)=0.0000 P(cry)=0.9961
+I (411832) link: node 1: ALERT — cry
+I (411882) link: node 1: rms 0.0400  seq 17  flags 0x07  crc 0xAC5DFDC9
+I (411932) link: node 1: asking for the window (seq 17, rms 0.0310)
+I (412632) link: link: 7446 frames off the air, 7446 parsed, 0 bad, 0 bad payload, 45 requests sent, 0 failed
+I (415832) link: node 1: rms 0.1010  seq 17  flags 0x03  crc 0xAC5DFDC9
+I (416382) link: node 1: rms 0.0290  seq 17  flags 0x01  crc 0xAC5DFDC9
+I (416482) link: node 1: rms 0.0620  seq 17  flags 0x03  crc 0xAC5DFDC9
+I (417532) link: node 1: rms 0.1080  seq 17  flags 0x03  crc 0xAC5DFDC9
+W (417572) link: node 1: the burst stalled with 251 of 286 fragments; asking for the 35 that are missing
+I (417672) link: link: 7676 frames off the air, 7676 parsed, 0 bad, 0 bad payload, 46 requests sent, 0 failed
+I (418122) link: node 1: rms 0.0210  seq 17  flags 0x05  crc 0xAC5DFDC9
+I (418472) link: node 1: rms 0.0650  seq 17  flags 0x07  crc 0xAC5DFDC9
+I (419222) link: node 1: rms 0.0280  seq 17  flags 0x05  crc 0xAC5DFDC9
+W (419312) link: node 1: the burst stalled with 284 of 286 fragments; asking for the 2 that are missing
+I (419362) link: node 1: rms 0.0500  seq 17  flags 0x07  crc 0xAC5DFDC9
+I (419379) link: node 1: 286/286 fragments in 7.43 s
+I (419379) link: node 1: window crc32 0xAC5DFDC9, the node advertised 0xAC5DFDC9 -> MATCH
+I (419386) link: node 1: window rms 0.105046  mean -68  peak 16493
+I (419537) link: node 1: front end 47.8 ms, inference 102.7 ms, P(no_cry)=0.0000 P(cry)=0.9961
+I (419537) link: node 1: ALERT — cry
+I (419588) link: node 1: rms 0.0880  seq 18  flags 0x07  crc 0x38BEB286
+I (419588) link: node 1: asking for the window (seq 18, rms 0.0880)
+
+--- captured 59689 bytes from COM32 at 115200 baud ---

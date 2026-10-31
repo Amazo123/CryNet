@@ -24,6 +24,7 @@ typedef struct {
     int width;
     int height;
     uint8_t rotation;
+    uint8_t dc_level;     /* the level the next transaction drives D/C to */
 } ili9341_t;
 
 /* Bring the panel up.  Returns false if it did not answer. */

@@ -9,6 +9,26 @@
  * The init sequence and the rotation values are the ones Adafruit's
  * ILI9341 library uses, which is what the legacy firmware drove the
  * panel with.
+ *
+ * Three things about the ILI9341's serial interface are easy to get
+ * wrong, and all three of them are fixed here:
+ *
+ *   1. **CS must stay down across a command and its parameters.**  The
+ *      panel resets its serial interface when CS goes high, so a
+ *      command byte and the bytes that follow it have to be one
+ *      continuous transfer.  The ESP-IDF's `SPI_TRANS_CS_KEEP_ACTIVE`
+ *      does exactly that, and the bus has to be acquired for it to be
+ *      allowed.
+ *   2. **D/C is the only thing that tells a command from data.**  The
+ *      level is changed in the transaction's pre-transmission callback,
+ *      which the driver calls once CS is asserted and just before the
+ *      bytes go out — the only moment at which it is safe to change it.
+ *   3. **The address window is big-endian, and it is one command per
+ *      axis.**  CASET takes four bytes (start column, end column) and
+ *      PASET takes four bytes (start row, end row).  Sending the column
+ *      address twice — once for the start and once for the end —
+ *      instead re-sets the start, and the panel ends up with a window
+ *      of one pixel and displays uninitialised memory.
  */
 
 #include "ili9341.h"
@@ -65,43 +85,42 @@ static const uint8_t s_init[] = {
     ILI9341_DISPON, 0x80,       /* display on */
 };
 
-static void dc_low(ili9341_t *dev)
+/* The D/C line: the level the next transaction drives it to.  The SPI
+ * driver reads it in the pre-transmission callback, which runs inside
+ * the driver with the CS line already down. */
+static void dc_pre_cb(spi_transaction_t *t)
 {
-    gpio_set_level((gpio_num_t)dev->dc_pin, 0);
+    ili9341_t *dev = (ili9341_t *)t->user;
+    gpio_set_level((gpio_num_t)dev->dc_pin, dev->dc_level ? 1 : 0);
 }
 
-static void dc_high(ili9341_t *dev)
+/* Send bytes with D/C at the given level.  With keep_cs the chip select
+ * stays down afterwards, so the next call continues the same transfer. */
+static void tx(ili9341_t *dev, uint8_t dc, const uint8_t *buf, size_t len,
+               bool keep_cs)
 {
-    gpio_set_level((gpio_num_t)dev->dc_pin, 1);
-}
-
-static void write_command(ili9341_t *dev, uint8_t cmd)
-{
-    dc_low(dev);
-    spi_transaction_t t = {
-        .length = 8,
-        .tx_buffer = &cmd,
-    };
-    spi_device_polling_transmit(dev->spi, &t);
-}
-
-static void write_data(ili9341_t *dev, const uint8_t *data, size_t len)
-{
-    dc_high(dev);
+    dev->dc_level = dc;
     spi_transaction_t t = {
         .length = len * 8,
-        .tx_buffer = data,
+        .tx_buffer = buf,
+        .user = dev,
     };
+    if (keep_cs) {
+        t.flags |= SPI_TRANS_CS_KEEP_ACTIVE;
+    }
     spi_device_polling_transmit(dev->spi, &t);
 }
 
+/* A command, and the parameters that belong to it, in one transfer. */
 static void write_command_data(ili9341_t *dev, uint8_t cmd,
                                const uint8_t *data, size_t len)
 {
-    write_command(dev, cmd);
+    spi_device_acquire_bus(dev->spi, portMAX_DELAY);
+    tx(dev, 0, &cmd, 1, len > 0);
     if (len) {
-        write_data(dev, data, len);
+        tx(dev, 1, data, len, false);
     }
+    spi_device_release_bus(dev->spi);
 }
 
 bool ili9341_init(ili9341_t *dev, int mosi, int sclk, int cs, int dc,
@@ -146,6 +165,7 @@ bool ili9341_init(ili9341_t *dev, int mosi, int sclk, int cs, int dc,
         .mode = 0,
         .spics_io_num = cs,
         .queue_size = 7,
+        .pre_cb = dc_pre_cb,
     };
     err = spi_bus_add_device(SPI2_HOST, &iface, &dev->spi);
     if (err != ESP_OK) {
@@ -160,7 +180,7 @@ bool ili9341_init(ili9341_t *dev, int mosi, int sclk, int cs, int dc,
         const uint8_t count = s_init[i++];
         if (count == 0x80) {
             /* A command with no data, and a pause after it. */
-            write_command(dev, cmd);
+            write_command_data(dev, cmd, NULL, 0);
             vTaskDelay(pdMS_TO_TICKS(120));
             continue;
         }
@@ -179,10 +199,11 @@ bool ili9341_init(ili9341_t *dev, int mosi, int sclk, int cs, int dc,
              dev->width = 320; dev->height = 240; break;
     }
     write_command_data(dev, ILI9341_MADCTL, &madctl, 1);
-    dev->rotation = rotation;
 
     const uint8_t fmt = 0x55;      /* 16 bits per pixel */
     write_command_data(dev, ILI9341_PIXFMT, &fmt, 1);
+
+    dev->rotation = rotation;
 
     ili9341_backlight(dev, true);
     ESP_LOGI(TAG, "the panel is up: %d x %d, rotation %d",
@@ -216,18 +237,35 @@ void ili9341_fill(ili9341_t *dev, int x, int y, int w, int h, uint16_t colour)
         return;
     }
 
+    /* The address window: four bytes per axis, big-endian, one command
+     * for the columns and one for the rows. */
     const uint16_t x0 = (uint16_t)x;
     const uint16_t x1 = (uint16_t)(x + w - 1);
     const uint16_t y0 = (uint16_t)y;
     const uint16_t y1 = (uint16_t)(y + h - 1);
-    write_command_data(dev, ILI9341_CASET, (const uint8_t *)&x0, 2);
-    write_command_data(dev, ILI9341_CASET, (const uint8_t *)&x1, 2);
-    write_command_data(dev, ILI9341_PASET, (const uint8_t *)&y0, 2);
-    write_command_data(dev, ILI9341_PASET, (const uint8_t *)&y1, 2);
+    const uint8_t cols[4] = {
+        (uint8_t)(x0 >> 8), (uint8_t)(x0 & 0xFF),
+        (uint8_t)(x1 >> 8), (uint8_t)(x1 & 0xFF),
+    };
+    const uint8_t rows[4] = {
+        (uint8_t)(y0 >> 8), (uint8_t)(y0 & 0xFF),
+        (uint8_t)(y1 >> 8), (uint8_t)(y1 & 0xFF),
+    };
 
-    /* The pixel stream: the same colour, over and over. */
+    spi_device_acquire_bus(dev->spi, portMAX_DELAY);
+
+    const uint8_t cmd_caset = ILI9341_CASET;
+    const uint8_t cmd_paset = ILI9341_PASET;
+    const uint8_t cmd_ramwr = ILI9341_RAMWR;
+    tx(dev, 0, &cmd_caset, 1, true);
+    tx(dev, 1, cols, 4, true);
+    tx(dev, 0, &cmd_paset, 1, true);
+    tx(dev, 1, rows, 4, true);
+
+    /* The pixel stream: the same colour, over and over, in one
+     * transfer with CS down the whole way. */
     uint8_t chunk[512];
-    uint16_t px = colour;
+    const uint16_t px = colour;
     for (size_t i = 0; i < sizeof chunk; i += 2) {
         chunk[i] = (uint8_t)(px >> 8);
         chunk[i + 1] = (uint8_t)(px & 0xFF);
@@ -235,20 +273,17 @@ void ili9341_fill(ili9341_t *dev, int x, int y, int w, int h, uint16_t colour)
     const size_t pixels = (size_t)w * h;
     const size_t chunk_pixels = sizeof chunk / 2;
 
-    dc_high(dev);
-    write_command(dev, ILI9341_RAMWR);
-    dc_high(dev);
+    tx(dev, 0, &cmd_ramwr, 1, true);
     for (size_t sent = 0; sent < pixels; sent += chunk_pixels) {
         size_t n = pixels - sent;
         if (n > chunk_pixels) {
             n = chunk_pixels;
         }
-        spi_transaction_t t = {
-            .length = n * 16,      /* two bytes per pixel */
-            .tx_buffer = chunk,
-        };
-        spi_device_polling_transmit(dev->spi, &t);
+        const bool last = (sent + n >= pixels);
+        tx(dev, 1, chunk, n * 2, !last);
     }
+
+    spi_device_release_bus(dev->spi);
 }
 
 void ili9341_text(ili9341_t *dev, int x, int y, const char *text,
@@ -264,13 +299,25 @@ void ili9341_text(ili9341_t *dev, int x, int y, const char *text,
             c = '?';
         }
         const uint8_t *glyph = s_font5x7[c - FONT5X7_FIRST];
-        for (int col = 0; col < FONT5X7_WIDTH; col++) {
-            const uint8_t bits = glyph[col];
-            for (int row = 0; row < 7; row++) {
-                if (bits & (1 << row)) {
-                    ili9341_fill(dev, cursor + col * scale,
-                                 y + row * scale, scale, scale, colour);
+
+        /* Each glyph row is a run of lit columns, and a run is one
+         * rectangle.  Drawing it pixel by pixel would be sixty times
+         * the work for the same picture. */
+        for (int row = 0; row < FONT5X7_HEIGHT; row++) {
+            int col = 0;
+            while (col < FONT5X7_WIDTH) {
+                if (!(glyph[col] & (1 << row))) {
+                    col++;
+                    continue;
                 }
+                int run = 0;
+                while (col + run < FONT5X7_WIDTH &&
+                       (glyph[col + run] & (1 << row))) {
+                    run++;
+                }
+                ili9341_fill(dev, cursor + col * scale, y + row * scale,
+                             run * scale, scale, colour);
+                col += run;
             }
         }
         cursor += (FONT5X7_WIDTH + 1) * scale;
