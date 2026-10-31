@@ -56,3 +56,9 @@ CONFIG_BT_NIMBLE_LOG_LEVEL=3
 # BLE and Wi-Fi share the one radio, so software coexistence arbitrates
 # the airtime between the ESP-NOW link and the BLE connection.
 CONFIG_ESP_COEX_SW_COEXIST_ENABLE=y
+
+# The node sends a 286-fragment burst as fast as the radio allows, so the
+# hub needs receive buffers that can hold one.  With the hub's own RAM
+# freed up (the probe buffers moved to PSRAM) these are affordable.
+CONFIG_ESP_WIFI_STATIC_RX_BUFFER_NUM=32
+CONFIG_ESP_WIFI_DYNAMIC_RX_BUFFER_NUM=64

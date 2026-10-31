@@ -9,4 +9,10 @@ idf_component_register(
 # idf_component_register; an unknown keyword is silently swallowed as a
 # value of the keyword before it, which made this component's include
 # directory nonsense.  A target_compile_definitions call is the way now.
-target_compile_definitions(${COMPONENT_LIB} PRIVATE "CRYNET_LINK_PROMISCUOUS=1")
+#
+# Promiscuous mode is a diagnostic and it is off: it hands the host
+# every frame on the channel, and with the laptop's own Wi-Fi on channel
+# 1 that flooded the receive path and cost the hub about fifteen
+# fragments out of every burst.  Uncomment the next line to bring it
+# back.
+# target_compile_definitions(${COMPONENT_LIB} PRIVATE "CRYNET_LINK_PROMISCUOUS=1")

@@ -42,6 +42,34 @@ static bool s_swept = false;
  * negative. */
 #define CRY_HOLD_MS 8000
 
+/* How long the burst may go without a fragment before the hub asks for
+ * the missing ones again.  The node paces its fragments about thirteen
+ * milliseconds apart, so a gap of one and a half seconds is not a slow
+ * burst -- it is a burst that has stopped. */
+#define FRAG_STALL_MS 1200
+
+/* How long the burst must have been in flight before a stall may be
+ * believed.  The node is asked for the window and then starts sending
+ * it; the first fragments take a moment to arrive, and a stall
+ * detector that fires before the node has begun would ask for the whole
+ * window a second time for nothing. */
+#define RESEND_MIN_FLIGHT_MS 2500
+
+/* How many times the hub may ask for the missing fragments of one
+ * burst.  Each round costs a few frames of air and covers the handful
+ * the last round still lost.  Three is enough in practice: the first
+ * round asks for everything that is missing, the second for the handful
+ * that round also lost, and the third for the one or two that the
+ * second lost. */
+#define RESEND_MAX_ROUNDS 3
+
+/* How long the node takes to send one fragment.  The node waits ten
+ * milliseconds between fragments and the radio needs a couple more, so
+ * a hundred fragments take a second and a half.  The hub has to allow
+ * for that when it decides a burst has stalled: asking again while the
+ * node is still sending wastes a round and floods the air. */
+#define FRAG_PER_FRAGMENT_MS 15
+
 typedef struct {
     bool     heard;
     uint8_t  node_id;
@@ -57,6 +85,12 @@ typedef struct {
     int64_t  requested_at_us;
     uint16_t request_seq;
     uint32_t request_crc;
+    uint32_t request_raw;    /* the hub's frame counter when it asked */
+    uint32_t request_frags;  /* the hub's fragment counter when it asked */
+    uint16_t last_have;      /* the fragment count at the last poll */
+    int64_t  last_frag_us;   /* when a fragment last arrived */
+    int64_t  last_resend_us; /* when the last resend went out */
+    uint8_t  resend_rounds;  /* how many resends this burst has had */
 
     bool     cry_active;      /* the hub is announcing a cry */
     int64_t  cry_until_us;     /* and it does so until this moment */
@@ -262,6 +296,23 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
             st->rms = tel.rms;
             st->window_full = (tel.flags & CRYNET_PROTO_FLAG_WINDOW_FULL) != 0;
 
+            /* The node has moved on to a newer window.  The burst in
+             * flight can never be completed -- the node no longer
+             * holds the fragments of the old one, so it cannot send
+             * them again -- and waiting out the timeout would only
+             * delay the next attempt.  The burst is abandoned and the
+             * newer window is asked for instead. */
+            if (st->requested && st->seq != st->request_seq &&
+                (tel.flags & CRYNET_PROTO_FLAG_BURST_READY) != 0) {
+                ESP_LOGW(TAG, "node %u: the node moved to window %u while "
+                              "window %u was in flight; asking for the new one",
+                         tel.node_id, (unsigned)tel.burst_seq,
+                         (unsigned)st->request_seq);
+                node_link_reset_burst(nl, tel.node_id);
+                st->requested = false;
+                st->last_request_us = 0;
+            }
+
             /* How long the level has been sustained.  A cry lasts for
              * seconds; the microphone's slow DC drift produces one lone
              * reading above the trigger, and a single reading is not
@@ -299,6 +350,14 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
             if (st->requested) {
                 node_link_burst_t burst;
                 if (node_link_burst_state(nl, st->node_id, &burst)) {
+                    /* Watch the fragment count: a burst that stops
+                     * growing has stopped, and that is the moment to ask
+                     * for what is missing rather than to wait out the
+                     * timeout. */
+                    if (burst.frag_have != st->last_have) {
+                        st->last_have = burst.frag_have;
+                        st->last_frag_us = now;
+                    }
                     if (burst.complete) {
                         const int64_t t0 = esp_timer_get_time();
                         if (node_link_take_window(nl, st->node_id, s_window,
@@ -341,13 +400,84 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
                         }
                         st->requested = false;
                         st->last_log_us = esp_timer_get_time();
-                    } else if ((now - st->requested_at_us) > (BURST_TIMEOUT_MS * 1000)) {
+                    } else {
+                        /* The burst is short of fragments.  If it has
+                         * stopped arriving, ask the node for the ones
+                         * that are missing: the hub's radio also carries
+                         * Bluetooth, and while it is retuned to a BLE
+                         * channel the Wi-Fi receiver is deaf, so a
+                         * burst sent flat out always loses a few frames
+                         * in the air.  The node keeps the window it
+                         * froze, so it can send them again. */
+                        /* The wait before a burst counts as stalled
+                         * grows with the number of fragments the node
+                         * still has to send: a hundred missing
+                         * fragments take a second and a half to arrive,
+                         * and a burst that is quiet for less than that
+                         * is a burst still in flight. */
+                        const int still_missing =
+                            (int)burst.frag_want - (int)burst.frag_have;
+                        const int64_t stall_us =
+                            ((int64_t)FRAG_STALL_MS +
+                             (int64_t)still_missing * FRAG_PER_FRAGMENT_MS) * 1000;
+                        const bool stalled =
+                            (now - st->last_frag_us) > stall_us;
+                        const bool long_enough =
+                            (now - st->requested_at_us) > (RESEND_MIN_FLIGHT_MS * 1000);
+                        /* A second round waits out a stall period of
+                         * its own: the fragments the last round asked
+                         * for are on the air, and asking again before
+                         * they arrive only spends a round. */
+                        const bool settled =
+                            (now - st->last_resend_us) > stall_us;
+                        if (stalled && long_enough && settled &&
+                            st->resend_rounds < RESEND_MAX_ROUNDS) {
+                            const int asked = node_link_request_missing(
+                                nl, st->node_id, st->request_seq);
+                            if (asked > 0) {
+                                st->resend_rounds++;
+                                st->last_resend_us = now;
+                                ESP_LOGW(TAG, "node %u: the burst stalled with "
+                                              "%u of %u fragments; asking for "
+                                              "the %u that are missing",
+                                         st->node_id, (unsigned)burst.frag_have,
+                                         (unsigned)burst.frag_want,
+                                         (unsigned)asked);
+                            }
+                        } else if ((now - st->requested_at_us) >
+                                   (BURST_TIMEOUT_MS * 1000)) {
                         ESP_LOGW(TAG, "node %u: the burst timed out with %u of %u "
                                       "fragments",
                                  st->node_id, (unsigned)burst.frag_have,
                                  (unsigned)burst.frag_want);
+                        {
+                            node_link_stats_t rs;
+                            node_link_get_stats(nl, &rs);
+                            ESP_LOGW(TAG, "node %u: %u frames reached the hub "
+                                          "during the burst, %u of them "
+                                          "fragments",
+                                     st->node_id,
+                                     (unsigned)(rs.raw_frames - st->request_raw),
+                                     (unsigned)(rs.frag_frames - st->request_frags));
+                        }
+                        /* Which ones are missing?  A burst that lost its
+                         * first frames lost them to the request; one that
+                         * lost its last frames never had them sent; a
+                         * scattered set was lost in the air. */
+                        uint16_t missing[16];
+                        const int n_missing = node_link_burst_missing(
+                            nl, st->node_id, missing,
+                            (int)(sizeof missing / sizeof missing[0]));
+                        if (n_missing > 0) {
+                            ESP_LOGW(TAG, "node %u: missing fragments:",
+                                     st->node_id);
+                            for (int m = 0; m < n_missing; m++) {
+                                ESP_LOGW(TAG, "  %u", (unsigned)missing[m]);
+                            }
+                        }
                         node_link_reset_burst(nl, st->node_id);
                         st->requested = false;
+                        }
                     }
                 }
                 continue;
@@ -379,7 +509,23 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
                     st->requested_at_us = now;
                     st->request_seq = st->seq;
                     st->request_crc = st->crc;
+                    {
+                        /* How many frames the hub has seen, so the
+                         * timeout can say how many arrived during the
+                         * burst: if the number is the number of
+                         * fragments, they reached the hub and the
+                         * reassembly is at fault; if it is short, they
+                         * were lost on the way. */
+                        node_link_stats_t rs;
+                        node_link_get_stats(nl, &rs);
+                        st->request_raw = rs.raw_frames;
+                        st->request_frags = rs.frag_frames;
+                    }
                     st->last_request_us = now;
+                    st->last_have = 0;
+                    st->last_frag_us = now;
+                    st->last_resend_us = 0;
+                    st->resend_rounds = 0;
                     /* The node drops its live window when it serves a
                      * request and refills it over the next two seconds,
                      * so until it says the window is whole again there is
@@ -505,9 +651,14 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
                      (unsigned)st.raw_frames, (unsigned)st.frames_ok,
                      (unsigned)st.frames_bad, (unsigned)st.payloads_bad,
                      (unsigned)st.requests_sent, (unsigned)st.requests_failed);
-            ESP_LOGI(TAG, "air: %u frames seen raw, %u carrying our magic",
-                     (unsigned)node_link_promisc_total(),
-                     (unsigned)node_link_promisc_magic());
+            /* The air counters only move when promiscuous mode is on,
+             * which it is not by default; skip the line rather than
+             * print two zeroes every five seconds. */
+            if (node_link_promisc_total() > 0) {
+                ESP_LOGI(TAG, "air: %u frames seen raw, %u carrying our magic",
+                         (unsigned)node_link_promisc_total(),
+                         (unsigned)node_link_promisc_magic());
+            }
 
         }
 

@@ -57,6 +57,7 @@
 #include <WiFi.h>
 #include <esp_timer.h>
 #include <esp_now.h>
+#include <esp_wifi.h>
 #include <esp_mac.h>
 #include <ESP_I2S.h>
 
@@ -92,6 +93,20 @@ static const uint16_t FRAG_COUNT   = (BURST_BYTES + FRAG_PAYLOAD - 1) / FRAG_PAY
  * silence. */
 static const float EVENT_RMS = 0.030f;
 
+/* The ESP-NOW channel.  The hub uses the same one. */
+static const uint8_t LINK_CHANNEL = 6;
+
+/* The frame types on the radio.  These mirror crynet_proto.h on the hub;
+ * both sides were written from the same table. */
+#define LINK_TYPE_TELEMETRY 1
+#define LINK_TYPE_FRAGMENT  2
+#define LINK_TYPE_REQUEST   3
+#define LINK_TYPE_HEARTBEAT 4
+#define LINK_TYPE_RESEND    5
+
+/* The bitmap in a resend request: one bit per fragment. */
+#define RESEND_BITMAP_BYTES ((FRAG_COUNT + 7) / 8)
+
 /* How long after the loudest moment the window is frozen, so the two
  * seconds the hub classifies are centred on the cry rather than ending
  * at it.  The ring holds two seconds, so the peak has to be frozen
@@ -99,8 +114,32 @@ static const float EVENT_RMS = 0.030f;
 static const uint32_t PEAK_DELAY_MS = 1000;
 static const uint32_t PEAK_EXPIRE_MS = 2000;
 
-/* How long a frozen window may sit unserved before it is dropped. */
-static const uint32_t FROZEN_EXPIRE_MS = 5000;
+/* How long the node holds a frozen window after it has been uploaded.
+ *
+ * The upload is not the end of the conversation about that window: the
+ * hub asks for the fragments it missed, and only the node can send them
+ * again.  The node used to freeze the next window as soon as its live
+ * window refilled, which is about three seconds after the upload -- and
+ * the hub's first request for the missing fragments often arrived just
+ * after that, when the node had already thrown the old window away.
+ * The node refused those requests ("no frozen window for it"), the hub
+ * ran out of rounds, and the burst timed out.
+ *
+ * So the snapshot is held for four seconds after the upload.  Four
+ * seconds is longer than the hub needs for all three of its rounds
+ * (the first about one and a half seconds after the stall, the others
+ * further out as the missing count falls), and short enough that a new
+ * window is not held up for long. */
+static const uint32_t FROZEN_HOLD_MS = 4000;
+
+/* How long a frozen window may sit unserved before it is dropped.
+ *
+ * It has to outlast the whole conversation about one window: the burst
+ * itself takes nearly four seconds to send, and the hub may then ask
+ * for the fragments that did not arrive.  Five seconds was not enough
+ * for that -- the window expired while the hub was still waiting for
+ * the pieces it had asked for. */
+static const uint32_t FROZEN_EXPIRE_MS = 20000;
 
 /* ----------------------------------------------------------------- state -- */
 
@@ -113,6 +152,12 @@ static uint32_t  g_filled = 0;          /* valid samples, up to 32000     */
 static uint32_t  g_frozen_fill = 0;     /* valid samples in g_frozen      */
 
 static bool      g_frozen_valid = false;
+/* The frozen window has already been uploaded once.  It stays on the
+ * node afterwards -- the hub may ask for the fragments it missed -- but
+ * it must not stop the node freezing the *next* window, which is what
+ * g_frozen_valid used to guard on its own. */
+static bool      g_frozen_served = false;
+static uint32_t  g_frozen_hold_ms = 0;   /* when the hold on it ends */
 static bool      g_peak_pending = false;   /* a loud moment is waiting to
                                             * be frozen, one second late */
 static uint32_t  g_peak_ms = 0;
@@ -259,6 +304,7 @@ static void freeze_window(void) {
     }
     g_frozen_fill = WINDOW_SAMPLES;
     g_frozen_valid = true;
+    g_frozen_served = false;
     g_frozen_ms = millis();
     /* The checksum of the exact bytes that will be uploaded.  The hub
      * computes the same value over the window it reassembles, so the two
@@ -376,6 +422,25 @@ static bool     g_hub_known = false;
 static volatile bool g_hub_peer_pending = false;
 static uint8_t       g_pending_mac[6];
 
+/* A resend request from the hub: the fragments of a burst that never
+ * arrived.  The bitmap says which ones. */
+static bool      g_resend_pending = false;
+static uint16_t  g_resend_seq = 0;
+static uint8_t   g_resend_bitmap[RESEND_BITMAP_BYTES];
+
+/* The request the node answered last, and when.  The hub sends its
+ * request three times, because a broadcast is never acknowledged; the
+ * node must answer it once.  A repeat of the request it is already
+ * serving is dropped, or the node would send the same hundred and
+ * twenty-eight fragments two or three times over and the hub would see
+ * a burst that never settles. */
+static uint16_t  g_resend_last_seq = 0;
+static uint32_t  g_resend_last_ms = 0;
+
+/* How close together two requests for the same window have to be for
+ * the second to count as a repeat of the first. */
+static const uint32_t RESEND_DEDUPE_MS = 800;
+
 /* The radio's transmit callback.  It fires when a frame has actually left
  * the queue, and the sender waits for it before queueing the next one:
  * ESP-NOW's queue is ten frames deep, so a 286-fragment burst sent back to
@@ -411,17 +476,64 @@ static void on_recv(const esp_now_recv_info_t *info, const uint8_t *data, int le
      * for a request meant that a hub which had already heard the node
      * (and so had stopped probing) never told the node where to send. */
     if (!g_hub_known && !g_hub_peer_pending && info != NULL &&
-        (data[2] == 3 || data[2] == 4)) {
+        (data[2] == LINK_TYPE_REQUEST || data[2] == LINK_TYPE_HEARTBEAT ||
+         data[2] == LINK_TYPE_RESEND)) {
         memcpy(g_pending_mac, info->src_addr, 6);
         g_hub_peer_pending = true;
     }
     /* A heartbeat (type 4) is the hub keeping its radio awake.  It asks
      * for nothing, so the node's window is left alone. */
-    if (data[2] == 4) {
+    if (data[2] == LINK_TYPE_HEARTBEAT) {
         g_heartbeats++;
         return;
     }
-    if (data[2] != 3) {
+
+    /* A resend request: the hub's list of the fragments of a burst that
+     * never arrived.  The payload is a bitmap, one bit per fragment,
+     * and the node answers by sending exactly the fragments whose bit
+     * is set -- out of the same frozen window, with the same sequence
+     * number, so the pieces that did arrive are not sent again. */
+    if (data[2] == LINK_TYPE_RESEND) {
+        const uint16_t plen = (uint16_t)data[10] | ((uint16_t)data[11] << 8);
+        const size_t total = 14u + (size_t)plen;
+        if (plen != RESEND_BITMAP_BYTES || len != (int)(total + 2u)) {
+            g_frames_lost++;
+            return;
+        }
+        /* The frame's own CRC first: the bitmap is only worth reading
+         * if the frame is intact. */
+        const uint16_t fcrc = (uint16_t)data[total] | ((uint16_t)data[total + 1] << 8);
+        if (crc16(data, total) != fcrc) {
+            g_frames_lost++;
+            return;
+        }
+        const uint16_t pcrc = (uint16_t)data[12] | ((uint16_t)data[13] << 8);
+        if (crc16(&data[14], plen) != pcrc) {
+            g_frames_lost++;
+            return;
+        }
+        if (data[3] != g_node_id && data[3] != 0xFF) {
+            return;                       /* not for us */
+        }
+        const uint16_t seq = (uint16_t)data[4] | ((uint16_t)data[5] << 8);
+        const uint32_t now = millis();
+        if (seq == g_resend_last_seq &&
+            (now - g_resend_last_ms) < RESEND_DEDUPE_MS) {
+            /* A repeat of the request already being answered. */
+            return;
+        }
+        g_resend_last_seq = seq;
+        g_resend_last_ms = now;
+        g_resend_pending = true;
+        g_resend_seq = seq;
+        memcpy(g_resend_bitmap, &data[14], RESEND_BITMAP_BYTES);
+        if (Serial) {
+            Serial.printf("resend request: seq %u\n", (unsigned)g_resend_seq);
+        }
+        return;
+    }
+
+    if (data[2] != LINK_TYPE_REQUEST) {
         return;
     }
     uint16_t want = (uint16_t)data[10] | ((uint16_t)data[11] << 8);
@@ -443,15 +555,48 @@ static void on_recv(const esp_now_recv_info_t *info, const uint8_t *data, int le
     }
 }
 
+/* The channel the radio is actually on.  WiFi.channel() is no use here:
+ * it reports the channel of the AP the station is associated with, and
+ * this node never associates with one. */
+static int link_channel(void) {
+    uint8_t c = 0;
+    wifi_second_chan_t second = WIFI_SECOND_CHAN_NONE;
+    if (esp_wifi_get_channel(&c, &second) == ESP_OK) {
+        return (int)c;
+    }
+    return -1;
+}
+
 static bool radio_start(void) {
     WiFi.mode(WIFI_STA);
     WiFi.setSleep(false);
-    WiFi.channel(1);
     delay(100);
+
+    /* The channel is set with esp_wifi_set_channel(), and the reason it
+     * is not WiFi.channel(11) is worth writing down: the Arduino core
+     * has no channel *setter*.  WiFi.channel(x) is the scan result's
+     * channel — WiFiScanClass::channel(uint8_t i) — so the call
+     * compiled, returned an int, and changed nothing at all.  The node
+     * sat on channel 1 the whole time and the sends failed with "peer
+     * channel is not equal to the home channel". */
+    if (esp_wifi_set_channel(LINK_CHANNEL, WIFI_SECOND_CHAN_NONE) != ESP_OK) {
+        if (Serial) {
+            Serial.printf("the channel could not be set to %d\n",
+                          (unsigned)LINK_CHANNEL);
+        }
+        return false;
+    }
+    delay(50);
 
     if (esp_now_init() != ESP_OK) {
         return false;
     }
+    /* esp_now_init() starts the Wi-Fi driver, and the driver puts the
+     * interface back on channel 1 when it starts — so the channel is
+     * set again, after it. */
+    esp_wifi_set_channel(LINK_CHANNEL, WIFI_SECOND_CHAN_NONE);
+    delay(50);
+
     esp_now_register_recv_cb(on_recv);
     esp_now_register_send_cb(on_send);
 
@@ -463,7 +608,7 @@ static bool radio_start(void) {
      * and nothing arrived at the hub, on any of the thirteen channels.
      * The hub's peer has always had the channel set, and the hub's
      * transmissions arrive perfectly. */
-    peer.channel = 1;
+    peer.channel = LINK_CHANNEL;
     peer.ifidx   = WIFI_IF_STA;
     peer.encrypt = false;
     if (esp_now_add_peer(&peer) != ESP_OK) {
@@ -600,7 +745,7 @@ static void print_status(void) {
     Serial.printf("rms %.4f  mean %d  fragments=%u\n", g_rms, (int)g_mean,
                   (unsigned)FRAG_COUNT);
     Serial.printf("heap %u bytes\n", (unsigned)ESP.getFreeHeap());
-    Serial.printf("channel %d\n", (int)WiFi.channel());
+    Serial.printf("channel %d\n", link_channel());
     uint32_t ver = 0;
     esp_now_get_version(&ver);
     Serial.printf("ESP-NOW version %u, hub %s\n", (unsigned)ver,
@@ -695,7 +840,7 @@ void setup() {
     if (esp_now_get_version(&now_version) == ESP_OK) {
         Serial.printf("ESP-NOW protocol version %u\n", (unsigned)now_version);
     }
-    Serial.println("ESP-NOW ready on channel 1");
+    Serial.printf("ESP-NOW ready on channel %d\n", link_channel());
 
     Serial.println("commands: status | stats | freeze | burst | id <n> | help");
 }
@@ -708,7 +853,7 @@ void loop() {
         esp_now_peer_info_t hub = {};
         memcpy(g_hub_mac, g_pending_mac, 6);
         memcpy(hub.peer_addr, g_hub_mac, 6);
-        hub.channel = 1;
+        hub.channel = LINK_CHANNEL;
         hub.ifidx = WIFI_IF_STA;
         hub.encrypt = false;
         if (esp_now_add_peer(&hub) == ESP_OK) {
@@ -738,7 +883,14 @@ void loop() {
              * about to ask for; if the freeze happened after the frame
              * was sent, the hub had nothing to check the window it
              * reassembled against. */
-            if (!g_frozen_valid && g_filled == WINDOW_SAMPLES) {
+            /* The hold on the uploaded window ends here.  Until then
+             * the node keeps that snapshot -- it is the one the hub is
+             * missing fragments of -- and does not freeze a new one. */
+            if (g_frozen_served && (uint32_t)(now - g_frozen_hold_ms) >= 0x80000000u) {
+                g_frozen_served = false;
+                g_peak_pending = false;
+            }
+            if (!g_frozen_served && g_filled == WINDOW_SAMPLES) {
                 if (!g_peak_pending && g_rms >= EVENT_RMS) {
                     /* A loud moment: remember it, and freeze a second
                      * later, when the ring holds the second that follows
@@ -765,9 +917,18 @@ void loop() {
              * next one.  The microphone's DC drift can cross the event
              * level for a single reading, and the hub's trigger needs two
              * of them, so that window would sit here unused and the next
-             * real cry would be served the stale, quiet one. */
-            if (g_frozen_valid && (now - g_frozen_ms) > FROZEN_EXPIRE_MS) {
+             * real cry would be served the stale, quiet one.
+             *
+             * The age is measured from a fresh clock reading, not from
+             * the `now` above: that one was taken before the freeze
+             * above happened, so `now - g_frozen_ms` would underflow to
+             * four billion and expire the window that was frozen a
+             * moment earlier — which is exactly what happened, and the
+             * node never once advertised a burst as ready. */
+            if (g_frozen_valid &&
+                (millis() - g_frozen_ms) > FROZEN_EXPIRE_MS) {
                 g_frozen_valid = false;
+                g_frozen_served = false;
                 g_peak_pending = false;
             }
 
@@ -808,12 +969,25 @@ void loop() {
             if (first >= FRAG_COUNT) {
                 first = 0;
             }
+            uint16_t sent = 0;
             for (uint16_t i = 0; i < count; i++) {
                 uint16_t index = (uint16_t)(first + i);
                 if (index >= FRAG_COUNT) {
                     break;
                 }
                 send_fragment(index, from_frozen, false);
+                sent++;
+                /* Space between the fragments.  The radio acknowledges a
+                 * send in about two milliseconds, so back to back the
+                 * burst arrives as a wall of frames and the far end
+                 * loses some of them.  The gap spreads the 286 fragments
+                 * over a few seconds, which the hub's fifteen-second
+                 * timeout has plenty of room for. */
+                delay(10);
+            }
+            if (!g_dump_active && Serial) {
+                Serial.printf("served %u fragments of %u\n", (unsigned)sent,
+                              (unsigned)count);
             }
             /* A one-fragment probe costs a few milliseconds of air, not
              * a burst, so the live window keeps its value.  A real burst
@@ -823,12 +997,48 @@ void loop() {
              * stays where it is so the valid region keeps moving. */
             if (count > 1) {
                 g_filled = 0;
-                g_frozen_valid = false;
+                /* The frozen snapshot stays.  The hub may have lost a
+                 * few fragments of this very window in the air, and it
+                 * can only get them back from a node that still has
+                 * them.  g_frozen_served says "this one has been
+                 * uploaded", which is what lets the node freeze the
+                 * next one straight away. */
+                g_frozen_served = true;
+                g_frozen_hold_ms = millis() + FROZEN_HOLD_MS;
                 g_peak_pending = false;
             }
         }
     }
     g_t_req += (uint64_t)(esp_timer_get_time() - rq0);
+
+    /* A resend request is served from the frozen window, and only if the
+     * frozen window is still the one the hub asked about.  If the node
+     * has already frozen a newer window the fragments the hub wants are
+     * gone, and sending newer ones under the old sequence number would
+     * corrupt the burst rather than complete it -- so the request is
+     * refused and the hub asks for the newer window instead. */
+    if (g_resend_pending) {
+        g_resend_pending = false;
+        if (!g_frozen_valid || g_resend_seq != g_burst_seq) {
+            if (Serial) {
+                Serial.println("resend refused: no frozen window for it");
+            }
+        } else {
+            uint16_t resent = 0;
+            for (uint16_t i = 0; i < FRAG_COUNT; i++) {
+                if ((g_resend_bitmap[i >> 3] & (1u << (i & 7u))) == 0) {
+                    continue;
+                }
+                send_fragment(i, true, false);
+                resent++;
+                delay(10);
+            }
+            if (Serial) {
+                Serial.printf("resent %u fragments of seq %u\n",
+                              (unsigned)resent, (unsigned)g_burst_seq);
+            }
+        }
+    }
 
     /* The console. */
     static char line[64];

@@ -23,7 +23,7 @@ static const char *TAG = "node_link";
 /* The radio channel the nodes use.  Both sides set it explicitly, because
  * ESP-NOW does not roam: a node on channel 1 and a hub on channel 6 hear
  * nothing of each other. */
-#define NODE_LINK_CHANNEL 1
+#define NODE_LINK_CHANNEL 6
 
 #define NODE_LINK_MAX_FRAME 260
 
@@ -47,6 +47,12 @@ typedef struct {
     uint16_t frag_want;
     uint16_t frag_have;
     uint32_t bad_payloads;
+    /* The sequence the hub asked for.  A fragment that carries any other
+     * sequence belongs to an earlier window and is dropped: the radio
+     * delivers frames in the order it wants to, and one straggler from
+     * the last burst must not wipe the burst being assembled now. */
+    uint16_t want_seq;
+    bool     have_want;
     uint8_t  bitmap[(CRYNET_PROTO_FRAG_COUNT + 7u) / 8u];
 
     int16_t *window;
@@ -157,6 +163,7 @@ static uint32_t s_bad_dbg = 0;   /* the first few rejects are printed, then quie
 static volatile uint32_t s_promisc_total = 0;
 static volatile uint32_t s_promisc_magic = 0;
 
+#ifdef CRYNET_LINK_PROMISCUOUS
 static void promisc_rx(void *buf, wifi_promiscuous_pkt_type_t type)
 {
     (void)type;
@@ -169,6 +176,7 @@ static void promisc_rx(void *buf, wifi_promiscuous_pkt_type_t type)
         }
     }
 }
+#endif
 
 /* Diagnostic: move the radio to another channel and count what is there. */
 void node_link_sweep_channel(uint8_t ch)
@@ -234,6 +242,7 @@ static void handle_fragment(node_link_t *nl, uint8_t node_id, uint16_t seq,
                              const uint8_t *payload, int payload_len)
 {
     node_slot_t *slot = NULL;
+    nl->stats.frag_frames++;
     for (int i = 0; i < NODE_LINK_MAX_NODES; i++) {
         if (nl->slots[i].used && nl->slots[i].id == node_id) {
             slot = &nl->slots[i];
@@ -272,8 +281,25 @@ static void handle_fragment(node_link_t *nl, uint8_t node_id, uint16_t seq,
         return;
     }
 
+    /* A fragment that belongs to another window is not ours to use. */
+    if (slot->have_want && seq != slot->want_seq) {
+        nl->stats.frames_bad++;
+        return;
+    }
+
     /* A new burst sequence starts a new reassembly. */
     if (!slot->in_burst || slot->frag_seq != seq) {
+        if (slot->in_burst) {
+            /* The sequence changed while a burst was in flight: the
+             * fragments that arrived so far are discarded and the count
+             * starts again.  This is worth a line of its own — it is
+             * the difference between a burst that lost frames in the
+             * air and one the hub counted wrongly. */
+            ESP_LOGW(TAG, "node %u: the burst sequence changed from %u to %u "
+                          "with %u of %u fragments in hand",
+                     node_id, (unsigned)slot->frag_seq, (unsigned)seq,
+                     (unsigned)slot->frag_have, (unsigned)slot->frag_want);
+        }
         memset(slot->bitmap, 0, sizeof(slot->bitmap));
         slot->in_burst = true;
         slot->frag_seq = seq;
@@ -542,10 +568,20 @@ bool node_link_start(node_link_t *nl)
         return false;
     }
 
+    /* Promiscuous mode hands the host *every* frame on the channel, and
+     * it is off by default: with the laptop's own Wi-Fi sitting on
+     * channel 1, that traffic flooded the receive path and cost the hub
+     * about fifteen fragments out of every 286-fragment burst.  The
+     * counters below are the diagnostic it was used for; build with
+     * -DCRYNET_LINK_PROMISCUOUS=1 to bring it back. */
+#ifdef CRYNET_LINK_PROMISCUOUS
     if (esp_wifi_set_promiscuous(true) == ESP_OK) {
         esp_wifi_set_promiscuous_rx_cb(promisc_rx);
         ESP_LOGW(TAG, "promiscuous mode is on (diagnostic)");
     }
+#else
+    ESP_LOGI(TAG, "promiscuous mode is off (the air counters are idle)");
+#endif
 
     uint32_t version = 0;
     if (esp_now_get_version(&version) == ESP_OK) {
@@ -659,6 +695,8 @@ bool node_link_request_window(node_link_t *nl, uint8_t node_id, uint16_t burst_s
             slot->frag_have = 0;
             slot->frag_want = 0;
             slot->frag_seq = burst_seq;
+            slot->want_seq = burst_seq;
+            slot->have_want = true;
             memset(slot->bitmap, 0, sizeof(slot->bitmap));
         }
     }
@@ -671,6 +709,100 @@ bool node_link_request_window(node_link_t *nl, uint8_t node_id, uint16_t burst_s
     }
     nl->stats.requests_sent++;
     return true;
+}
+
+/*
+ * Ask the node to send the fragments of a burst that never arrived.
+ *
+ * The link loses frames for a reason that is outside its control: the
+ * hub's one radio also carries Bluetooth, and while it is retuned to a
+ * BLE channel the Wi-Fi receiver hears nothing.  A burst of 286 frames
+ * sent as fast as the radio allows therefore loses a handful of them,
+ * and the hole is not where the request was lost or where the burst
+ * ended -- it is scattered through the middle.
+ *
+ * So the hub says exactly which fragments it is missing, as a bitmap,
+ * and the node sends only those.  The fragments that did arrive are not
+ * sent again, and the ones that did not are covered.
+ *
+ * Returns the number of fragments asked for, 0 if there was nothing
+ * missing, or -1 if the request could not be built or sent.
+ */
+int node_link_request_missing(node_link_t *nl, uint8_t node_id, uint16_t seq)
+{
+    if (nl == NULL || !nl->up) {
+        return -1;
+    }
+
+    uint8_t bitmap[CRYNET_PROTO_RESEND_BITMAP_BYTES];
+    memset(bitmap, 0, sizeof bitmap);
+
+    int missing = 0;
+    bool found = false;
+    link_lock(nl);
+    for (int i = 0; i < NODE_LINK_MAX_NODES; i++) {
+        node_slot_t *slot = &nl->slots[i];
+        if (!slot->used || slot->id != node_id) {
+            continue;
+        }
+        found = true;
+        if (slot->in_burst && slot->frag_seq == seq) {
+            for (uint16_t f = 0; f < slot->frag_want; f++) {
+                if ((slot->bitmap[f >> 3] & (1u << (f & 7u))) == 0) {
+                    bitmap[f >> 3] |= (uint8_t)(1u << (f & 7u));
+                    missing++;
+                }
+            }
+        }
+        break;
+    }
+    link_unlock(nl);
+
+    if (!found) {
+        return -1;
+    }
+    if (missing == 0) {
+        return 0;
+    }
+
+    uint8_t frame[CRYNET_PROTO_HEADER_BYTES + CRYNET_PROTO_RESEND_BITMAP_BYTES + 4u];
+    const size_t len = crynet_proto_build(frame, CRYNET_PROTO_TYPE_RESEND,
+                                           node_id, seq, 0u,
+                                           CRYNET_PROTO_FRAG_COUNT,
+                                           bitmap, (uint16_t)sizeof bitmap);
+    if (len == 0) {
+        return -1;
+    }
+
+    /* The request is sent three times.
+     *
+     * ESP-NOW broadcast has no acknowledgement: the sender is told the
+     * frame left the queue, not that it arrived.  The hub's radio is
+     * deaf whenever it is retuned to a Bluetooth channel, and the
+     * resend is sent at exactly the moment the burst has just gone
+     * quiet -- which is when the radio has been busiest.  One lost
+     * request means the whole round is wasted and the burst times out
+     * with the fragments still missing, so the request is repeated.
+     * It is fifty-four bytes and it asks for a handful of frames, so
+     * three copies cost less than one lost round. */
+    static const uint8_t bcast[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+    bool sent = false;
+    for (int attempt = 0; attempt < 3; attempt++) {
+        if (attempt > 0) {
+            vTaskDelay(pdMS_TO_TICKS(20));
+        }
+        if (esp_now_send(bcast, frame, len) != ESP_OK) {
+            nl->stats.requests_failed++;
+            continue;
+        }
+        sent = true;
+    }
+    if (!sent) {
+        return -1;
+    }
+    nl->stats.requests_sent++;
+    nl->stats.resends_sent++;
+    return missing;
 }
 
 bool node_link_burst_state(const node_link_t *nl, uint8_t node_id,
@@ -698,6 +830,35 @@ bool node_link_burst_state(const node_link_t *nl, uint8_t node_id,
         out->missing = (slot->frag_want > slot->frag_have)
                            ? (slot->frag_want - slot->frag_have) : 0u;
         found = true;
+        break;
+    }
+    link_unlock(nl);
+    return found;
+}
+
+/* Which fragments of the burst in flight have not arrived.  The indices
+ * are written into `out` (up to `max` of them) and the number written
+ * is returned.  This is a diagnostic: a burst that times out is usually
+ * missing a handful of frames, and *which* ones says whether they were
+ * lost at the start of the burst, at the end, or scattered through it. */
+int node_link_burst_missing(node_link_t *nl, uint8_t node_id,
+                            uint16_t *out, int max)
+{
+    if (out == NULL || max <= 0) {
+        return 0;
+    }
+    int found = 0;
+    link_lock(nl);
+    for (int i = 0; i < NODE_LINK_MAX_NODES; i++) {
+        const node_slot_t *slot = &nl->slots[i];
+        if (!slot->used || slot->id != node_id || !slot->in_burst) {
+            continue;
+        }
+        for (uint16_t f = 0; f < slot->frag_want && found < max; f++) {
+            if ((slot->bitmap[f >> 3] & (1u << (f & 7u))) == 0) {
+                out[found++] = f;
+            }
+        }
         break;
     }
     link_unlock(nl);

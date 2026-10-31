@@ -66,11 +66,13 @@ typedef struct {
 /* Counters for the whole link. */
 typedef struct {
     uint32_t raw_frames;   /* frames off the air, before any parsing */
+    uint32_t frag_frames;  /* fragment frames received, whatever they carried */
     uint32_t frames_ok;
     uint32_t frames_bad;      /* malformed or frame-CRC failures */
     uint32_t payloads_bad;    /* the frame was sound, the payload was not */
     uint32_t requests_sent;
     uint32_t requests_failed;
+    uint32_t resends_sent;   /* requests for the fragments that went missing */
 } node_link_stats_t;
 
 /* Create the link.  Returns NULL only if the memory for the windows
@@ -112,6 +114,20 @@ bool node_link_request_window(node_link_t *nl, uint8_t node_id, uint16_t burst_s
 /* The state of a node's burst.  False if the node is unknown. */
 bool node_link_burst_state(const node_link_t *nl, uint8_t node_id,
                            node_link_burst_t *out);
+
+/* Which fragments of the burst in flight are still missing. */
+int node_link_burst_missing(node_link_t *nl, uint8_t node_id,
+                            uint16_t *out, int max);
+
+/*
+ * Ask the node to send the fragments of the burst in flight that never
+ * arrived.  The request carries a bitmap of exactly the missing
+ * fragments, so one request covers a scattered set of losses.
+ *
+ * Returns the number of fragments asked for, 0 if nothing was missing,
+ * or -1 if the request could not be built or sent.
+ */
+int node_link_request_missing(node_link_t *nl, uint8_t node_id, uint16_t seq);
 
 /*
  * Copy a node's reassembled window into `dst`, which must have room for

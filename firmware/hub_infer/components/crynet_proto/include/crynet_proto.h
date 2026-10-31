@@ -54,8 +54,28 @@ extern "C" {
  * everything the nodes send. */
 #define CRYNET_PROTO_TYPE_HEARTBEAT 4u
 
+/*
+ * A resend request: the hub's list of the fragments of a burst that did
+ * not arrive.  It carries the full fourteen-byte header and a payload,
+ * and the payload is a bitmap — one bit per fragment, the bit set for
+ * the fragments the hub is still missing.  Thirty-six bytes cover all
+ * 286 fragments, so one request says everything that is missing however
+ * scattered the losses are, and the whole frame is 54 bytes, well inside
+ * the 255-byte ESP-NOW limit.
+ *
+ * The node answers by sending exactly the fragments whose bit is set,
+ * out of the same frozen window and with the same sequence number, so
+ * the fragments that did arrive are not sent again and the ones that did
+ * not are now covered.
+ */
+#define CRYNET_PROTO_TYPE_RESEND   5u
+
 #define CRYNET_PROTO_HEADER_BYTES  14u
 #define CRYNET_PROTO_REQUEST_BYTES 12u
+
+/* The bitmap in a resend request: one bit per fragment. */
+#define CRYNET_PROTO_RESEND_BITMAP_BYTES \
+    ((CRYNET_PROTO_FRAG_COUNT + 7u) / 8u)
 
 /* ESP-NOW carries at most 255 bytes in one frame. */
 #define CRYNET_PROTO_MAX_FRAME     255u

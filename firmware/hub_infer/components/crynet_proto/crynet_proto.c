@@ -111,7 +111,8 @@ int crynet_proto_parse(const uint8_t *data,
     if (t != CRYNET_PROTO_TYPE_TELEMETRY &&
         t != CRYNET_PROTO_TYPE_FRAGMENT &&
         t != CRYNET_PROTO_TYPE_REQUEST &&
-        t != CRYNET_PROTO_TYPE_HEARTBEAT) {
+        t != CRYNET_PROTO_TYPE_HEARTBEAT &&
+        t != CRYNET_PROTO_TYPE_RESEND) {
         return CRYNET_PROTO_BAD_FRAME;
     }
 
