@@ -216,9 +216,13 @@ def dashboard(path: Path, cots, linked, crying, cot_id, confidence, level,
                   C["C_SURFACE_HI"], C["C_BORDER"])
 
     # ---- the footer ----
-    count = len(cots)
-    draw_text(d, 12, foot_y, f"{count} cot{'' if count == 1 else 's'} linked",
-              C["C_DIM"], 1)
+    # The firmware counts the cots that are *answering*, not the cards
+    # on the screen: a card for a quiet cot says NO SIGNAL, so a
+    # "3 cots linked" above two NO SIGNAL cards would be a lie.
+    count = sum(1 for cot in cots if cot["online"])
+    label = ("no cots linked" if count == 0
+             else f"{count} cot{'' if count == 1 else 's'} linked")
+    draw_text(d, 12, foot_y, label, C["C_DIM"], 1)
     up = f"up {uptime_s // 60}:{uptime_s % 60:02d}"
     draw_text(d, W - 12 - text_width(up), foot_y, up, C["C_DIM"], 1)
 

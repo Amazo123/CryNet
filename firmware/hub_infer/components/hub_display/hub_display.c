@@ -487,12 +487,17 @@ static void draw_dashboard(const hub_display_state_t *st)
     /* ---- a card for every cot ---- */
     const int count = st->node_count > HUB_DISPLAY_MAX_NODES
                     ? HUB_DISPLAY_MAX_NODES : st->node_count;
+    unsigned online = 0;
     for (int i = 0; i < count; i++) {
         const int y = CARD_Y0 + i * CARD_STEP;
         const hub_display_node_t *n = &st->nodes[i];
         const bool known = n->online;
         const uint16_t accent = n->crying ? C_ALERT
                              : (known ? C_ACCENT : C_BORDER);
+
+        if (known) {
+            online++;
+        }
 
         fb_round_fill(CARD_X, y, CARD_W, CARD_H, 6,
                       blend(C_SURFACE, accent, n->crying ? 0.16f : 0.05f));
@@ -523,10 +528,19 @@ static void draw_dashboard(const hub_display_state_t *st)
                        known ? n->level : 0.0f, n->crying);
     }
 
-    /* ---- the footer ---- */
+    /* ---- the footer ----
+     * The footer counts the cots that are actually answering, not the
+     * cards on the screen.  A card for a cot that has gone quiet reads
+     * NO SIGNAL, so "3 cots linked" printed above two NO SIGNAL cards
+     * would be a lie — and the panel is the one place the caregiver is
+     * certain to look. */
     char foot[40];
-    snprintf(foot, sizeof foot, "%u cot%s linked", (unsigned)count,
-             count == 1 ? "" : "s");
+    if (online == 0) {
+        snprintf(foot, sizeof foot, "no cots linked");
+    } else {
+        snprintf(foot, sizeof foot, "%u cot%s linked", online,
+                 online == 1 ? "" : "s");
+    }
     fb_text(12, FOOT_Y, foot, C_DIM, 1);
 
     char up[24];
