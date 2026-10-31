@@ -25,6 +25,11 @@
  *      address twice — once for the start and once for the end —
  *      instead re-sets the start, and the panel ends up with a window
  *      of one pixel and displays uninitialised memory.
+ *   4. **The colour order is set by one bit in MADCTL.**  The BGR bit
+ *      tells the panel that the top bits of each RGB565 word are blue.
+ *      The framebuffer holds red there, so leaving BGR set swaps red
+ *      and blue on the glass: the teal accent came out olive, and the
+ *      amber "no phone" pill came out blue.  The bit is cleared here.
  *
  * The orientation is a property of *this* panel, not of the chip: it is
  * a "landscape-first" 320x240 glass, so the upright landscape setting
@@ -76,7 +81,9 @@ static const uint8_t s_init[] = {
     0xC1, 1, 0x10,              /* power control 2 */
     0xC5, 2, 0x3e, 0x28,        /* VCM control */
     0xC7, 1, 0x86,              /* VCM control 2 */
-    ILI9341_MADCTL, 1, 0x48,    /* memory access control */
+    ILI9341_MADCTL, 1, 0x40,    /* memory access control: the rotation
+                                 * is written again below, once the
+                                 * orientation is known */
     0xB6, 1, 0x00,              /* display function control */
     0xF2, 1, 0x00,              /* 3 gamma function disable */
     0x26, 1, 0x01,              /* gamma set */
@@ -193,16 +200,28 @@ bool ili9341_init(ili9341_t *dev, int mosi, int sclk, int cs, int dc,
 
     /* The rotation.  On this panel the upright landscape setting is
      * MADCTL_MY with a 320x240 logical framebuffer — see the note at
-     * the top of this file. */
+     * the top of this file.
+     *
+     * MADCTL_BGR is deliberately NOT set.  It would tell the panel that
+     * the top bits of each RGB565 word are blue; the framebuffer puts
+     * red there, so the picture would arrive with red and blue
+     * exchanged — the teal accent olive, the amber pill blue.  The
+     * picture in the first photograph of the panel proved it. */
     uint8_t madctl;
     switch (rotation & 3) {
-    case 0:  madctl = MADCTL_MX | MADCTL_BGR; dev->width = 240; dev->height = 320; break;
-    case 1:  madctl = MADCTL_MV | MADCTL_BGR; dev->width = 320; dev->height = 240; break;
-    case 2:  madctl = MADCTL_MY | MADCTL_BGR; dev->width = 320; dev->height = 240; break;
-    default: madctl = MADCTL_MX | MADCTL_MY | MADCTL_MV | MADCTL_BGR;
+    case 0:  madctl = MADCTL_MX; dev->width = 240; dev->height = 320; break;
+    case 1:  madctl = MADCTL_MV; dev->width = 320; dev->height = 240; break;
+    case 2:  madctl = MADCTL_MY; dev->width = 320; dev->height = 240; break;
+    default: madctl = MADCTL_MX | MADCTL_MY | MADCTL_MV;
              dev->width = 320; dev->height = 240; break;
     }
     write_command_data(dev, ILI9341_MADCTL, &madctl, 1);
+
+    /* Pin the inversion state.  The chip's default after a reset is
+     * already "inversion off", but saying so explicitly means the
+     * picture cannot depend on what the last user of this glass left
+     * in the controller. */
+    write_command_data(dev, ILI9341_INVOFF, NULL, 0);
 
     const uint8_t fmt = 0x55;      /* 16 bits per pixel */
     write_command_data(dev, ILI9341_PIXFMT, &fmt, 1);
