@@ -1,0 +1,74 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1793453994.414073   19752 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1793454033.987105   19752 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+WARNING:tensorflow:TensorFlow GPU support is not available on native Windows for TensorFlow >= 2.11. Even if CUDA/cuDNN are installed, GPU will not be used. Please use WSL2 or the TensorFlow-DirectML plugin.
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+>>> CELL 1 — Environment
+========================================================================
+CryNet — infant cry detection for ESP32-S3
+========================================================================
+  mode          : FULL
+  signal        : 16000 Hz mono, 2.0 s window (32000 samples)
+  log-mel       : 81 frames x 64 bands, n_fft=512, hop=400
+  dB floor      : -80.0 dB   CMVN: True
+  cache / work  : C:\Users\HP\.t3\projects\fp-2\research\_cache  |  C:\Users\HP\.t3\projects\fp-2\research\_verify_work
+  artifacts     : C:\Users\HP\.t3\projects\fp-2\research\out
+========================================================================
+>>> CELL 2 — Dependencies
+tensorflow 2.21.0 | librosa 0.11.0
+GPU: none (CPU mode — expect it to be slower)
+>>> CELL 3 — Dataset acquisition
+Acquiring corpora ...
+  downloaded icd_meta       1.6 MB  (3s)
+  cached     icd_pos     2159.8 MB
+  cached     icd_neg     2479.6 MB
+  cached     icd_rir      110.3 MB
+  cached     cry4         494.6 MB
+  cached     esc50        646.2 MB
+  cached     snore        118.2 MB
+  cached     gtzan       1226.0 MB
+ICD manifest: 28478 clips
+>>> CELL 4 — The audio front end
+log_mel shape : (81, 64)  (expect (81, 64))
+value range   : [-0.33, 5.51]
+mean / std    : +0.0000 / 1.0000   (CMVN -> ~0 / ~1)
+mel bank      : (64, 257), non-zero weights 497
+>>> CELL 5 — Archive readers
+ZipReader ready.
+>>> CELL 6 — Corpus manifests
+ICD      :  28478  (cry=13330)
+cry4     :   4871  (cry=4871)
+ESC-50   :   2000  (cry=40)
+snoring  :   1001
+GTZAN    :      0  (music, all negative)
+  100 clips
+  200 clips
+  300 clips
+  400 clips
+  500 clips
+  600 clips
+  700 clips
+  800 clips
+  900 clips
+  1000 clips
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+clips: 1000  windows: 6000  (196s of features)
+
+=== music, by genre ===
+genre               clips  reached  alarms  alarm/reached  max P(cry)
+blues                 100      100      13          0.130      0.9961
+classical             100       68       2          0.029      0.9961
+country               100       99       3          0.030      0.9961
+disco                 100      100      10          0.100      0.9961
+hiphop                100      100       9          0.090      0.9961
+jazz                  100       98      14          0.143      0.9961
+metal                 100      100       4          0.040      0.9922
+pop                   100      100      12          0.120      0.9961
+reggae                100      100       2          0.020      0.9961
+rock                  100      100      10          0.100      0.9961
+
+overall: 79 alarms out of 965 that reached the model (8.19 %)
+loudest tenth: 8/100 (8.00 %)
+wrote C:\Users\HP\.t3\projects\fp-2\research\out\eval_music.json
+total 203s

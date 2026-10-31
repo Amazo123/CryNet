@@ -547,7 +547,7 @@ snore_entries = [(s, 0, "snoring", "x", "snore") for s in snore_idx]
 # breakdown can report the model per genre.
 gtzan_entries = []
 for member in READERS["gtzan"].names():
-    if not member.lower().endswith(".wav"):
+    if not member.lower().endswith((".wav", ".au")):
         continue
     genre = Path(member).parent.name.lower()
     # keyed by the whole path: every genre calls its clips 00000.wav...

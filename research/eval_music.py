@@ -44,8 +44,7 @@ OUT = ROOT / "research" / "out"
 CACHE = ROOT / "research" / "_cache"
 
 DEFAULT_ZIPS = [
-    CACHE / "gtzan__agrimamalviya_gtzan-from-desk.zip",
-    CACHE / "gtzan5__Feanix_gtzan-5-sec.tar.gz",
+    CACHE / "gtzan__carlthome_gtzan-genre-collection.zip",
 ]
 
 sys.path.insert(0, str(ROOT / "research"))
@@ -60,18 +59,21 @@ def find_corpus() -> Path | None:
 
 
 def members_of(path: Path):
-    """Every wav in the archive, with the genre read off the folder name."""
+    """Every clip in the archive, with the genre read off the folder name.
+
+    GTZAN ships as Sun/NeXT AU (libsndfile reads it), some copies as WAV.
+    """
     if path.suffix == ".zip":
         with zipfile.ZipFile(path) as z:
             for name in z.namelist():
-                if name.lower().endswith(".wav"):
+                if name.lower().endswith((".wav", ".au")):
                     genre = Path(name).parent.name.lower()
                     yield name, genre, z.read(name)
     else:
         import tarfile
         with tarfile.open(path) as t:
             for m in t.getmembers():
-                if m.isfile() and m.name.lower().endswith(".wav"):
+                if m.isfile() and m.name.lower().endswith((".wav", ".au")):
                     f = t.extractfile(m)
                     if f is None:
                         continue
