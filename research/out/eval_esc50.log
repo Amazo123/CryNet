@@ -1,0 +1,82 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1793450205.302018   23800 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1793450208.840063   23800 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+WARNING:tensorflow:TensorFlow GPU support is not available on native Windows for TensorFlow >= 2.11. Even if CUDA/cuDNN are installed, GPU will not be used. Please use WSL2 or the TensorFlow-DirectML plugin.
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+>>> CELL 1 — Environment
+========================================================================
+CryNet — infant cry detection for ESP32-S3
+========================================================================
+  mode          : FULL
+  signal        : 16000 Hz mono, 2.0 s window (32000 samples)
+  log-mel       : 81 frames x 64 bands, n_fft=512, hop=400
+  dB floor      : -80.0 dB   CMVN: True
+  cache / work  : C:\Users\HP\.t3\projects\fp-2\research\_cache  |  C:\Users\HP\.t3\projects\fp-2\research\_verify_work
+  artifacts     : C:\Users\HP\.t3\projects\fp-2\research\out
+========================================================================
+>>> CELL 2 — Dependencies
+tensorflow 2.21.0 | librosa 0.11.0
+GPU: none (CPU mode — expect it to be slower)
+>>> CELL 3 — Dataset acquisition
+Acquiring corpora ...
+  downloaded icd_meta       1.6 MB  (1s)
+  cached     icd_pos     2159.8 MB
+  cached     icd_neg     2479.6 MB
+  cached     icd_rir      110.3 MB
+  cached     cry4         494.6 MB
+  cached     esc50        646.2 MB
+  cached     snore        118.2 MB
+ICD manifest: 28478 clips
+>>> CELL 4 — The audio front end
+log_mel shape : (81, 64)  (expect (81, 64))
+value range   : [-0.33, 5.51]
+mean / std    : +0.0000 / 1.0000   (CMVN -> ~0 / ~1)
+mel bank      : (64, 257), non-zero weights 497
+>>> CELL 5 — Archive readers
+ZipReader ready.
+>>> CELL 6 — Corpus manifests
+ICD      :  28478  (cry=13330)
+cry4     :   4871  (cry=4871)
+ESC-50   :   2000  (cry=40)
+snoring  :   1001
+
+ESC-50 manifest: 2000 clips
+  200 clips
+  400 clips
+  600 clips
+  800 clips
+  1000 clips
+  1200 clips
+  1400 clips
+  1600 clips
+  1800 clips
+  2000 clips
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+windows: 4000  (35s of features)
+
+=== ESC-50, by kind of sound ===
+group               clips  reached  alarms  alarm/reached  max P(cry)
+animal                400      349      13          0.037      0.9961
+cry-ish                40       40      36          0.900      0.9961
+domestic              440      248       4          0.016      0.9961
+human_non_speech      280      188       3          0.016      0.9922
+nature                400      262       2          0.008      0.9961
+other                  40       24       0          0.000      0.1250
+urban                 400      368      16          0.043      0.9961
+
+=== the ten worst categories by P(cry) ===
+brushing_teeth             40 clips  reached   14  alarms   1  max P 0.9961
+car_horn                   40 clips  reached   38  alarms   6  max P 0.9961
+church_bells               40 clips  reached   39  alarms   1  max P 0.9961
+crickets                   40 clips  reached   16  alarms   0  max P 0.9961
+crow                       40 clips  reached   32  alarms   4  max P 0.9961
+crying_baby                40 clips  reached   40  alarms  36  max P 0.9961
+door_wood_creaks           40 clips  reached   25  alarms   2  max P 0.9961
+frog                       40 clips  reached   33  alarms   1  max P 0.9961
+hand_saw                   40 clips  reached   37  alarms   4  max P 0.9961
+sheep                      40 clips  reached   33  alarms   2  max P 0.9961
+
+negatives: 38 alarms out of 1439 that reached the model (2.64 %)
+wrote C:\Users\HP\.t3\projects\fp-2\research\out\eval_esc50.json
+total 38s
