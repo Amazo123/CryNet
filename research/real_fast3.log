@@ -161,3 +161,10 @@ Epoch 1/3
 Epoch 2/3
 156/156 - 29s - 183ms/step - accuracy: 0.9276 - loss: 0.1955 - val_accuracy: 0.9106 - val_loss: 0.2183 - learning_rate: 0.0010
 Epoch 3/3
+156/156 - 29s - 186ms/step - accuracy: 0.9383 - loss: 0.1662 - val_accuracy: 0.9217 - val_loss: 0.1922 - learning_rate: 0.0010
+  params=122,770  val_auc=0.9855  test_auc=0.9885  cross_auc=0.9928
+
+========================================================================
+TRAINING temporal_cnn   (3 epochs)
+========================================================================
+Epoch 1/3
