@@ -142,12 +142,18 @@ static const uint32_t PEAK_EXPIRE_MS = 2000;
  * The node refused those requests ("no frozen window for it"), the hub
  * ran out of rounds, and the burst timed out.
  *
- * So the snapshot is held for four seconds after the upload.  Four
- * seconds is longer than the hub needs for all three of its rounds
- * (the first about one and a half seconds after the stall, the others
- * further out as the missing count falls), and short enough that a new
- * window is not held up for long. */
-static const uint32_t FROZEN_HOLD_MS = 4000;
+ * So the snapshot is held for eight seconds after the upload.  Eight
+ * seconds is twice the hub's burst duration: the hub processes one
+ * window in about four seconds, and the node freezes a new one only
+ * after the hold expires, so the node never freezes faster than the
+ * hub can empty the queue.  With the old four seconds the node froze
+ * a new window every four seconds while the hub emptied one every four
+ * seconds, and during a cry the two rates matched exactly -- the queue
+ * never drained and the first cry window waited behind every quiet
+ * window frozen before it.  Eight seconds also still covers the hub's
+ * three resend rounds, which all land inside the first seven seconds.
+ * (D-67.) */
+static const uint32_t FROZEN_HOLD_MS = 8000;
 
 /* How long a frozen window may sit unserved before it is dropped.
  *
