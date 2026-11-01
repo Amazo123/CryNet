@@ -1,0 +1,61 @@
+=== the RMS of every recorded session (the node's own telemetry)
+
+session    what it was                  n      p10      p25   median      p90      max
+session10  phone cry, 1 m             590   0.0030   0.0050   0.0070   0.0120   0.0160
+session5   quiet room                 590   0.0010   0.0020   0.0020   0.0040   0.0100
+session6   speech, desk distance      590   0.0020   0.0030   0.0040   0.0091   0.0530
+session6b  speech, 30 cm              590   0.0030   0.0050   0.0080   0.0310   0.6670
+session7   music, 1 m                 590   0.0050   0.0070   0.0100   0.0160   0.0380
+session7b  music, 30 cm               590   0.0260   0.0350   0.0470   0.0760   0.1410
+session8   film, 1 m                  590   0.0030   0.0040   0.0070   0.0120   0.0190
+session8b  film, 30 cm                590   0.0100   0.0140   0.0260   0.0800   0.2180
+session9   phone cry, 15 cm           590   0.0090   0.0170   0.0370   0.1271   0.3870
+
+=== the noise floor of the quiet room: 0.0010 (p10)
+
+The adaptive rule would trigger at 3x that, i.e. 0.0030.
+
+=== trigger events per session at each level (two consecutive readings above it)
+
+  level    s10     s5     s6    s6b     s7    s7b     s8    s8b     s9
+  0.004      32      24      35      27      14       1      28       1       6 
+  0.005      46       5      41      39      21       1      20       4      10 
+  0.006      45       1      45      46      32       1      24       4      13 
+  0.007      46       1      35      48      44       1      33       7      16 
+  0.008      37       0      27      49      50       1      36       9      17 
+  0.010      30       0      12      40      47       2      28      15      23 
+  0.012      14       0       7      29      45       5      22      23      29 
+  0.015       0       0       3      20      23       8       4      31      32 
+  0.020       0       0       2      18       5      15       0      40      36 
+  0.025       0       0       2      14       1      27       0      42      47 
+  0.030       0       0       1      13       0      32       0      43      41 
+
+=== the same, as the number of non-cry events and cry events
+
+  level   non-cry events   cry events   cry s9  cry s10
+  0.004              130           38        6       32
+  0.005              131           56       10       46
+  0.006              153           58       13       45
+  0.007              169           62       16       46
+  0.008              172           54       17       37
+  0.010              144           53       23       30
+  0.012              131           43       29       14
+  0.015               89           32       32        0
+  0.020               80           36       36        0
+  0.025               86           47       47        0
+  0.030               89           41       41        0
+
+=== the adaptive rule, simulated over each session (the floor tracker, then the trigger)
+
+--- the floor rises by 0.002 of the way to the reading each time (a 50 s time constant)
+  2x floor: s10= 48s5=  5s6= 42s6b= 44s7= 42s7b= 32s8= 31s8b= 46s9= 30   non-cry  242  cry   78
+  3x floor: s10= 39s5=  5s6= 34s6b= 45s7= 42s7b= 37s8= 23s8b= 45s9= 35   non-cry  231  cry   74
+  4x floor: s10= 20s5=  1s6= 21s6b= 40s7= 38s7b= 32s8= 14s8b= 45s9= 38   non-cry  191  cry   58
+  5x floor: s10=  7s5=  0s6= 11s6b= 31s7= 31s7b= 32s8= 12s8b= 43s9= 40   non-cry  160  cry   47
+
+--- the floor rises by 0.005 of the way to the reading each time (a 20 s time constant)
+  2x floor: s10= 46s5=  5s6= 39s6b= 48s7= 45s7b= 38s8= 28s8b= 46s9= 37   non-cry  249  cry   83
+  3x floor: s10= 34s5=  3s6= 27s6b= 46s7= 33s7b= 33s8= 22s8b= 42s9= 37   non-cry  206  cry   71
+  4x floor: s10= 13s5=  0s6=  9s6b= 30s7= 27s7b= 32s8= 13s8b= 44s9= 38   non-cry  155  cry   51
+  5x floor: s10=  5s5=  0s6=  6s6b= 24s7= 15s7b= 32s8=  6s8b= 43s9= 41   non-cry  126  cry   46
+
