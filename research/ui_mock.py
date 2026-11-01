@@ -154,7 +154,7 @@ def dashboard(path: Path, cots, linked, crying, cot_id, confidence, level,
     d = ImageDraw.Draw(img)
 
     # ---- the header ----
-    fill(d, 0, 0, W, header_h, C["C_SURFACE"])
+    fill(d, 0, 0, W, header_h, C["C_HEADER"])
     draw_text(d, 12, 8, "CRYNET", C["C_ACCENT"], 2)
     draw_text(d, 90, 12, "S3 HUB", C["C_DIM"], 1)
     draw_pill(d, 196, 11, "RADIO", C["C_GREEN"] if linked else C["C_DIM"])
@@ -198,7 +198,8 @@ def dashboard(path: Path, cots, linked, crying, cot_id, confidence, level,
         round_fill(d, card_x, y, card_w, card_h, 6,
                    blend(C["C_SURFACE"], accent, 0.16 if cot["crying"] else 0.05))
         round_rect(d, card_x, y, card_w, card_h, 6,
-                   blend(C["C_BORDER"], accent, 0.45 if known else 0.0))
+                   accent if (known or cot["crying"])
+                   else blend(C["C_BORDER"], C["C_BG"], 0.45))
         draw_text(d, card_x + 14, y + 8, f"COT {i + 1}",
                   C["C_TEXT"] if known else C["C_DIM"], 2)
         if cot["crying"]:
@@ -213,7 +214,9 @@ def dashboard(path: Path, cots, linked, crying, cot_id, confidence, level,
                    else C["C_AMBER"] if cot["rms"] >= 0.030 else C["C_GREEN"])
         level_bar(d, card_x + 14, y + 28, card_w - 28, 7,
                   cot["rms"] if known else 0.0, bar_col,
-                  C["C_SURFACE_HI"], C["C_BORDER"])
+                  C["C_SURFACE_HI"] if known else C["C_SURFACE"],
+                  C["C_BORDER"] if known
+                  else blend(C["C_BORDER"], C["C_BG"], 0.45))
 
     # ---- the footer ----
     # The firmware counts the cots that are *answering*, not the cards
@@ -271,7 +274,7 @@ def colour_check(path: Path):
     img = Image.new("RGB", (W, H), C["C_BG"])
     d = ImageDraw.Draw(img)
 
-    fill(d, 0, 0, W, header_h, C["C_SURFACE"])
+    fill(d, 0, 0, W, header_h, C["C_HEADER"])
     draw_text(d, 12, 8, "COLOUR CHECK", C["C_TEXT"], 2)
     fill(d, 0, header_h, W, 2, C["C_ACCENT_DIM"])
 

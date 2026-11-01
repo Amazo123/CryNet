@@ -88,13 +88,23 @@ static const char *TAG = "hub_display";
  * a cry - but the screen now reads teal instead of blue.
  *
  * The level itself was picked off the glass, not out of a chart: shown
- * the dark ramp, the reader chose its third step - (4,8,8), one step
- * darker than the background this replaced - as the teal the screen
- * should be.  The whole neutral family moved down one step of the same
- * ramp with it, so the cards stay a shade above the background. */
-#define C_BG         DISPLAY_RGB(4, 8, 8)
+ * the dark ramp, the reader chose its third step - (4,8,8) - as the teal
+ * the screen should be, and the whole neutral family moved down one step
+ * of the same ramp with it.  On the glass that made the cards sit at the
+ * same value as the background - the panel lifts the dark end until a
+ * two-step gap reads as one - so the background has dropped another step:
+ * the cards keep (7,15,16) and the ground under them is now (2,4,4).
+ *
+ * The header strip is its own colour for the same reason, one edge at a
+ * time: the backlight's LEDs run along the top of the glass and lift
+ * that strip blue, so a header painted the same (7,15,16) as the cards
+ * photographed blue while the cards photographed teal.  (7,20,15) asks
+ * for five steps of green above blue, which the lift spends on its way
+ * in; what the reader sees is the teal the cards show. */
+#define C_BG         DISPLAY_RGB(2, 4, 4)
 #define C_SURFACE    DISPLAY_RGB(7, 15, 16)
 #define C_SURFACE_HI DISPLAY_RGB(12, 26, 28)
+#define C_HEADER     DISPLAY_RGB(7, 20, 15)
 /* The border is a UI component, so it has to clear 3:1 against the
  * card it sits on — the first choice (40,57,76) measured 1.40:1 and
  * was effectively invisible. */
@@ -453,9 +463,13 @@ static void draw_pill_col(int x, int y, const char *label, uint16_t col)
     fb_text(x + 10, y, label, col, 1);
 }
 
-static void draw_level_bar(int x, int y, int w, int h, float level, bool crying)
+static void draw_level_bar(int x, int y, int w, int h, float level, bool crying,
+                           bool known)
 {
-    fb_fill(x, y, w, h, C_SURFACE_HI);
+    /* An empty bar in a full-strength frame reads as "active" - part of
+     * why the no-signal cards looked busier than the live ones - so a
+     * dead card's track and frame are washed towards the background. */
+    fb_fill(x, y, w, h, known ? C_SURFACE_HI : C_SURFACE);
     /* The bar is sqrt-scaled: a quiet room still shows a sliver, the
      * 0.030 trigger lands about a third of the way up, and a loud cry
      * reaches the end.  A linear bar would sit empty until the room
@@ -473,7 +487,7 @@ static void draw_level_bar(int x, int y, int w, int h, float level, bool crying)
     if (fill_w > 0) {
         fb_fill(x + 1, y + 1, fill_w, h - 2, col);
     }
-    fb_rect(x, y, w, h, C_BORDER);
+    fb_rect(x, y, w, h, known ? C_BORDER : blend(C_BORDER, C_BG, 0.45f));
 }
 
 static void draw_dashboard(const hub_display_state_t *st)
@@ -481,7 +495,7 @@ static void draw_dashboard(const hub_display_state_t *st)
     fb_fill(0, 0, FB_W, FB_H, C_BG);
 
     /* ---- the header ---- */
-    fb_fill(0, 0, FB_W, HEADER_H, C_SURFACE);
+    fb_fill(0, 0, FB_W, HEADER_H, C_HEADER);
     fb_text(12, 8, "CRYNET", C_ACCENT, 2);
     fb_text(90, 12, "S3 HUB", C_DIM, 1);
     draw_pill(196, 11, "RADIO", st->linked);
@@ -550,8 +564,16 @@ static void draw_dashboard(const hub_display_state_t *st)
 
         fb_round_fill(CARD_X, y, CARD_W, CARD_H, 6,
                       blend(C_SURFACE, accent, n->crying ? 0.16f : 0.05f));
+        /* The outline is the state, at full strength: a cot that is
+         * answering gets the vibrant teal - rose, when it cries - and a
+         * cot that has gone quiet gets the border washed towards the
+         * background.  The first version had this backwards in effect:
+         * the online outline was a 45 % blend while the no-signal cards
+         * carried the plain border, so the dead cards read as the
+         * livelier ones from the chair. */
         fb_round_rect(CARD_X, y, CARD_W, CARD_H, 6,
-                      blend(C_BORDER, accent, known ? 0.45f : 0.0f));
+                      known || n->crying ? accent
+                                         : blend(C_BORDER, C_BG, 0.45f));
 
         char name[8];
         snprintf(name, sizeof name, "COT %u", (unsigned)(i + 1));
@@ -574,7 +596,7 @@ static void draw_dashboard(const hub_display_state_t *st)
                 state_col, 1);
 
         draw_level_bar(CARD_X + 14, y + 28, CARD_W - 28, 7,
-                       known ? n->level : 0.0f, n->crying);
+                       known ? n->level : 0.0f, n->crying, known);
     }
 
     /* ---- the footer ----
@@ -623,7 +645,7 @@ static void draw_colour_check(void)
 {
     fb_fill(0, 0, FB_W, FB_H, C_BG);
 
-    fb_fill(0, 0, FB_W, HEADER_H, C_SURFACE);
+    fb_fill(0, 0, FB_W, HEADER_H, C_HEADER);
     fb_text(12, 8, "COLOUR CHECK", C_TEXT, 2);
     fb_fill(0, HEADER_H, FB_W, 2, C_ACCENT_DIM);
 
