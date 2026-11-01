@@ -183,6 +183,10 @@ static bool      g_frozen_served = false;
 static uint32_t  g_frozen_hold_ms = 0;   /* when the hold on it ends */
 static bool      g_peak_pending = false;   /* a loud moment is waiting to
                                             * be frozen, one second late */
+static bool      g_cry_mode = false;       /* a loud window is frozen; do
+                                            * not freeze again until the
+                                            * room goes quiet, so a cry
+                                            * does not build a queue */
 static uint32_t  g_peak_ms = 0;
 static uint32_t  g_frozen_ms = 0;
 static uint32_t  g_frozen_crc = 0;    /* CRC-32 of the frozen window's bytes */
@@ -1007,18 +1011,27 @@ void loop() {
                 g_frozen_served = false;
                 g_peak_pending = false;
             }
+            /* Cry mode: once a loud window is frozen, do not freeze
+             * another until the room goes quiet.  A cry that lasts
+             * thirty seconds would otherwise freeze six windows and the
+             * hub would process them one by one, 30 s behind.  (D-69.) */
+            if (g_cry_mode && g_rms < g_level && g_loud_streak == 0u) {
+                g_cry_mode = false;
+            }
             /* Preempt the hold for a loud event.  A cry is typically an
              * order of magnitude louder than the room, so a crossing at
              * three times the trigger level is a new event worth an
              * immediate freeze, even if the previous window is still
              * being served: the hub abandons the stale burst and asks
-             * for this one instead.  Without this, a cry waits behind
-             * every quiet window frozen before it.  (D-68.) */
+             * for this one instead.  (D-68.) */
             if (g_frozen_served && g_level > 0.0f &&
                 g_rms >= 3.0f * g_level && g_loud_streak >= 2u) {
                 g_frozen_served = false;
             }
-            if (!g_frozen_served && g_filled == WINDOW_SAMPLES) {
+            /* In cry mode, only a louder event (preempt) may freeze. */
+            bool allow_freeze = !g_cry_mode ||
+                (g_frozen_rms > 0.0f && g_rms >= 3.0f * g_frozen_rms);
+            if (allow_freeze && !g_frozen_served && g_filled == WINDOW_SAMPLES) {
                 if (!g_peak_pending && g_loud_streak >= 2u) {
                     /* A loud moment: remember it, and freeze a second
                      * later, when the ring holds the second that follows
@@ -1031,11 +1044,20 @@ void loop() {
                     if (age >= PEAK_DELAY_MS) {
                         if (age < PEAK_EXPIRE_MS) {
                             freeze_window();
+                            /* A loud window puts the node into cry mode:
+                             * do not freeze again until the room goes
+                             * quiet, so a sustained cry does not queue
+                             * six windows ahead of itself.  (D-69.) */
+                            if (g_floor > 0.0f &&
+                                g_frozen_rms >= 5.0f * g_floor) {
+                                g_cry_mode = true;
+                            }
                             if (!g_dump_active && Serial) {
                                 Serial.printf("froze window, burst seq %u  "
-                                              "level %.4f  win rms %.4f\n",
+                                              "level %.4f  win rms %.4f%s\n",
                                               g_burst_seq, g_level,
-                                              g_frozen_rms);
+                                              g_frozen_rms,
+                                              g_cry_mode ? "  (cry mode)" : "");
                             }
                         }
                         g_peak_pending = false;
