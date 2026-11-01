@@ -139,6 +139,13 @@ typedef struct {
     int64_t  last_request_us;   /* when the last window was asked for   */
     uint16_t last_flags;
     uint16_t last_seq;
+    uint16_t last_completed_seq;   /* the seq of the last window the hub
+                                    * actually received and judged; the
+                                    * hub will not ask for the same
+                                    * frozen window twice, since a second
+                                    * ask only re-serves the snapshot
+                                    * the hub already has and keeps the
+                                    * node from freezing the next one */
 } node_state_t;
 
 /* One entry per node the hub has heard from. */
@@ -480,6 +487,7 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
                                          st->node_id, (unsigned)crc);
                             }
                             analyse(dsp, infer, st, s_window);
+                        st->last_completed_seq = st->request_seq;
                         }
                         st->requested = false;
                         st->last_log_us = esp_timer_get_time();
@@ -591,6 +599,7 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
             const bool frozen =
                 (st->flags & CRYNET_PROTO_FLAG_BURST_READY) != 0;
             if (loud && frozen && st->window_full &&
+                (st->seq != st->last_completed_seq) &&
                 (now - st->last_request_us) > (RECOOLDOWN_MS * 1000)) {
                 if (node_link_request_window(nl, st->node_id, st->seq)) {
                     st->requested = true;
