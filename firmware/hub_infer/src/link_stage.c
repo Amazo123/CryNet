@@ -205,9 +205,14 @@ static void analyse(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer,
     const int32_t mean = window_mean(pcm, CRYNET_N_SAMPLES);
     const float rms = window_rms(pcm, CRYNET_N_SAMPLES, mean);
     const int32_t peak = window_peak(pcm, CRYNET_N_SAMPLES, mean);
+    /* Crest factor: a cry carries impulsive voiced peaks; room hiss is
+     * flat (see CRYNET_QUIET_CREST). */
+    const float crest = (rms > 0.0f)
+                            ? ((float)peak / (rms * 32768.0f))
+                            : 0.0f;
 
-    ESP_LOGI(TAG, "node %u: window rms %.6f  mean %d  peak %d",
-             node_id, (double)rms, (int)mean, (int)peak);
+    ESP_LOGI(TAG, "node %u: window rms %.6f  mean %d  peak %d  crest %.1f",
+             node_id, (double)rms, (int)mean, (int)peak, (double)crest);
 
     const int64_t t0 = esp_timer_get_time();
     crynet_dsp_features(dsp, pcm, s_mel);
@@ -226,7 +231,10 @@ static void analyse(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer,
     /* No window this quiet may announce a cry at all: the model's
      * verdict on near-silence is noise (see CRYNET_ANNOUNCE_MIN_RMS). */
     const bool audible = rms >= CRYNET_ANNOUNCE_MIN_RMS;
-    const bool unmistakable = audible && (p_cry >= CRYNET_CLEAR_CRY);
+    /* A loud window announces on its saturation alone; a quiet one must
+     * also have the cry's impulsive shape, not flat hiss. */
+    const bool unmistakable = audible && (p_cry >= CRYNET_CLEAR_CRY) &&
+        ((rms >= CRYNET_MAYBE_MIN_RMS) || (crest >= CRYNET_QUIET_CREST));
 
     /* The announcement rule.
      *
@@ -237,10 +245,11 @@ static void analyse(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer,
      * alarm.  So one window announces a cry on its own only when it is
      * unmistakable — the model's output saturates at 0.9961 for a clear
      * cry, and that window is announced at once if it carries real
-     * energy.  A window between the model's threshold and that is a
-     * maybe, and a maybe has to be confirmed by the next window before
-     * it is announced: a cry lasts for seconds and its windows agree.
-     * But the trigger pins at its minimum in a quiet room, so the room
+     * energy and, when quiet, has the impulsive shape of a cry.  A
+     * window between the model's threshold and that is a maybe, and a
+     * maybe has to be confirmed by the next window before it is
+     * announced: a cry lasts for seconds and its windows agree.  But
+     * the trigger pins at its minimum in a quiet room, so the room
      * keeps handing the model near-silent windows whose maybes repeat —
      * fourteen false alarms in one evening — and a maybe now only
      * counts toward the run when its window carries real energy

@@ -82,6 +82,19 @@ extern "C" {
  * The measured false maybes all sat at 0.012 rms or under. */
 #define CRYNET_MAYBE_MIN_RMS 0.020f
 
+/* The peak-to-rms ratio (crest factor) a quiet window needs before its
+ * saturated verdict may announce a cry.  A loud window (>= 0.020 rms)
+ * announces on saturation alone; a quiet one must also have a cry's
+ * shape, because the model has been known to saturate on flat hiss.
+ * Measured on the real boards: every quiet window that scored highly
+ * and was not a cry had a crest of 2.2-2.9 (room hiss is Gaussian, no
+ * impulses), and the quietest genuine cry — the phone cry at one metre,
+ * P(cry)=0.9961 at 0.0103 rms — had a crest of 5.6; the 15 cm cries
+ * measured 6.6-6.9.  A loud bump has a high crest too, but the model
+ * refuses bumps on its own (measured 0.0977), so this gate only does
+ * work exactly where the model is least trustworthy. */
+#define CRYNET_QUIET_CREST 3.5f
+
 /* Bring the radio up: NVS, then ESP-NOW.  Call it before the Bluetooth
  * stack starts — NimBLE's pools come out of the same internal RAM the
  * Wi-Fi driver allocates its buffers from, and when BLE claimed its
