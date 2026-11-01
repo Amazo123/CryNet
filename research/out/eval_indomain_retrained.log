@@ -1,0 +1,153 @@
+>>> CELL 1 — Environment
+========================================================================
+CryNet — infant cry detection for ESP32-S3
+========================================================================
+  mode          : FULL
+  signal        : 16000 Hz mono, 2.0 s window (32000 samples)
+  log-mel       : 81 frames x 64 bands, n_fft=512, hop=400
+  dB floor      : -80.0 dB   CMVN: True
+  cache / work  : C:\Users\HP\.t3\projects\fp-2\research\_cache  |  C:\Users\HP\.t3\projects\fp-2\research\_verify_work
+  artifacts     : C:\Users\HP\.t3\projects\fp-2\research\out
+========================================================================
+>>> CELL 2 — Dependencies
+tensorflow 2.21.0 | librosa 0.11.0
+GPU: none (CPU mode — expect it to be slower)
+>>> CELL 3 — Dataset acquisition
+Acquiring corpora ...
+  downloaded icd_meta       1.6 MB  (1s)
+  cached     icd_pos     2159.8 MB
+  cached     icd_neg     2479.6 MB
+  cached     icd_rir      110.3 MB
+  cached     cry4         494.6 MB
+  cached     esc50        646.2 MB
+  cached     snore        118.2 MB
+  cached     gtzan       1226.0 MB
+ICD manifest: 28478 clips
+>>> CELL 4 — The audio front end
+log_mel shape : (81, 64)  (expect (81, 64))
+value range   : [-0.33, 5.51]
+mean / std    : +0.0000 / 1.0000   (CMVN -> ~0 / ~1)
+mel bank      : (64, 257), non-zero weights 497
+>>> CELL 5 — Archive readers
+ZipReader ready.
+>>> CELL 6 — Corpus manifests
+ICD      :  28478  (cry=13330)
+cry4     :   4871  (cry=4871)
+ESC-50   :   2000  (cry=40)
+snoring  :   1001
+GTZAN    :   1000  (music, all negative)
+
+clips: 21  windows: 42  cry windows: 30
+
+AUC (INT8, the deployed model): 0.9653
+at P >= 0.95:
+  INT8    acc 0.857  recall 0.800  fpr 0.000  (tp 24 fn 6 fp 0 tn 12)
+  float32 acc 0.905  recall 0.867  fpr 0.000
+
+trigger at RMS >= 0.03:
+  14/15 cry clips would reach the model
+  0/6 no-cry clips would also reach it (false triggers)
+
+wrote research/out/eval_indomain_session1.json
+>>> CELL 1 — Environment
+========================================================================
+CryNet — infant cry detection for ESP32-S3
+========================================================================
+  mode          : FULL
+  signal        : 16000 Hz mono, 2.0 s window (32000 samples)
+  log-mel       : 81 frames x 64 bands, n_fft=512, hop=400
+  dB floor      : -80.0 dB   CMVN: True
+  cache / work  : C:\Users\HP\.t3\projects\fp-2\research\_cache  |  C:\Users\HP\.t3\projects\fp-2\research\_verify_work
+  artifacts     : C:\Users\HP\.t3\projects\fp-2\research\out
+========================================================================
+>>> CELL 2 — Dependencies
+tensorflow 2.21.0 | librosa 0.11.0
+GPU: none (CPU mode — expect it to be slower)
+>>> CELL 3 — Dataset acquisition
+Acquiring corpora ...
+  downloaded icd_meta       1.6 MB  (1s)
+  cached     icd_pos     2159.8 MB
+  cached     icd_neg     2479.6 MB
+  cached     icd_rir      110.3 MB
+  cached     cry4         494.6 MB
+  cached     esc50        646.2 MB
+  cached     snore        118.2 MB
+  cached     gtzan       1226.0 MB
+ICD manifest: 28478 clips
+>>> CELL 4 — The audio front end
+log_mel shape : (81, 64)  (expect (81, 64))
+value range   : [-0.33, 5.51]
+mean / std    : +0.0000 / 1.0000   (CMVN -> ~0 / ~1)
+mel bank      : (64, 257), non-zero weights 497
+>>> CELL 5 — Archive readers
+ZipReader ready.
+>>> CELL 6 — Corpus manifests
+ICD      :  28478  (cry=13330)
+cry4     :   4871  (cry=4871)
+ESC-50   :   2000  (cry=40)
+snoring  :   1001
+GTZAN    :   1000  (music, all negative)
+
+clips: 118  windows: 236  cry windows: 0
+
+AUC (INT8, the deployed model): nan
+at P >= 0.95:
+  INT8    acc 1.000  recall 0.000  fpr 0.000  (tp 0 fn 0 fp 0 tn 236)
+  float32 acc 1.000  recall 0.000  fpr 0.000
+
+trigger at RMS >= 0.03:
+  0/0 cry clips would reach the model
+  0/118 no-cry clips would also reach it (false triggers)
+
+wrote research/out/eval_indomain_session2.json
+>>> CELL 1 — Environment
+========================================================================
+CryNet — infant cry detection for ESP32-S3
+========================================================================
+  mode          : FULL
+  signal        : 16000 Hz mono, 2.0 s window (32000 samples)
+  log-mel       : 81 frames x 64 bands, n_fft=512, hop=400
+  dB floor      : -80.0 dB   CMVN: True
+  cache / work  : C:\Users\HP\.t3\projects\fp-2\research\_cache  |  C:\Users\HP\.t3\projects\fp-2\research\_verify_work
+  artifacts     : C:\Users\HP\.t3\projects\fp-2\research\out
+========================================================================
+>>> CELL 2 — Dependencies
+tensorflow 2.21.0 | librosa 0.11.0
+GPU: none (CPU mode — expect it to be slower)
+>>> CELL 3 — Dataset acquisition
+Acquiring corpora ...
+  downloaded icd_meta       1.6 MB  (1s)
+  cached     icd_pos     2159.8 MB
+  cached     icd_neg     2479.6 MB
+  cached     icd_rir      110.3 MB
+  cached     cry4         494.6 MB
+  cached     esc50        646.2 MB
+  cached     snore        118.2 MB
+  cached     gtzan       1226.0 MB
+ICD manifest: 28478 clips
+>>> CELL 4 — The audio front end
+log_mel shape : (81, 64)  (expect (81, 64))
+value range   : [-0.33, 5.51]
+mean / std    : +0.0000 / 1.0000   (CMVN -> ~0 / ~1)
+mel bank      : (64, 257), non-zero weights 497
+>>> CELL 5 — Archive readers
+ZipReader ready.
+>>> CELL 6 — Corpus manifests
+ICD      :  28478  (cry=13330)
+cry4     :   4871  (cry=4871)
+ESC-50   :   2000  (cry=40)
+snoring  :   1001
+GTZAN    :   1000  (music, all negative)
+
+clips: 130  windows: 260  cry windows: 174
+
+AUC (INT8, the deployed model): 0.9414
+at P >= 0.95:
+  INT8    acc 0.727  recall 0.592  fpr 0.000  (tp 103 fn 71 fp 0 tn 86)
+  float32 acc 0.815  recall 0.724  fpr 0.000
+
+trigger at RMS >= 0.03:
+  86/87 cry clips would reach the model
+  1/43 no-cry clips would also reach it (false triggers)
+
+wrote research/out/eval_indomain_session4.json

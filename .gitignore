@@ -42,3 +42,4 @@ research/in_domain/**/*.wav
 # The demo page's self-signed TLS key — a throwaway for the local HTTPS
 # server, never a repository file.
 research/web/.cert/
+research/kaggle_out/*.zip

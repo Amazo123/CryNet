@@ -32,13 +32,17 @@ size_t         crynet_model_size(void);
  * them against deploy_config.json — so the copies cannot silently drift
  * when a new set of Kaggle artifacts is dropped into research/out/.
  *
- * Values below are from the full Kaggle run (model SHA-256
- * 4aef55d8cfc0fb75aa944e73945ef5b832f12d71479c48f82aff58563126bc11).
+ * Values below are from the second full Kaggle run - the retrain with
+ * the GTZAN music corpus in it (model SHA-256
+ * bd592d541027b9f448bc218e6fdbef113e39d64b8a59f366a18586987dce43b9).
+ * Only the input calibration moved: IN_SCALE 0.060125612 -> 0.116329655
+ * and IN_ZP -4 -> -70; the threshold, the silence gate, the output
+ * calibration and the geometry are all the same run to run.
  */
 #define CRYNET_THRESHOLD          0.9500f    /* P(cry) >= this -> alert        */
 #define CRYNET_SILENCE_RMS_GATE   0.001500f  /* below this the window is silent */
-#define CRYNET_INPUT_SCALE        0.060125612f
-#define CRYNET_INPUT_ZERO_POINT   (-4)
+#define CRYNET_INPUT_SCALE        0.116329655f
+#define CRYNET_INPUT_ZERO_POINT   (-70)
 #define CRYNET_OUTPUT_SCALE       0.003906250f
 #define CRYNET_OUTPUT_ZERO_POINT  (-128)
 

@@ -14,8 +14,8 @@
 #define CRYNET_DB_FLOOR      (-80.0f)
 #define CRYNET_LOG_EPS       (0.0000000001f)
 #define CRYNET_CMVN          1
-#define CRYNET_IN_SCALE      0.060125612f
-#define CRYNET_IN_ZP         -4
+#define CRYNET_IN_SCALE      0.116329655f
+#define CRYNET_IN_ZP         -70
 #define CRYNET_OUT_SCALE     0.003906250f
 #define CRYNET_OUT_ZP        -128
 #define CRYNET_THRESHOLD     0.9500f
