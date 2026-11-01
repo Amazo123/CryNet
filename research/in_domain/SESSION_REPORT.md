@@ -62,14 +62,19 @@ comfortably, and the model rejects both.
 **4. The quiet floor is very low.** 0.0020 median, 0.0100 peak, and the
 room alone never asks the model a question.
 
-**5. The microphone is quiet, and that is worth fixing.** A close, loud
-conversation peaks at 0.6670, but a phone at full volume a metre away
-peaks at 0.0160 — the INMP441 sits at 20 dB gain (its L/R pin is tied to
-GND, per the wiring in `node_capture.ino`). The INMP441 also offers
-40 dB. Raising the gain by 20 dB would lift the one-metre phone to
-roughly 0.07 — over the trigger — without touching the noise floor of a
-quiet room. This is the single change that would most improve the
-system's reach.
+**5. The microphone is quiet, and the fix is in software, not in hardware.**
+A close, loud conversation peaks at 0.6670, but a phone at full volume a
+metre away peaks at 0.0160. The INMP441 has **no gain setting**: its `L/R`
+pin is a left/right *channel select* (LOW = the left slot), not a gain
+strap, and the part is fixed at −26 dBFS ±3 dB sensitivity — the
+datasheet's own note is that "in most applications, the microphone output
+requires some gain added in the signal path". So there is nothing to
+rewire. The reach is set by two software levers: the hub's trigger
+threshold, and a digital gain in the telemetry path. A gain in the
+*telemetry* path alone (the number the hub's trigger sees) is the cheap
+one — it lifts the signal and the noise floor together, so it cannot
+separate a distant cry from the quiet room, whereas a trigger that scales
+with the measured noise floor can.
 
 **6. A suggested change, with the evidence for it.** Lowering
 `CRYNET_TRIGGER_RMS` from 0.030 to about 0.012 would extend the
@@ -80,6 +85,15 @@ suggestion, not a change** — it is measured on 308 windows of one room on
 one afternoon, and the corpus numbers say the threshold is also what keeps
 ESC-50's non-cry rate at 1.18 %. It belongs in the next training round's
 evaluation, not in a flash tonight.
+
+The better version of the same idea is an **adaptive trigger**: the hub
+already sees the node's 100 ms RMS continuously, so it could track the
+quiet floor per node and trigger at a multiple of it (say 3× the running
+minimum) rather than at a fixed 0.030. In this room the floor is 0.0020,
+so 3× would be 0.006 — below the one-metre phone's 0.0070 — while the
+quiet room would still never trigger. That separates a distant cry from
+the room, which no amount of fixed gain can do. It is a hub-firmware
+change, not a model change, so it costs no re-deployment.
 
 ## The honest caveat
 
