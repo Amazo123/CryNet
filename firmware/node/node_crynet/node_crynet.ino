@@ -1014,8 +1014,11 @@ void loop() {
             /* Cry mode: once a loud window is frozen, do not freeze
              * another until the room goes quiet.  A cry that lasts
              * thirty seconds would otherwise freeze six windows and the
-             * hub would process them one by one, 30 s behind.  (D-69.) */
-            if (g_cry_mode && g_rms < g_level && g_loud_streak == 0u) {
+             * hub would process them one by one, 30 s behind.  (D-69.)
+             * The exit threshold is absolute (0.01 rms): the adaptive
+             * level can be as low as 0.005, and a quiet room at 0.01
+             * would never fall below it.  (D-70.) */
+            if (g_cry_mode && g_rms < 0.01f && g_loud_streak == 0u) {
                 g_cry_mode = false;
             }
             /* Preempt the hold for a loud event.  A cry is typically an
@@ -1047,9 +1050,12 @@ void loop() {
                             /* A loud window puts the node into cry mode:
                              * do not freeze again until the room goes
                              * quiet, so a sustained cry does not queue
-                             * six windows ahead of itself.  (D-69.) */
-                            if (g_floor > 0.0f &&
-                                g_frozen_rms >= 5.0f * g_floor) {
+                             * six windows ahead of itself.  (D-69.)
+                             * The threshold is absolute (0.05 rms), not
+                             * relative to the floor: a quiet room has a
+                             * floor near 0.001, and 5x that is 0.005,
+                             * which quiet windows exceed.  (D-70.) */
+                            if (g_frozen_rms >= 0.05f) {
                                 g_cry_mode = true;
                             }
                             if (!g_dump_active && Serial) {
