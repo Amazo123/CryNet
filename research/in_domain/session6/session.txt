@@ -1,0 +1,9 @@
+port: COM30
+sample_rate: 16000
+channels: 1
+bits: 16
+seconds: 59.000
+records: 590
+clips: 11 x 5.0 s
+note: speech: talk, read, laugh, cough
+recorded: 2026-11-01 13:26:13

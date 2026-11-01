@@ -134,6 +134,11 @@ def main() -> int:
     ap.add_argument("--quiet-share", type=float, default=0.05,
                     help="the share of loud records that makes a clip quiet")
     ap.add_argument("--name", default="", help="a label prefix, e.g. 'cry_near'")
+    ap.add_argument("--truth", choices=("auto", "cry", "no_cry"), default="auto",
+                    help="'auto' labels a clip by its loudness (the default); "
+                         "'cry' or 'no_cry' labels every clip with the ground "
+                         "truth of the session, for a session in which one "
+                         "sound was made for the whole minute")
     args = ap.parse_args()
 
     session = Path(args.session)
@@ -176,7 +181,15 @@ def main() -> int:
         window = records[rec_from:rec_to]
         share = (sum(1 for r in window if r >= threshold) / len(window)
                  if window else 0.0)
-        if share >= args.cry_share:
+        if args.truth != "auto":
+            # The session's ground truth, given by hand.  A loudness rule
+            # cannot label this session: in the music and movie takes the
+            # loud clips are exactly the ones that are NOT a cry, so the
+            # rule would call them cries and the confusion matrix would
+            # measure nothing.  One sound for the whole minute has one
+            # truth, and the script of the session knows it.
+            label = args.truth
+        elif share >= args.cry_share:
             label = "cry"
         elif share <= args.quiet_share:
             label = "no_cry"
@@ -208,8 +221,12 @@ def main() -> int:
     for m in manifest:
         counts[m[1]] += 1
     total_s = len(records) * RECORD_SECONDS
+    labels_line = ("ground truth of the session (given by hand)"
+                   if args.truth != "auto"
+                   else "by loudness (auto)")
     lines = [
         f"session: {session}",
+        f"labels: {labels_line}",
         f"records: {len(records)}  ({total_s:.1f} s)",
         f"threshold: {threshold:.5f}  (floor p10 = {floor:.5f}, "
         f"max = {max(records):.5f})",

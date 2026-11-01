@@ -1,0 +1,9 @@
+port: COM30
+sample_rate: 16000
+channels: 1
+bits: 16
+seconds: 59.000
+records: 590
+clips: 11 x 5.0 s
+note: movie from laptop, loud, node 1m away
+recorded: 2026-11-01 13:31:54

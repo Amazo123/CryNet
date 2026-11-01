@@ -1,0 +1,15 @@
+session: research\in_domain\session5
+labels: ground truth of the session (given by hand)
+records: 590  (59.0 s)
+threshold: 0.01200  (floor p10 = 0.00100, max = 0.01000)
+percentiles: p10 0.00100  p50 0.00200  p90 0.00400  p99 0.00700
+clips: 22  (0 cry, 22 no_cry, 0 uncertain)
+clip length: 5.0 s, stride 2.5 s
+
+timeline (every 10 s: mean RMS, peak RMS, [S]ignal share)
+       0s  mean 0.0030  peak 0.0100  [.]
+      10s  mean 0.0022  peak 0.0070  [.]
+      20s  mean 0.0026  peak 0.0060  [.]
+      30s  mean 0.0035  peak 0.0080  [.]
+      40s  mean 0.0026  peak 0.0070  [.]
+      50s  mean 0.0023  peak 0.0080  [.]
