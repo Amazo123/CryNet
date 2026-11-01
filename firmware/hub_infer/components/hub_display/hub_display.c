@@ -557,13 +557,20 @@ static void draw_dashboard(const hub_display_state_t *st)
         const bool known = n->online;
         const uint16_t accent = n->crying ? C_ALERT
                              : (known ? C_ACCENT : C_BORDER);
+        /* The fills are the one thing swapped by hand.  The reader saw
+         * the accent-washed fill as faint and the border-washed one as
+         * the denser, more active surface - the opposite of what the
+         * accent wash was meant to say - so a live card wears the
+         * border-washed fill and a dead card the faint accent wash. */
+        const uint16_t fill_col = n->crying ? C_ALERT
+                                : (known ? C_BORDER : C_ACCENT);
 
         if (known) {
             online++;
         }
 
         fb_round_fill(CARD_X, y, CARD_W, CARD_H, 6,
-                      blend(C_SURFACE, accent, n->crying ? 0.16f : 0.05f));
+                      blend(C_SURFACE, fill_col, n->crying ? 0.16f : 0.05f));
         /* The outline is the state, at full strength: a cot that is
          * answering gets the vibrant teal - rose, when it cries - and a
          * cot that has gone quiet gets the border washed towards the
@@ -589,7 +596,7 @@ static void draw_dashboard(const hub_display_state_t *st)
             state = "ONLINE";
             state_col = C_GREEN;
         } else {
-            state = "NO SIGNAL";
+            state = "OFFLINE";
             state_col = C_DIM;
         }
         fb_text(CARD_X + CARD_W - 14 - fb_text_w(state, 1), y + 11, state,

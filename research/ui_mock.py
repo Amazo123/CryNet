@@ -195,8 +195,11 @@ def dashboard(path: Path, cots, linked, crying, cot_id, confidence, level,
         known = cot["online"]
         accent = (C["C_ALERT"] if cot["crying"]
                   else C["C_ACCENT"] if known else C["C_BORDER"])
+        fill_col = (C["C_ALERT"] if cot["crying"]
+                    else C["C_BORDER"] if known else C["C_ACCENT"])
         round_fill(d, card_x, y, card_w, card_h, 6,
-                   blend(C["C_SURFACE"], accent, 0.16 if cot["crying"] else 0.05))
+                   blend(C["C_SURFACE"], fill_col,
+                         0.16 if cot["crying"] else 0.05))
         round_rect(d, card_x, y, card_w, card_h, 6,
                    accent if (known or cot["crying"])
                    else blend(C["C_BORDER"], C["C_BG"], 0.45))
@@ -207,7 +210,7 @@ def dashboard(path: Path, cots, linked, crying, cot_id, confidence, level,
         elif known:
             state, state_col = "ONLINE", C["C_GREEN"]
         else:
-            state, state_col = "NO SIGNAL", C["C_DIM"]
+            state, state_col = "OFFLINE", C["C_DIM"]
         draw_text(d, card_x + card_w - 14 - text_width(state), y + 11,
                   state, state_col, 1)
         bar_col = (C["C_ALERT"] if cot["crying"]
