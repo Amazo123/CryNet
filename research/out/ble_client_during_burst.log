@@ -1,0 +1,13 @@
+scanning for "INFANT_MONITOR_HUB" ...
+found INFANT_MONITOR_HUB at 30:30:F9:17:2F:82
+connected
+  service 00001800-0000-1000-8000-00805f9b34fb  characteristic 00002a00-0000-1000-8000-00805f9b34fb ['read']
+  service 00001800-0000-1000-8000-00805f9b34fb  characteristic 00002a01-0000-1000-8000-00805f9b34fb ['read']
+  service 00001801-0000-1000-8000-00805f9b34fb  characteristic 00002a05-0000-1000-8000-00805f9b34fb ['indicate']
+  service 00001801-0000-1000-8000-00805f9b34fb  characteristic 00002b3a-0000-1000-8000-00805f9b34fb ['read']
+  service 00001801-0000-1000-8000-00805f9b34fb  characteristic 00002b29-0000-1000-8000-00805f9b34fb ['read', 'write']
+  service 19b10000-e8f2-537e-4f6c-d104768a1214  characteristic 19b10001-e8f2-537e-4f6c-d104768a1214 ['notify', 'read', 'indicate']
+  service 19b10000-e8f2-537e-4f6c-d104768a1214  characteristic 19b10002-e8f2-537e-4f6c-d104768a1214 ['notify', 'read']
+subscribed to the alert characteristic
+subscribed to the state characteristic
+listening for 75 s ...

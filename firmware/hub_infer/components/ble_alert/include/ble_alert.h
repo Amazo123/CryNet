@@ -62,6 +62,20 @@ void ble_alert_publish_state(const ble_state_packet_t *state);
 /* How many clients are connected and subscribed. */
 int ble_alert_clients(void);
 
+/* Tell the Bluetooth stack that the Wi-Fi radio needs the air.
+ *
+ * The ESP32-S3 has one radio and it carries both Bluetooth and Wi-Fi:
+ * while the Bluetooth stack transmits an advertisement the Wi-Fi
+ * receiver is deaf, and the hub's window arrives as 286 ESP-NOW
+ * fragments that must not be missed.  The hub calls this with true
+ * while a burst is in flight and with false when it is done, and the
+ * Bluetooth stack stops advertising until it is told to start again.
+ *
+ * A connected caregiver's phone already stops the advertising on its
+ * own, so in the demo case the radio is free from the moment the phone
+ * connects. */
+void ble_alert_set_radio_busy(bool busy);
+
 /* Whether the Bluetooth stack came up at all. */
 bool ble_alert_is_running(void);
 

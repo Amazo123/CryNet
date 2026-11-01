@@ -982,8 +982,19 @@ void loop() {
                  * burst arrives as a wall of frames and the far end
                  * loses some of them.  The gap spreads the 286 fragments
                  * over a few seconds, which the hub's fifteen-second
-                 * timeout has plenty of room for. */
-                delay(10);
+                 * timeout has plenty of room for.
+                 *
+                 * The gap was ten milliseconds for a long time, and it
+                 * was the whole of the burst's length: 286 fragments at
+                 * thirteen milliseconds each is the 3.8 s the hub
+                 * measures.  The wall of frames it was written to avoid
+                 * was the hub's own Bluetooth deafening the Wi-Fi
+                 * receiver, and that is fixed now (the hub stops
+                 * advertising while a burst is in the air), so the gap
+                 * can be much smaller.  Four milliseconds is still a
+                 * hundred and forty frames a second, which the radio
+                 * carries without a queue growing behind it. */
+                delay(4);
             }
             if (!g_dump_active && Serial) {
                 Serial.printf("served %u fragments of %u\n", (unsigned)sent,

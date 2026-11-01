@@ -70,6 +70,30 @@ static bool s_swept = false;
  * node is still sending wastes a round and floods the air. */
 #define FRAG_PER_FRAGMENT_MS 15
 
+/* How many bursts are in the air.  While one is being received the
+ * hub's single radio must not also be advertising: every advertisement
+ * is a moment when the Wi-Fi receiver is deaf, and the burst loses
+ * frames in the air and has to be asked for again.  The Bluetooth stack
+ * is told to go quiet for the duration and to start again afterwards.
+ *
+ * The count, rather than a flag, because two cots can burst at the same
+ * time and the radio must stay quiet until the last of them is done. */
+static int s_bursts_in_flight = 0;
+
+static void burst_started(void)
+{
+    s_bursts_in_flight++;
+    ble_alert_set_radio_busy(true);
+}
+
+static void burst_finished(void)
+{
+    if (s_bursts_in_flight > 0) {
+        s_bursts_in_flight--;
+    }
+    ble_alert_set_radio_busy(s_bursts_in_flight > 0);
+}
+
 typedef struct {
     bool     heard;
     uint8_t  node_id;
@@ -315,6 +339,7 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
                 node_link_reset_burst(nl, tel.node_id);
                 st->requested = false;
                 st->last_request_us = 0;
+                burst_finished();
             }
 
             /* How long the level has been sustained.  A cry lasts for
@@ -404,6 +429,7 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
                         }
                         st->requested = false;
                         st->last_log_us = esp_timer_get_time();
+                        burst_finished();
                     } else {
                         /* The burst is short of fragments.  If it has
                          * stopped arriving, ask the node for the ones
@@ -481,6 +507,7 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
                         }
                         node_link_reset_burst(nl, st->node_id);
                         st->requested = false;
+                        burst_finished();
                         }
                     }
                 }
@@ -510,6 +537,7 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
                 (now - st->last_request_us) > (RECOOLDOWN_MS * 1000)) {
                 if (node_link_request_window(nl, st->node_id, st->seq)) {
                     st->requested = true;
+                    burst_started();
                     st->requested_at_us = now;
                     st->request_seq = st->seq;
                     st->request_crc = st->crc;

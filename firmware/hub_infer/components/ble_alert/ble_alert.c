@@ -51,7 +51,35 @@ static bool     s_alert_notify = false;
 static bool     s_state_notify = false;
 static uint16_t s_event_id = 0;
 
+/* The advertising policy.
+ *
+ * The ESP32-S3 has one radio and it carries both Bluetooth and Wi-Fi.
+ * While the Bluetooth stack is transmitting an advertisement the Wi-Fi
+ * receiver is deaf, and the hub's window arrives as 286 ESP-NOW
+ * fragments that it must not miss.  NimBLE's default advertising
+ * interval is its fastest (0x0020 = 20 ms) and each advertisement goes
+ * out on all three BLE channels - about 150 radio transmissions a
+ * second, and every one of them is a moment when the burst loses a
+ * frame.
+ *
+ * So the hub advertises as little as it can get away with:
+ *
+ *   - while a caregiver's phone is connected, not at all: nobody needs
+ *     to *find* a hub that is already connected, and the notifications
+ *     travel over the connection, not over advertising;
+ *   - while a burst is in the air, not at all - this is the window in
+ *     which the Wi-Fi receiver must be fully awake;
+ *   - otherwise, slowly: 100 ms instead of 20 ms, which the phone still
+ *     finds in well under a second.
+ */
+#define ADV_INTERVAL 0x00A0      /* 160 units of 0.625 ms = 100 ms */
+
+static bool s_advertising = false;   /* the hub is advertising right now */
+static bool s_connected = false;     /* a caregiver's phone is connected */
+static bool s_radio_busy = false;    /* the Wi-Fi radio needs the air */
+
 static int gap_event(struct ble_gap_event *event, void *arg);
+static void update_advertising(void);
 
 /* ---------------------------------------------------------------- GATT -- */
 
@@ -125,7 +153,7 @@ static int gatt_svr_init(void)
 
 /* ----------------------------------------------------------------- GAP -- */
 
-static void advertise(void)
+static bool advertise(void)
 {
     struct ble_gap_adv_params adv_params;
     struct ble_hs_adv_fields fields;
@@ -143,19 +171,47 @@ static void advertise(void)
     rc = ble_gap_adv_set_fields(&fields);
     if (rc != 0) {
         ESP_LOGE(TAG, "the advertisement fields could not be set: %d", rc);
-        return;
+        return false;
     }
 
     memset(&adv_params, 0, sizeof adv_params);
     adv_params.conn_mode = BLE_GAP_CONN_MODE_UND;
     adv_params.disc_mode = BLE_GAP_DISC_MODE_GEN;
+    /* The slow interval: the phone still finds the hub quickly, and the
+     * radio is free for the burst three to five times as often.  NimBLE
+     * would otherwise use its own default of 30-60 ms. */
+    adv_params.itvl_min = ADV_INTERVAL;
+    adv_params.itvl_max = ADV_INTERVAL;
     rc = ble_gap_adv_start(BLE_OWN_ADDR_PUBLIC, NULL, BLE_HS_FOREVER,
                            &adv_params, gap_event, NULL);
     if (rc != 0) {
         ESP_LOGE(TAG, "advertising could not be started: %d", rc);
-        return;
+        return false;
     }
     ESP_LOGI(TAG, "advertising as \"" DEVICE_NAME "\"");
+    return true;
+}
+
+/* Bring the advertising into line with the policy: advertise only when
+ * nobody is connected and the Wi-Fi radio is not carrying a burst. */
+static void update_advertising(void)
+{
+    const bool wanted = !s_connected && !s_radio_busy;
+
+    if (wanted == s_advertising) {
+        return;
+    }
+    if (wanted) {
+        s_advertising = advertise();
+    } else {
+        int rc = ble_gap_adv_stop();
+        if (rc != 0 && rc != BLE_HS_EALREADY) {
+            ESP_LOGW(TAG, "advertising could not be stopped: %d", rc);
+        }
+        s_advertising = false;
+        ESP_LOGI(TAG, "advertising is off (%s)",
+                 s_connected ? "a phone is connected" : "the radio is busy");
+    }
 }
 
 static int gap_event(struct ble_gap_event *event, void *arg)
@@ -166,7 +222,11 @@ static int gap_event(struct ble_gap_event *event, void *arg)
     case BLE_GAP_EVENT_CONNECT:
         if (event->connect.status == 0) {
             s_conn_handle = event->connect.conn_handle;
+            s_connected = true;
             ESP_LOGI(TAG, "a caregiver's phone connected");
+            /* Nobody has to find a hub that is already connected, and
+             * the radio is wanted for the burst. */
+            update_advertising();
         } else {
             ESP_LOGW(TAG, "the connection failed: %d", event->connect.status);
         }
@@ -176,9 +236,10 @@ static int gap_event(struct ble_gap_event *event, void *arg)
         ESP_LOGI(TAG, "the caregiver's phone disconnected (reason %d)",
                  event->disconnect.reason);
         s_conn_handle = BLE_HS_CONN_HANDLE_NONE;
+        s_connected = false;
         s_alert_notify = false;
         s_state_notify = false;
-        advertise();   /* so the next phone can find the hub */
+        update_advertising();   /* so the next phone can find the hub */
         break;
 
     case BLE_GAP_EVENT_SUBSCRIBE:
@@ -214,7 +275,7 @@ static void on_sync(void)
         ESP_LOGE(TAG, "no usable Bluetooth address: %d", rc);
         return;
     }
-    advertise();
+    update_advertising();
 }
 
 /* -------------------------------------------------------------- public -- */
@@ -267,6 +328,15 @@ int ble_alert_clients(void)
 bool ble_alert_is_running(void)
 {
     return s_running;
+}
+
+void ble_alert_set_radio_busy(bool busy)
+{
+    if (s_radio_busy == busy) {
+        return;
+    }
+    s_radio_busy = busy;
+    update_advertising();
 }
 
 static void host_task(void *param)
