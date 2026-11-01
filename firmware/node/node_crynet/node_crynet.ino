@@ -81,17 +81,34 @@ static const uint32_t RMS_SAMPLES    = SAMPLE_RATE / 10;    /* 100 ms  */
 static const uint16_t FRAG_PAYLOAD = 224;
 static const uint16_t FRAG_COUNT   = (BURST_BYTES + FRAG_PAYLOAD - 1) / FRAG_PAYLOAD;
 
-/* The hub starts classifying at an RMS of 0.03 (frozen decision 5).  The
- * node uses a higher level to decide that something worth uploading is
- * happening: a cry is well above 0.03, room noise is not. */
-/* The level at which the node freezes its two-second window.  It is the
- * same number as the hub's trigger (CRYNET_TRIGGER_RMS): the hub asks for
- * a window when the node says it is this loud, and the window it gets must
- * be the loud one.  When this was 0.10 the node almost never froze
- * anything, so the hub was served the live two seconds — whose average is
- * mostly the gaps between cries — and real cries were classified as
- * silence. */
-static const float EVENT_RMS = 0.030f;
+/* The level at which the node freezes its two-second window, and the level
+ * the hub is asked to trigger at.  It used to be a fixed 0.030 — the same
+ * number as the hub's trigger — and the consequence was that a cry played
+ * a metre from the node (median RMS 0.0070, not one of its 590 readings
+ * over 0.030) was never offered to the model at all.  The system's reach
+ * was set by a constant, not by the classifier.
+ *
+ * So the level is now relative to the node's own noise floor: three times
+ * it.  The floor falls at once when the room gets quieter and rises very
+ * slowly (FLOOR_RISE below), so a cry that lasts a minute cannot drag the
+ * floor up to the cry's own level and switch the trigger off half way
+ * through the episode.  The multiple and the clamps were chosen from the
+ * recorded sessions by research/adaptive_trigger_study.py: at three times
+ * the floor the cry a metre away crosses the level and the quiet room
+ * does not.
+ *
+ * The upper clamp is the fixed level this replaces, so the rule is never
+ * worse than it was in a loud room.  The lower clamp keeps the level
+ * above the microphone's own noise, where a trigger would mean nothing. */
+static const float TRIGGER_MULT = 3.0f;
+static const float TRIGGER_MIN = 0.005f;
+static const float TRIGGER_MAX = 0.030f;
+
+/* How much of the way towards a louder reading the floor moves each time.
+ * There are ten readings a second, so 0.002 is a fifty-second time
+ * constant: long enough that a cry does not raise the floor, short enough
+ * that the room's own noise is followed within a minute. */
+static const float FLOOR_RISE = 0.002f;
 
 /* The ESP-NOW channel.  The hub uses the same one. */
 static const uint8_t LINK_CHANNEL = 6;
@@ -163,6 +180,7 @@ static bool      g_peak_pending = false;   /* a loud moment is waiting to
 static uint32_t  g_peak_ms = 0;
 static uint32_t  g_frozen_ms = 0;
 static uint32_t  g_frozen_crc = 0;    /* CRC-32 of the frozen window's bytes */
+static float     g_frozen_rms = 0.0f; /* the frozen window's own level */
 static uint16_t  g_burst_seq = 0;
 static uint8_t   g_node_id = 1;
 
@@ -170,6 +188,13 @@ static uint16_t  g_telemetry_seq = 0;
 static uint32_t  g_last_tick = 0;
 static float     g_rms = 0.0f;
 static int32_t   g_mean = 0;
+
+/* The room's noise floor, the event level that follows from it, and how
+ * many readings in a row have been at or above that level.  The floor is
+ * negative until the first reading arrives, which is what sets it. */
+static float     g_floor = -1.0f;
+static float     g_level = 0.006f;
+static uint8_t   g_loud_streak = 0;
 
 static uint32_t  g_frames_sent = 0;
 static uint32_t  g_frames_lost = 0;
@@ -293,6 +318,27 @@ static float rms_of_last(int32_t mean, uint32_t n) {
     return (float)(sqrt(m) / 32768.0);
 }
 
+/* The RMS of a buffer, with its own mean removed — the same thing the
+ * hub's front end does to a window before it makes the features out of
+ * it.  Used on the frozen snapshot, so that the level the model is shown
+ * can be compared with the level of the room at the time. */
+static float buffer_rms(const int16_t *buf, uint32_t n) {
+    if (n == 0) {
+        return 0.0f;
+    }
+    int64_t sum = 0;
+    for (uint32_t i = 0; i < n; i++) {
+        sum += (int32_t)buf[i];
+    }
+    const int32_t mean = (int32_t)(sum / (int64_t)n);
+    int64_t acc = 0;
+    for (uint32_t i = 0; i < n; i++) {
+        const int32_t d = (int32_t)buf[i] - mean;
+        acc += (int64_t)d * d;
+    }
+    return (float)(sqrt((double)acc / (double)n) / 32768.0);
+}
+
 /* Copy the live window into the frozen snapshot, oldest sample first. */
 static void freeze_window(void) {
     for (uint32_t i = 0; i < WINDOW_SAMPLES; i++) {
@@ -306,6 +352,10 @@ static void freeze_window(void) {
     g_frozen_valid = true;
     g_frozen_served = false;
     g_frozen_ms = millis();
+    /* The level of the window that is being offered.  The hub reports it
+     * beside the live reading, and the two together say whether the window
+     * that was judged was the loud one or a quiet stretch next to it. */
+    g_frozen_rms = buffer_rms(g_frozen, WINDOW_SAMPLES);
     /* The checksum of the exact bytes that will be uploaded.  The hub
      * computes the same value over the window it reassembles, so the two
      * agreeing is the proof that the radio delivered the audio intact. */
@@ -600,6 +650,21 @@ static bool radio_start(void) {
     esp_now_register_recv_cb(on_recv);
     esp_now_register_send_cb(on_send);
 
+    /* The transmitter's power, and why it is turned down.
+     *
+     * The INMP441 sits on the same board as the Wi-Fi antenna, a few
+     * centimetres from it, and the radio's own transmission reaches the
+     * microphone: with the radio at full power the node's windows
+     * carried roughly five times the energy of the same room's windows
+     * recorded with the radio off, and the extra energy had the shape
+     * the model reads as a cry.  The node's own transmitter was putting
+     * cry-shaped noise into the audio it was about to be judged on.
+     *
+     * 8.5 dBm is enough for a link of a couple of metres, which is what
+     * a cot node is, and it is 11 dB less power into the room.  On a
+     * battery node that is also the right thing to be doing. */
+    esp_wifi_set_max_tx_power(WIFI_POWER_8_5dBm);
+
     esp_now_peer_info_t peer = {};
     memcpy(peer.peer_addr, g_bcast, 6);
     /* The channel is set explicitly rather than left at 0.  With 0 the
@@ -682,7 +747,7 @@ static void send_fragment(uint16_t index, bool from_frozen, bool over_serial) {
 
 static void send_telemetry(void) {
     int32_t rms_milli = (int32_t)(g_rms * 1000.0f + (g_rms >= 0 ? 0.5f : -0.5f));
-    uint8_t payload[12];
+    uint8_t payload[16];
     payload[0] = (uint8_t)(rms_milli & 0xFF);
     payload[1] = (uint8_t)((rms_milli >> 8) & 0xFF);
     payload[2] = (uint8_t)((rms_milli >> 16) & 0xFF);
@@ -694,21 +759,37 @@ static void send_telemetry(void) {
     if (g_frozen_valid) {
         flags |= 0x01;              /* a burst is ready */
     }
-    if (g_rms >= EVENT_RMS) {
+    if (g_rms >= g_level) {
         flags |= 0x02;              /* the event level is being crossed */
     }
     if (g_filled == WINDOW_SAMPLES) {
         flags |= 0x04;              /* the live window is complete */
     }
     payload[6] = flags;
-    payload[7] = 0;
+    /* The event level the node is using, in milli-RMS.  The node owns the
+     * noise floor, so it owns the level that follows from it, and the hub
+     * triggers on this number: the node is the one that freezes the
+     * window, so the level that matters is the one it used.  Zero means
+     * "not reported" and the hub falls back to its own fixed level. */
+    uint16_t level_milli = (uint16_t)(g_level * 1000.0f + 0.5f);
+    payload[7] = (uint8_t)(level_milli & 0xFF);
+    payload[8] = (uint8_t)((level_milli >> 8) & 0xFF);
+    /* The frozen window's own level, in milli-RMS: what the model will
+     * actually be shown, as opposed to the live reading beside it. */
+    uint16_t frozen_milli = (uint16_t)(g_frozen_rms * 1000.0f + 0.5f);
+    payload[9] = (uint8_t)(frozen_milli & 0xFF);
+    payload[10] = (uint8_t)((frozen_milli >> 8) & 0xFF);
+    /* The noise floor itself, in milli-RMS, clamped to what one byte
+     * holds. */
+    uint16_t floor_milli = (uint16_t)(g_floor * 1000.0f + 0.5f);
+    payload[11] = (uint8_t)(floor_milli > 255u ? 255u : floor_milli);
     /* The CRC-32 of the frozen window, so the hub can check the window it
      * reassembles against the one the node actually froze. */
     uint32_t crc = g_frozen_valid ? g_frozen_crc : 0u;
-    payload[8]  = (uint8_t)(crc & 0xFF);
-    payload[9]  = (uint8_t)((crc >> 8) & 0xFF);
-    payload[10] = (uint8_t)((crc >> 16) & 0xFF);
-    payload[11] = (uint8_t)((crc >> 24) & 0xFF);
+    payload[12] = (uint8_t)(crc & 0xFF);
+    payload[13] = (uint8_t)((crc >> 8) & 0xFF);
+    payload[14] = (uint8_t)((crc >> 16) & 0xFF);
+    payload[15] = (uint8_t)((crc >> 24) & 0xFF);
 
     size_t total = build_frame(1, g_burst_seq, 0, 0, payload, sizeof(payload));
     radio_send(g_frame, total);
@@ -742,8 +823,8 @@ static void print_status(void) {
     if (g_frozen_valid) {
         Serial.printf("frozen crc32 0x%08X\n", (unsigned)g_frozen_crc);
     }
-    Serial.printf("rms %.4f  mean %d  fragments=%u\n", g_rms, (int)g_mean,
-                  (unsigned)FRAG_COUNT);
+    Serial.printf("rms %.4f  mean %d  floor %.4f  level %.4f  fragments=%u\n",
+                  g_rms, (int)g_mean, g_floor, g_level, (unsigned)FRAG_COUNT);
     Serial.printf("heap %u bytes\n", (unsigned)ESP.getFreeHeap());
     Serial.printf("channel %d\n", link_channel());
     uint32_t ver = 0;
@@ -878,6 +959,36 @@ void loop() {
             uint32_t n = (g_filled < RMS_SAMPLES) ? g_filled : RMS_SAMPLES;
             g_rms = rms_of_last(g_mean, n);
 
+            /* The noise floor, and the event level that follows from it.
+             * The floor falls at once when the room gets quieter and rises
+             * slowly, so a cry that lasts a minute cannot raise the floor
+             * to the cry's own level and turn the trigger off half way
+             * through the episode.  The first reading sets the floor. */
+            if (g_floor < 0.0f) {
+                g_floor = g_rms;
+            } else if (g_rms < g_floor) {
+                g_floor = g_rms;
+            } else {
+                g_floor += (g_rms - g_floor) * FLOOR_RISE;
+            }
+            g_level = TRIGGER_MULT * g_floor;
+            if (g_level < TRIGGER_MIN) {
+                g_level = TRIGGER_MIN;
+            } else if (g_level > TRIGGER_MAX) {
+                g_level = TRIGGER_MAX;
+            }
+
+            /* Two readings in a row at or above the level: the same rule
+             * the hub uses, and the same one the study assumed.  One lone
+             * reading is the microphone's slow drift, not an event. */
+            if (g_rms >= g_level) {
+                if (g_loud_streak < 255u) {
+                    g_loud_streak++;
+                }
+            } else {
+                g_loud_streak = 0;
+            }
+
             /* Freeze first, announce second.  The telemetry has to carry
              * the sequence number and the CRC-32 of the window the hub is
              * about to ask for; if the freeze happened after the frame
@@ -891,7 +1002,7 @@ void loop() {
                 g_peak_pending = false;
             }
             if (!g_frozen_served && g_filled == WINDOW_SAMPLES) {
-                if (!g_peak_pending && g_rms >= EVENT_RMS) {
+                if (!g_peak_pending && g_loud_streak >= 2u) {
                     /* A loud moment: remember it, and freeze a second
                      * later, when the ring holds the second that follows
                      * it as well.  The two seconds the hub classifies are
@@ -904,8 +1015,10 @@ void loop() {
                         if (age < PEAK_EXPIRE_MS) {
                             freeze_window();
                             if (!g_dump_active && Serial) {
-                                Serial.printf("froze window, burst seq %u\n",
-                                              g_burst_seq);
+                                Serial.printf("froze window, burst seq %u  "
+                                              "level %.4f  win rms %.4f\n",
+                                              g_burst_seq, g_level,
+                                              g_frozen_rms);
                             }
                         }
                         g_peak_pending = false;
@@ -939,8 +1052,9 @@ void loop() {
                  * port, a write blocks — and this print runs every
                  * hundred milliseconds, so an unattended node starved
                  * its own loop and stopped pumping the microphone. */
-                Serial.printf("rms %.4f  mean %d  %s\n", g_rms, (int)g_mean,
-                              g_rms >= EVENT_RMS ? "EVENT" : "");
+                Serial.printf("rms %.4f  floor %.4f  level %.4f  %s\n",
+                              g_rms, g_floor, g_level,
+                              g_loud_streak >= 2u ? "EVENT" : "");
             }
         }
     }

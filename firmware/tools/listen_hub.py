@@ -30,11 +30,13 @@ LINE_RE = re.compile(r"^I \((\d+)\) (\w+): (.*)$")
 MARKERS = (
     ("asking for the window", "ask"),
     ("fragments in", "burst"),
+    ("window rms", "window"),
     ("front end", "model"),
     ("P(cry)=", "model"),
     ("ALERT", "verdict"),
     ("no cry", "verdict"),
     ("silent", "verdict"),
+    ("cry (", "maybe"),
     ("stalled", "problem"),
     ("timed out", "problem"),
     ("missing", "problem"),

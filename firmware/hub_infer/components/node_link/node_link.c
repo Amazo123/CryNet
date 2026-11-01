@@ -37,6 +37,9 @@ typedef struct {
     float    rms;
     uint16_t window_ms;
     uint8_t  flags;
+    float    event_rms;
+    float    frozen_rms;
+    float    floor_rms;
     uint32_t frozen_crc;
     uint32_t last_seen_ms;
     bool     telemetry_new;
@@ -190,10 +193,10 @@ uint32_t node_link_promisc_magic(void) { return s_promisc_magic; }
 /* ------------------------------------------------------------- reception -- */
 
 static void handle_telemetry(node_link_t *nl, uint8_t node_id, uint16_t seq,
-                             const uint8_t *payload)
+                             const uint8_t *payload, size_t payload_len)
 {
     crynet_proto_telemetry_t tel;
-    if (!crynet_proto_decode_telemetry(payload, CRYNET_PROTO_TELEMETRY_BYTES, &tel)) {
+    if (!crynet_proto_decode_telemetry(payload, payload_len, &tel)) {
         return;
     }
 
@@ -232,6 +235,9 @@ static void handle_telemetry(node_link_t *nl, uint8_t node_id, uint16_t seq,
     slot->rms = tel.rms;
     slot->window_ms = tel.window_ms;
     slot->flags = tel.flags;
+    slot->event_rms = tel.event_rms;
+    slot->frozen_rms = tel.frozen_rms;
+    slot->floor_rms = tel.floor_rms;
     slot->frozen_crc = tel.frozen_crc;
     slot->last_seen_ms = now_ms();
     slot->telemetry_new = true;
@@ -390,7 +396,7 @@ static void on_recv(const esp_now_recv_info_t *info, const uint8_t *data, int le
 
     link_lock(nl);
     if (type == CRYNET_PROTO_TYPE_TELEMETRY) {
-        handle_telemetry(nl, node_id, seq, payload);
+        handle_telemetry(nl, node_id, seq, payload, (size_t)parsed);
         if (info != NULL) {
             for (int i = 0; i < NODE_LINK_MAX_NODES; i++) {
                 if (nl->slots[i].used && nl->slots[i].id == node_id) {
@@ -631,6 +637,9 @@ bool node_link_poll_telemetry(node_link_t *nl, node_link_telemetry_t *out)
         out->rms = slot->rms;
         out->window_ms = slot->window_ms;
         out->flags = slot->flags;
+        out->event_rms = slot->event_rms;
+        out->frozen_rms = slot->frozen_rms;
+        out->floor_rms = slot->floor_rms;
         out->frozen_crc = slot->frozen_crc;
         out->age_ms = now_ms() - slot->last_seen_ms;
         found = true;
@@ -659,6 +668,9 @@ bool node_link_last_telemetry(const node_link_t *nl, uint8_t node_id,
         out->rms = slot->rms;
         out->window_ms = slot->window_ms;
         out->flags = slot->flags;
+        out->event_rms = slot->event_rms;
+        out->frozen_rms = slot->frozen_rms;
+        out->floor_rms = slot->floor_rms;
         out->frozen_crc = slot->frozen_crc;
         out->age_ms = now_ms() - slot->last_seen_ms;
         found = true;

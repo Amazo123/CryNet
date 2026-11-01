@@ -1,0 +1,9 @@
+port: COM30
+sample_rate: 16000
+channels: 1
+bits: 16
+seconds: 29.000
+records: 290
+clips: 5 x 5.0 s
+note: 
+recorded: 2026-11-01 16:06:36

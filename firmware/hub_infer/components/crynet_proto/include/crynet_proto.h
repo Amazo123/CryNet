@@ -28,8 +28,20 @@
  *     4  u16 burst seq   6 u16 first fragment   8 u16 fragment count
  *    10  u16 CRC-16/CCITT-FALSE over the first ten bytes
  *
- * The telemetry payload is eight bytes: u32 rms x 1000, u16 window ms,
- * u8 flags, u8 reserved.
+ * The telemetry payload is sixteen bytes:
+ *
+ *     0  u32 rms x 1000          the node's 100 ms reading
+ *     4  u16 window ms
+ *     6  u8  flags
+ *     7  u16 event level x 1000  the level the node triggers at
+ *     9  u16 frozen rms x 1000   the level of the frozen window itself
+ *    11  u8  floor x 1000        the node's noise floor
+ *    12  u32 frozen crc          CRC-32 of the frozen window
+ *
+ * The event level is the node's own: it tracks the room's noise floor,
+ * so the level that follows from it is the node's to decide, and the hub
+ * triggers on the number the node reports.  A node that does not report
+ * one (an older node) is given the hub's fixed level instead.
  */
 
 #ifndef CRYNET_PROTO_H
@@ -91,8 +103,13 @@ extern "C" {
 #define CRYNET_PROTO_FRAG_COUNT     \
     ((CRYNET_PROTO_WINDOW_BYTES + CRYNET_PROTO_FRAG_PAYLOAD - 1u) / CRYNET_PROTO_FRAG_PAYLOAD)
 
-/* The telemetry payload is 12 bytes. */
-#define CRYNET_PROTO_TELEMETRY_BYTES 12u
+/* The telemetry payload is 16 bytes. */
+#define CRYNET_PROTO_TELEMETRY_BYTES 16u
+
+/* The payload an older node sent: the same fields, without the event
+ * level, the window's own level or the noise floor, and with the CRC
+ * four bytes earlier. */
+#define CRYNET_PROTO_TELEMETRY_BYTES_LEGACY 12u
 
 /* Telemetry flags. */
 #define CRYNET_PROTO_FLAG_BURST_READY   0x01u  /* the node has a frozen window  */
@@ -151,6 +168,15 @@ typedef struct {
     float    rms;        /* the node's 100 ms RMS, in full-scale units */
     uint16_t window_ms;  /* the length of the node's window           */
     uint8_t  flags;
+    /* The level the node triggers at, in full-scale units.  Zero means
+     * the node did not report one. */
+    float    event_rms;
+    /* The level of the node's frozen window itself, in full-scale
+     * units: what the model will be shown, as opposed to the live
+     * reading beside it. */
+    float    frozen_rms;
+    /* The node's noise floor, in full-scale units. */
+    float    floor_rms;
     uint32_t frozen_crc; /* CRC-32 of the node's frozen window, 0 if none */
 } crynet_proto_telemetry_t;
 

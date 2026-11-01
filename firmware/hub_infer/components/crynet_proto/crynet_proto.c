@@ -165,7 +165,8 @@ bool crynet_proto_decode_telemetry(const uint8_t *payload,
                                    size_t len,
                                    crynet_proto_telemetry_t *out)
 {
-    if (payload == NULL || len < 12u) {
+    if (payload == NULL ||
+        len < CRYNET_PROTO_TELEMETRY_BYTES_LEGACY) {
         return false;
     }
 
@@ -176,9 +177,27 @@ bool crynet_proto_decode_telemetry(const uint8_t *payload,
     out->rms = (float)rms_milli / 1000.0f;
     out->window_ms = get_u16(&payload[4]);
     out->flags = payload[6];
-    out->frozen_crc = (uint32_t)payload[8] |
-                      ((uint32_t)payload[9] << 8) |
-                      ((uint32_t)payload[10] << 16) |
-                      ((uint32_t)payload[11] << 24);
+
+    if (len >= CRYNET_PROTO_TELEMETRY_BYTES) {
+        /* The event level the node triggers at, the level of the frozen
+         * window itself, and the node's noise floor. */
+        out->event_rms  = (float)get_u16(&payload[7]) / 1000.0f;
+        out->frozen_rms = (float)get_u16(&payload[9]) / 1000.0f;
+        out->floor_rms  = (float)payload[11] / 1000.0f;
+        out->frozen_crc = (uint32_t)payload[12] |
+                          ((uint32_t)payload[13] << 8) |
+                          ((uint32_t)payload[14] << 16) |
+                          ((uint32_t)payload[15] << 24);
+    } else {
+        /* An older node: the level, the window's own level and the floor
+         * are not on the wire, and the CRC sits four bytes earlier. */
+        out->event_rms  = 0.0f;
+        out->frozen_rms = 0.0f;
+        out->floor_rms  = 0.0f;
+        out->frozen_crc = (uint32_t)payload[8] |
+                          ((uint32_t)payload[9] << 8) |
+                          ((uint32_t)payload[10] << 16) |
+                          ((uint32_t)payload[11] << 24);
+    }
     return true;
 }

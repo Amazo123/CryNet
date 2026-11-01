@@ -104,6 +104,19 @@ typedef struct {
     bool     window_full;  /* the node says its live window holds 2 s */
     uint8_t  loud_streak;  /* consecutive telemetry readings above the
                             * trigger level */
+    /* How many windows in a row have said cry, and the sequence of the
+     * last one counted.  The same window is judged more than once when
+     * the hub asks for it again, and it always gives the same answer,
+     * so it must only count once. */
+    uint8_t  cry_run;
+    uint16_t cry_seq;
+    /* The level the node triggers at.  The node owns the room's noise
+     * floor, so it owns the level that follows from it, and the hub
+     * triggers on the number the node reports.  A node that reports
+     * none is given CRYNET_TRIGGER_RMS instead. */
+    float    event_rms;
+    float    frozen_rms;   /* the level of the window the node froze */
+    float    floor_rms;    /* the node's noise floor */
 
     bool     requested;      /* a burst is in flight */
     int64_t  requested_at_us;
@@ -202,7 +215,34 @@ static void analyse(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer,
     const int64_t t2 = esp_timer_get_time();
 
     const bool silent = rms < CRYNET_SILENCE_RMS_GATE;
-    const bool confirmed = (!silent) && (p_cry >= CRYNET_THRESHOLD);
+    const bool says_cry = (!silent) && (p_cry >= CRYNET_THRESHOLD);
+    const bool unmistakable = (!silent) && (p_cry >= CRYNET_CLEAR_CRY);
+
+    /* The announcement rule.
+     *
+     * The model is not a reliable judge of a window that is very nearly
+     * silent: on the real boards, the same quiet room has produced
+     * verdicts of 0.0000 and of 0.9766 for windows that differ by
+     * nothing a person could hear, and the second of those is a false
+     * alarm.  So one window announces a cry on its own only when it is
+     * unmistakable — the model's output saturates at 0.9961 for a clear
+     * cry, and that window is announced at once.  A window between the
+     * model's threshold and that is a maybe, and a maybe has to be
+     * confirmed by the next window before it is announced: a cry lasts
+     * for seconds and its windows agree, while a noise fluctuation that
+     * happens to look like a cry is not repeated. */
+    bool confirmed = false;
+    if (says_cry) {
+        if (st->cry_seq != st->request_seq) {
+            st->cry_seq = st->request_seq;
+            if (st->cry_run < 255u) {
+                st->cry_run++;
+            }
+        }
+        confirmed = unmistakable || (st->cry_run >= CRYNET_CRY_RUN);
+    } else {
+        st->cry_run = 0;
+    }
 
     /* A confirmed cry is held: the announcement outlives the window
      * that confirmed it, so the display does not flicker while the
@@ -225,7 +265,8 @@ static void analyse(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer,
              (double)p_no_cry, (double)p_cry);
     ESP_LOGI(TAG, "node %u: %s", node_id,
              st->cry_active ? (confirmed ? "ALERT — cry" : "cry (held)")
-                            : (silent ? "silent" : "no cry"));
+                            : (says_cry ? "cry (unconfirmed)"
+                                        : (silent ? "silent" : "no cry")));
 }
 
 /* Whether the hub is announcing a cry for a node.  The display and the
@@ -265,7 +306,8 @@ bool link_stage_radio_start(void)
         return false;
     }
 
-    ESP_LOGI(TAG, "listening on ESP-NOW; asking for audio at RMS >= %.3f",
+    ESP_LOGI(TAG, "listening on ESP-NOW; asking for audio at RMS >= %.3f "
+                  "(the level a node reports wins; this is the fallback)",
              (double)CRYNET_TRIGGER_RMS);
     return true;
 }
@@ -324,6 +366,18 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
             st->rms = tel.rms;
             st->window_full = (tel.flags & CRYNET_PROTO_FLAG_WINDOW_FULL) != 0;
 
+            /* The level to trigger at comes from the node.  The node
+             * tracks the room's noise floor and turns it into the level
+             * it freezes a window at, and the hub is asked to trigger on
+             * the same number -- the node is the one that freezes the
+             * window, so the level that matters is the one it used.  A
+             * node that reports none is an older node, and it gets the
+             * fixed level. */
+            st->event_rms = (tel.event_rms > 0.0f) ? tel.event_rms
+                                                    : CRYNET_TRIGGER_RMS;
+            st->frozen_rms = tel.frozen_rms;
+            st->floor_rms = tel.floor_rms;
+
             /* The node has moved on to a newer window.  The burst in
              * flight can never be completed -- the node no longer
              * holds the fragments of the old one, so it cannot send
@@ -346,7 +400,7 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
              * seconds; the microphone's slow DC drift produces one lone
              * reading above the trigger, and a single reading is not
              * worth a 286-fragment burst. */
-            if (tel.rms >= CRYNET_TRIGGER_RMS) {
+            if (tel.rms >= st->event_rms) {
                 if (st->loud_streak < 255u) {
                     st->loud_streak++;
                 }
@@ -521,9 +575,12 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
              * node's RMS has reached the level above which audio is worth
              * classifying, and has stayed there for two readings (a cry
              * lasts for seconds; the microphone's DC drift produces one
-             * lone reading).  And the node's: it froze a window, which is
-             * the loudest two seconds it has, and the one whose CRC-32
-             * can be checked against what the node advertises. */
+             * lone reading).  The level is the node's own — it tracks the
+             * room's noise floor and reports the level that follows from
+             * it.  And the node's: it froze a window, which is the two
+             * seconds centred on the moment it crossed that level, and
+             * the one whose CRC-32 can be checked against what the node
+             * advertises. */
             const bool loud = (st->loud_streak >= 2u);
             /* Only ask for a window the node has actually frozen.  The
              * node's live window is emptied by an upload and needs two
@@ -563,8 +620,10 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
                      * so until it says the window is whole again there is
                      * nothing to ask for. */
                     st->window_full = false;
-                    ESP_LOGI(TAG, "node %u: asking for the window (seq %u, rms %.4f)",
-                             st->node_id, (unsigned)st->seq, (double)st->rms);
+                    ESP_LOGI(TAG, "node %u: asking for the window (seq %u, "
+                                  "rms %.4f, level %.4f, win %.4f)",
+                             st->node_id, (unsigned)st->seq, (double)st->rms,
+                             (double)st->event_rms, (double)st->frozen_rms);
                 } else {
                     ESP_LOGW(TAG, "node %u: the request could not be sent",
                              st->node_id);

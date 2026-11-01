@@ -48,6 +48,13 @@ typedef struct {
     float    rms;         /* the node's 100 ms RMS, in full-scale units */
     uint16_t window_ms;
     uint8_t  flags;
+    /* The level the node triggers at, 0 if the node did not report one.
+     * The node owns the room's noise floor, so it owns this. */
+    float    event_rms;
+    /* The level of the node's frozen window itself: what the model will
+     * be shown, as opposed to the live reading beside it. */
+    float    frozen_rms;
+    float    floor_rms;   /* the node's noise floor */
     uint32_t frozen_crc;  /* the node's frozen-window CRC-32, 0 if it has none */
     uint32_t age_ms;      /* how long ago this telemetry arrived */
 } node_link_telemetry_t;
