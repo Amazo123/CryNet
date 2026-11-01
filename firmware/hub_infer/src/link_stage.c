@@ -223,7 +223,10 @@ static void analyse(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer,
 
     const bool silent = rms < CRYNET_SILENCE_RMS_GATE;
     const bool says_cry = (!silent) && (p_cry >= CRYNET_THRESHOLD);
-    const bool unmistakable = (!silent) && (p_cry >= CRYNET_CLEAR_CRY);
+    /* No window this quiet may announce a cry at all: the model's
+     * verdict on near-silence is noise (see CRYNET_ANNOUNCE_MIN_RMS). */
+    const bool audible = rms >= CRYNET_ANNOUNCE_MIN_RMS;
+    const bool unmistakable = audible && (p_cry >= CRYNET_CLEAR_CRY);
 
     /* The announcement rule.
      *
@@ -233,14 +236,19 @@ static void analyse(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer,
      * nothing a person could hear, and the second of those is a false
      * alarm.  So one window announces a cry on its own only when it is
      * unmistakable — the model's output saturates at 0.9961 for a clear
-     * cry, and that window is announced at once.  A window between the
-     * model's threshold and that is a maybe, and a maybe has to be
-     * confirmed by the next window before it is announced: a cry lasts
-     * for seconds and its windows agree, while a noise fluctuation that
-     * happens to look like a cry is not repeated. */
+     * cry, and that window is announced at once if it carries real
+     * energy.  A window between the model's threshold and that is a
+     * maybe, and a maybe has to be confirmed by the next window before
+     * it is announced: a cry lasts for seconds and its windows agree.
+     * But the trigger pins at its minimum in a quiet room, so the room
+     * keeps handing the model near-silent windows whose maybes repeat —
+     * fourteen false alarms in one evening — and a maybe now only
+     * counts toward the run when its window carries real energy
+     * (CRYNET_MAYBE_MIN_RMS).  A near-silent window can neither announce
+     * nor confirm; a real cry saturates, and announces alone. */
     bool confirmed = false;
     if (says_cry) {
-        if (st->cry_seq != st->request_seq) {
+        if (rms >= CRYNET_MAYBE_MIN_RMS && st->cry_seq != st->request_seq) {
             st->cry_seq = st->request_seq;
             if (st->cry_run < 255u) {
                 st->cry_run++;
@@ -272,7 +280,9 @@ static void analyse(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer,
              (double)p_no_cry, (double)p_cry);
     ESP_LOGI(TAG, "node %u: %s", node_id,
              st->cry_active ? (confirmed ? "ALERT — cry" : "cry (held)")
-                            : (says_cry ? "cry (unconfirmed)"
+                            : (says_cry ? (rms < CRYNET_MAYBE_MIN_RMS
+                                               ? "cry (too quiet to announce)"
+                                               : "cry (unconfirmed)")
                                         : (silent ? "silent" : "no cry")));
 }
 

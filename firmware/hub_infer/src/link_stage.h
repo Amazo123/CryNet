@@ -42,16 +42,45 @@ extern "C" {
  * model's output saturates at 0.9961 for a clear cry, so a window that
  * reaches this level is announcing itself, and it is announced at once
  * — the panel still shows the cry two and a half seconds after it
- * happened.  Anything between the model's own threshold and this one is
- * a maybe, and a maybe has to be confirmed by the next window before it
- * is announced (see CRYNET_CRY_RUN in link_stage.c). */
+ * happened, provided the window carries real energy (see
+ * CRYNET_ANNOUNCE_MIN_RMS below).  Anything between the model's own
+ * threshold and this one is a maybe, and a maybe has to be confirmed by
+ * the next window before it is announced (see CRYNET_CRY_RUN in
+ * link_stage.c). */
 #define CRYNET_CLEAR_CRY 0.9900f
+
+/* The rms below which no window may announce a cry at all, however
+ * confident the model says it is.
+ *
+ * The adaptive trigger sends the model windows the old fixed 0.030
+ * trigger never would, and the model is not a reliable judge of a
+ * window that is nearly silent.  Measured on the real boards: the
+ * quietest genuine cry that reached the model carried 0.0103 rms (the
+ * phone cry at one metre), while quiet-room windows at 0.002-0.012 have
+ * scored up to 0.9883.  This gate sits under the quietest genuine cry
+ * with room to spare, so the one-metre cry still announces and a
+ * near-silent window cannot. */
+#define CRYNET_ANNOUNCE_MIN_RMS 0.006f
 
 /* How many windows in a row have to say cry before a maybe is
  * announced.  Two: a cry lasts for seconds and its windows agree, while
  * a noise fluctuation that happens to look like a cry is not repeated
- * in the next window. */
+ * in the next window.
+ *
+ * That assumption failed in a quiet room: the trigger pins at its
+ * minimum there, the hub judges near-silent window after near-silent
+ * window, their verdicts scatter across 0.95-0.99 for no audible
+ * reason, and two of them in a row confirmed each other into fourteen
+ * false alarms in one evening.  A maybe therefore only counts toward
+ * the run when its window carries real energy (CRYNET_MAYBE_MIN_RMS). */
 #define CRYNET_CRY_RUN 2u
+
+/* The rms a window needs before its maybe can count toward the
+ * confirming run.  Every measured genuine cry announced saturated
+ * (>= 0.99, the unmistakable path) — the run exists for a real cry that
+ * scores just over the threshold, and that comes with sound behind it.
+ * The measured false maybes all sat at 0.012 rms or under. */
+#define CRYNET_MAYBE_MIN_RMS 0.020f
 
 /* Bring the radio up: NVS, then ESP-NOW.  Call it before the Bluetooth
  * stack starts — NimBLE's pools come out of the same internal RAM the
