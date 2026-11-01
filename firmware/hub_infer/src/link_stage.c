@@ -263,7 +263,15 @@ static void analyse(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer,
                 st->cry_run++;
             }
         }
-        confirmed = unmistakable || (st->cry_run >= CRYNET_CRY_RUN);
+        /* And the run can confirm only a window that itself carries
+         * energy: a quiet hiss window may keep the run alive (a real
+         * cry has quiet gaps, and the next loud window should not have
+         * to start over), but it may not announce on the run's
+         * momentum — after this session's cry, the quiet flukes that
+         * score 0.95+ would otherwise have refreshed the ALERT
+         * indefinitely. */
+        confirmed = unmistakable ||
+            (st->cry_run >= CRYNET_CRY_RUN && rms >= CRYNET_MAYBE_MIN_RMS);
     } else {
         st->cry_run = 0;
     }
