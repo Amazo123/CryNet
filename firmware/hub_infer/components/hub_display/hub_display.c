@@ -22,9 +22,9 @@
  * camera opens up, the highlights clip and the white balance drifts —
  * so the swatches are how the panel's own colours are judged.
  *
- * The palette is a calm dark navy with a teal accent.  Red is kept for
- * one thing only — a confirmed cry — because a panel that is red all
- * the time stops meaning anything.
+ * The palette is a calm near-black teal with a teal accent.  Red is
+ * kept for one thing only — a confirmed cry — because a panel that is
+ * red all the time stops meaning anything.
  *
  * Everything is composed in a framebuffer (320x240 RGB565, in PSRAM)
  * and pushed to the panel in one transfer, so a frame is never torn.
@@ -72,20 +72,31 @@ static const char *TAG = "hub_display";
 #define FB_H 240
 
 /* ---- the palette -------------------------------------------------------- */
-/* A dark, calm scheme: navy background, a teal accent, green for a cot
- * that is fine, amber for a cot that is loud, and rose — not fire-engine
- * red — for a confirmed cry. */
-#define C_BG         DISPLAY_RGB(12, 20, 32)
-#define C_SURFACE    DISPLAY_RGB(21, 32, 45)
-#define C_SURFACE_HI DISPLAY_RGB(29, 42, 57)
+/* A dark, calm scheme: a near-black teal background, a teal accent,
+ * green for a cot that is fine, amber for a cot that is loud, and rose
+ * — not fire-engine red — for a confirmed cry.
+ *
+ * The neutrals are darker and teal-tinted rather than navy, and that is
+ * a measured change.  The colour-check page (the BOOT button) put a
+ * (12,20,32) navy on the glass and a (0,0,0) black next to it, and the
+ * navy came back as a **saturated blue while the black stayed black**:
+ * this panel lifts the dark end, and it lifts the blue channel most of
+ * all, so the *less* blue the screen asks for, the less blue it gets.
+ * A background that asks for 32 blue reads as a bright blue; one that
+ * asks for 16 reads as a dark one.  The theme is unchanged in what it
+ * says - teal for the system, green for fine, amber for loud, rose for
+ * a cry - but the screen now reads teal instead of blue. */
+#define C_BG         DISPLAY_RGB(7, 15, 16)
+#define C_SURFACE    DISPLAY_RGB(12, 26, 28)
+#define C_SURFACE_HI DISPLAY_RGB(17, 36, 39)
 /* The border is a UI component, so it has to clear 3:1 against the
  * card it sits on — the first choice (40,57,76) measured 1.40:1 and
  * was effectively invisible. */
-#define C_BORDER     DISPLAY_RGB(88, 112, 136)
-#define C_TEXT       DISPLAY_RGB(228, 236, 245)
-#define C_DIM        DISPLAY_RGB(122, 142, 163)
+#define C_BORDER     DISPLAY_RGB(78, 116, 112)
+#define C_TEXT       DISPLAY_RGB(228, 240, 236)
+#define C_DIM        DISPLAY_RGB(122, 150, 146)
 #define C_ACCENT     DISPLAY_RGB(45, 212, 191)
-#define C_ACCENT_DIM DISPLAY_RGB(24, 122, 110)
+#define C_ACCENT_DIM DISPLAY_RGB(22, 124, 112)
 #define C_BLUE       DISPLAY_RGB(96, 165, 250)
 #define C_GREEN      DISPLAY_RGB(52, 211, 153)
 #define C_AMBER      DISPLAY_RGB(251, 191, 36)
@@ -591,7 +602,10 @@ static void draw_dashboard(const hub_display_state_t *st)
  * The grid is ordered so that the answers are unambiguous: black and
  * white at the ends of the first row, the accent in the middle, and
  * the alert colour last, where a red that is really a swapped blue
- * cannot hide. */
+ * cannot hide.  Under it is a ramp of the darks, which is where this
+ * panel does something unusual: a (12,20,32) navy comes back as a
+ * saturated blue while a (0,0,0) black stays black, so the ramp says
+ * in one row how far up the dark end the glass lifts. */
 static void draw_colour_check(void)
 {
     fb_fill(0, 0, FB_W, FB_H, C_BG);
@@ -607,7 +621,7 @@ static void draw_colour_check(void)
         {"BLACK",  DISPLAY_RGB(0, 0, 0)},
         {"WHITE",  DISPLAY_RGB(255, 255, 255)},
         {"TEAL",   C_ACCENT},
-        {"NAVY",   C_BG},
+        {"NAVY",   DISPLAY_RGB(12, 20, 32)},
         {"GREEN",  C_GREEN},
         {"AMBER",  C_AMBER},
         {"ROSE",   C_ALERT},
@@ -615,22 +629,38 @@ static void draw_colour_check(void)
     };
     const int n = (int)(sizeof swatches / sizeof swatches[0]);
     const int cols = 4;
-    const int w = 74, h = 62, gap = 6;
+    const int w = 74, h = 56, gap = 6;
     const int x0 = (FB_W - (cols * w + (cols - 1) * gap)) / 2;
 
     for (int i = 0; i < n; i++) {
         const int cx = x0 + (i % cols) * (w + gap);
-        const int cy = 46 + (i / cols) * (h + 22);
+        const int cy = 40 + (i / cols) * (h + 24);
         fb_fill(cx, cy, w, h, swatches[i].colour);
         fb_rect(cx, cy, w, h, C_BORDER);
         fb_text(cx + (w - fb_text_w(swatches[i].name, 1)) / 2, cy + h + 5,
                 swatches[i].name, C_DIM, 1);
     }
 
+    /* The dark ramp: the same hue, six steps.  The step that reads
+     * brightest is the one the panel is lifting, and how it lifts is
+     * the panel's own curve rather than the camera's. */
+    static const uint16_t ramp[] = {
+        DISPLAY_RGB(0, 0, 0),   DISPLAY_RGB(2, 4, 4),
+        DISPLAY_RGB(4, 8, 8),   DISPLAY_RGB(7, 15, 16),
+        DISPLAY_RGB(12, 26, 28), DISPLAY_RGB(24, 52, 56),
+    };
+    const int steps = (int)(sizeof ramp / sizeof ramp[0]);
+    const int rw = (FB_W - 8) / steps;
+    for (int i = 0; i < steps; i++) {
+        fb_fill(4 + i * rw, 190, rw, 14, ramp[i]);
+    }
+    fb_rect(3, 189, rw * steps + 2, 16, C_BORDER);
+    fb_text(4, 206, "the dark ramp", C_DIM, 1);
+
     char foot[48];
     snprintf(foot, sizeof foot, "backlight %u%%  -  press BOOT to go back",
              (unsigned)s_brightness);
-    fb_text_centre(FB_H - 16, foot, C_DIM, 1);
+    fb_text_centre(FB_H - 14, foot, C_DIM, 1);
 }
 
 /* ------------------------------------------------------------------ */

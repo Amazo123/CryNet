@@ -279,24 +279,33 @@ def colour_check(path: Path):
         ("BLACK", (0, 0, 0)),
         ("WHITE", (255, 255, 255)),
         ("TEAL", C["C_ACCENT"]),
-        ("NAVY", C["C_BG"]),
+        ("NAVY", (12, 20, 32)),
         ("GREEN", C["C_GREEN"]),
         ("AMBER", C["C_AMBER"]),
         ("ROSE", C["C_ALERT"]),
         ("GREY", C["C_DIM"]),
     ]
-    cols, w, h, gap = 4, 74, 62, 6
+    cols, w, h, gap = 4, 74, 56, 6
     x0 = (W - (cols * w + (cols - 1) * gap)) // 2
     for i, (name, colour) in enumerate(swatches):
         cx = x0 + (i % cols) * (w + gap)
-        cy = 46 + (i // cols) * (h + 22)
+        cy = 40 + (i // cols) * (h + 24)
         fill(d, cx, cy, w, h, colour)
         rect(d, cx, cy, w, h, C["C_BORDER"])
         draw_text(d, cx + (w - text_width(name, 1)) // 2, cy + h + 5,
                   name, C["C_DIM"], 1)
 
+    # the dark ramp
+    ramp = [(0, 0, 0), (2, 4, 4), (4, 8, 8), (7, 15, 16), (12, 26, 28),
+            (24, 52, 56)]
+    rw = (W - 8) // len(ramp)
+    for i, colour in enumerate(ramp):
+        fill(d, 4 + i * rw, 190, rw, 14, colour)
+    rect(d, 3, 189, rw * len(ramp) + 2, 16, C["C_BORDER"])
+    draw_text(d, 4, 206, "the dark ramp", C["C_DIM"], 1)
+
     foot = "backlight 55%  -  press BOOT to go back"
-    draw_text_centre(d, H - 16, foot, C["C_DIM"], 1)
+    draw_text_centre(d, H - 14, foot, C["C_DIM"], 1)
 
     img.save(path)
     return path
