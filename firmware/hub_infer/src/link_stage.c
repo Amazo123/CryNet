@@ -589,7 +589,8 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
              * seconds centred on the moment it crossed that level, and
              * the one whose CRC-32 can be checked against what the node
              * advertises. */
-            const bool loud = (st->loud_streak >= 2u);
+            const bool loud = (st->loud_streak >= 2u) ||
+                              (st->rms >= 3.0f * st->event_rms);
             /* Only ask for a window the node has actually frozen.  The
              * node's live window is emptied by an upload and needs two
              * seconds to refill, and a request that arrives in that gap

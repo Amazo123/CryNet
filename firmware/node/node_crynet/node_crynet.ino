@@ -1007,6 +1007,17 @@ void loop() {
                 g_frozen_served = false;
                 g_peak_pending = false;
             }
+            /* Preempt the hold for a loud event.  A cry is typically an
+             * order of magnitude louder than the room, so a crossing at
+             * three times the trigger level is a new event worth an
+             * immediate freeze, even if the previous window is still
+             * being served: the hub abandons the stale burst and asks
+             * for this one instead.  Without this, a cry waits behind
+             * every quiet window frozen before it.  (D-68.) */
+            if (g_frozen_served && g_level > 0.0f &&
+                g_rms >= 3.0f * g_level && g_loud_streak >= 2u) {
+                g_frozen_served = false;
+            }
             if (!g_frozen_served && g_filled == WINDOW_SAMPLES) {
                 if (!g_peak_pending && g_loud_streak >= 2u) {
                     /* A loud moment: remember it, and freeze a second
