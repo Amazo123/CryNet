@@ -85,10 +85,16 @@ static const char *TAG = "hub_display";
  * A background that asks for 32 blue reads as a bright blue; one that
  * asks for 16 reads as a dark one.  The theme is unchanged in what it
  * says - teal for the system, green for fine, amber for loud, rose for
- * a cry - but the screen now reads teal instead of blue. */
-#define C_BG         DISPLAY_RGB(7, 15, 16)
-#define C_SURFACE    DISPLAY_RGB(12, 26, 28)
-#define C_SURFACE_HI DISPLAY_RGB(17, 36, 39)
+ * a cry - but the screen now reads teal instead of blue.
+ *
+ * The level itself was picked off the glass, not out of a chart: shown
+ * the dark ramp, the reader chose its third step - (4,8,8), one step
+ * darker than the background this replaced - as the teal the screen
+ * should be.  The whole neutral family moved down one step of the same
+ * ramp with it, so the cards stay a shade above the background. */
+#define C_BG         DISPLAY_RGB(4, 8, 8)
+#define C_SURFACE    DISPLAY_RGB(7, 15, 16)
+#define C_SURFACE_HI DISPLAY_RGB(12, 26, 28)
 /* The border is a UI component, so it has to clear 3:1 against the
  * card it sits on — the first choice (40,57,76) measured 1.40:1 and
  * was effectively invisible. */
@@ -238,19 +244,24 @@ static void fb_round_fill(int x, int y, int w, int h, int r, uint16_t c)
     fb_fill(x, y + r, r, h - 2 * r, c);
     fb_fill(x + w - r, y + r, r, h - 2 * r, c);
 
-    /* The four corner discs. */
+    /* The four corner discs.  Each disc is centred on the point the
+     * straight edges stop at, and its quarter is walked *towards its
+     * own corner* (sx, sy).  An earlier version walked every disc
+     * inward from its centre, which painted all four arcs on the
+     * inside of the shape; the bottom-right one only looked right
+     * because its inward quadrant happened to end at the shape's own
+     * edge. */
     const int cx[4] = { x + r, x + w - 1 - r, x + r, x + w - 1 - r };
     const int cy[4] = { y + r, y + r, y + h - 1 - r, y + h - 1 - r };
+    const int sx[4] = { -1, 1, -1, 1 };
+    const int sy[4] = { -1, -1, 1, 1 };
     for (int k = 0; k < 4; k++) {
-        for (int dx = 0; dx < r; dx++) {
-            for (int dy = 0; dy < r; dy++) {
-                const int px = cx[k] + ((k % 2) ? (r - 1 - dx) : dx);
-                const int py = cy[k] + ((k / 2) ? (r - 1 - dy) : dy);
-                const int ex = px - cx[k];
-                const int ey = py - cy[k];
-                if (ex * ex + ey * ey <= r * r) {
-                    fb_px(px, py, c);
+        for (int dx = 0; dx <= r; dx++) {
+            for (int dy = 0; dy <= r; dy++) {
+                if (dx * dx + dy * dy > r * r) {
+                    continue;
                 }
+                fb_px(cx[k] + sx[k] * dx, cy[k] + sy[k] * dy, c);
             }
         }
     }
@@ -274,19 +285,21 @@ static void fb_round_rect(int x, int y, int w, int h, int r, uint16_t c)
     fb_vline(x, y + r, h - 2 * r, c);
     fb_vline(x + w - 1, y + r, h - 2 * r, c);
 
+    /* The corner arcs - the same discs as fb_round_fill, but only the
+     * pixels a ring's width from the arc itself, and walked towards
+     * their own corners (see the note there). */
     const int cx[4] = { x + r, x + w - 1 - r, x + r, x + w - 1 - r };
     const int cy[4] = { y + r, y + r, y + h - 1 - r, y + h - 1 - r };
+    const int sx[4] = { -1, 1, -1, 1 };
+    const int sy[4] = { -1, -1, 1, 1 };
     for (int k = 0; k < 4; k++) {
-        for (int dx = 0; dx < r; dx++) {
-            for (int dy = 0; dy < r; dy++) {
-                const int px = cx[k] + ((k % 2) ? (r - 1 - dx) : dx);
-                const int py = cy[k] + ((k / 2) ? (r - 1 - dy) : dy);
-                const int ddx = px - cx[k];
-                const int ddy = py - cy[k];
-                const int d2 = ddx * ddx + ddy * ddy;
-                if (d2 <= r * r && d2 >= (r - 1) * (r - 1)) {
-                    fb_px(px, py, c);
+        for (int dx = 0; dx <= r; dx++) {
+            for (int dy = 0; dy <= r; dy++) {
+                const int d2 = dx * dx + dy * dy;
+                if (d2 > r * r || d2 < (r - 1) * (r - 1)) {
+                    continue;
                 }
+                fb_px(cx[k] + sx[k] * dx, cy[k] + sy[k] * dy, c);
             }
         }
     }
