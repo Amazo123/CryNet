@@ -1,0 +1,233 @@
+=== listening on COM32 for 240 s (the sound is expected after 8 s)
+--- quiet for 8 s: **play the cry now** ---
+  [  1.03s] node 1: 286/286 fragments in 3.70 s
+  [  1.20s] node 1: front end 50.1 ms, inference 102.6 ms, P(no_cry)=0.9492 P(cry)=0.0508
+  [  1.20s] node 1: no cry
+  [  1.68s] node 1: asking for the window (seq 6, rms 0.0900)
+  [  5.13s] node 1: 286/286 fragments in 3.45 s
+  [  5.30s] node 1: front end 47.5 ms, inference 102.3 ms, P(no_cry)=0.9492 P(cry)=0.0508
+  [  5.30s] node 1: no cry
+  [  5.68s] node 1: asking for the window (seq 6, rms 0.0600)
+--- the sound is expected from here ---
+  [  9.08s] node 1: 286/286 fragments in 3.40 s
+  [  9.25s] node 1: front end 50.3 ms, inference 102.7 ms, P(no_cry)=0.9492 P(cry)=0.0508
+  [  9.25s] node 1: no cry
+  [ 11.18s] node 1: asking for the window (seq 7, rms 0.1040)
+  [ 14.64s] node 1: 286/286 fragments in 3.45 s
+  [ 14.80s] node 1: front end 47.4 ms, inference 104.5 ms, P(no_cry)=0.0000 P(cry)=0.9961
+  [ 14.81s] node 1: ALERT — cry
+  [ 15.19s] node 1: asking for the window (seq 7, rms 0.1010)
+  [ 18.89s] node 1: 286/286 fragments in 3.70 s
+  [ 19.06s] node 1: front end 48.9 ms, inference 102.8 ms, P(no_cry)=0.0000 P(cry)=0.9961
+  [ 19.06s] node 1: ALERT — cry
+  [ 19.69s] node 1: asking for the window (seq 7, rms 0.1580)
+  [ 24.78s] node 1: 286/286 fragments in 5.09 s
+  [ 24.95s] node 1: front end 49.2 ms, inference 102.9 ms, P(no_cry)=0.0000 P(cry)=0.9961
+  [ 24.95s] node 1: ALERT — cry
+  [ 25.13s] node 1: asking for the window (seq 8, rms 0.0870)
+  [ 28.58s] node 1: 286/286 fragments in 3.45 s
+  [ 28.75s] node 1: front end 50.7 ms, inference 102.5 ms, P(no_cry)=0.9492 P(cry)=0.0508
+  [ 29.24s] node 1: asking for the window (seq 8, rms 0.1020)
+  [ 32.63s] node 1: 286/286 fragments in 3.40 s
+  [ 32.80s] node 1: front end 50.0 ms, inference 102.4 ms, P(no_cry)=0.9492 P(cry)=0.0508
+  [ 33.33s] node 1: asking for the window (seq 8, rms 0.1270)
+  [ 36.73s] node 1: 286/286 fragments in 3.40 s
+  [ 36.90s] node 1: front end 47.6 ms, inference 106.2 ms, P(no_cry)=0.9492 P(cry)=0.0508
+  [ 36.91s] node 1: no cry
+  [ 37.34s] node 1: asking for the window (seq 8, rms 0.0360)
+  [ 40.79s] node 1: 286/286 fragments in 3.45 s
+  [ 40.95s] node 1: front end 47.5 ms, inference 102.3 ms, P(no_cry)=0.9492 P(cry)=0.0508
+  [ 40.96s] node 1: no cry
+  [ 41.43s] node 1: asking for the window (seq 8, rms 0.0330)
+  [ 44.84s] node 1: 286/286 fragments in 3.40 s
+  [ 45.00s] node 1: front end 47.4 ms, inference 102.3 ms, P(no_cry)=0.9492 P(cry)=0.0508
+  [ 45.00s] node 1: no cry
+  [ 46.63s] node 1: asking for the window (seq 9, rms 0.1440)
+  [ 50.08s] node 1: 286/286 fragments in 3.45 s
+  [ 50.25s] node 1: front end 47.4 ms, inference 105.5 ms, P(no_cry)=0.8516 P(cry)=0.1484
+  [ 50.25s] node 1: no cry
+  [ 50.72s] node 1: asking for the window (seq 9, rms 0.0410)
+  [ 54.43s] node 1: 286/286 fragments in 3.70 s
+  [ 54.59s] node 1: front end 47.5 ms, inference 102.4 ms, P(no_cry)=0.8516 P(cry)=0.1484
+  [ 54.59s] node 1: no cry
+  [ 54.88s] node 1: asking for the window (seq 9, rms 0.1060)
+  [ 58.64s] node 1: 286/286 fragments in 3.75 s
+  [ 58.80s] node 1: front end 47.4 ms, inference 106.1 ms, P(no_cry)=0.8516 P(cry)=0.1484
+  [ 58.81s] node 1: no cry
+  [ 60.13s] node 1: asking for the window (seq 9, rms 0.0800)
+  [ 63.58s] node 1: 286/286 fragments in 3.45 s
+  [ 63.75s] node 1: front end 47.7 ms, inference 102.3 ms, P(no_cry)=0.8516 P(cry)=0.1484
+  [ 63.75s] node 1: no cry
+  [ 64.13s] node 1: asking for the window (seq 9, rms 0.0590)
+  [ 69.31s] node 1: asking for the window (seq 10, rms 0.1190)
+  [ 72.71s] node 1: 286/286 fragments in 3.40 s
+  [ 72.88s] node 1: front end 51.1 ms, inference 102.3 ms, P(no_cry)=0.0000 P(cry)=0.9961
+  [ 72.88s] node 1: ALERT — cry
+  [ 73.37s] node 1: asking for the window (seq 10, rms 0.1280)
+  [ 76.92s] node 1: 286/286 fragments in 3.55 s
+  [ 77.08s] node 1: front end 47.7 ms, inference 102.3 ms, P(no_cry)=0.0000 P(cry)=0.9961
+  [ 77.09s] node 1: ALERT — cry
+  [ 77.67s] node 1: asking for the window (seq 10, rms 0.0480)
+  [ 82.65s] node 1: 286/286 fragments in 4.99 s
+  [ 82.82s] node 1: front end 47.7 ms, inference 105.4 ms, P(no_cry)=0.0000 P(cry)=0.9961
+  [ 82.83s] node 1: ALERT — cry
+  [ 83.86s] node 1: asking for the window (seq 11, rms 0.0300)
+  [ 88.75s] node 1: 286/286 fragments in 4.89 s
+  [ 88.91s] node 1: front end 50.5 ms, inference 102.6 ms, P(no_cry)=0.0000 P(cry)=0.9961
+  [ 88.92s] node 1: ALERT — cry
+  [ 88.99s] node 1: asking for the window (seq 11, rms 0.1030)
+  [ 89.09s] node 1: asking for the window (seq 12, rms 0.1060)
+  [ 92.75s] node 1: 286/286 fragments in 3.67 s
+  [ 92.92s] node 1: front end 48.1 ms, inference 107.3 ms, P(no_cry)=0.0000 P(cry)=0.9961
+  [ 92.93s] node 1: ALERT — cry
+  [ 95.70s] node 1: asking for the window (seq 12, rms 0.0470)
+  [100.69s] node 1: 286/286 fragments in 4.99 s
+  [100.86s] node 1: front end 47.6 ms, inference 102.3 ms, P(no_cry)=0.0000 P(cry)=0.9961
+  [100.86s] node 1: ALERT — cry
+  [103.49s] node 1: asking for the window (seq 12, rms 0.1240)
+  [108.28s] node 1: 286/286 fragments in 4.79 s
+  [108.44s] node 1: front end 50.5 ms, inference 102.9 ms, P(no_cry)=0.0000 P(cry)=0.9961
+  [108.45s] node 1: ALERT — cry
+  [108.68s] node 1: asking for the window (seq 13, rms 0.0930)
+  [110.74s] node 1: 286/286 fragments in 2.06 s
+  [110.91s] node 1: front end 48.0 ms, inference 102.3 ms, P(no_cry)=0.0000 P(cry)=0.9961
+  [110.91s] node 1: ALERT — cry
+  [112.89s] node 1: asking for the window (seq 13, rms 0.0880)
+  [116.34s] node 1: 286/286 fragments in 3.45 s
+  [116.50s] node 1: front end 47.6 ms, inference 106.3 ms, P(no_cry)=0.0000 P(cry)=0.9961
+  [116.51s] node 1: ALERT — cry
+  [117.53s] node 1: asking for the window (seq 13, rms 0.1150)
+  [120.99s] node 1: 286/286 fragments in 3.45 s
+  [121.15s] node 1: front end 47.6 ms, inference 102.3 ms, P(no_cry)=0.0000 P(cry)=0.9961
+  [121.15s] node 1: ALERT — cry
+  [121.54s] node 1: asking for the window (seq 13, rms 0.0920)
+  [124.99s] node 1: 286/286 fragments in 3.45 s
+  [125.15s] node 1: front end 48.1 ms, inference 102.3 ms, P(no_cry)=0.0000 P(cry)=0.9961
+  [125.16s] node 1: ALERT — cry
+  [125.55s] node 1: asking for the window (seq 13, rms 0.1220)
+  [130.73s] node 1: asking for the window (seq 14, rms 0.1520)
+  [134.18s] node 1: 286/286 fragments in 3.46 s
+  [134.34s] node 1: front end 47.6 ms, inference 102.3 ms, P(no_cry)=0.0000 P(cry)=0.9961
+  [134.35s] node 1: ALERT — cry
+  [134.93s] node 1: asking for the window (seq 14, rms 0.0570)
+  [138.48s] node 1: 286/286 fragments in 3.55 s
+  [138.64s] node 1: front end 50.4 ms, inference 102.3 ms, P(no_cry)=0.0000 P(cry)=0.9961
+  [138.65s] node 1: ALERT — cry
+  [139.03s] node 1: asking for the window (seq 14, rms 0.1490)
+  [142.58s] node 1: 286/286 fragments in 3.55 s
+  [142.75s] node 1: front end 47.4 ms, inference 105.2 ms, P(no_cry)=0.0000 P(cry)=0.9961
+  [142.75s] node 1: ALERT — cry
+  [143.13s] node 1: asking for the window (seq 14, rms 0.1090)
+  [146.59s] node 1: 286/286 fragments in 3.46 s
+  [146.76s] node 1: front end 48.9 ms, inference 102.3 ms, P(no_cry)=0.0000 P(cry)=0.9961
+  [146.76s] node 1: ALERT — cry
+  [147.15s] node 1: asking for the window (seq 14, rms 0.0700)
+  [150.70s] node 1: 286/286 fragments in 3.55 s
+  [150.86s] node 1: front end 47.4 ms, inference 104.7 ms, P(no_cry)=0.0000 P(cry)=0.9961
+  [150.87s] node 1: ALERT — cry
+  [152.94s] node 1: asking for the window (seq 15, rms 0.0680)
+  [156.89s] node 1: 286/286 fragments in 3.95 s
+  [157.06s] node 1: front end 47.4 ms, inference 104.5 ms, P(no_cry)=0.0000 P(cry)=0.9961
+  [157.06s] node 1: ALERT — cry
+  [161.89s] node 1: asking for the window (seq 16, rms 0.1500)
+  [165.34s] node 1: 286/286 fragments in 3.45 s
+  [165.51s] node 1: front end 47.6 ms, inference 106.0 ms, P(no_cry)=0.9922 P(cry)=0.0078
+  [165.51s] node 1: no cry
+  [165.90s] node 1: asking for the window (seq 16, rms 0.0320)
+  [169.35s] node 1: 286/286 fragments in 3.45 s
+  [169.52s] node 1: front end 49.2 ms, inference 102.5 ms, P(no_cry)=0.9922 P(cry)=0.0078
+  [169.53s] node 1: no cry
+  [169.91s] node 1: asking for the window (seq 16, rms 0.1050)
+  [176.63s] node 1: asking for the window (seq 17, rms 0.1590)
+  [180.18s] node 1: 286/286 fragments in 3.56 s
+  [180.34s] node 1: front end 50.8 ms, inference 102.3 ms, P(no_cry)=0.7852 P(cry)=0.2148
+  [180.35s] node 1: no cry
+  [180.73s] node 1: asking for the window (seq 17, rms 0.1510)
+  [184.48s] node 1: 286/286 fragments in 3.75 s
+  [184.65s] node 1: front end 50.4 ms, inference 102.6 ms, P(no_cry)=0.7852 P(cry)=0.2148
+  [184.65s] node 1: no cry
+  [184.88s] node 1: asking for the window (seq 17, rms 0.0900)
+  [189.87s] node 1: 286/286 fragments in 4.99 s
+  [190.04s] node 1: front end 50.2 ms, inference 102.6 ms, P(no_cry)=0.7852 P(cry)=0.2148
+  [190.04s] node 1: no cry
+  [190.13s] node 1: asking for the window (seq 18, rms 0.0540)
+  [195.32s] node 1: 286/286 fragments in 5.19 s
+  [195.48s] node 1: front end 48.1 ms, inference 102.0 ms, P(no_cry)=0.0000 P(cry)=0.9961
+  [195.48s] node 1: ALERT — cry
+  [195.57s] node 1: asking for the window (seq 19, rms 0.1660)
+  [200.51s] node 1: 286/286 fragments in 4.94 s
+  [200.68s] node 1: front end 50.5 ms, inference 102.4 ms, P(no_cry)=0.0078 P(cry)=0.9922
+  [200.68s] node 1: ALERT — cry
+  [200.76s] node 1: asking for the window (seq 19, rms 0.0810)
+  [204.22s] node 1: 286/286 fragments in 3.46 s
+  [204.39s] node 1: front end 50.2 ms, inference 102.8 ms, P(no_cry)=0.0078 P(cry)=0.9922
+  [204.39s] node 1: ALERT — cry
+  [204.77s] node 1: asking for the window (seq 19, rms 0.1140)
+  [208.52s] node 1: 286/286 fragments in 3.75 s
+  [208.69s] node 1: front end 47.4 ms, inference 104.3 ms, P(no_cry)=0.0078 P(cry)=0.9922
+  [208.69s] node 1: ALERT — cry
+  [208.98s] node 1: asking for the window (seq 19, rms 0.1800)
+  [212.63s] node 1: 286/286 fragments in 3.65 s
+  [212.79s] node 1: front end 50.2 ms, inference 102.6 ms, P(no_cry)=0.0078 P(cry)=0.9922
+  [212.80s] node 1: ALERT — cry
+  [213.08s] node 1: asking for the window (seq 19, rms 0.0450)
+  [221.55s] node 1: asking for the window (seq 20, rms 0.0540)
+  [226.55s] node 1: 286/286 fragments in 5.00 s
+  [226.71s] node 1: front end 47.7 ms, inference 102.3 ms, P(no_cry)=0.0039 P(cry)=0.9961
+  [226.71s] node 1: ALERT — cry
+  [226.79s] node 1: asking for the window (seq 20, rms 0.0540)
+  [226.89s] node 1: asking for the window (seq 21, rms 0.0490)
+  [228.07s] node 1: asking for the window (seq 22, rms 0.0400)
+  [231.63s] node 1: 286/286 fragments in 3.55 s
+  [231.79s] node 1: front end 47.5 ms, inference 102.3 ms, P(no_cry)=0.9023 P(cry)=0.0977
+  [232.17s] node 1: asking for the window (seq 22, rms 0.0650)
+  [237.31s] node 1: 286/286 fragments in 5.14 s
+  [237.48s] node 1: front end 47.9 ms, inference 102.0 ms, P(no_cry)=0.9023 P(cry)=0.0977
+  [237.48s] node 1: no cry
+  [238.46s] node 1: asking for the window (seq 23, rms 0.0550)
+
+=== 184 marks, 42 verdicts, 26 cry verdicts
+  node 1: no cry
+  node 1: no cry
+  node 1: no cry
+  node 1: ALERT — cry
+  node 1: ALERT — cry
+  node 1: ALERT — cry
+  node 1: no cry
+  node 1: no cry
+  node 1: no cry
+  node 1: no cry
+  node 1: no cry
+  node 1: no cry
+  node 1: no cry
+  node 1: ALERT — cry
+  node 1: ALERT — cry
+  node 1: ALERT — cry
+  node 1: ALERT — cry
+  node 1: ALERT — cry
+  node 1: ALERT — cry
+  node 1: ALERT — cry
+  node 1: ALERT — cry
+  node 1: ALERT — cry
+  node 1: ALERT — cry
+  node 1: ALERT — cry
+  node 1: ALERT — cry
+  node 1: ALERT — cry
+  node 1: ALERT — cry
+  node 1: ALERT — cry
+  node 1: ALERT — cry
+  node 1: ALERT — cry
+  node 1: no cry
+  node 1: no cry
+  node 1: no cry
+  node 1: no cry
+  node 1: no cry
+  node 1: ALERT — cry
+  node 1: ALERT — cry
+  node 1: ALERT — cry
+  node 1: ALERT — cry
+  node 1: ALERT — cry
+  node 1: ALERT — cry
+  node 1: no cry
+
+[exited with code 0]
