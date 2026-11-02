@@ -397,6 +397,7 @@ The fix that worked: delete `packages/framework-espidf`, move the fully extracte
 
 | Date | Change | Files touched | Notes |
 |---|---|---|---|
+| 2026-11-02 | Created a separate four-page illustrated wiring guide: verified node and hub pin-to-pin wiring, proposed wearable bus and a clearly labelled battery power architecture. | `SYSTEM_WIRING_DIAGRAMS.html`, `SYSTEM_WIRING_DIAGRAMS.pdf`, `SYSTEM_UPDATE.md` | PDF text and page boundaries checked; wearable and battery details remain unverified, not a build-ready battery schematic. |
 | 2026-11-02 | Exported the wiring guide to a three-page PDF and checked its text is present through the final section. | `SYSTEM_WIRING.pdf`, `SYSTEM_UPDATE.md` | PDF is a printable text guide; proposed battery wiring remains unvalidated. |
 | 2026-11-02 | Added a point-to-point USB test wiring guide and proposed battery-system architecture; explicitly marked wearable pins, battery charger power paths, LED/ADC pin choices and portable circuits as unverified pending component selection. | `SYSTEM_WIRING.md`, `SYSTEM_UPDATE.md` | Documentation only; no new circuit or firmware has been tested. |
 | 2026-11-02 | Expanded the hardware BOM at the user's request to include proposed battery power, chargers, boost converters, switches, battery monitoring and indicator components down to individual resistor and capacitor counts for the full system. | `HARDWARE_COMPONENTS.md`, `SYSTEM_UPDATE.md` | Planning assumptions only: circuit design, component compatibility, node indicator/ADC firmware and battery testing remain open. |
