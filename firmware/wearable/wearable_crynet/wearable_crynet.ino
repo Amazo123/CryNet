@@ -256,6 +256,12 @@ static bool connect_to_hub(void)
 class HubScanCallbacks : public BLEAdvertisedDeviceCallbacks {
     void onResult(BLEAdvertisedDevice advertisedDevice) override
     {
+        /* SCAN DEBUG — what the scan actually sees.  Removed once the
+         * link is verified. */
+        Serial.printf("[scan] %s name=\"%s\" svc_uuid=%d\n",
+                      advertisedDevice.getAddress().toString().c_str(),
+                      advertisedDevice.getName().c_str(),
+                      advertisedDevice.haveServiceUUID() ? 1 : 0);
         const bool name_ok = advertisedDevice.getName() == HUB_NAME;
         const bool uuid_ok = advertisedDevice.haveServiceUUID() &&
                              advertisedDevice.isAdvertisingService(BLEUUID(SERVICE_UUID));
