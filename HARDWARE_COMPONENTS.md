@@ -20,7 +20,7 @@ Three ESP32-C3 microphone nodes transmit audio via ESP-NOW to an ESP32-S3 hub. T
 
 | Item | Per node | System total | Specification and purchasing guidance |
 |---|---:|---:|---|
-| ESP32-C3 SuperMini development board | 1 | **3** | Match the working ESP32-C3 SuperMini / WeAct-style board and its USB connector where possible. The radio is built in. |
+| ESP32-C3 node board | 1 | **3** | Working prototype uses an ESP32-C3 SuperMini; planned production boards are the user's ESP32-C3 **Pro Mini** stock (verify native USB, 4 MB flash and the GPIO3/4/5/6/7/10 pins on the actual board). The radio is built in. |
 | INMP441 digital I²S microphone breakout | 1 | **3** | Use a 3.3 V-compatible INMP441 breakout. Keep the acoustic opening unobstructed. |
 | USB data/power cable | 1 | **3** | Match the board connector; data-capable cables support programming. Existing cables can be shared for programming if all three nodes are otherwise powered. |
 | Regulated 5 V USB supply | 1 | **3** | One per simultaneously operating node, or an adequately rated multiport supply. Use a reputable supply with current headroom; verify connector and board power input. |
@@ -86,7 +86,7 @@ The hub's BLE service has been exercised with a phone, but **the wearable itself
 
 | Item | Total | Status / selection |
 |---|---:|---|
-| ESP32-C3 development board | **1** | Planned BLE client. A SuperMini can be used for initial development; check physical size, supply requirements and power consumption before final wearable assembly. |
+| ESP32-C3 development board | **1** | Planned BLE client — **the existing SuperMini is reassigned here** (the node role moves to the Pro Minis). Check physical size, supply requirements and power consumption before final wearable assembly. |
 | SSD1306 OLED module | **1** | Planned **0.96-inch, 128 × 64, I²C** display. Choose a module compatible with 3.3 V power and 3.3 V I²C logic; verify the actual pin labels and pull-ups. |
 | DRV2605L haptic-driver breakout | **1** | Recommended instead of a discrete MOSFET motor switch. Choose a breakout compatible with the chosen supply and **3.3 V I²C logic**. Verify breakout wiring and its I²C pull-up voltage. |
 | Compatible vibration actuator | **1** | A small ERM coin vibration motor is a practical candidate; select its rated voltage, startup/operating current and mechanical mounting to suit the driver, supply and intended vibration. Exact part is not yet selected. The DRV2605L also supports LRAs, but those require matching configuration. |
@@ -130,9 +130,8 @@ The hub's BLE service has been exercised with a phone, but **the wearable itself
 | 0.96-inch SSD1306 I²C OLED | **1** | Planned wearable. |
 | DRV2605L haptic breakout | **1** | Recommended wearable driver; not yet tested in this project. |
 | Compatible vibration motor | **1** | Exact model pending selection. |
-| Protected 1-cell rechargeable batteries | **5** | 3 nodes, 1 hub, 1 wearable; cell capacity and ratings per unit remain to be selected. |
-| Compatible 1-cell charging / protection / load-sharing arrangements | **5** | One per unit; may be integrated modules or multiple parts; exact implementation not yet selected. |
-| 5 V boost converter modules | **4 + 1 candidate** | 3 nodes and hub proposed; wearable converter depends on its final supply architecture. Verify current and ripple. |
+| LX-LCBST-TC-001 charger + boost modules | **4 + 1 candidate** | Battery pads B+/B−, output VO+/VO−, charging via USB-C — pad map confirmed from the user's photograph. Bench-validate ONE board (charge current, trimpot-set 5.1 V output, off-state drain) before buying the rest; wearable use pending the same check. |
+| Protected 1-cell rechargeable Li-Po cells | **5** | 3 nodes, 1 hub, 1 wearable; suggested starting sizes 2,000 / 3,000 / 1,000 mAh; each cell's datasheet must permit the module's measured charge current. |
 | On/off power switches | **5** | One per unit; match the actual current and power-path placement. |
 | 100 µF electrolytic capacitors | **4 + 1 candidate** | Proposed 3 node and 1 hub rail capacitors; wearable candidate. |
 | 100 nF ceramic capacitors, marked 104 | **4 + up to 4 candidates** | 3 node ADC filters and 1 hub decoupling allowance; plus up to 3 supplemental mic capacitors and 1 wearable supply capacitor if needed. |
