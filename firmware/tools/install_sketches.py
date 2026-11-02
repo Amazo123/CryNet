@@ -19,7 +19,10 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-SKETCHES = ["node_crynet", "node_capture"]
+# (subdirectory under firmware/, sketch name) — the wearable lives outside
+# firmware/node but installs into the sketchbook the same way.
+SKETCHES = [("node", "node_crynet"), ("node", "node_capture"),
+            ("wearable", "wearable_crynet")]
 
 
 def sketchbook() -> Path:
@@ -33,14 +36,13 @@ def main() -> int:
                     help="remove the sketches from the sketchbook instead")
     args = ap.parse_args()
 
-    src_root = ROOT / "firmware" / "node"
     dst_root = sketchbook()
 
     if args.list:
-        for name in SKETCHES:
-            src = src_root / name
+        for subdir, name in SKETCHES:
+            src = ROOT / "firmware" / subdir / name
             dst = dst_root / name
-            print(f"{name:<14} {'present' if (src / (name + '.ino')).is_file() else 'MISSING'}"
+            print(f"{name:<18} {'present' if (src / (name + '.ino')).is_file() else 'MISSING'}"
                   f"  ->  {dst}{' (installed)' if dst.is_dir() else ''}")
         return 0
 
@@ -49,8 +51,8 @@ def main() -> int:
               f"once so it creates it.", file=sys.stderr)
         return 1
 
-    for name in SKETCHES:
-        src = src_root / name
+    for subdir, name in SKETCHES:
+        src = ROOT / "firmware" / subdir / name
         dst = dst_root / name
         if not (src / (name + ".ino")).is_file():
             print(f"missing {src / (name + '.ino')}", file=sys.stderr)
