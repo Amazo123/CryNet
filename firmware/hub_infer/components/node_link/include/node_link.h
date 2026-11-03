@@ -66,6 +66,7 @@ typedef struct {
     uint16_t burst_seq;
     uint16_t frag_want;
     uint16_t frag_have;
+    uint16_t frag_seen;   /* fragment frames that arrived, stored or not */
     bool     complete;
     uint32_t bad_payloads;  /* fragments whose payload CRC failed */
     uint32_t missing;       /* fragments still outstanding */

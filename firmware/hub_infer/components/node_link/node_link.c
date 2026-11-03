@@ -50,6 +50,11 @@ typedef struct {
     uint16_t frag_seq;
     uint16_t frag_want;
     uint16_t frag_have;
+    /* How many fragment frames have arrived for this burst, counting
+     * the ones that were already stored.  It is the difference between
+     * "the frame never arrived" and "the frame arrived and was not
+     * counted", which are two very different faults. */
+    uint16_t frag_seen;
     uint32_t bad_payloads;
     /* The sequence the hub asked for.  A fragment that carries any other
      * sequence belongs to an earlier window and is dropped: the radio
@@ -313,7 +318,11 @@ static void handle_fragment(node_link_t *nl, uint8_t node_id, uint16_t seq,
         slot->frag_seq = seq;
         slot->frag_want = frag_count;
         slot->frag_have = 0;
+        slot->frag_seen = 0;
     }
+    /* It belongs to this burst and it arrived, whatever happens to it
+     * next. */
+    slot->frag_seen++;
 
     const uint8_t bit = (uint8_t)(frag & 7u);
     const uint8_t mask = (uint8_t)(1u << bit);
@@ -709,6 +718,7 @@ bool node_link_request_window(node_link_t *nl, uint8_t node_id, uint16_t burst_s
         if (slot->used && slot->id == node_id) {
             slot->in_burst = false;
             slot->frag_have = 0;
+            slot->frag_seen = 0;
             slot->frag_want = 0;
             slot->frag_seq = burst_seq;
             slot->want_seq = burst_seq;
@@ -839,6 +849,7 @@ bool node_link_burst_state(const node_link_t *nl, uint8_t node_id,
         out->burst_seq = slot->frag_seq;
         out->frag_want = slot->frag_want;
         out->frag_have = slot->frag_have;
+        out->frag_seen = slot->frag_seen;
         out->complete = slot->in_burst &&
                         (slot->frag_want > 0) &&
                         (slot->frag_have >= slot->frag_want);
@@ -917,6 +928,7 @@ void node_link_reset_burst(node_link_t *nl, uint8_t node_id)
         if (slot->used && slot->id == node_id) {
             slot->in_burst = false;
             slot->frag_have = 0;
+            slot->frag_seen = 0;
             slot->frag_want = 0;
             memset(slot->bitmap, 0, sizeof(slot->bitmap));
         }

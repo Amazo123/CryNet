@@ -52,8 +52,12 @@ static const char *TAG = "link";
  * three and a half seconds to cross the air and wrong now that a burst
  * takes less than one: one lost fragment in three hundred was costing
  * the system a second and a half of dead time while the hub waited to
- * notice. */
-#define FRAG_STALL_MS 300
+ * notice.  It is now sixty milliseconds: the fragments arrive three
+ * milliseconds apart, so a gap of six hundredths of a second is
+ * twenty times the normal gap and means the burst really has stopped.
+ * The lost fragment costs about a tenth of a second now, instead of
+ * more than one. */
+#define FRAG_STALL_MS 60
 
 /* How long the burst must have been in flight before a stall may be
  * believed.  The node is asked for the window and then starts sending
@@ -272,6 +276,14 @@ static uint8_t battery_band_advance(uint8_t band, uint16_t mv)
     }
     return band;
 }
+
+/* How long the Bluetooth advertising stays off after a cot is heard
+ * getting loud.  The window arrives half a second later, and the radio
+ * only has to be quiet *before* the burst starts, so this is generous. */
+#define PREPARE_QUIET_MS 3000
+
+/* When the radio may go back to advertising. */
+static int64_t s_prepare_until_us = 0;
 
 /* When the hub came up, for the uptime on the display. */
 static int64_t s_boot_us = 0;
@@ -577,6 +589,19 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
             }
 
             const int64_t now = esp_timer_get_time();
+            /* The cot is getting loud, so a window is half a second away.
+             * The Bluetooth advertising stops now, while there is still
+             * time for the radio to go quiet: the ESP32-S3 has one radio
+             * for both, and an advertisement that slips through while
+             * the burst is on the air deafens the Wi-Fi receiver for a
+             * moment.  It was costing exactly one fragment of every
+             * burst -- always the same one, always among the first
+             * thirty, which is the advertising interval. */
+            if (tel.rms >= st->event_rms &&
+                (now + PREPARE_QUIET_MS * 1000) > s_prepare_until_us) {
+                s_prepare_until_us = now + (PREPARE_QUIET_MS * 1000);
+                ble_alert_set_preparing(true);
+            }
             const bool changed = (tel.flags != st->last_flags) ||
                                  (tel.burst_seq != st->last_seq);
             if (changed || (now - st->last_log_us) > 1000000) {
@@ -721,10 +746,12 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
                                 st->resend_rounds++;
                                 st->last_resend_us = now;
                                 ESP_LOGW(TAG, "node %u: the burst stalled with "
-                                              "%u of %u fragments; asking for "
-                                              "the %u that are missing",
+                                              "%u of %u fragments (%u frames "
+                                              "arrived); asking for the %u "
+                                              "that are missing",
                                          st->node_id, (unsigned)burst.frag_have,
                                          (unsigned)burst.frag_want,
+                                         (unsigned)burst.frag_seen,
                                          (unsigned)asked);
                             }
                         } else if ((now - st->requested_at_us) >
@@ -853,6 +880,13 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
         }
 
         /* ---------------- the caregiver's phone ---------------- */
+        /* The advertising goes back on once the burst has come and
+         * gone: the radio has to be quiet before a burst, not during
+         * the whole quiet period afterwards. */
+        if (s_prepare_until_us != 0 && now > s_prepare_until_us) {
+            s_prepare_until_us = 0;
+            ble_alert_set_preparing(false);
+        }
         /* The alert is published when the state *changes*: once when a
          * cot starts crying and once when it stops, not once for every
          * two-second window. */

@@ -77,6 +77,7 @@ static uint16_t s_event_id = 0;
 static bool s_advertising = false;   /* the hub is advertising right now */
 static bool s_connected = false;     /* a caregiver's phone is connected */
 static bool s_radio_busy = false;    /* the Wi-Fi radio needs the air */
+static bool s_preparing = false;    /* the Wi-Fi radio will need it */
 
 static int gap_event(struct ble_gap_event *event, void *arg);
 static void update_advertising(void);
@@ -196,7 +197,7 @@ static bool advertise(void)
  * nobody is connected and the Wi-Fi radio is not carrying a burst. */
 static void update_advertising(void)
 {
-    const bool wanted = !s_connected && !s_radio_busy;
+    const bool wanted = !s_connected && !s_radio_busy && !s_preparing;
 
     if (wanted == s_advertising) {
         return;
@@ -210,7 +211,9 @@ static void update_advertising(void)
         }
         s_advertising = false;
         ESP_LOGI(TAG, "advertising is off (%s)",
-                 s_connected ? "a phone is connected" : "the radio is busy");
+                 s_connected ? "a phone is connected"
+                             : (s_radio_busy ? "the radio is busy"
+                                             : "the radio is about to be busy"));
     }
 }
 
@@ -328,6 +331,15 @@ int ble_alert_clients(void)
 bool ble_alert_is_running(void)
 {
     return s_running;
+}
+
+void ble_alert_set_preparing(bool preparing)
+{
+    if (s_preparing == preparing) {
+        return;
+    }
+    s_preparing = preparing;
+    update_advertising();
 }
 
 void ble_alert_set_radio_busy(bool busy)

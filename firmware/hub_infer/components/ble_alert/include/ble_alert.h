@@ -76,6 +76,16 @@ int ble_alert_clients(void);
  * connects. */
 void ble_alert_set_radio_busy(bool busy);
 
+/* The Wi-Fi radio is about to need the air.
+ *
+ * The hub hears a cot getting loud half a second before the window
+ * arrives, and the advertising stops there and then: an advertisement
+ * that slips through while the burst is on the air deafens the Wi-Fi
+ * receiver for a moment, because the ESP32-S3 has one radio for both
+ * Bluetooth and Wi-Fi.  That was costing exactly one fragment of every
+ * burst -- always one, always among the first thirty. */
+void ble_alert_set_preparing(bool preparing);
+
 /* Whether the Bluetooth stack came up at all. */
 bool ble_alert_is_running(void);
 
