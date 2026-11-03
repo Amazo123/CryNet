@@ -43,31 +43,22 @@ static const char *TAG = "link";
  * negative. */
 #define CRY_HOLD_MS 8000
 
-/* How long the burst may go without a fragment before the hub asks for
- * the missing ones again.  The node paces its fragments about three
- * milliseconds apart, so a gap of a third of a second is not a slow
- * burst -- it is a burst that has stopped.
+/* The shortest a burst may go without a fragment before the hub asks
+ * for the missing ones again.  It is a floor, not a fixed threshold:
+ * the hub waits eight times the cot's own fragment spacing, which is
+ * twenty-four milliseconds for a burst that crosses a good link in
+ * three, and four hundred milliseconds for one that manages a fragment
+ * every fifty.  The floor is what a good link gets.
  *
- * It was one and a half seconds, which was right when a burst took
- * three and a half seconds to cross the air and wrong now that a burst
- * takes less than one: one lost fragment in three hundred was costing
- * the system a second and a half of dead time while the hub waited to
- * notice.  It is now four hundred milliseconds: the fragments arrive
- * three milliseconds apart, so a gap of six hundredths of a second is
- * twenty times the normal gap and means the burst really has stopped.
- * The lost fragment costs about a tenth of a second now, instead of
- * more than one.
- *
- * It was then raised again, to four hundred milliseconds, because a
- * sixty-millisecond gap is not a stall at a cot whose link is poor.
- * The fragments of such a burst arrive in clumps, with gaps of a
- * second and more between them, and the hub was declaring those
- * bursts dead while they were still crossing the air -- and then
- * asking for the missing ones again, which is what the resend rounds
- * are for.  Four hundred milliseconds is still far longer than the
- * three-millisecond gap of a good link, and long enough that a burst
- * which is merely slow is left alone. */
-#define FRAG_STALL_MS 400
+ * The threshold used to be fixed, at one and a half seconds, and then
+ * at sixty milliseconds, and both were wrong for the same reason: one
+ * number cannot describe two links.  A fixed second and a half made a
+ * single lost fragment in three hundred cost the system a second and a
+ * half of dead time, and a fixed sixty milliseconds called a slow
+ * burst dead while it was still crossing the air -- which is what
+ * happened at the cot whose link is poor, where the hub spent its
+ * resend rounds before the node had finished its first pass. */
+#define FRAG_STALL_MS 60
 
 /* How long the burst must have been in flight before a stall may be
  * believed.  The node is asked for the window and then starts sending
@@ -105,6 +96,20 @@ static const char *TAG = "link";
  * wastes a round and floods the air.  The fragments now go out as fast
  * as the radio carries them, so the margin is a few milliseconds each. */
 #define FRAG_PER_FRAGMENT_MS 4
+
+/* The longest a burst may go without a fragment before the hub calls
+ * it stopped, whatever rate the cot is managing.  A burst that is
+ * merely slow is caught by the cot's own fragment spacing -- eight
+ * times it -- and this is the ceiling on that patience, so that a burst
+ * which has really stopped is noticed and asked for again. */
+#define FRAG_STALL_MS_MAX 1500
+
+/* The longest the hub waits for the fragments of a resend round to
+ * arrive before it asks for them a second time.  A round that is
+ * answered slowly is not worth repeating while it is still in the air,
+ * but a round that is never answered must not hold the burst open for
+ * the whole of its timeout. */
+#define FRAG_SETTLE_MS_MAX 3000
 
 /* How many bursts are in the air.  While one is being received the
  * hub's single radio must not also be advertising: every advertisement
@@ -214,6 +219,13 @@ typedef struct {
     uint32_t request_acked;
     uint16_t last_have;      /* the fragment count at the last poll */
     int64_t  last_frag_us;   /* when a fragment last arrived */
+    /* How far apart this cot's fragments arrive, as a running mean.
+     * The hub's patience has to follow the cot's own rate: a burst that
+     * crosses a good link in three milliseconds a fragment is not a
+     * burst that has stopped when it goes quiet for a tenth of a
+     * second, and a burst that is crossing a poor link at one fragment
+     * a second is not dead when it goes quiet for a moment. */
+    int64_t  gap_ewma_us;
     int64_t  last_resend_us; /* when the last resend went out */
     uint8_t  resend_rounds;  /* how many resends this burst has had */
 
@@ -694,6 +706,15 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
                      * timeout. */
                     if (burst.frag_have != st->last_have) {
                         st->last_have = burst.frag_have;
+                        const int64_t gap = now - st->last_frag_us;
+                        /* A gap of more than half a second says nothing
+                         * about the rate: it is the pause the burst was
+                         * already judged on. */
+                        if (gap > 0 && gap < 500000) {
+                            st->gap_ewma_us = st->gap_ewma_us
+                                ? (st->gap_ewma_us * 3 + gap) / 4
+                                : gap;
+                        }
                         st->last_frag_us = now;
                     }
                     if (burst.complete) {
@@ -761,19 +782,53 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
                          * is a burst still in flight. */
                         const int still_missing =
                             (int)burst.frag_want - (int)burst.frag_have;
-                        const int64_t stall_us =
-                            ((int64_t)FRAG_STALL_MS +
-                             (int64_t)still_missing * FRAG_PER_FRAGMENT_MS) * 1000;
+                        /* How long this cot's fragments take to arrive,
+                         * as its own burst has shown it.  A burst that
+                         * has not started yet has no rate of its own, so
+                         * the estimate for a good link is used until it
+                         * has one. */
+                        int64_t per_fragment_ms = FRAG_PER_FRAGMENT_MS;
+                        if (st->gap_ewma_us > 0) {
+                            per_fragment_ms = st->gap_ewma_us / 1000;
+                            if (per_fragment_ms < 1) {
+                                per_fragment_ms = 1;
+                            }
+                        }
+                        /* A burst has stopped when it has been quiet
+                         * for eight times its own fragment spacing --
+                         * twenty-four times for a burst that crosses a
+                         * good link in three milliseconds, and four
+                         * hundred milliseconds for one that manages a
+                         * fragment every fifty. */
+                        int64_t stall_ms = per_fragment_ms * 8;
+                        if (stall_ms < FRAG_STALL_MS) {
+                            stall_ms = FRAG_STALL_MS;
+                        }
+                        if (stall_ms > FRAG_STALL_MS_MAX) {
+                            stall_ms = FRAG_STALL_MS_MAX;
+                        }
+                        const int64_t stall_us = stall_ms * 1000;
                         const bool stalled =
                             (now - st->last_frag_us) > stall_us;
                         const bool long_enough =
                             (now - st->requested_at_us) > (RESEND_MIN_FLIGHT_MS * 1000);
-                        /* A second round waits out a stall period of
-                         * its own: the fragments the last round asked
-                         * for are on the air, and asking again before
-                         * they arrive only spends a round. */
+                        /* A second round waits out the fragments the
+                         * last round asked for: they are on the air, and
+                         * asking again before they arrive only spends a
+                         * round.  How long they need is this cot's own
+                         * fragment spacing times the number of them --
+                         * a second for a good link, and the few seconds
+                         * a poor one needs. */
+                        int64_t settle_ms = (int64_t)still_missing *
+                                            per_fragment_ms;
+                        if (settle_ms > FRAG_SETTLE_MS_MAX) {
+                            settle_ms = FRAG_SETTLE_MS_MAX;
+                        }
+                        if (settle_ms < stall_ms) {
+                            settle_ms = stall_ms;
+                        }
                         const bool settled =
-                            (now - st->last_resend_us) > stall_us;
+                            (now - st->last_resend_us) > (settle_ms * 1000);
                         if (stalled && long_enough && settled &&
                             st->resend_rounds < RESEND_MAX_ROUNDS) {
                             /* Which fragments?  One in three hundred is
