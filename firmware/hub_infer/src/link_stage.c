@@ -23,17 +23,18 @@
 
 static const char *TAG = "link";
 
-static bool s_swept = false;
-
 /* How long to wait for a burst before giving up on it.  The node sends
  * 286 fragments with the radio's flow control in the way, so a couple of
  * seconds is normal; fifteen is generous. */
 #define BURST_TIMEOUT_MS 15000
 
-/* The pause after a window has been analysed.  The node needs two seconds
- * to refill its window after an upload, so asking again sooner is
- * pointless. */
-#define RECOOLDOWN_MS 2500
+/* The pause after a window has been analysed.  The node used to need two
+ * seconds to refill its window after an upload -- it threw the live
+ * window away because the microphone was not read while the burst was on
+ * the air -- so asking again sooner was pointless.  The node now reads
+ * the microphone throughout the burst and keeps its window whole, so the
+ * wait is only for the next freeze to happen. */
+#define RECOOLDOWN_MS 1500
 
 /* How long a confirmed cry keeps being announced.  A cry lasts for
  * seconds; the model's windows are two seconds apart, and a recording
@@ -52,8 +53,14 @@ static bool s_swept = false;
  * believed.  The node is asked for the window and then starts sending
  * it; the first fragments take a moment to arrive, and a stall
  * detector that fires before the node has begun would ask for the whole
- * window a second time for nothing. */
-#define RESEND_MIN_FLIGHT_MS 2500
+ * window a second time for nothing.
+ *
+ * It was two and a half seconds, which is longer than a whole burst
+ * takes now, so a stalled burst was never believed at all: the hub sat
+ * out the whole fifteen-second timeout instead.  A burst crosses the
+ * air in well under a second, so a second is plenty to tell "the node
+ * has started" from "the node has stopped". */
+#define RESEND_MIN_FLIGHT_MS 1000
 
 /* How many times the hub may ask for the missing fragments of one
  * burst.  Each round costs a few frames of air and covers the handful
@@ -63,12 +70,13 @@ static bool s_swept = false;
  * second lost. */
 #define RESEND_MAX_ROUNDS 3
 
-/* How long the node takes to send one fragment.  The node waits ten
- * milliseconds between fragments and the radio needs a couple more, so
- * a hundred fragments take a second and a half.  The hub has to allow
- * for that when it decides a burst has stalled: asking again while the
- * node is still sending wastes a round and floods the air. */
-#define FRAG_PER_FRAGMENT_MS 15
+/* How long the node takes to send one fragment.  The node used to wait
+ * ten milliseconds between fragments, so a hundred fragments took a
+ * second and a half, and the hub had to allow for that when it decided
+ * a burst had stalled: asking again while the node was still sending
+ * wastes a round and floods the air.  The fragments now go out as fast
+ * as the radio carries them, so the margin is a few milliseconds each. */
+#define FRAG_PER_FRAGMENT_MS 4
 
 /* How many bursts are in the air.  While one is being received the
  * hub's single radio must not also be advertising: every advertisement
@@ -990,6 +998,11 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
 
         }
 
-        vTaskDelay(pdMS_TO_TICKS(50));
+        /* The loop polls the radio, asks for windows and shows the
+         * panel.  At fifty milliseconds a decision could sit waiting for
+         * the next turn of the loop -- a fifth of the time a cry now
+         * takes to be answered, and there is nothing in the loop heavy
+         * enough to want that much of the CPU. */
+        vTaskDelay(pdMS_TO_TICKS(20));
     }
 }

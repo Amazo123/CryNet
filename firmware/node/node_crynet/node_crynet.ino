@@ -136,8 +136,18 @@ static const uint8_t LINK_CHANNEL = 6;
 /* How long after the loudest moment the window is frozen, so the two
  * seconds the hub classifies are centred on the cry rather than ending
  * at it.  The ring holds two seconds, so the peak has to be frozen
- * within PEAK_EXPIRE_MS of the moment it was heard. */
-static const uint32_t PEAK_DELAY_MS = 1000;
+ * within PEAK_EXPIRE_MS of the moment it was heard.
+ *
+ * It used to be a full second — exactly half the window, so the cry sat
+ * in the middle of it.  That is a whole second of the system's reaction
+ * time spent waiting for audio that has already been heard, and the
+ * window does not need the cry in its middle: the model was trained on
+ * two-second windows in which the cry is wherever it fell, so a cry
+ * that sits a little later in the window is judged the same.  Half a
+ * second still leaves the cry well inside the window (it begins about a
+ * second and a half into it) and buys back half a second on every
+ * detection. */
+static const uint32_t PEAK_DELAY_MS = 500;
 static const uint32_t PEAK_EXPIRE_MS = 2000;
 
 /* How long the node holds a frozen window after it has been uploaded.
@@ -158,8 +168,11 @@ static const uint32_t PEAK_EXPIRE_MS = 2000;
  * hold no longer has queue duty -- it is pure resend coverage now, and
  * the extra four seconds was only adding wait between windows: the
  * three-minute session of 2026-11-01 (late) measured 6.5-7.0 s of
- * hold-driven gap between every burst.  (D-71.) */
-static const uint32_t FROZEN_HOLD_MS = 4000;
+ * hold-driven gap between every burst.  (D-71.)  It was cut from four
+ * seconds to three when the burst stopped taking three and a half
+ * seconds to cross the air: the resend round the hold has to cover now
+ * starts about a second and a half after the upload, not four. */
+static const uint32_t FROZEN_HOLD_MS = 3000;
 
 /* How long a frozen window may sit unserved before it is dropped.
  *
@@ -469,7 +482,12 @@ static bool i2s_start(void) {
     return true;
 }
 
-/* Read whatever the microphone has produced and append it to the window. */
+/* Read whatever the microphone has produced and append it to the window.
+ *
+ * A read that comes back short means the microphone's buffer ran dry --
+ * the driver waited and the samples did not arrive -- so the audio has a
+ * hole in it and the live window can no longer be trusted.  That is
+ * flagged here and acted on by the caller. */
 static uint32_t g_loop_iters = 0;
 static uint32_t g_loop_max_us = 0;
 static uint64_t g_t_pump = 0, g_t_tick = 0, g_t_req = 0, g_t_rest = 0;
@@ -477,6 +495,7 @@ static uint32_t g_pump_calls = 0;
 static uint32_t g_pump_empty = 0;   /* calls that returned no whole frame */
 static uint32_t g_pump_frames = 0;
 static uint32_t g_pump_max_us = 0;
+static bool     g_window_damaged = false;  /* the live window has a hole */
 static size_t i2s_pump(void) {
     const int64_t t0 = esp_timer_get_time();
     size_t got = g_i2s.readBytes((char *)g_raw, sizeof(g_raw));
@@ -486,6 +505,11 @@ static size_t i2s_pump(void) {
         g_pump_max_us = (uint32_t)dt;
     }
     g_pump_calls++;
+    if (got < sizeof(g_raw)) {
+        /* The microphone's buffer ran dry: what is in the window is no
+         * longer continuous audio. */
+        g_window_damaged = true;
+    }
     if (got < 8) {
         g_pump_empty++;
     }
@@ -547,10 +571,31 @@ static uint32_t  g_resend_last_ms = 0;
 static const uint32_t RESEND_DEDUPE_MS = 800;
 
 /* The radio's transmit callback.  It fires when a frame has actually left
- * the queue, and the sender waits for it before queueing the next one:
- * ESP-NOW's queue is ten frames deep, so a 286-fragment burst sent back to
- * back overflows it and every frame past the tenth is lost for good. */
+ * the queue.  The sender counts the frames it has handed over against the
+ * frames that have left, so it always knows how many the radio is still
+ * holding.
+ *
+ * ESP-NOW's queue is ten frames deep.  A burst is 286 fragments, so they
+ * cannot all be handed over at once: every frame past the tenth would be
+ * lost for good.  The sender used to wait for each frame's own
+ * acknowledgement before handing over the next one, and that cost about
+ * twelve milliseconds a fragment -- three and a half seconds for a burst,
+ * which was most of the time the system took to answer a cry.  It now
+ * keeps a few frames in the radio at once and waits for a group of them,
+ * which is what the queue is for. */
 static volatile uint32_t g_tx_acks = 0;
+static uint32_t g_tx_queued = 0;   /* handed over, not yet acknowledged */
+
+/* How many frames the radio may be holding at once.  The queue is ten
+ * deep; four leaves room for the telemetry and the heartbeats that share
+ * it, and keeps the far end's receive queue from filling up. */
+#define TX_INFLIGHT_MAX 4
+
+/* How many frames the radio is holding right now. */
+static uint32_t tx_inflight(void)
+{
+    return g_tx_queued - g_tx_acks;
+}
 
 /* How long the sender waits for the radio to take each frame.  A frame
  * that is acknowledged in a millisecond was handed to the driver, not put
@@ -561,6 +606,9 @@ static uint32_t g_send_calls = 0;
 static uint32_t g_tx_wait_us = 0;
 static uint32_t g_tx_wait_n = 0;
 static uint32_t g_tx_wait_max = 0;
+
+/* How many times the radio had no room and the sender had to wait. */
+static uint32_t g_tx_full = 0;
 
 static void on_send(const esp_now_send_info_t *info, esp_now_send_status_t status) {
     (void)info;
@@ -737,18 +785,17 @@ static bool radio_start(void) {
     return true;
 }
 
-static bool radio_send(const uint8_t *data, size_t len) {
-    /* Wait for the previous frame to leave the queue before adding this
-     * one.  ESP-NOW's transmit queue holds ten frames; a burst is 286 of
-     * them, so without this the queue overflows, esp_now_send() fails with
-     * ESP_ERR_NO_MEM, and the burst never gets reassembled on the hub. */
-    const uint32_t before = g_tx_acks;
-    /* Broadcast.  Unicast to the learned hub address wedged the send
-     * path: the frame was accepted, never transmitted, and the send
-     * callback never fired, so every send burned its wait cap and the
-     * loop starved the microphone.  Broadcast callbacks fire in
-     * milliseconds; revisit unicast only with a passing dedicated
-     * test. */
+/* Hand one frame to the radio.  The driver copies it into its queue and
+ * returns at once; the frame goes on the air a moment later and its
+ * acknowledgement arrives in the Wi-Fi task.
+ *
+ * Broadcast.  Unicast to the learned hub address wedged the send path:
+ * the frame was accepted, never transmitted, and the send callback never
+ * fired, so every send burned its two-second cap and the loop starved
+ * the microphone.  Broadcast callbacks fire in milliseconds; revisit
+ * unicast only with a passing dedicated test. */
+static bool radio_queue(const uint8_t *data, size_t len)
+{
     const uint8_t *dest = g_bcast;
     const int64_t st0 = esp_timer_get_time();
     const esp_err_t serr = esp_now_send(dest, data, len);
@@ -762,6 +809,99 @@ static bool radio_send(const uint8_t *data, size_t len) {
         return false;
     }
     g_frames_sent++;
+    g_tx_queued++;
+    return true;
+}
+
+/* How often the microphone's buffer is emptied while the radio is busy.
+ * The driver's DMA holds about a fifth of a second of audio (six
+ * descriptors of 240 stereo frames), so a tenth of a second is
+ * comfortable. */
+static const uint64_t MIC_DRAIN_INTERVAL_US = 100000;
+
+/* How much audio one drain may take.  The reads block until the samples
+ * are there, so a drain that asked for a second of audio would hold the
+ * burst up for a second; the buffer only holds a fifth of a second
+ * anyway, so there is nothing to gain by asking for more. */
+static const uint32_t MIC_DRAIN_MAX_SAMPLES = 2560;
+
+/* When the microphone's buffer was last emptied. */
+static uint64_t g_last_drain_us = 0;
+
+/* Empty the microphone's buffer, taking only the audio that has arrived
+ * since the last time.
+ *
+ * The reads block until the samples are there, so this takes as long as
+ * the audio takes to arrive and no longer: the microphone is the clock
+ * here, not a delay. */
+static void drain_mic(void)
+{
+    const uint64_t now = esp_timer_get_time();
+    const uint32_t elapsed_ms = (uint32_t)((now - g_last_drain_us) / 1000);
+    g_last_drain_us = now;
+    if (elapsed_ms == 0u) {
+        return;
+    }
+    /* Sixteen thousand samples a second, in whole reads of 256, and no
+     * more than the buffer holds. */
+    uint32_t samples = elapsed_ms * 16u;
+    if (samples > MIC_DRAIN_MAX_SAMPLES) {
+        samples = MIC_DRAIN_MAX_SAMPLES;
+    }
+    samples = (samples + 255u) & ~255u;
+    for (uint32_t got = 0; got < samples; ) {
+        const size_t n = i2s_pump();
+        if (n == 0) {
+            break;      /* the read came back short: there is no more */
+        }
+        got += n;
+    }
+}
+
+/* Wait until the radio has room for another frame.
+ *
+ * The microphone is read while we wait, but only as often as it needs to
+ * be read.  The Wi-Fi task runs while this task sleeps on the
+ * microphone, so the radio keeps moving while the audio is collected and
+ * the two costs do not add up.
+ *
+ * The old code did not read the microphone at all while a burst was on
+ * the air: the samples piled up in the driver's DMA, overflowed, and
+ * were lost, so the node went deaf for the length of the burst and threw
+ * its live window away afterwards.  Reading it here is what keeps the
+ * node listening while it is talking. */
+static void radio_wait_room(void)
+{
+    const int64_t start_us = esp_timer_get_time();
+    for (;;) {
+        if (tx_inflight() < TX_INFLIGHT_MAX) {
+            return;
+        }
+        const uint64_t now = esp_timer_get_time();
+        if (now - g_last_drain_us > MIC_DRAIN_INTERVAL_US) {
+            drain_mic();
+        } else {
+            delay(1);
+        }
+        if (esp_timer_get_time() - start_us > 5000000) {
+            /* Far longer than the radio should ever take to take a frame;
+             * give up rather than hang the node. */
+            g_tx_full++;
+            return;
+        }
+    }
+}
+
+/* Send one frame and wait for it to be acknowledged.  The telemetry uses
+ * this: it is one frame every hundred milliseconds, and the wait is what
+ * keeps the radio's queue tidy. */
+static bool radio_send(const uint8_t *data, size_t len)
+{
+    radio_wait_room();
+    const uint32_t before = g_tx_acks;
+    if (!radio_queue(data, len)) {
+        return false;
+    }
     uint32_t waited = 0;
     const uint32_t t0 = micros();
     while (g_tx_acks == before && waited < 50) {
@@ -794,7 +934,18 @@ static void send_fragment(uint16_t index, bool from_frozen, bool over_serial) {
     if (over_serial) {
         Serial.write(g_frame, total);
     } else {
-        radio_send(g_frame, total);
+        /* The radio takes a few frames at a time; the wait for room is
+         * where the microphone is read, so the node keeps listening while
+         * it talks.  A frame the driver refuses is tried again: the
+         * queue was full, and the fragment is one the hub is waiting
+         * for. */
+        for (int tries = 0; tries < 3; tries++) {
+            radio_wait_room();
+            if (radio_queue(g_frame, total)) {
+                break;
+            }
+            delay(2);
+        }
     }
 }
 
@@ -955,6 +1106,9 @@ static void print_stats(void) {
     Serial.printf("tx wait: avg %u us, max %u us, over %u frames\n",
                   (unsigned)(g_tx_wait_n ? g_tx_wait_us / g_tx_wait_n : 0),
                   (unsigned)g_tx_wait_max, (unsigned)g_tx_wait_n);
+    Serial.printf("radio: queued %u  acked %u  in flight %u  queue full %u times\n",
+                  (unsigned)g_tx_queued, (unsigned)g_tx_acks,
+                  (unsigned)tx_inflight(), (unsigned)g_tx_full);
 }
 
 static void handle_command(char *line) {
@@ -1074,6 +1228,17 @@ void loop() {
         }
     }
     i2s_pump();
+    /* The microphone has just been read, so the buffer is empty and the
+     * next drain starts from here. */
+    g_last_drain_us = esp_timer_get_time();
+    /* A hole in the live window -- the microphone's buffer ran dry, so
+     * what the window holds is no longer continuous audio.  It is
+     * thrown away and filled again rather than frozen with a gap in
+     * it. */
+    if (g_window_damaged) {
+        g_filled = 0;
+        g_window_damaged = false;
+    }
 
     /* The window is only worth measuring once it holds a full 100 ms: the
      * hub's front end removes the mean of the whole two seconds, and a
@@ -1251,6 +1416,7 @@ void loop() {
                 first = 0;
             }
             uint16_t sent = 0;
+            const int64_t burst_t0 = esp_timer_get_time();
             for (uint16_t i = 0; i < count; i++) {
                 uint16_t index = (uint16_t)(first + i);
                 if (index >= FRAG_COUNT) {
@@ -1258,37 +1424,40 @@ void loop() {
                 }
                 send_fragment(index, from_frozen, false);
                 sent++;
-                /* Space between the fragments.  The radio acknowledges a
-                 * send in about two milliseconds, so back to back the
-                 * burst arrives as a wall of frames and the far end
-                 * loses some of them.  The gap spreads the 286 fragments
-                 * over a few seconds, which the hub's fifteen-second
-                 * timeout has plenty of room for.
+                /* No fixed gap between the fragments.  The radio takes
+                 * them a few at a time and acknowledges them in groups,
+                 * and the wait for room is where the microphone is read,
+                 * so the burst crosses the air as fast as the radio can
+                 * carry it.
                  *
                  * The gap was ten milliseconds for a long time, and it
                  * was the whole of the burst's length: 286 fragments at
                  * thirteen milliseconds each is the 3.8 s the hub
-                 * measures.  The wall of frames it was written to avoid
-                 * was the hub's own Bluetooth deafening the Wi-Fi
-                 * receiver, and that is fixed now (the hub stops
-                 * advertising while a burst is in the air), so the gap
-                 * can be much smaller.  Four milliseconds is still a
-                 * hundred and forty frames a second, which the radio
-                 * carries without a queue growing behind it. */
-                delay(4);
+                 * measures.  Then it was four, which still left the
+                 * burst at 3.4 s, because the cost was in waiting for
+                 * each frame's own acknowledgement rather than in the
+                 * gap.  The radio now carries a group of frames at a
+                 * time and the burst is a fraction of its old length. */
             }
             if (!g_dump_active && Serial) {
-                Serial.printf("served %u fragments of %u\n", (unsigned)sent,
-                              (unsigned)count);
+                const uint64_t burst_ms =
+                    (uint64_t)(esp_timer_get_time() - burst_t0) / 1000;
+                Serial.printf("served %u fragments of %u in %llu ms\n",
+                              (unsigned)sent, (unsigned)count,
+                              (unsigned long long)burst_ms);
             }
-            /* A one-fragment probe costs a few milliseconds of air, not
-             * a burst, so the live window keeps its value.  A real burst
-             * took seconds to send and the microphone kept running into
-             * a DMA buffer that was not being read, so the live window
-             * has holes in it: drop it and refill; the write cursor
-             * stays where it is so the valid region keeps moving. */
+            /* The live window is only thrown away if the microphone
+             * actually lost samples while the burst was on the air.  It
+             * used to be dropped every time, because nothing read the
+             * microphone during the burst and the audio it held had
+             * holes in it -- which left the node deaf for the two
+             * seconds the window took to refill, and the next cry at
+             * this cot could not be seen until then. */
             if (count > 1) {
-                g_filled = 0;
+                if (g_window_damaged) {
+                    g_filled = 0;
+                    g_window_damaged = false;
+                }
                 /* The frozen snapshot stays.  The hub may have lost a
                  * few fragments of this very window in the air, and it
                  * can only get them back from a node that still has
@@ -1323,7 +1492,6 @@ void loop() {
                 }
                 send_fragment(i, true, false);
                 resent++;
-                delay(10);
             }
             if (Serial) {
                 Serial.printf("resent %u fragments of seq %u\n",

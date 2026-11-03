@@ -37,7 +37,7 @@ def one_run(port: str, warmup: float, sound: float, tail: float):
     import winsound
 
     ser = serial.Serial(port, 115200, timeout=0.3)
-    lines: list[str] = []
+    lines: list[tuple[float, int, str]] = []
 
     def reader():
         end = time.time() + warmup + sound + tail
@@ -47,11 +47,15 @@ def one_run(port: str, warmup: float, sound: float, tail: float):
             except Exception:
                 return
             if raw:
-                lines.append(raw.decode("utf-8", "replace").rstrip())
+                body = raw.decode("utf-8", "replace").rstrip()
+                m = LINE_RE.match(body)
+                if m:
+                    lines.append((time.monotonic(), int(m.group(1)), m.group(3)))
 
     t = threading.Thread(target=reader, daemon=True)
     t.start()
     time.sleep(warmup)
+    sound_at = time.monotonic()
     winsound.PlaySound(str(CRY_WAV), winsound.SND_FILENAME | winsound.SND_ASYNC)
     time.sleep(sound)
     winsound.PlaySound(None, winsound.SND_PURGE)
@@ -63,12 +67,7 @@ def one_run(port: str, warmup: float, sound: float, tail: float):
         pass
 
     out = []
-    for l in lines:
-        m = LINE_RE.match(l)
-        if not m:
-            continue
-        ts = int(m.group(1))
-        body = m.group(3)
+    for wall, ts, body in lines:
         if "asking for the window" in body:
             out.append(("ask", ts, body))
         elif "fragments in" in body:
@@ -79,7 +78,7 @@ def one_run(port: str, warmup: float, sound: float, tail: float):
             out.append(("verdict", ts, body))
         elif "stalled" in body or "timed out" in body:
             out.append(("stall", ts, body))
-    return out
+    return out, sound_at, lines
 
 
 def main() -> int:
@@ -93,9 +92,19 @@ def main() -> int:
 
     print(f"=== {args.runs} run(s): the cry played from the laptop's speakers\n")
     totals = []
+    detection = []
     for i in range(args.runs):
-        marks = one_run(args.port, args.warmup, args.sound, args.tail)
+        marks, sound_at, lines = one_run(args.port, args.warmup, args.sound, args.tail)
         print(f"--- run {i + 1}")
+
+        # The hub's own clock starts at its boot; the laptop's clock starts
+        # now.  One logged line is enough to tie the two together, and the
+        # sound is played at a known moment on the laptop's clock.
+        sound_ts = None
+        if lines:
+            wall0, ts0, _ = lines[0]
+            sound_ts = ts0 + (sound_at - wall0) * 1000.0
+
         ask = burst = model = verdict = None
         for kind, ts, body in marks:
             if kind == "ask":
@@ -121,11 +130,21 @@ def main() -> int:
             print(f"                 ==> request to verdict: {total:.2f} s")
         if burst and model:
             print(f"                 ==> burst to model: {(model - burst) / 1000.0:.2f} s")
+        if sound_ts is not None and verdict:
+            whole = (verdict - sound_ts) / 1000.0
+            print(f"                 ==> sound to verdict: {whole:.2f} s")
+            if ask:
+                det = (ask - sound_ts) / 1000.0
+                detection.append(det)
+                print(f"                 ==> sound to request: {det:.2f} s")
         print()
 
     if totals:
         print(f"request to verdict: min {min(totals):.2f} s  "
               f"max {max(totals):.2f} s  mean {sum(totals) / len(totals):.2f} s")
+    if detection:
+        print(f"sound to request:   min {min(detection):.2f} s  "
+              f"max {max(detection):.2f} s  mean {sum(detection) / len(detection):.2f} s")
     sys.stdout.flush()
     # The reader thread is a daemon and is still blocked in a read when
     # the interpreter wants to shut down; leaving it that way prints a
