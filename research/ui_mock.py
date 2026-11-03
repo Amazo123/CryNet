@@ -135,6 +135,39 @@ def level_bar(d, x, y, w, h, level, colour, track, border):
     rect(d, x, y, w, h, border)
 
 
+# The resting-voltage curve the panel reads percentages off, kept in
+# step with BAT_CURVE in hub_display.c (see the comment there: it is a
+# generic Li-Po curve until the real cell is profiled).
+BAT_CURVE = [(4200, 100), (4050, 90), (3900, 65), (3800, 40),
+             (3700, 20), (3550, 8), (3450, 3), (3300, 0)]
+
+
+def battery_percent(mv: int) -> int:
+    if mv >= BAT_CURVE[0][0]:
+        return 100
+    for (hi_mv, hi_pct), (lo_mv, lo_pct) in zip(BAT_CURVE, BAT_CURVE[1:]):
+        if mv >= lo_mv:
+            return lo_pct + (mv - lo_mv) * (hi_pct - lo_pct) // (hi_mv - lo_mv)
+    return 0
+
+
+def cot_detail(d, x, y, w, cot, known, C):
+    """The line under the level bar: the level's number, the battery."""
+    if not known:
+        return
+    draw_text(d, x, y, f"{cot['rms']:.3f}", C["C_DIM"], 1)
+    band, mv = cot["battery"]
+    if band == "normal":
+        bat, col = f"BAT ~{battery_percent(mv)}%", C["C_GREEN"]
+    elif band == "low":
+        bat, col = "BAT LOW - CHARGE SOON", C["C_AMBER"]
+    elif band == "critical":
+        bat, col = "BAT CRITICAL - SWITCH OFF AND CHARGE", C["C_ALERT"]
+    else:                      # none: no reading, no claim
+        return
+    draw_text(d, x + w - text_width(bat), y, bat, col, 1)
+
+
 # ---------------------------------------------------------------- the pages
 def dashboard(path: Path, cots, linked, crying, cot_id, confidence, level,
               clients, ble_ready, uptime_s, heading=None):
@@ -146,9 +179,9 @@ def dashboard(path: Path, cots, linked, crying, cot_id, confidence, level,
     banner_x, banner_y = L.get("BANNER_X", 10), L.get("BANNER_Y", 40)
     banner_w, banner_h = L.get("BANNER_W", 300), L.get("BANNER_H", 44)
     card_x, card_w = L.get("CARD_X", 10), L.get("CARD_W", 300)
-    card_y0, card_h = L.get("CARD_Y0", 92), L.get("CARD_H", 40)
-    card_step = L.get("CARD_STEP", 44)
-    foot_y = L.get("FOOT_Y", 226)
+    card_y0, card_h = L.get("CARD_Y0", 88), L.get("CARD_H", 44)
+    card_step = L.get("CARD_STEP", 47)
+    foot_y = L.get("FOOT_Y", 230)
 
     img = Image.new("RGB", (W, H), C["C_BG"])
     d = ImageDraw.Draw(img)
@@ -221,6 +254,7 @@ def dashboard(path: Path, cots, linked, crying, cot_id, confidence, level,
                   C["C_SURFACE_HI"] if known else C["C_SURFACE"],
                   C["C_BORDER"] if known
                   else blend(C["C_BORDER"], C["C_BG"], 0.45))
+        cot_detail(d, card_x + 14, y + 35, card_w - 28, cot, known, C)
 
     # ---- the footer ----
     # The firmware counts the cots that are *answering*, not the cards
@@ -319,15 +353,21 @@ def colour_check(path: Path):
 
 
 COTS_QUIET = [
-    {"online": True, "crying": False, "rms": 0.084, "conf": 0},
-    {"online": True, "crying": False, "rms": 0.012, "conf": 0},
-    {"online": False, "crying": False, "rms": 0.0, "conf": 0},
+    {"online": True, "crying": False, "rms": 0.084, "conf": 0,
+     "battery": ("normal", 3980)},
+    {"online": True, "crying": False, "rms": 0.012, "conf": 0,
+     "battery": ("low", 3620)},
+    {"online": False, "crying": False, "rms": 0.0, "conf": 0,
+     "battery": ("none", 0)},
 ]
 
 COTS_CRYING = [
-    {"online": True, "crying": True, "rms": 0.284, "conf": 97},
-    {"online": True, "crying": False, "rms": 0.141, "conf": 0},
-    {"online": False, "crying": False, "rms": 0.0, "conf": 0},
+    {"online": True, "crying": True, "rms": 0.284, "conf": 97,
+     "battery": ("critical", 3470)},
+    {"online": True, "crying": False, "rms": 0.141, "conf": 0,
+     "battery": ("normal", 3980)},
+    {"online": False, "crying": False, "rms": 0.0, "conf": 0,
+     "battery": ("none", 0)},
 ]
 
 

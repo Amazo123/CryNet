@@ -126,10 +126,14 @@ static const char *TAG = "hub_display";
 #define BANNER_H     44
 #define CARD_X       10
 #define CARD_W       300
-#define CARD_H       40
-#define CARD_Y0      92
-#define CARD_STEP    44
-#define FOOT_Y       226
+/* The cards grew from 40 to 44 to carry a second text line -- the cot's
+ * own sound level and its battery -- under the level bar.  88 + 2*47
+ * puts the last card's bottom edge at 228, four pixels above the
+ * footer text at 230. */
+#define CARD_H       44
+#define CARD_Y0      88
+#define CARD_STEP    47
+#define FOOT_Y       230
 
 /* The splash: how long it runs, how long each fade takes, and how fast
  * it animates. */
@@ -482,6 +486,69 @@ static void draw_level_bar(int x, int y, int w, int h, float level, bool crying,
     fb_rect(x, y, w, h, known ? C_BORDER : blend(C_BORDER, C_BG, 0.45f));
 }
 
+/* The battery percentage, read off the cell voltage.
+ *
+ * This is a resting-voltage curve for an ordinary Li-Po, not a
+ * measurement of this project's cell -- none has been profiled yet
+ * (SYSTEM_WIRING.md 7 says percentages must come from the actual cell,
+ * not nominal voltages).  It is shown with a tilde, and it only has to
+ * separate "fine" from "charge soon"; when the real cell has been
+ * measured through a discharge, this table gets replaced with its
+ * curve. */
+static const uint16_t BAT_CURVE[][2] = {
+    /* millivolts, percent */
+    { 4200, 100 }, { 4050,  90 }, { 3900,  65 }, { 3800,  40 },
+    { 3700,  20 }, { 3550,   8 }, { 3450,   3 }, { 3300,   0 },
+};
+
+static uint8_t battery_percent(uint16_t mv)
+{
+    if (mv >= BAT_CURVE[0][0]) {
+        return 100;
+    }
+    for (size_t i = 1; i < sizeof BAT_CURVE / sizeof BAT_CURVE[0]; i++) {
+        if (mv >= BAT_CURVE[i][0]) {
+            const uint32_t span = BAT_CURVE[i - 1][0] - BAT_CURVE[i][0];
+            const uint32_t up = mv - BAT_CURVE[i][0];
+            const uint32_t pct = BAT_CURVE[i][1] +
+                (up * (uint32_t)(BAT_CURVE[i - 1][1] - BAT_CURVE[i][1])) / span;
+            return (uint8_t)(pct > 100u ? 100u : pct);
+        }
+    }
+    return 0;
+}
+
+/* The line under a cot's level bar: the cot's own sound level on the
+ * left, its battery on the right.  The bar shows the level's shape;
+ * this shows its number, and the battery the caregiver has to think
+ * about before the night is over. */
+static void draw_cot_detail(int x, int y, int w, const hub_display_node_t *n)
+{
+    char left[12];
+    snprintf(left, sizeof left, "%.3f", (double)n->level);
+    fb_text(x, y, left, C_DIM, 1);
+
+    char bat[40];
+    uint16_t col;
+    switch (n->battery_band) {
+    case HUB_BAT_NORMAL:
+        snprintf(bat, sizeof bat, "BAT ~%u%%", (unsigned)battery_percent(n->battery_mv));
+        col = C_GREEN;
+        break;
+    case HUB_BAT_LOW:
+        snprintf(bat, sizeof bat, "BAT LOW - CHARGE SOON");
+        col = C_AMBER;
+        break;
+    case HUB_BAT_CRITICAL:
+        snprintf(bat, sizeof bat, "BAT CRITICAL - SWITCH OFF AND CHARGE");
+        col = C_ALERT;
+        break;
+    default:            /* HUB_BAT_NONE: no reading, no claim */
+        return;
+    }
+    fb_text(x + w - fb_text_w(bat, 1), y, bat, col, 1);
+}
+
 static void draw_dashboard(const hub_display_state_t *st)
 {
     fb_fill(0, 0, FB_W, FB_H, C_BG);
@@ -600,6 +667,9 @@ static void draw_dashboard(const hub_display_state_t *st)
 
         draw_level_bar(CARD_X + 14, y + 28, CARD_W - 28, 7,
                        known ? n->level : 0.0f, n->crying, known);
+        if (known) {
+            draw_cot_detail(CARD_X + 14, y + 35, CARD_W - 28, n);
+        }
     }
 
     /* ---- the footer ----

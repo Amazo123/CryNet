@@ -41,6 +41,7 @@ typedef struct {
     float    frozen_rms;
     float    floor_rms;
     uint32_t frozen_crc;
+    uint16_t battery_mv;
     uint32_t last_seen_ms;
     bool     telemetry_new;
 
@@ -239,6 +240,7 @@ static void handle_telemetry(node_link_t *nl, uint8_t node_id, uint16_t seq,
     slot->frozen_rms = tel.frozen_rms;
     slot->floor_rms = tel.floor_rms;
     slot->frozen_crc = tel.frozen_crc;
+    slot->battery_mv = tel.battery_mv;
     slot->last_seen_ms = now_ms();
     slot->telemetry_new = true;
 }
@@ -641,6 +643,7 @@ bool node_link_poll_telemetry(node_link_t *nl, node_link_telemetry_t *out)
         out->frozen_rms = slot->frozen_rms;
         out->floor_rms = slot->floor_rms;
         out->frozen_crc = slot->frozen_crc;
+        out->battery_mv = slot->battery_mv;
         out->age_ms = now_ms() - slot->last_seen_ms;
         found = true;
         break;
@@ -672,6 +675,7 @@ bool node_link_last_telemetry(const node_link_t *nl, uint8_t node_id,
         out->frozen_rms = slot->frozen_rms;
         out->floor_rms = slot->floor_rms;
         out->frozen_crc = slot->frozen_crc;
+        out->battery_mv = slot->battery_mv;
         out->age_ms = now_ms() - slot->last_seen_ms;
         found = true;
         break;
