@@ -620,10 +620,30 @@ static uint8_t   g_resend_bitmap[RESEND_BITMAP_BYTES];
  * a burst that never settles. */
 static uint16_t  g_resend_last_seq = 0;
 static uint32_t  g_resend_last_ms = 0;
+/* The bitmap of that request, so a repeat can be told apart from a
+ * *new* round. */
+static uint8_t   g_resend_last_bitmap[RESEND_BITMAP_BYTES];
 
 /* How close together two requests for the same window have to be for
- * the second to count as a repeat of the first. */
-static const uint32_t RESEND_DEDUPE_MS = 800;
+ * the second to count as a repeat of the first.
+ *
+ * This was 800 ms, and it was longer than the hub's own round of
+ * resends -- the hub asks again about 670-770 ms after the last ask --
+ * so the node threw away every round after the first as a "repeat" of
+ * the one it was answering.  The consequence was fatal: a burst that
+ * lost one fragment could never be completed.  The hub asked for the
+ * missing fragment five times, the node answered none of the five
+ * requests, the burst sat at 285 of 286 until it timed out, and the
+ * whole two-second window -- the one that held the cry -- was thrown
+ * away.  A burst that is one frame short is the *commonest* failure
+ * on a weak link, so this was the single most expensive line in the
+ * firmware.
+ *
+ * The rule is now two-sided: a request is a repeat only if it names
+ * the same window AND the same fragments AND arrives within the window
+ * below.  A round that asks for a *different* fragment is a new round
+ * and is always answered. */
+static const uint32_t RESEND_DEDUPE_MS = 250;
 
 /* The radio's transmit callback.  It fires when a frame has actually left
  * the queue.  The sender counts the frames it has handed over against the
@@ -727,13 +747,20 @@ static void on_recv(const esp_now_recv_info_t *info, const uint8_t *data, int le
         }
         const uint16_t seq = (uint16_t)data[4] | ((uint16_t)data[5] << 8);
         const uint32_t now = millis();
-        if (seq == g_resend_last_seq &&
-            (now - g_resend_last_ms) < RESEND_DEDUPE_MS) {
+        /* A repeat is the same window, the same fragments, and close in
+         * time.  A round that asks for a fragment the last round did
+         * not ask for is a new round: it is answered, however soon it
+         * follows the last one. */
+        const bool same_round =
+            (seq == g_resend_last_seq) &&
+            (memcmp(&data[14], g_resend_last_bitmap, RESEND_BITMAP_BYTES) == 0);
+        if (same_round && (now - g_resend_last_ms) < RESEND_DEDUPE_MS) {
             /* A repeat of the request already being answered. */
             return;
         }
         g_resend_last_seq = seq;
         g_resend_last_ms = now;
+        memcpy(g_resend_last_bitmap, &data[14], RESEND_BITMAP_BYTES);
         g_resend_pending = true;
         g_resend_seq = seq;
         memcpy(g_resend_bitmap, &data[14], RESEND_BITMAP_BYTES);

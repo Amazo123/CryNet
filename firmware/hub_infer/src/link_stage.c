@@ -277,6 +277,16 @@ static node_state_t state[NODE_LINK_MAX_NODES];
  * change can be announced instead of only shown. */
 static bool s_was_live[NODE_LINK_MAX_NODES];
 
+/* The difference between two readings of one of the node's own radio
+ * counters.  The counters restart when the node reboots, and subtracting
+ * two unsigned numbers across a restart wraps around: the log once said
+ * the node had handed over 4 294 963 123 frames.  A counter that has
+ * gone backwards says nothing about this burst, so it counts as zero. */
+static uint32_t counter_delta(uint32_t now_v, uint32_t base)
+{
+    return (now_v >= base) ? (now_v - base) : 0u;
+}
+
 /* A node is live while its telemetry is recent.  Everything the
  * caregiver sees — the cards, the banner, the NODE pill — reads this,
  * not the latched `heard` flag, or an unplugged cot would stay online
@@ -886,13 +896,22 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
                                               "%u of them left it, %u were "
                                               "refused, %u times it had no room",
                                          st->node_id,
-                                         (unsigned)(st->frames_sent -
-                                                    st->request_sent),
-                                         (unsigned)(st->frames_acked -
-                                                    st->request_acked),
-                                         (unsigned)(st->frames_lost -
-                                                    st->request_lost),
+                                         (unsigned)counter_delta(st->frames_sent,
+                                                                 st->request_sent),
+                                         (unsigned)counter_delta(st->frames_acked,
+                                                                 st->request_acked),
+                                         (unsigned)counter_delta(st->frames_lost,
+                                                                 st->request_lost),
                                          (unsigned)st->radio_full);
+                                if (st->frames_sent < st->request_sent) {
+                                    ESP_LOGW(TAG, "node %u: its counters went "
+                                                  "backwards -- the node has "
+                                                  "restarted since the burst "
+                                                  "began, so the numbers above "
+                                                  "count only what it has "
+                                                  "handed over since",
+                                             st->node_id);
+                                }
                                 ESP_LOGW(TAG, "node %u: arrival pattern: %s",
                                          st->node_id, pattern);
                             }
