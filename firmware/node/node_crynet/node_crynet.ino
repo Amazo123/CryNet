@@ -176,6 +176,29 @@ static const uint32_t PEAK_EXPIRE_MS = 2000;
  * starts about a second and a half after the upload, not four. */
 static const uint32_t FROZEN_HOLD_MS = 3000;
 
+/* How long a window the hub is still fetching may not be taken away by
+ * a louder moment.
+ *
+ * The hold above is three seconds and the preempt rule -- a new window
+ * that is three times louder than the frozen one takes its place -- was
+ * allowed to cancel it at any moment.  In a noisy room that is exactly
+ * what happens: the room is loud enough that each new reading is three
+ * times the last window's level, so the node froze a new window every
+ * second or two, and every freeze threw away the fragments the hub was
+ * still missing.  The hub could never finish a burst at such a cot: it
+ * asked for the pieces that were missing, the node had already thrown
+ * them away, and the burst died with a third of it on the floor.
+ *
+ * So a window that is being fetched is now protected.  The protection
+ * is refreshed every time the node sends a fragment, so it lasts while
+ * the burst is crossing the air -- which is the whole of a slow cot's
+ * transfer -- and it ends TRANSFER_HOLD_MS after the last fragment the
+ * node sent.  That is a little longer than the gap between the hub's
+ * resend rounds, so the window survives the wait for the next round,
+ * and it is about as long as the hold that was there before, so a cot
+ * is not left unable to freeze a new window any longer than it was. */
+static const uint32_t TRANSFER_HOLD_MS = 4000;
+
 /* How long a frozen window may sit unserved before it is dropped.
  *
  * It has to outlast the whole conversation about one window: the burst
@@ -232,6 +255,10 @@ static bool      g_frozen_valid = false;
  * g_frozen_valid used to guard on its own. */
 static bool      g_frozen_served = false;
 static uint32_t  g_frozen_hold_ms = 0;   /* when the hold on it ends */
+/* When the hub last asked this node for the window it froze.  A window
+ * that is being fetched is not taken away by a louder moment until
+ * TRANSFER_HOLD_MS has passed without a word from the hub. */
+static uint32_t  g_transfer_ms = 0;
 static bool      g_peak_pending = false;   /* a loud moment is waiting to
                                             * be frozen, one second late */
 static bool      g_cry_mode = false;       /* a loud window is frozen; do
@@ -980,7 +1007,7 @@ static void battery_tick(uint32_t now_ms) {
 
 static void send_telemetry(void) {
     int32_t rms_milli = (int32_t)(g_rms * 1000.0f + (g_rms >= 0 ? 0.5f : -0.5f));
-    uint8_t payload[18];
+    uint8_t payload[34];
     payload[0] = (uint8_t)(rms_milli & 0xFF);
     payload[1] = (uint8_t)((rms_milli >> 8) & 0xFF);
     payload[2] = (uint8_t)((rms_milli >> 16) & 0xFF);
@@ -1028,6 +1055,30 @@ static void send_telemetry(void) {
      * power, or the divider is not wired yet. */
     payload[16] = (uint8_t)(g_battery_mv & 0xFF);
     payload[17] = (uint8_t)(g_battery_mv >> 8);
+
+    /* The radio's own counters.  They are the answer to the question a
+     * stalled burst raises -- "did the node send them, or did the air
+     * eat them?" -- and they cost the telemetry sixteen bytes.
+     *
+     * frames_sent is what the node handed to the radio, frames_acked is
+     * what the radio says it put on the air, and frames_lost is what
+     * the radio refused outright.  A node whose frames_sent climbs to
+     * 286 while frames_acked stays at 30 has lost the rest in the air;
+     * a node whose frames_lost climbs has a radio queue too small for
+     * the burst.  The hub prints all four whenever a burst stalls, so
+     * the difference is on the log instead of in a guess. */
+    const uint32_t counters[4] = {
+        (uint32_t)g_frames_sent,
+        (uint32_t)g_frames_lost,
+        (uint32_t)g_tx_acks,
+        (uint32_t)g_tx_full,
+    };
+    for (int i = 0; i < 4; i++) {
+        payload[18 + i * 4]     = (uint8_t)(counters[i] & 0xFF);
+        payload[18 + i * 4 + 1] = (uint8_t)((counters[i] >> 8) & 0xFF);
+        payload[18 + i * 4 + 2] = (uint8_t)((counters[i] >> 16) & 0xFF);
+        payload[18 + i * 4 + 3] = (uint8_t)((counters[i] >> 24) & 0xFF);
+    }
 
     size_t total = build_frame(1, g_burst_seq, 0, 0, payload, sizeof(payload));
     radio_send(g_frame, total);
@@ -1272,8 +1323,18 @@ void loop() {
              * reassembled against. */
             /* The hold on the uploaded window ends here.  Until then
              * the node keeps that snapshot -- it is the one the hub is
-             * missing fragments of -- and does not freeze a new one. */
-            if (g_frozen_served && (uint32_t)(now - g_frozen_hold_ms) >= 0x80000000u) {
+             * missing fragments of -- and does not freeze a new one.
+             *
+             * The hold does not end while the hub is still fetching
+             * that window.  It used to, and in a noisy room the three
+             * seconds it lasts were up long before the hub's resend
+             * rounds had finished, so the node froze a new window in
+             * the middle of a transfer and the pieces the hub was still
+             * missing went with the old one. */
+            const bool hub_is_fetching =
+                (uint32_t)(now - g_transfer_ms) < TRANSFER_HOLD_MS;
+            if (g_frozen_served && !hub_is_fetching &&
+                (uint32_t)(now - g_frozen_hold_ms) >= 0x80000000u) {
                 g_frozen_served = false;
                 g_peak_pending = false;
             }
@@ -1304,8 +1365,18 @@ void loop() {
              * for the newest one instead.  The hub chased windows it
              * could never finish assembling, one after another.  The
              * rule now asks the question that was meant: is this a new
-             * event, or the same one going on? */
-            if (g_frozen_served && g_frozen_rms > 0.0f &&
+             * event, or the same one going on?
+             *
+             * And it does not take a window the hub is still fetching.
+             * The rule used to be able to cancel the hold at any moment,
+             * which in a noisy room was every second or two -- and each
+             * time it fired, the fragments the hub was still missing were
+             * thrown away with the old window.  The hub could never
+             * finish a burst at such a cot: it asked for the pieces that
+             * were missing and the node had no copy of them left.  A
+             * window the hub is still asking about is now left alone
+             * until TRANSFER_HOLD_MS has passed with no word from it. */
+            if (g_frozen_served && g_frozen_rms > 0.0f && !hub_is_fetching &&
                 g_rms >= 3.0f * g_frozen_rms && g_loud_streak >= 2u) {
                 g_frozen_served = false;
             }
@@ -1412,6 +1483,12 @@ void loop() {
             }
             uint16_t sent = 0;
             const int64_t burst_t0 = esp_timer_get_time();
+            if (from_frozen) {
+                /* The hub is fetching this window.  While it does, the
+                 * window is not taken away by a louder moment: the
+                 * fragments that did not arrive are only in this copy. */
+                g_transfer_ms = millis();
+            }
             for (uint16_t i = 0; i < count; i++) {
                 uint16_t index = (uint16_t)(first + i);
                 if (index >= FRAG_COUNT) {
@@ -1419,6 +1496,13 @@ void loop() {
                 }
                 send_fragment(index, from_frozen, false);
                 sent++;
+                /* The window is being fetched.  The clock is refreshed
+                 * for every fragment, so a burst that takes ten seconds
+                 * to cross a bad link keeps its window for the whole
+                 * of it. */
+                if (from_frozen) {
+                    g_transfer_ms = millis();
+                }
                 /* No fixed gap between the fragments.  The radio takes
                  * them a few at a time and acknowledges them in groups,
                  * and the wait for room is where the microphone is read,
@@ -1481,16 +1565,15 @@ void loop() {
             }
         } else {
             uint16_t resent = 0;
+            /* The hub is still fetching this window. */
+            g_transfer_ms = millis();
             for (uint16_t i = 0; i < FRAG_COUNT; i++) {
                 if ((g_resend_bitmap[i >> 3] & (1u << (i & 7u))) == 0) {
                     continue;
                 }
                 send_fragment(i, true, false);
                 resent++;
-                if (!g_dump_active && Serial) {
-                    Serial.printf("resent fragment %u of %u\n", (unsigned)i,
-                                  (unsigned)FRAG_COUNT);
-                }
+                g_transfer_ms = millis();
             }
             if (Serial) {
                 Serial.printf("resent %u fragments of seq %u\n",

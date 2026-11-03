@@ -58,6 +58,15 @@ typedef struct {
     uint32_t frozen_crc;  /* the node's frozen-window CRC-32, 0 if it has none */
     uint16_t battery_mv;  /* the node's battery cell voltage, 0 = no reading */
     uint32_t age_ms;      /* how long ago this telemetry arrived */
+    /* The node's own radio counters.  These are what say whether a
+     * burst was lost in the air or refused by the node's radio: a node
+     * that handed every fragment over and saw few of them come back has
+     * lost them on the way, and a node whose radio refused them has a
+     * queue too small for the burst. */
+    uint32_t frames_sent;   /* frames handed to the radio   */
+    uint32_t frames_lost;   /* frames the radio refused     */
+    uint32_t frames_acked;  /* frames that left the radio   */
+    uint32_t radio_full;    /* times the radio had no room  */
 } node_link_telemetry_t;
 
 /* The state of one node's burst. */

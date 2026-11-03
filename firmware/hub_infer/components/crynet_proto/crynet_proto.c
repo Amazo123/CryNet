@@ -44,6 +44,12 @@ static uint16_t get_u16(const uint8_t *p)
     return (uint16_t)p[0] | ((uint16_t)p[1] << 8);
 }
 
+static uint32_t get_u32(const uint8_t *p)
+{
+    return (uint32_t)p[0] | ((uint32_t)p[1] << 8) |
+           ((uint32_t)p[2] << 16) | ((uint32_t)p[3] << 24);
+}
+
 size_t crynet_proto_build(uint8_t *out,
                            uint8_t type,
                            uint8_t node_id,
@@ -205,5 +211,19 @@ bool crynet_proto_decode_telemetry(const uint8_t *payload,
      * node with no divider wired — decodes as "no reading". */
     out->battery_mv = (len >= CRYNET_PROTO_TELEMETRY_BYTES_BATTERY)
                     ? get_u16(&payload[16]) : 0u;
+
+    /* The radio counters ride after the battery in the newest tier.  A
+     * node that does not send them decodes as zeroes. */
+    if (len >= CRYNET_PROTO_TELEMETRY_BYTES_COUNTERS) {
+        out->frames_sent  = get_u32(&payload[18]);
+        out->frames_lost  = get_u32(&payload[22]);
+        out->frames_acked = get_u32(&payload[26]);
+        out->radio_full   = get_u32(&payload[30]);
+    } else {
+        out->frames_sent  = 0u;
+        out->frames_lost  = 0u;
+        out->frames_acked = 0u;
+        out->radio_full   = 0u;
+    }
     return true;
 }

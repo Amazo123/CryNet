@@ -52,12 +52,22 @@ static const char *TAG = "link";
  * three and a half seconds to cross the air and wrong now that a burst
  * takes less than one: one lost fragment in three hundred was costing
  * the system a second and a half of dead time while the hub waited to
- * notice.  It is now sixty milliseconds: the fragments arrive three
- * milliseconds apart, so a gap of six hundredths of a second is
+ * notice.  It is now four hundred milliseconds: the fragments arrive
+ * three milliseconds apart, so a gap of six hundredths of a second is
  * twenty times the normal gap and means the burst really has stopped.
  * The lost fragment costs about a tenth of a second now, instead of
- * more than one. */
-#define FRAG_STALL_MS 60
+ * more than one.
+ *
+ * It was then raised again, to four hundred milliseconds, because a
+ * sixty-millisecond gap is not a stall at a cot whose link is poor.
+ * The fragments of such a burst arrive in clumps, with gaps of a
+ * second and more between them, and the hub was declaring those
+ * bursts dead while they were still crossing the air -- and then
+ * asking for the missing ones again, which is what the resend rounds
+ * are for.  Four hundred milliseconds is still far longer than the
+ * three-millisecond gap of a good link, and long enough that a burst
+ * which is merely slow is left alone. */
+#define FRAG_STALL_MS 400
 
 /* How long the burst must have been in flight before a stall may be
  * believed.  The node is asked for the window and then starts sending
@@ -77,8 +87,16 @@ static const char *TAG = "link";
  * the last round still lost.  Three is enough in practice: the first
  * round asks for everything that is missing, the second for the handful
  * that round also lost, and the third for the one or two that the
- * second lost. */
-#define RESEND_MAX_ROUNDS 3
+ * second lost.
+ *
+ * It is now ten, for the cot whose link is poor.  Its bursts arrive at
+ * a fraction of the rate a good link manages, so a round that recovers
+ * a third of what is missing needs several rounds to finish, and three
+ * rounds was the hub giving up while the node was still sending.  The
+ * rounds are bounded by the burst's own timeout, so a round that cannot
+ * help does not cost more than the time it takes to notice that
+ * nothing arrived. */
+#define RESEND_MAX_ROUNDS 10
 
 /* How long the node takes to send one fragment.  The node used to wait
  * ten milliseconds between fragments, so a hundred fragments took a
@@ -174,6 +192,14 @@ typedef struct {
     float    floor_rms;    /* the node's noise floor */
     uint16_t battery_mv;   /* its battery cell voltage; 0 = no reading */
     uint8_t  battery_band; /* HUB_BAT_*, moved with hysteresis */
+    /* The node's own radio counters, from its telemetry: what it handed
+     * to the radio, what the radio refused, what actually left it, and
+     * how often the radio had no room.  They are what tell a burst that
+     * was lost in the air from one the node's radio would not carry. */
+    uint32_t frames_sent;
+    uint32_t frames_lost;
+    uint32_t frames_acked;
+    uint32_t radio_full;
 
     bool     requested;      /* a burst is in flight */
     int64_t  requested_at_us;
@@ -181,6 +207,11 @@ typedef struct {
     uint32_t request_crc;
     uint32_t request_raw;    /* the hub's frame counter when it asked */
     uint32_t request_frags;  /* the hub's fragment counter when it asked */
+    /* The node's radio counters when it was asked, so that a stalled
+     * burst can say what the node did with the fragments it was sent. */
+    uint32_t request_sent;
+    uint32_t request_lost;
+    uint32_t request_acked;
     uint16_t last_have;      /* the fragment count at the last poll */
     int64_t  last_frag_us;   /* when a fragment last arrived */
     int64_t  last_resend_us; /* when the last resend went out */
@@ -566,6 +597,15 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
             st->battery_band = battery_band_advance(st->battery_band,
                                                     tel.battery_mv);
 
+            /* The node's radio counters.  They are kept so that a
+             * stalled burst can say whether the node handed the
+             * fragments over and lost them in the air, or whether its
+             * own radio would not carry them. */
+            st->frames_sent = tel.frames_sent;
+            st->frames_lost = tel.frames_lost;
+            st->frames_acked = tel.frames_acked;
+            st->radio_full = tel.radio_full;
+
             /* The node has moved on to a newer window.  The burst in
              * flight can never be completed -- the node no longer
              * holds the fragments of the old one, so it cannot send
@@ -777,6 +817,27 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
                                          (int)burst.rssi_min,
                                          (int)burst.rssi_max,
                                          (int)burst.tel_rssi);
+                                /* What the node's own radio did with the
+                                 * fragments it was sent.  A node that
+                                 * handed them all over and saw few of
+                                 * them come back has lost them in the
+                                 * air; a node whose radio refused them
+                                 * has a queue that is too small for the
+                                 * burst.  The two faults are fixed in
+                                 * opposite places, so the log says which
+                                 * one it is. */
+                                ESP_LOGW(TAG, "node %u: its radio handed over "
+                                              "%u frames since the burst began, "
+                                              "%u of them left it, %u were "
+                                              "refused, %u times it had no room",
+                                         st->node_id,
+                                         (unsigned)(st->frames_sent -
+                                                    st->request_sent),
+                                         (unsigned)(st->frames_acked -
+                                                    st->request_acked),
+                                         (unsigned)(st->frames_lost -
+                                                    st->request_lost),
+                                         (unsigned)st->radio_full);
                                 ESP_LOGW(TAG, "node %u: arrival pattern: %s",
                                          st->node_id, pattern);
                             }
@@ -904,6 +965,9 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
                     node_link_get_stats(nl, &rs);
                     st->request_raw = rs.raw_frames;
                     st->request_frags = rs.frag_frames;
+                    st->request_sent = st->frames_sent;
+                    st->request_lost = st->frames_lost;
+                    st->request_acked = st->frames_acked;
                 }
                 st->last_request_us = now;
                 st->last_have = 0;

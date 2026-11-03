@@ -112,6 +112,20 @@ extern "C" {
 #define CRYNET_PROTO_TELEMETRY_BYTES_BATTERY \
     (CRYNET_PROTO_TELEMETRY_BYTES + 2u)
 
+/* The radio-counter tier: the same 18 bytes, then the node's own radio
+ * counters -- the frames it handed to the radio, the frames the radio
+ * refused, the frames that actually left it, and the number of times it
+ * had to wait for the radio to have room.
+ *
+ * These are the counters that say where a burst went.  A node that hands
+ * over all 286 fragments and sees only a few of them come back has lost
+ * them in the air; a node whose radio refused them has a queue that is
+ * too small for the burst.  The hub cannot tell the two apart from the
+ * fragments alone, and the difference is the difference between moving
+ * a cot and rewriting a radio's pacing. */
+#define CRYNET_PROTO_TELEMETRY_BYTES_COUNTERS \
+    (CRYNET_PROTO_TELEMETRY_BYTES_BATTERY + 16u)
+
 /* The payload an older node sent: the same fields, without the event
  * level, the window's own level or the noise floor, and with the CRC
  * four bytes earlier. */
@@ -189,6 +203,12 @@ typedef struct {
      * reading: it is on USB power, or the divider is not wired, or the
      * node's firmware predates the field. */
     uint16_t battery_mv;
+    /* The node's radio counters.  Zero means the node did not report
+     * them: its firmware predates the field. */
+    uint32_t frames_sent;   /* frames handed over to the radio   */
+    uint32_t frames_lost;   /* frames the radio refused outright  */
+    uint32_t frames_acked;  /* frames that actually left the radio */
+    uint32_t radio_full;    /* times the radio had no room        */
 } crynet_proto_telemetry_t;
 
 bool crynet_proto_decode_telemetry(const uint8_t *payload,

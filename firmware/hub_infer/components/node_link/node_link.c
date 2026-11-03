@@ -67,6 +67,11 @@ typedef struct {
     int32_t  rssi_sum;
     uint16_t rssi_n;
     int8_t   tel_rssi;
+    /* The node's own radio counters, from its telemetry. */
+    uint32_t frames_sent;
+    uint32_t frames_lost;
+    uint32_t frames_acked;
+    uint32_t radio_full;
     /* The sequence the hub asked for.  A fragment that carries any other
      * sequence belongs to an earlier window and is dropped: the radio
      * delivers frames in the order it wants to, and one straggler from
@@ -257,6 +262,10 @@ static void handle_telemetry(node_link_t *nl, uint8_t node_id, uint16_t seq,
     slot->floor_rms = tel.floor_rms;
     slot->frozen_crc = tel.frozen_crc;
     slot->battery_mv = tel.battery_mv;
+    slot->frames_sent = tel.frames_sent;
+    slot->frames_lost = tel.frames_lost;
+    slot->frames_acked = tel.frames_acked;
+    slot->radio_full = tel.radio_full;
     slot->last_seen_ms = now_ms();
     slot->telemetry_new = true;
 }
@@ -690,6 +699,10 @@ bool node_link_poll_telemetry(node_link_t *nl, node_link_telemetry_t *out)
         out->floor_rms = slot->floor_rms;
         out->frozen_crc = slot->frozen_crc;
         out->battery_mv = slot->battery_mv;
+        out->frames_sent = slot->frames_sent;
+        out->frames_lost = slot->frames_lost;
+        out->frames_acked = slot->frames_acked;
+        out->radio_full = slot->radio_full;
         out->age_ms = now_ms() - slot->last_seen_ms;
         found = true;
         break;
@@ -722,6 +735,10 @@ bool node_link_last_telemetry(const node_link_t *nl, uint8_t node_id,
         out->floor_rms = slot->floor_rms;
         out->frozen_crc = slot->frozen_crc;
         out->battery_mv = slot->battery_mv;
+        out->frames_sent = slot->frames_sent;
+        out->frames_lost = slot->frames_lost;
+        out->frames_acked = slot->frames_acked;
+        out->radio_full = slot->radio_full;
         out->age_ms = now_ms() - slot->last_seen_ms;
         found = true;
         break;
