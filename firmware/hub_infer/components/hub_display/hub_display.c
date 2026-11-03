@@ -12,7 +12,7 @@
  *     the name, a progress bar and the boot steps.  The user asked for
  *     this — the dashboard should not simply appear.
  *
- *   * The dashboard.  The hub's own state at the top (radio, bluetooth,
+ *   * The dashboard.  The hub's own state at the top (cot link, bluetooth,
  *     uptime), a banner that says what the system is doing, and a card
  *     for every cot: its name, whether it is online, and its level.
  *
@@ -446,17 +446,9 @@ static void draw_splash(int64_t elapsed_ms, int frame)
 /* The dashboard                                                        */
 /* ------------------------------------------------------------------ */
 
-/* A small status pill: a dot and a word. */
-static void draw_pill(int x, int y, const char *label, bool good)
-{
-    const uint16_t col = good ? C_GREEN : C_DIM;
-    fb_fill(x, y + 2, 6, 6, col);
-    fb_text(x + 10, y, label, col, 1);
-}
-
-/* The same, but with the colour chosen by the caller — the caregiver's
- * device has three states, not two: attached, waiting to be attached,
- * and the Bluetooth stack itself down. */
+/* A pill with the colour chosen by the caller: the NODE pill has two
+ * states, and the WEARABLE pill has three — attached, waiting to be
+ * attached, and the Bluetooth stack itself down. */
 static void draw_pill_col(int x, int y, const char *label, uint16_t col)
 {
     fb_fill(x, y + 2, 6, 6, col);
@@ -498,15 +490,19 @@ static void draw_dashboard(const hub_display_state_t *st)
     fb_fill(0, 0, FB_W, HEADER_H, C_HEADER);
     fb_text(12, 8, "CRYNET", C_ACCENT, 2);
     fb_text(90, 12, "S3 HUB", C_DIM, 1);
-    draw_pill(196, 11, "RADIO", st->linked);
-    /* The caregiver's device — the phone, or the wearable, which uses the
-     * same GATT service — is the other half of the system, so its state
-     * belongs on the panel: green when one is connected and subscribed,
-     * amber when the stack is up but nobody has attached yet, dim when
+    /* The cot link: green while at least one cot is answering, amber
+     * once every card has gone quiet.  Amber, not the dim grey the
+     * first version used, so both pills read the same way — green is
+     * working, amber is waiting, and there is one rule to learn. */
+    draw_pill_col(196, 11, "NODE", st->linked ? C_GREEN : C_AMBER);
+    /* The caregiver's device — the wearable, which uses the same GATT
+     * service — is the other half of the system, so its state belongs
+     * on the panel: green when one is connected and subscribed, amber
+     * when the stack is up but nobody has attached yet, dim when
      * Bluetooth itself is down. */
-    const uint16_t phone_col = (st->ble_clients > 0) ? C_GREEN
-                             : (st->ble_ready ? C_AMBER : C_DIM);
-    draw_pill_col(258, 11, "PHONE", phone_col);
+    const uint16_t wearable_col = (st->ble_clients > 0) ? C_GREEN
+                                : (st->ble_ready ? C_AMBER : C_DIM);
+    draw_pill_col(258, 11, "WEARABLE", wearable_col);
     fb_fill(0, HEADER_H, FB_W, 2, C_ACCENT_DIM);
 
     /* ---- the banner: what the system is doing ---- */
