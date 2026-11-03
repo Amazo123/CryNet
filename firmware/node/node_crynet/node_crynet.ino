@@ -135,22 +135,51 @@ static const uint8_t LINK_CHANNEL = 6;
 /* The bitmap in a resend request: one bit per fragment. */
 #define RESEND_BITMAP_BYTES ((FRAG_COUNT + 7) / 8)
 
-/* How long after the loudest moment the window is frozen, so the two
- * seconds the hub classifies are centred on the cry rather than ending
- * at it.  The ring holds two seconds, so the peak has to be frozen
- * within PEAK_EXPIRE_MS of the moment it was heard.
+/* How long after the loudest moment the window is frozen.
  *
- * It used to be a full second — exactly half the window, so the cry sat
- * in the middle of it.  That is a whole second of the system's reaction
- * time spent waiting for audio that has already been heard, and the
- * window does not need the cry in its middle: the model was trained on
- * two-second windows in which the cry is wherever it fell, so a cry
- * that sits a little later in the window is judged the same.  Half a
- * second still leaves the cry well inside the window (it begins about a
- * second and a half into it) and buys back half a second on every
- * detection. */
-static const uint32_t PEAK_DELAY_MS = 500;
-static const uint32_t PEAK_EXPIRE_MS = 2000;
+ * The ring holds two seconds, so whatever is frozen is always the two
+ * seconds that ended at the moment of the freeze.  This constant
+ * therefore decides *which* two seconds the hub classifies:
+ *
+ *   PEAK_DELAY_MS = 0    ->  the two seconds BEFORE the peak
+ *   PEAK_DELAY_MS = 500  ->  the peak in the middle of the window
+ *   PEAK_DELAY_MS = 2000 ->  the two seconds AFTER the peak
+ *
+ * It used to be 500, so the window was the peak in the middle of it and
+ * the second half of the cry was in it.  That was defended by the
+ * belief that "the model was trained on two-second windows in which the
+ * cry is wherever it fell, so a cry that sits a little later in the
+ * window is judged the same".  On 2026-11-04 that belief was measured,
+ * on every clip of the in-domain sessions, with the deployed INT8 model
+ * (research/screen_clips.py):  it is false for a cry that has only just
+ * started.  P(cry) against the amount of continuous cry inside the
+ * two-second window:
+ *
+ *     0.50 s -> 0.004 .. 0.36      1.25 s -> 0.10 .. 0.95
+ *     1.00 s -> 0.02  .. 0.23      1.50 s -> 0.21 .. 0.99
+ *                                1.75 s -> 0.77 .. 0.9961
+ *                                2.00 s -> 0.9961
+ *
+ * The model needs roughly 1.5 to 1.75 seconds of continuous cry inside
+ * the window; half a window of cry is refused however loud it is.  A
+ * 500 ms delay freezes the peak in the middle of the window, so a cry
+ * that starts at the peak puts only about half a second of cry in it
+ * -- and the window is refused.  That is a structural cause of the
+ * misses, and of the misses that looked like "the node is not
+ * detecting" on 2026-11-03.
+ *
+ * So the window is now the two seconds AFTER the peak: for a cry that
+ * lasts longer than two seconds -- which is every real cry and every
+ * demo clip in research/out/demo_kit/ -- the whole window is cry, and
+ * the model scores it 0.9961.  The price is honest and stated: the
+ * freeze now happens two seconds after the peak instead of half a
+ * second after it, so the detection is about 1.5 s later.
+ *
+ * PEAK_EXPIRE_MS has to outlast the delay: the peak must still be
+ * alive when the window is frozen, or the freeze never happens at all.
+ */
+static const uint32_t PEAK_DELAY_MS = 2000;
+static const uint32_t PEAK_EXPIRE_MS = 4000;
 
 /* How long the node holds a frozen window after it has been uploaded.
  *
