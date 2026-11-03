@@ -82,6 +82,37 @@ extern "C" {
  * The measured false maybes all sat at 0.012 rms or under. */
 #define CRYNET_MAYBE_MIN_RMS 0.020f
 
+/* The rms at which a window carries so much sound that the model's
+ * score may be taken at face value: from this loudness a window may
+ * announce a cry on the model's own threshold (0.95) instead of
+ * waiting for the saturation (0.99) that the quiet path demands.
+ *
+ * Why: a phone held right at the microphone distorts the cry it
+ * plays -- the window clips, the impulsive shape is lost, and the
+ * model's score falls off the saturation it reaches on an undamaged
+ * recording.  Measured on the bench on 2026-11-04, at node 2, with
+ * the phone 10 cm away: the window carried 0.1801 rms at crest 3.6 and
+ * scored 0.9805 -- a clear cry, refused, because 0.9805 is not 0.99.
+ * The same play's later windows clipped (peak 33389) and fell to
+ * 0.0078 and 0.1602.  The cot 1.5 m away heard the same cry cleanly,
+ * scored 0.9961 on a 0.0207 rms window, and was announced instead --
+ * the alert named the wrong cot for 42 seconds.
+ *
+ * The bar is safe because the loud path is where the model is most
+ * reliable and where the false alarms have never been: every one of
+ * the 964 windows screened with the deployed model
+ * (research/screen_clips.py) was looked at under this rule, and not
+ * one of the 189 windows from the nine non-cry sessions reached 0.95
+ * at 0.08 rms -- the loudest of them scored 0.0156.  All the measured
+ * false alarms were quiet windows at 0.012 rms or under, which this
+ * rule does not touch.  It does add 21 loud cry windows (130 instead
+ * of 109) that would now announce without waiting for a second
+ * window to confirm them.
+ *
+ * The quiet path keeps the saturation requirement: that is where the
+ * model has been caught saturating on flat hiss. */
+#define CRYNET_LOUD_ANNOUNCE_RMS 0.080f
+
 /* The peak-to-rms ratio (crest factor) a quiet window needs before its
  * saturated verdict may announce a cry.  A loud window (>= 0.020 rms)
  * announces on saturation alone; a quiet one must also have a cry's

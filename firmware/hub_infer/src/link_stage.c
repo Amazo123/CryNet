@@ -441,7 +441,10 @@ static void analyse(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer,
     const bool audible = rms >= CRYNET_ANNOUNCE_MIN_RMS;
     /* A loud window announces on its saturation alone; a quiet one must
      * also have the cry's impulsive shape, not flat hiss. */
-    const bool unmistakable = audible && (p_cry >= CRYNET_CLEAR_CRY) &&
+    const bool unmistakable = audible &&
+        ((rms >= CRYNET_LOUD_ANNOUNCE_RMS)
+             ? (p_cry >= CRYNET_THRESHOLD)     /* loud: the model's word is enough */
+             : (p_cry >= CRYNET_CLEAR_CRY)) && /* quiet: it must saturate */
         ((rms >= CRYNET_MAYBE_MIN_RMS) || (crest >= CRYNET_QUIET_CREST));
 
     /* The announcement rule.
