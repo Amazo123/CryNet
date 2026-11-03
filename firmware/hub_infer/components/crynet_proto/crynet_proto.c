@@ -199,5 +199,11 @@ bool crynet_proto_decode_telemetry(const uint8_t *payload,
                           ((uint32_t)payload[10] << 16) |
                           ((uint32_t)payload[11] << 24);
     }
+
+    /* The battery cell voltage rides after the CRC in the newest tier.
+     * A node that does not send it — any current flashed node, or a
+     * node with no divider wired — decodes as "no reading". */
+    out->battery_mv = (len >= CRYNET_PROTO_TELEMETRY_BYTES_BATTERY)
+                    ? get_u16(&payload[16]) : 0u;
     return true;
 }

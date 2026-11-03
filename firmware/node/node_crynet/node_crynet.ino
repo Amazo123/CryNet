@@ -47,10 +47,18 @@
  *     4  u16 burst seq   6 u16 first fragment   8 u16 fragment count
  *    10  u16 CRC-16/CCITT-FALSE
  *
- * The telemetry payload is 12 bytes: u32 rms x 1000, u16 window ms,
- * u8 flags, u8 reserved, u32 CRC-32 of the frozen window (0 when there is
- * none).  The hub recomputes that CRC over the window it reassembles from
- * the radio, so the two agreeing proves the audio crossed the link intact.
+ * The telemetry payload has three tiers, told apart by length.  The
+ * first twelve bytes are the original ones: u32 rms x 1000, u16 window
+ * ms, u8 flags, u8 reserved, u32 CRC-32 of the frozen window (0 when
+ * there is none).  The hub recomputes that CRC over the window it
+ * reassembles from the radio, so the two agreeing proves the audio
+ * crossed the link intact.  Four more bytes follow on every node
+ * flashed since the adaptive trigger: u16 event level x 1000, u16
+ * frozen window level x 1000, u8 noise floor x 1000, then the same CRC
+ * at the end.  The newest tier appends the battery cell voltage in
+ * millivolts, little-endian (0 = no reading: USB power, no divider
+ * wired, or a firmware without the field).  The hub reads by length,
+ * so every tier decodes on every hub.
  */
 
 #include <Arduino.h>
@@ -162,6 +170,36 @@ static const uint32_t FROZEN_HOLD_MS = 4000;
  * the pieces it had asked for. */
 static const uint32_t FROZEN_EXPIRE_MS = 20000;
 
+/* ------------------------------------------------------------- battery -- */
+
+/* The battery sense pin and the divider behind it.
+ *
+ * The cell sits on the power module's B+/B- pads; a 220 kohm resistor
+ * runs from B+ to GPIO3, and a 100 kohm resistor with a 100 nF
+ * capacitor across it drops the rest of the way to B- (SYSTEM_WIRING.md
+ * 3.3).  At a 4.2 V cell the pin sees about 1.31 V, well inside the ADC
+ * range with the Arduino core's default 11 dB attenuation, and the
+ * divider draws about 13 uA, day and night.  GPIO3 is ADC1_CH3, and
+ * ADC1 is the converter that keeps working while the Wi-Fi radio is
+ * on -- ADC2 does not, and the radio never sleeps.
+ *
+ * This firmware was written before the divider is wired: today every
+ * cot runs from USB.  A pin with nothing behind it floats, so a reading
+ * only counts once three readings in a row land inside the window a
+ * wired cell could produce (0.80-1.50 V at the pin, a cell between
+ * about 2.6 and 4.8 V), and a trusted reading stays trusted until two
+ * in a row fall outside.  Until then the node reports no battery at
+ * all, and the panel shows nothing -- a number invented by a floating
+ * pin would be worse than none.  One averaged reading every four
+ * seconds spreads the readings across the burst cycles, so radio-load
+ * dips cannot align with every sample; the hub bands with hysteresis
+ * on top of that. */
+static const uint8_t  PIN_BATTERY      = 3;    /* ADC1_CH3               */
+static const uint32_t BATTERY_MS       = 4000; /* one reading each ...   */
+static const uint8_t  BATTERY_AVG      = 16;   /* ADC reads per reading  */
+static const uint16_t BAT_PIN_MIN_MV   = 800;  /* pin floor of "wired"   */
+static const uint16_t BAT_PIN_MAX_MV   = 1500; /* pin ceiling of "wired" */
+
 /* ----------------------------------------------------------------- state -- */
 
 static I2SClass  g_i2s;
@@ -197,6 +235,14 @@ static uint16_t  g_telemetry_seq = 0;
 static uint32_t  g_last_tick = 0;
 static float     g_rms = 0.0f;
 static int32_t   g_mean = 0;
+
+/* The battery, as the trust gate leaves it: the cell voltage in
+ * millivolts, or 0 for "no reading". */
+static uint32_t  g_last_battery_ms = 0;   /* millis() of the last reading */
+static uint32_t  g_battery_mv = 0;        /* the cell, 0 = no reading     */
+static bool      g_bat_trusted = false;   /* a wired divider was seen     */
+static uint8_t   g_bat_good = 0;          /* consecutive in-range reads   */
+static uint8_t   g_bat_bad  = 0;          /* consecutive out-of-range     */
 
 /* The room's noise floor, the event level that follows from it, and how
  * many readings in a row have been at or above that level.  The floor is
@@ -754,9 +800,58 @@ static void send_fragment(uint16_t index, bool from_frozen, bool over_serial) {
 
 /* ------------------------------------------------------------ telemetry -- */
 
+/* One averaged reading of the battery pin, in millivolts at the pin.
+ * analogReadMilliVolts() applies the factory eFuse calibration, so
+ * this is millivolts, not raw counts.  The sixteen reads take about
+ * four milliseconds -- an order of magnitude below the slack the pump
+ * already has, and brief enough next to the 100 nF on the divider to
+ * ride out radio pulses. */
+static uint32_t battery_read_once(void) {
+    uint32_t total = 0;
+    for (uint8_t i = 0; i < BATTERY_AVG; i++) {
+        total += analogReadMilliVolts(PIN_BATTERY);
+        delayMicroseconds(200);
+    }
+    return total / BATTERY_AVG;
+}
+
+/* The trust gate around the battery reading, on its four-second
+ * cadence.  The cell voltage is the pin reading times (220k + 100k) /
+ * 100k -- times 3.2, done here as * 32 / 10 to stay in integers. */
+static void battery_tick(uint32_t now_ms) {
+    if (g_last_battery_ms != 0u && now_ms - g_last_battery_ms < BATTERY_MS) {
+        return;
+    }
+    g_last_battery_ms = now_ms;
+
+    const uint32_t pin_mv = battery_read_once();
+    const bool in_range = pin_mv >= BAT_PIN_MIN_MV && pin_mv <= BAT_PIN_MAX_MV;
+
+    if (!g_bat_trusted) {
+        g_bat_good = in_range ? (uint8_t)(g_bat_good + 1u) : 0u;
+        if (g_bat_good < 3u) {
+            g_battery_mv = 0;      /* not believable yet */
+            return;
+        }
+        g_bat_trusted = true;
+        g_bat_bad = 0;
+    } else {
+        g_bat_bad = in_range ? 0u : (uint8_t)(g_bat_bad + 1u);
+        if (g_bat_bad >= 2u) {
+            /* The divider stopped reading like a cell -- unwired, or
+             * the cell fell below the floor the range protects. */
+            g_bat_trusted = false;
+            g_bat_good = 0;
+            g_battery_mv = 0;
+            return;
+        }
+    }
+    g_battery_mv = pin_mv * 32u / 10u;
+}
+
 static void send_telemetry(void) {
     int32_t rms_milli = (int32_t)(g_rms * 1000.0f + (g_rms >= 0 ? 0.5f : -0.5f));
-    uint8_t payload[16];
+    uint8_t payload[18];
     payload[0] = (uint8_t)(rms_milli & 0xFF);
     payload[1] = (uint8_t)((rms_milli >> 8) & 0xFF);
     payload[2] = (uint8_t)((rms_milli >> 16) & 0xFF);
@@ -799,6 +894,11 @@ static void send_telemetry(void) {
     payload[13] = (uint8_t)((crc >> 8) & 0xFF);
     payload[14] = (uint8_t)((crc >> 16) & 0xFF);
     payload[15] = (uint8_t)((crc >> 24) & 0xFF);
+    /* The battery cell voltage, in millivolts, from the divider on
+     * GPIO3.  Zero tells the hub "no reading": the node is on USB
+     * power, or the divider is not wired yet. */
+    payload[16] = (uint8_t)(g_battery_mv & 0xFF);
+    payload[17] = (uint8_t)(g_battery_mv >> 8);
 
     size_t total = build_frame(1, g_burst_seq, 0, 0, payload, sizeof(payload));
     radio_send(g_frame, total);
@@ -815,6 +915,11 @@ static void print_status(void) {
     esp_read_mac(sta, ESP_MAC_WIFI_STA);
     Serial.printf("node %u  mac %02X:%02X:%02X:%02X:%02X:%02X\n", g_node_id,
                   sta[0], sta[1], sta[2], sta[3], sta[4], sta[5]);
+    if (g_battery_mv > 0u) {
+        Serial.printf("battery %u mV\n", (unsigned)g_battery_mv);
+    } else {
+        Serial.printf("battery none (USB, or the divider is not wired)\n");
+    }
     Serial.printf("esp_now_send calls=%u max_us=%u\n",
                   (unsigned)g_send_calls, (unsigned)g_send_max_us);
     Serial.printf("time pump=%llu tick=%llu req=%llu rest=%llu ms\n",
@@ -1102,6 +1207,10 @@ void loop() {
                 g_frozen_served = false;
                 g_peak_pending = false;
             }
+
+            /* The battery, on its own slow cadence, just before the
+             * telemetry that will carry it. */
+            battery_tick(now);
 
             send_telemetry();
 

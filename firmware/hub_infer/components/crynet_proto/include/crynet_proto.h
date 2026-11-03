@@ -106,6 +106,12 @@ extern "C" {
 /* The telemetry payload is 16 bytes. */
 #define CRYNET_PROTO_TELEMETRY_BYTES 16u
 
+/* The battery tier: the same 16 bytes, then the node's battery cell
+ * voltage in millivolts, little-endian.  Zero means "no reading" —
+ * the node is on USB power, or the sense divider is not wired. */
+#define CRYNET_PROTO_TELEMETRY_BYTES_BATTERY \
+    (CRYNET_PROTO_TELEMETRY_BYTES + 2u)
+
 /* The payload an older node sent: the same fields, without the event
  * level, the window's own level or the noise floor, and with the CRC
  * four bytes earlier. */
@@ -178,6 +184,11 @@ typedef struct {
     /* The node's noise floor, in full-scale units. */
     float    floor_rms;
     uint32_t frozen_crc; /* CRC-32 of the node's frozen window, 0 if none */
+    /* The node's battery cell voltage, in millivolts, measured behind
+     * its own divider and averaged.  Zero means the node sent no
+     * reading: it is on USB power, or the divider is not wired, or the
+     * node's firmware predates the field. */
+    uint16_t battery_mv;
 } crynet_proto_telemetry_t;
 
 bool crynet_proto_decode_telemetry(const uint8_t *payload,
