@@ -355,6 +355,10 @@ static int64_t s_prepare_until_us = 0;
 static uint8_t s_ble_cot = 0;
 static bool    s_ble_cry = false;
 
+/* How much louder another cot has to be before the caregiver is told
+ * about it instead of the cot that was already named. */
+#define COT_SWITCH_MARGIN 1.5f
+
 /* When the hub came up, for the uptime on the display. */
 static int64_t s_boot_us = 0;
 
@@ -1094,14 +1098,16 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
             }
         }
 
-        /* The alert names *one* cot: the loudest one that is crying,
-         * which is the cot the baby is in -- the same rule the panel
-         * uses.  Publishing an alert per cot meant that two cots
-         * hearing one cry produced two buzzes and the wearable
-         * showed "cot 2", then "cot 1", then "cot 2" again for a
-         * single physical cry.  Now the loudest cot is named, and if a
-         * louder cot joins the cry the alert is re-issued for it,
-         * because the caregiver should be told where the baby is. */
+        /* The alert names *one* cot, and the same cot for the whole
+         * episode.  Publishing an alert per cot meant that two cots
+         * hearing one cry produced two buzzes and the wearable showed
+         * "cot 2", then "cot 1", then "cot 2" again for a single
+         * physical cry.  Naming the loudest cot is not enough on its
+         * own: two cots in one room both hear the cry, and their
+         * levels cross over from window to window, so "the loudest"
+         * changed hands every few hundred milliseconds.  The cot that
+         * was named keeps the alert until it stops crying, or until
+         * another cot is clearly louder. */
         node_state_t *loudest = NULL;
         for (int i = 0; i < NODE_LINK_MAX_NODES; i++) {
             node_state_t *st = &state[i];
@@ -1110,6 +1116,19 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
             }
             if (loudest == NULL || st->rms > loudest->rms) {
                 loudest = st;
+            }
+        }
+        if (s_ble_cry && loudest != NULL && loudest->node_id != s_ble_cot) {
+            /* The named cot is still crying: it keeps the alert unless
+             * the other one is clearly louder. */
+            for (int i = 0; i < NODE_LINK_MAX_NODES; i++) {
+                node_state_t *st = &state[i];
+                if (st->heard && st->node_id == s_ble_cot &&
+                    st->published_cry &&
+                    loudest->rms <= st->rms * COT_SWITCH_MARGIN) {
+                    loudest = st;
+                    break;
+                }
             }
         }
         if (loudest != NULL) {
@@ -1202,6 +1221,21 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
                 link_stage_crying(state[i].node_id)) {
                 if (show == NULL || state[i].rms > show->rms) {
                     show = &state[i];
+                }
+            }
+        }
+        /* The cot the caregiver was told about keeps the display as
+         * well: two cots in one room cross over from window to
+         * window, and a card that changes every few hundred
+         * milliseconds is unreadable. */
+        if (show != NULL && s_ble_cry) {
+            for (int i = 0; i < NODE_LINK_MAX_NODES; i++) {
+                if (state[i].node_id == s_ble_cot &&
+                    node_live(&state[i], snap_now) &&
+                    link_stage_crying(state[i].node_id) &&
+                    show->rms <= state[i].rms * COT_SWITCH_MARGIN) {
+                    show = &state[i];
+                    break;
                 }
             }
         }

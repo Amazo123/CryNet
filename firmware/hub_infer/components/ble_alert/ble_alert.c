@@ -329,7 +329,7 @@ void ble_alert_publish(uint8_t cot_id, bool crying, uint16_t confidence_pct)
     s_alert_value.event_id = s_event_id;
 
     ESP_LOGI(TAG, "%s cot %u at %u%%",
-             crying ? "a cry on" : "the cry on cot", cot_id,
+             crying ? "a cry on" : "the cry on", cot_id,
              (unsigned)confidence_pct);
 
     notify_value(s_alert_handle, s_alert_notify, &s_alert_value,
