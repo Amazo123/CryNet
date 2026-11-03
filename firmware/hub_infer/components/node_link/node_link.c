@@ -56,6 +56,17 @@ typedef struct {
      * counted", which are two very different faults. */
     uint16_t frag_seen;
     uint32_t bad_payloads;
+    /* The signal strength of the burst's frames, and of the node's last
+     * telemetry.  The two together say whether a burst that never
+     * arrived was too weak to be heard or was never sent: a node whose
+     * telemetry reads as strongly as its neighbours' and whose burst
+     * frames read far weaker is not being heard at all, and one whose
+     * frames read well was heard and something else went wrong. */
+    int8_t   rssi_min;
+    int8_t   rssi_max;
+    int32_t  rssi_sum;
+    uint16_t rssi_n;
+    int8_t   tel_rssi;
     /* The sequence the hub asked for.  A fragment that carries any other
      * sequence belongs to an earlier window and is dropped: the radio
      * delivers frames in the order it wants to, and one straggler from
@@ -252,7 +263,8 @@ static void handle_telemetry(node_link_t *nl, uint8_t node_id, uint16_t seq,
 
 static void handle_fragment(node_link_t *nl, uint8_t node_id, uint16_t seq,
                              uint16_t frag, uint16_t frag_count,
-                             const uint8_t *payload, int payload_len)
+                             const uint8_t *payload, int payload_len,
+                             int rssi)
 {
     node_slot_t *slot = NULL;
     nl->stats.frag_frames++;
@@ -319,10 +331,32 @@ static void handle_fragment(node_link_t *nl, uint8_t node_id, uint16_t seq,
         slot->frag_want = frag_count;
         slot->frag_have = 0;
         slot->frag_seen = 0;
+        slot->rssi_min = 0;
+        slot->rssi_max = 0;
+        slot->rssi_sum = 0;
+        slot->rssi_n = 0;
     }
     /* It belongs to this burst and it arrived, whatever happens to it
      * next. */
     slot->frag_seen++;
+
+    /* How loudly it arrived.  The frames of a burst are the biggest the
+     * link carries, so they are the first thing to go when the path is
+     * short of signal -- and the number says how much of the burst was
+     * lost to the path rather than to anything the node did. */
+    if (slot->rssi_n == 0u) {
+        slot->rssi_min = (int8_t)rssi;
+        slot->rssi_max = (int8_t)rssi;
+    } else {
+        if ((int8_t)rssi < slot->rssi_min) {
+            slot->rssi_min = (int8_t)rssi;
+        }
+        if ((int8_t)rssi > slot->rssi_max) {
+            slot->rssi_max = (int8_t)rssi;
+        }
+    }
+    slot->rssi_sum += rssi;
+    slot->rssi_n++;
 
     const uint8_t bit = (uint8_t)(frag & 7u);
     const uint8_t mask = (uint8_t)(1u << bit);
@@ -412,12 +446,15 @@ static void on_recv(const esp_now_recv_info_t *info, const uint8_t *data, int le
             for (int i = 0; i < NODE_LINK_MAX_NODES; i++) {
                 if (nl->slots[i].used && nl->slots[i].id == node_id) {
                     memcpy(nl->slots[i].src_mac, info->src_addr, 6);
+                    nl->slots[i].tel_rssi =
+                        (info->rx_ctrl != NULL) ? info->rx_ctrl->rssi : 0;
                     break;
                 }
             }
         }
     } else if (type == CRYNET_PROTO_TYPE_FRAGMENT) {
-        handle_fragment(nl, node_id, seq, frag, frag_count, payload, parsed);
+        handle_fragment(nl, node_id, seq, frag, frag_count, payload, parsed,
+                        (info != NULL && info->rx_ctrl != NULL) ? info->rx_ctrl->rssi : 0);
     }
     link_unlock(nl);
 }
@@ -856,6 +893,11 @@ bool node_link_burst_state(const node_link_t *nl, uint8_t node_id,
         out->bad_payloads = slot->bad_payloads;
         out->missing = (slot->frag_want > slot->frag_have)
                            ? (slot->frag_want - slot->frag_have) : 0u;
+        out->rssi_min = slot->rssi_min;
+        out->rssi_max = slot->rssi_max;
+        out->rssi_avg = (slot->rssi_n > 0u)
+                            ? (int)(slot->rssi_sum / (int32_t)slot->rssi_n) : 0;
+        out->tel_rssi = slot->tel_rssi;
         found = true;
         break;
     }
@@ -890,6 +932,43 @@ int node_link_burst_missing(node_link_t *nl, uint8_t node_id,
     }
     link_unlock(nl);
     return found;
+}
+
+/* The arrival pattern of the burst in flight: one character for each of
+ * the first fragments, '#' for one that arrived and '.' for one that did
+ * not.  A burst whose frames arrive as a solid run of '#' and then stop
+ * was cut off part way through -- the node stopped sending, or the
+ * frames stopped being heard -- while one that arrives dotted all over
+ * was heard and lost, which is a different fault with a different cure. */
+int node_link_burst_pattern(node_link_t *nl, uint8_t node_id,
+                            char *buf, int max)
+{
+    if (buf == NULL || max <= 0) {
+        return 0;
+    }
+    buf[0] = '\0';
+    int n = 0;
+    link_lock(nl);
+    for (int i = 0; i < NODE_LINK_MAX_NODES; i++) {
+        const node_slot_t *slot = &nl->slots[i];
+        if (!slot->used || slot->id != node_id || !slot->in_burst) {
+            continue;
+        }
+        int lim = (slot->frag_want < 64) ? (int)slot->frag_want : 64;
+        if (lim > max) {
+            lim = max;
+        }
+        for (int f = 0; f < lim; f++) {
+            buf[f] = (slot->bitmap[f >> 3] & (1u << (f & 7u))) ? '#' : '.';
+        }
+        n = lim;
+        break;
+    }
+    link_unlock(nl);
+    if (n < max) {
+        buf[n] = '\0';
+    }
+    return n;
 }
 
 bool node_link_take_window(node_link_t *nl, uint8_t node_id,

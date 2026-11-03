@@ -671,10 +671,14 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
                             const bool checkable = (st->request_crc != 0) &&
                                                   (burst.burst_seq == st->request_seq);
                             const bool match = checkable && (crc == st->request_crc);
-                            ESP_LOGI(TAG, "node %u: %u/%u fragments in %.2f s",
+                            ESP_LOGI(TAG, "node %u: %u/%u fragments in %.2f s "
+                                          "(signal %d dBm, from %d to %d; its "
+                                          "telemetry reads %d dBm)",
                                      st->node_id, (unsigned)burst.frag_have,
                                      (unsigned)burst.frag_want,
-                                     (double)(t0 - st->requested_at_us) / 1000000.0);
+                                     (double)(t0 - st->requested_at_us) / 1000000.0,
+                                     (int)burst.rssi_avg, (int)burst.rssi_min,
+                                     (int)burst.rssi_max, (int)burst.tel_rssi);
                             if (checkable) {
                                 ESP_LOGI(TAG, "node %u: window crc32 0x%08X, the node "
                                               "advertised 0x%08X -> %s",
@@ -756,14 +760,25 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
                             if (asked > 0) {
                                 st->resend_rounds++;
                                 st->last_resend_us = now;
+                                char pattern[72];
+                                node_link_burst_pattern(nl, st->node_id,
+                                                        pattern, sizeof pattern);
                                 ESP_LOGW(TAG, "node %u: the burst stalled with "
                                               "%u of %u fragments (%u frames "
                                               "arrived); asking for the %u "
-                                              "that are missing",
+                                              "that are missing (signal %d dBm, "
+                                              "from %d to %d; its telemetry "
+                                              "reads %d dBm)",
                                          st->node_id, (unsigned)burst.frag_have,
                                          (unsigned)burst.frag_want,
                                          (unsigned)burst.frag_seen,
-                                         (unsigned)asked);
+                                         (unsigned)asked,
+                                         (int)burst.rssi_avg,
+                                         (int)burst.rssi_min,
+                                         (int)burst.rssi_max,
+                                         (int)burst.tel_rssi);
+                                ESP_LOGW(TAG, "node %u: arrival pattern: %s",
+                                         st->node_id, pattern);
                             }
                         } else if ((now - st->requested_at_us) >
                                    (BURST_TIMEOUT_MS * 1000)) {

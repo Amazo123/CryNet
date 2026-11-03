@@ -70,6 +70,14 @@ typedef struct {
     bool     complete;
     uint32_t bad_payloads;  /* fragments whose payload CRC failed */
     uint32_t missing;       /* fragments still outstanding */
+    /* How loudly the burst's frames arrived, in dBm.  A burst that was
+     * never heard has a weak maximum; one that was heard and lost is a
+     * different fault altogether, and the number says which it was. */
+    int8_t   rssi_min;
+    int8_t   rssi_max;
+    int      rssi_avg;
+    /* The node's last telemetry reading, for comparison. */
+    int8_t   tel_rssi;
 } node_link_burst_t;
 
 /* Counters for the whole link. */
@@ -127,6 +135,13 @@ bool node_link_burst_state(const node_link_t *nl, uint8_t node_id,
 /* Which fragments of the burst in flight are still missing. */
 int node_link_burst_missing(node_link_t *nl, uint8_t node_id,
                             uint16_t *out, int max);
+
+/* The arrival pattern of the burst in flight: '#' for a fragment that
+ * arrived, '.' for one that did not, one character per fragment of the
+ * first part of the burst.  The number of characters written is
+ * returned. */
+int node_link_burst_pattern(node_link_t *nl, uint8_t node_id,
+                            char *buf, int max);
 
 /*
  * Ask the node to send the fragments of the burst in flight that never
