@@ -94,8 +94,16 @@ static const char *TAG = "link";
  * frames in the air and has to be asked for again.  The Bluetooth stack
  * is told to go quiet for the duration and to start again afterwards.
  *
- * The count, rather than a flag, because two cots can burst at the same
- * time and the radio must stay quiet until the last of them is done. */
+ * It is also the guard on the pull itself: the hub asks for one
+ * node's window at a time.  Three cots bursting together put three
+ * times the frames on one channel, the channel saturates, and the
+ * bursts starve each other -- measured 2026-11-03 with all three cots
+ * loud at once: the nearest cot's burst completed 286/286 in 0.79 s
+ * while the next lost up to 46 fragments and the farthest never got
+ * past 113 of 286, and every pull churned from window to window
+ * without ever finishing one.  One burst at a time crosses the air in
+ * under a second, so each cot is still served well inside the few
+ * seconds its frozen window is held. */
 static int s_bursts_in_flight = 0;
 
 /* How long the hub's own radio has been deaf.  While a burst is on the
@@ -608,26 +616,29 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
                 st->last_log_us = now;
                 st->last_flags = tel.flags;
                 st->last_seq = tel.burst_seq;
-                if (tel.battery_mv > 0u) {
-                    ESP_LOGI(TAG, "node %u: rms %.4f  seq %u  flags 0x%02X"
-                             "  crc 0x%08X  bat %u mV",
-                             tel.node_id, (double)tel.rms,
-                             (unsigned)tel.burst_seq, (unsigned)tel.flags,
-                             (unsigned)tel.frozen_crc,
-                             (unsigned)tel.battery_mv);
-                } else {
-                    ESP_LOGI(TAG, "node %u: rms %.4f  seq %u  flags 0x%02X"
-                             "  crc 0x%08X",
-                             tel.node_id, (double)tel.rms,
-                             (unsigned)tel.burst_seq, (unsigned)tel.flags,
-                             (unsigned)tel.frozen_crc);
-                }
+                /* Everything the hub's own decision depends on, in one
+                 * line: the level the cot triggers at, how many
+                 * readings in a row have been above it, and the level of
+                 * the window it froze.  When a cry goes unheard, this
+                 * line is where the answer is. */
+                ESP_LOGI(TAG, "node %u: rms %.4f  seq %u  flags 0x%02X"
+                         "  crc 0x%08X  level %.4f  streak %u  win %.4f"
+                         "  bat %u mV",
+                         tel.node_id, (double)tel.rms,
+                         (unsigned)tel.burst_seq, (unsigned)tel.flags,
+                         (unsigned)tel.frozen_crc, (double)st->event_rms,
+                         (unsigned)st->loud_streak, (double)st->frozen_rms,
+                         (unsigned)tel.battery_mv);
             }
         }
 
         /* ---------------- requests and bursts ---------------- */
         const int64_t now = esp_timer_get_time();
 
+        /* The frozen window the next pull will ask for: the loudest
+         * eligible one anywhere in the room, picked below and pulled
+         * after the loop so only one burst is ever on the air. */
+        node_state_t *pull = NULL;
         for (int i = 0; i < NODE_LINK_MAX_NODES; i++) {
             node_state_t *st = &state[i];
             if (!st->heard) {
@@ -837,45 +848,65 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
             const bool worth_pulling =
                 (st->frozen_rms <= 0.0f) ||
                 (st->frozen_rms >= 0.8f * CRYNET_MAYBE_MIN_RMS);
+            /* One burst on the air at a time: a pull only starts while
+             * no burst is in flight, and when several cots have frozen
+             * windows the loudest window is the one asked for first.
+             * The loudest is also the most likely to be announced, so
+             * spending the airtime on it first is the right order even
+             * before fairness. */
             if (loud && frozen && worth_pulling && st->window_full &&
                 (st->seq != st->last_completed_seq) &&
-                (now - st->last_request_us) > (RECOOLDOWN_MS * 1000)) {
-                if (node_link_request_window(nl, st->node_id, st->seq)) {
-                    st->requested = true;
-                    burst_started();
-                    st->requested_at_us = now;
-                    st->request_seq = st->seq;
-                    st->request_crc = st->crc;
-                    {
-                        /* How many frames the hub has seen, so the
-                         * timeout can say how many arrived during the
-                         * burst: if the number is the number of
-                         * fragments, they reached the hub and the
-                         * reassembly is at fault; if it is short, they
-                         * were lost on the way. */
-                        node_link_stats_t rs;
-                        node_link_get_stats(nl, &rs);
-                        st->request_raw = rs.raw_frames;
-                        st->request_frags = rs.frag_frames;
-                    }
-                    st->last_request_us = now;
-                    st->last_have = 0;
-                    st->last_frag_us = now;
-                    st->last_resend_us = 0;
-                    st->resend_rounds = 0;
-                    /* The node drops its live window when it serves a
-                     * request and refills it over the next two seconds,
-                     * so until it says the window is whole again there is
-                     * nothing to ask for. */
-                    st->window_full = false;
-                    ESP_LOGI(TAG, "node %u: asking for the window (seq %u, "
-                                  "rms %.4f, level %.4f, win %.4f)",
-                             st->node_id, (unsigned)st->seq, (double)st->rms,
-                             (double)st->event_rms, (double)st->frozen_rms);
-                } else {
-                    ESP_LOGW(TAG, "node %u: the request could not be sent",
-                             st->node_id);
+                (now - st->last_request_us) > (RECOOLDOWN_MS * 1000) &&
+                s_bursts_in_flight == 0 &&
+                (pull == NULL || st->frozen_rms > pull->frozen_rms)) {
+                pull = st;
+            }
+        }
+
+        /* The chosen window goes on the air, alone.  Nothing else may
+         * share the channel with it: a burst that loses frames to
+         * another cot's burst needs resend rounds to recover, and the
+         * node refreezes a window every few seconds, so a pull that
+         * drags past that abandons a nearly whole window and starts
+         * over -- which is exactly the churn three concurrent bursts
+         * were stuck in, and why nodes 2 and 3 never finished one. */
+        if (pull != NULL) {
+            node_state_t *st = pull;
+            if (node_link_request_window(nl, st->node_id, st->seq)) {
+                st->requested = true;
+                burst_started();
+                st->requested_at_us = now;
+                st->request_seq = st->seq;
+                st->request_crc = st->crc;
+                {
+                    /* How many frames the hub has seen, so the
+                     * timeout can say how many arrived during the
+                     * burst: if the number is the number of
+                     * fragments, they reached the hub and the
+                     * reassembly is at fault; if it is short, they
+                     * were lost on the way. */
+                    node_link_stats_t rs;
+                    node_link_get_stats(nl, &rs);
+                    st->request_raw = rs.raw_frames;
+                    st->request_frags = rs.frag_frames;
                 }
+                st->last_request_us = now;
+                st->last_have = 0;
+                st->last_frag_us = now;
+                st->last_resend_us = 0;
+                st->resend_rounds = 0;
+                /* The node drops its live window when it serves a
+                 * request and refills it over the next two seconds,
+                 * so until it says the window is whole again there is
+                 * nothing to ask for. */
+                st->window_full = false;
+                ESP_LOGI(TAG, "node %u: asking for the window (seq %u, "
+                              "rms %.4f, level %.4f, win %.4f)",
+                         st->node_id, (unsigned)st->seq, (double)st->rms,
+                         (double)st->event_rms, (double)st->frozen_rms);
+            } else {
+                ESP_LOGW(TAG, "node %u: the request could not be sent",
+                         st->node_id);
             }
         }
 
