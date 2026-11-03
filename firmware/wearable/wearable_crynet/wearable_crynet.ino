@@ -172,6 +172,8 @@ static void alert_notify_cb(BLERemoteCharacteristic * /*chr*/,
         Serial.printf("[ble] short alert (%u bytes) ignored\n", (unsigned)len);
         return;
     }
+    /* What the wrist was told last, so one cry is one buzz. */
+    const uint8_t prev_type = g_type;
     g_cot      = data[0];
     g_type     = data[1];
     g_conf_pct = (uint16_t)data[2] | ((uint16_t)data[3] << 8);
@@ -182,7 +184,11 @@ static void alert_notify_cb(BLERemoteCharacteristic * /*chr*/,
     Serial.printf("[ble] ALERT cot %u type %u conf %u%% event #%u\n",
                   (unsigned)g_cot, (unsigned)g_type,
                   (unsigned)g_conf_pct, (unsigned)g_event);
-    if (g_type == 1) {
+    if (g_type == 1 && prev_type != 1) {
+        /* One buzz per cry, not one per announcement.  The hub names
+         * the loudest cot, and it re-issues the alert when a louder
+         * cot joins the cry -- the display follows the baby from cot
+         * to cot, but the wrist buzzes once. */
         haptic_trigger();
     }
 }

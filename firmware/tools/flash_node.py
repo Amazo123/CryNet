@@ -13,9 +13,14 @@ the sketch from the repository if it is there and from the Arduino
 sketchbook if it is not -- so it works on the second laptop, where the
 repository may not be checked out.
 
+The wearable is flashed the same way, with `--sketch wearable`: it is
+the same board and the same toolchain, and the two sketches live side by
+side in the repository.
+
 Usage:
     python firmware/tools/flash_node.py --port COM38
     python firmware/tools/flash_node.py --port COM38 --dry-run
+    python firmware/tools/flash_node.py --port COM30 --sketch wearable
 """
 
 from __future__ import annotations
@@ -30,6 +35,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 SKETCH_NAME = "node_crynet"
 FQBN = "esp32:esp32:weact_studio_esp32c3"
+# The sketches this tool can flash, and where they live in the tree.
+SKETCHES = {
+    "node": ("node", "node_crynet"),
+    "wearable": ("wearable", "wearable_crynet"),
+}
 
 
 def find_arduino_cli() -> str | None:
@@ -52,15 +62,16 @@ def find_arduino_cli() -> str | None:
     return None
 
 
-def find_sketch() -> Path:
+def find_sketch(which: str = "node") -> Path:
     """The sketch to build: the repository's, or the sketchbook's copy."""
-    repo = ROOT / "firmware" / "node" / SKETCH_NAME
-    if (repo / f"{SKETCH_NAME}.ino").exists():
+    folder, name = SKETCHES[which]
+    repo = ROOT / "firmware" / folder / name
+    if (repo / f"{name}.ino").exists():
         return repo
-    book = Path.home() / "Documents/Arduino" / SKETCH_NAME
-    if (book / f"{SKETCH_NAME}.ino").exists():
+    book = Path.home() / "Documents/Arduino" / name
+    if (book / f"{name}.ino").exists():
         return book
-    raise SystemExit(f"no {SKETCH_NAME} sketch found in {repo} or {book}")
+    raise SystemExit(f"no {name} sketch found in {repo} or {book}")
 
 
 def main() -> int:
@@ -68,6 +79,8 @@ def main() -> int:
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--port", required=True, help="the node's serial port")
     ap.add_argument("--fqbn", default=FQBN, help="the board to build for")
+    ap.add_argument("--sketch", default="node", choices=sorted(SKETCHES),
+                    help="which sketch to build and flash")
     ap.add_argument("--dry-run", action="store_true",
                     help="build and upload without erasing the app partition")
     args = ap.parse_args()
@@ -77,7 +90,7 @@ def main() -> int:
         print("arduino-cli not found: install the Arduino IDE, or set "
               "ARDUINO_CLI to the binary", file=sys.stderr)
         return 1
-    sketch = find_sketch()
+    sketch = find_sketch(args.sketch)
     print(f"arduino-cli: {cli}")
     print(f"sketch:      {sketch}")
 
@@ -98,7 +111,7 @@ def main() -> int:
     if up.returncode != 0:
         print(f"the flash to {args.port} failed", file=sys.stderr)
         return up.returncode
-    print(f"node on {args.port} is running the new firmware")
+    print(f"{args.sketch} on {args.port} is running the new firmware")
     return 0
 
 

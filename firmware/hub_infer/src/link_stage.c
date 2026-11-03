@@ -346,6 +346,15 @@ static uint8_t battery_band_advance(uint8_t band, uint16_t mv)
 /* When the radio may go back to advertising. */
 static int64_t s_prepare_until_us = 0;
 
+/* The cot the caregiver was last told about, and whether that cot is
+ * crying.  The alert that reaches the wrist names *one* cot: the
+ * loudest one, the same rule the panel uses.  When two cots hear one
+ * cry the hub used to publish an alert for each of them, and the
+ * wearable showed "cot 2", then "cot 1", then "cot 2" again for a
+ * single physical cry — three buzzes for one baby. */
+static uint8_t s_ble_cot = 0;
+static bool    s_ble_cry = false;
+
 /* When the hub came up, for the uptime on the display. */
 static int64_t s_boot_us = 0;
 
@@ -1071,22 +1080,56 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
             s_prepare_until_us = 0;
             ble_alert_set_preparing(false);
         }
-        /* The alert is published when the state *changes*: once when a
-         * cot starts crying and once when it stops, not once for every
-         * two-second window. */
+        /* The per-cot state first: which cots are crying. */
+        bool any_state_changed = false;
         for (int i = 0; i < NODE_LINK_MAX_NODES; i++) {
             node_state_t *st = &state[i];
             if (!st->heard) {
                 continue;
             }
             const bool crying = link_stage_crying(st->node_id);
-            if (crying == st->published_cry) {
+            if (crying != st->published_cry) {
+                st->published_cry = crying;
+                any_state_changed = true;
+            }
+        }
+
+        /* The alert names *one* cot: the loudest one that is crying,
+         * which is the cot the baby is in -- the same rule the panel
+         * uses.  Publishing an alert per cot meant that two cots
+         * hearing one cry produced two buzzes and the wearable
+         * showed "cot 2", then "cot 1", then "cot 2" again for a
+         * single physical cry.  Now the loudest cot is named, and if a
+         * louder cot joins the cry the alert is re-issued for it,
+         * because the caregiver should be told where the baby is. */
+        node_state_t *loudest = NULL;
+        for (int i = 0; i < NODE_LINK_MAX_NODES; i++) {
+            node_state_t *st = &state[i];
+            if (!st->heard || !st->published_cry) {
                 continue;
             }
-            st->published_cry = crying;
-            ble_alert_publish(st->node_id, crying, st->last_confidence);
+            if (loudest == NULL || st->rms > loudest->rms) {
+                loudest = st;
+            }
+        }
+        if (loudest != NULL) {
+            if (!s_ble_cry || loudest->node_id != s_ble_cot) {
+                ble_alert_publish(loudest->node_id, true,
+                                  loudest->last_confidence);
+                s_ble_cot = loudest->node_id;
+                s_ble_cry = true;
+                any_state_changed = true;
+            }
+        } else if (s_ble_cry) {
+            /* The cry is over: the cot that was named is told so. */
+            ble_alert_publish(s_ble_cot, false, 0);
+            s_ble_cry = false;
+            s_ble_cot = 0;
+            any_state_changed = true;
+        }
 
-            /* The state characteristic carries the whole system. */
+        /* The state characteristic carries the whole system. */
+        if (any_state_changed) {
             ble_state_packet_t sp;
             memset(&sp, 0, sizeof sp);
             for (int j = 0; j < NODE_LINK_MAX_NODES; j++) {

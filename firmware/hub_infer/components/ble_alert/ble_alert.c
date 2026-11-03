@@ -67,17 +67,26 @@ static uint16_t s_event_id = 0;
  *   - while a caregiver's phone is connected, not at all: nobody needs
  *     to *find* a hub that is already connected, and the notifications
  *     travel over the connection, not over advertising;
- *   - while a burst is in the air, not at all - this is the window in
- *     which the Wi-Fi receiver must be fully awake;
- *   - otherwise, slowly: 100 ms instead of 20 ms, which the phone still
- *     finds in well under a second.
+ *   - while a burst is in the air, *slowly*: the wearable is the thing
+ *     that has to be found, and it used to be left waiting for a gap in
+ *     the radio's traffic -- with three cots the radio was busy 89 % of
+ *     the time, so the wearable could take a minute to attach.  An
+ *     advertisement every 320 ms costs the burst a frame or two, and
+ *     the resend path recovers them; silence cost the caregiver the
+ *     device altogether;
+ *   - otherwise, quickly: 100 ms, which the phone still finds in well
+ *     under a second.
  */
-#define ADV_INTERVAL 0x00A0      /* 160 units of 0.625 ms = 100 ms */
+#define ADV_INTERVAL       0x00A0  /* 160 units of 0.625 ms = 100 ms */
+#define ADV_INTERVAL_SLOW  0x0200  /* 512 units of 0.625 ms = 320 ms */
 
 static bool s_advertising = false;   /* the hub is advertising right now */
 static bool s_connected = false;     /* a caregiver's phone is connected */
 static bool s_radio_busy = false;    /* the Wi-Fi radio needs the air */
 static bool s_preparing = false;    /* the Wi-Fi radio will need it */
+/* The interval the advertising is running at, so a change of policy
+ * restarts it with the new interval. */
+static uint16_t s_adv_interval = ADV_INTERVAL;
 
 static int gap_event(struct ble_gap_event *event, void *arg);
 static void update_advertising(void);
@@ -181,28 +190,42 @@ static bool advertise(void)
     /* The slow interval: the phone still finds the hub quickly, and the
      * radio is free for the burst three to five times as often.  NimBLE
      * would otherwise use its own default of 30-60 ms. */
-    adv_params.itvl_min = ADV_INTERVAL;
-    adv_params.itvl_max = ADV_INTERVAL;
+    adv_params.itvl_min = s_adv_interval;
+    adv_params.itvl_max = s_adv_interval;
     rc = ble_gap_adv_start(BLE_OWN_ADDR_PUBLIC, NULL, BLE_HS_FOREVER,
                            &adv_params, gap_event, NULL);
     if (rc != 0) {
         ESP_LOGE(TAG, "advertising could not be started: %d", rc);
         return false;
     }
-    ESP_LOGI(TAG, "advertising as \"" DEVICE_NAME "\"");
+    ESP_LOGI(TAG, "advertising as \"" DEVICE_NAME "\" every %u ms",
+             (unsigned)(s_adv_interval * 5u / 8u));
     return true;
 }
 
-/* Bring the advertising into line with the policy: advertise only when
- * nobody is connected and the Wi-Fi radio is not carrying a burst. */
+/* Bring the advertising into line with the policy: whenever nobody is
+ * connected, but slowly while the Wi-Fi radio is carrying a burst. */
 static void update_advertising(void)
 {
-    const bool wanted = !s_connected && !s_radio_busy && !s_preparing;
+    const bool wanted = !s_connected;
+    const uint16_t interval =
+        (s_radio_busy || s_preparing) ? ADV_INTERVAL_SLOW : ADV_INTERVAL;
 
-    if (wanted == s_advertising) {
+    if (wanted == s_advertising && interval == s_adv_interval) {
         return;
     }
     if (wanted) {
+        /* A different interval means the advertising is started again
+         * with the new one: NimBLE takes the interval when the
+         * advertising starts. */
+        if (s_advertising) {
+            int rc = ble_gap_adv_stop();
+            if (rc != 0 && rc != BLE_HS_EALREADY) {
+                ESP_LOGW(TAG, "advertising could not be stopped: %d", rc);
+            }
+            s_advertising = false;
+        }
+        s_adv_interval = interval;
         s_advertising = advertise();
     } else {
         int rc = ble_gap_adv_stop();
@@ -210,10 +233,7 @@ static void update_advertising(void)
             ESP_LOGW(TAG, "advertising could not be stopped: %d", rc);
         }
         s_advertising = false;
-        ESP_LOGI(TAG, "advertising is off (%s)",
-                 s_connected ? "a phone is connected"
-                             : (s_radio_busy ? "the radio is busy"
-                                             : "the radio is about to be busy"));
+        ESP_LOGI(TAG, "advertising is off (a phone is connected)");
     }
 }
 
