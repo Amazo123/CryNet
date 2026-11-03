@@ -1,0 +1,237 @@
+=== listening on COM32 for 420 s (the sound is expected after 15 s)
+--- quiet for 15 s: **play the cry now** ---
+  [ 13.57s] node 3: asking for the window (seq 7, rms 0.0220, level 0.0120, win 0.0170)
+  [ 14.66s] node 3: 286/286 fragments in 1.07 s (signal -48 dBm, from -51 to -48; its telemetry reads 
+  [ 14.68s] node 3: window rms 0.016852  mean 56  peak 1494  crest 2.7
+  [ 14.83s] node 3: front end 48.9 ms, inference 103.9 ms, P(no_cry)=0.4141 P(cry)=0.5859
+  [ 14.83s] node 3: no cry
+--- the sound is expected from here ---
+  [ 23.53s] node 3: asking for the window (seq 8, rms 0.0270, level 0.0110, win 0.0340)
+  [ 24.62s] node 3: 286/286 fragments in 1.07 s (signal -48 dBm, from -51 to -48; its telemetry reads 
+  [ 24.63s] node 3: window rms 0.033572  mean -16  peak 2776  crest 2.5
+  [ 24.79s] node 3: front end 52.0 ms, inference 104.0 ms, P(no_cry)=0.3555 P(cry)=0.6445
+  [ 24.79s] node 3: no cry
+  [ 56.22s] node 3: asking for the window (seq 13, rms 0.0130, level 0.0110, win 0.0290)
+  [ 57.27s] node 3: 286/286 fragments in 1.03 s (signal -48 dBm, from -50 to -48; its telemetry reads 
+  [ 57.29s] node 3: window rms 0.028832  mean 10  peak 2523  crest 2.7
+  [ 57.44s] node 3: front end 48.5 ms, inference 104.1 ms, P(no_cry)=0.8398 P(cry)=0.1602
+  [ 57.44s] node 3: no cry
+  [ 84.37s] node 3: asking for the window (seq 1, rms 0.0130, level 0.0090, win 0.0210)
+  [ 85.53s] node 3: 286/286 fragments in 1.14 s (signal -48 dBm, from -50 to -48; its telemetry reads 
+  [ 85.54s] node 3: window rms 0.020550  mean -98  peak 1609  crest 2.4
+  [ 85.70s] node 3: front end 47.9 ms, inference 106.8 ms, P(no_cry)=0.9453 P(cry)=0.0547
+  [ 85.70s] node 3: no cry
+  [ 94.42s] node 3: asking for the window (seq 2, rms 0.0170, level 0.0140, win 0.0270)
+  [ 96.08s] node 3: 286/286 fragments in 1.64 s (signal -47 dBm, from -50 to -47; its telemetry reads 
+  [ 96.09s] node 3: window rms 0.026501  mean 143  peak 2917  crest 3.4
+  [ 96.25s] node 3: front end 51.2 ms, inference 103.2 ms, P(no_cry)=0.5000 P(cry)=0.5000
+  [ 96.25s] node 3: no cry
+  [116.77s] node 3: asking for the window (seq 3, rms 0.0190, level 0.0120, win 0.0230)
+  [117.84s] node 3: 286/286 fragments in 1.05 s (signal -48 dBm, from -50 to -47; its telemetry reads 
+  [117.85s] node 3: window rms 0.023215  mean -31  peak 1922  crest 2.5
+  [118.00s] node 3: front end 47.7 ms, inference 104.8 ms, P(no_cry)=0.9453 P(cry)=0.0547
+  [118.00s] node 3: no cry
+  [127.37s] node 3: asking for the window (seq 4, rms 0.1510, level 0.0210, win 0.0960)
+  [128.42s] node 3: 286/286 fragments in 1.04 s (signal -50 dBm, from -54 to -49; its telemetry reads 
+  [128.43s] node 3: window rms 0.095868  mean -78  peak 13879  crest 4.4
+  [128.59s] node 3: front end 47.8 ms, inference 105.4 ms, P(no_cry)=0.0039 P(cry)=0.9961
+  [128.59s] node 3: ALERT — cry
+  [149.74s] node 3: asking for the window (seq 5, rms 0.0240, level 0.0120, win 0.0260)
+  [150.83s] node 3: 286/286 fragments in 1.07 s (signal -49 dBm, from -52 to -48; its telemetry reads 
+  [150.84s] node 3: window rms 0.026003  mean -36  peak 2247  crest 2.6
+  [151.00s] node 3: front end 48.4 ms, inference 113.2 ms, P(no_cry)=0.4141 P(cry)=0.5859
+  [151.00s] node 3: no cry
+  [152.95s] node 2: asking for the window (seq 1, rms 0.0330, level 0.0220, win 0.0350)
+  [154.80s] node 2: 286/286 fragments in 1.84 s (signal -54 dBm, from -58 to -53; its telemetry reads 
+  [154.82s] node 2: window rms 0.034840  mean -1383  peak 2928  crest 2.6
+  [154.97s] node 2: front end 49.9 ms, inference 104.2 ms, P(no_cry)=0.2812 P(cry)=0.7188
+  [154.97s] node 2: no cry
+  [155.37s] node 1: asking for the window (seq 1, rms 0.0270, level 0.0160, win 0.0260)
+  [157.25s] node 1: 286/286 fragments in 1.86 s (signal -21 dBm, from -23 to -21; its telemetry reads 
+  [157.26s] node 1: window rms 0.025696  mean -1100  peak 3045  crest 3.6
+  [157.42s] node 1: front end 51.5 ms, inference 104.3 ms, P(no_cry)=0.1797 P(cry)=0.8203
+  [157.42s] node 1: no cry
+  [157.43s] node 3: asking for the window (seq 6, rms 0.0590, level 0.0300, win 0.0770)
+  [158.47s] node 3: 286/286 fragments in 1.22 s (signal -49 dBm, from -52 to -48; its telemetry reads 
+  [158.48s] node 3: window rms 0.077431  mean -113  peak 17085  crest 6.7
+  [158.64s] node 3: front end 51.1 ms, inference 104.7 ms, P(no_cry)=0.0039 P(cry)=0.9961
+  [158.64s] node 3: ALERT — cry
+  [179.04s] node 3: asking for the window (seq 7, rms 0.1200, level 0.0300, win 0.1590)
+  [180.11s] node 3: 286/286 fragments in 1.06 s (signal -48 dBm, from -50 to -47; its telemetry reads 
+  [180.13s] node 3: window rms 0.158608  mean 84  peak 22459  crest 4.3
+  [180.28s] node 3: front end 48.4 ms, inference 103.7 ms, P(no_cry)=0.0000 P(cry)=0.9961
+  [180.28s] node 3: ALERT — cry
+  [186.20s] node 1: asking for the window (seq 13, rms 0.0560, level 0.0100, win 0.0220)
+  [187.25s] node 1: 286/286 fragments in 1.04 s (signal -21 dBm, from -23 to -20; its telemetry reads 
+  [187.26s] node 1: window rms 0.021800  mean 282  peak 2537  crest 3.6
+  [187.42s] node 1: front end 48.1 ms, inference 108.8 ms, P(no_cry)=0.7422 P(cry)=0.2578
+  [187.42s] node 1: no cry
+  [191.73s] node 1: asking for the window (seq 14, rms 0.0490, level 0.0260, win 0.0940)
+  [193.57s] node 1: 286/286 fragments in 1.83 s (signal -21 dBm, from -23 to -20; its telemetry reads 
+  [193.58s] node 1: window rms 0.093893  mean 474  peak 20763  crest 6.7
+  [193.74s] node 1: front end 53.0 ms, inference 104.0 ms, P(no_cry)=0.0000 P(cry)=0.9961
+  [193.74s] node 1: ALERT — cry
+  [200.20s] node 2: asking for the window (seq 12, rms 0.0430, level 0.0090, win 0.0230)
+  [201.25s] node 2: 286/286 fragments in 1.04 s (signal -44 dBm, from -46 to -42; its telemetry reads 
+  [201.26s] node 2: window rms 0.023476  mean 45  peak 2304  crest 3.0
+  [201.41s] node 2: front end 51.2 ms, inference 103.7 ms, P(no_cry)=0.9766 P(cry)=0.0234
+  [201.42s] node 2: no cry
+  [201.44s] node 3: asking for the window (seq 8, rms 0.0270, level 0.0120, win 0.0160)
+  [203.26s] node 3: 286/286 fragments in 1.80 s (signal -49 dBm, from -51 to -48; its telemetry reads 
+  [203.27s] node 3: window rms 0.015640  mean -7  peak 1344  crest 2.6
+  [203.43s] node 3: front end 50.2 ms, inference 103.9 ms, P(no_cry)=0.6953 P(cry)=0.3047
+  [203.43s] node 3: no cry
+  [205.71s] node 2: asking for the window (seq 13, rms 0.2690, level 0.0290, win 0.1250)
+  [206.76s] node 2: 286/286 fragments in 1.04 s (signal -44 dBm, from -46 to -42; its telemetry reads 
+  [206.78s] node 2: window rms 0.124549  mean 1193  peak 27279  crest 6.7
+  [206.94s] node 2: front end 48.1 ms, inference 108.9 ms, P(no_cry)=0.9727 P(cry)=0.0273
+  [206.94s] node 2: no cry
+  [211.21s] node 3: asking for the window (seq 9, rms 0.0180, level 0.0100, win 0.0270)
+  [212.32s] node 3: 286/286 fragments in 1.08 s (signal -49 dBm, from -51 to -49; its telemetry reads 
+  [212.33s] node 3: window rms 0.027335  mean -26  peak 2644  crest 3.0
+  [212.49s] node 3: front end 51.7 ms, inference 104.2 ms, P(no_cry)=0.9531 P(cry)=0.0469
+  [212.49s] node 3: no cry
+  [215.09s] node 1: asking for the window (seq 19, rms 0.0120, level 0.0110, win 0.0160)
+  [216.16s] node 1: 286/286 fragments in 1.04 s (signal -21 dBm, from -22 to -20; its telemetry reads 
+  [216.17s] node 1: window rms 0.015584  mean -10  peak 1972  crest 3.9
+  [216.33s] node 1: front end 47.9 ms, inference 103.5 ms, P(no_cry)=0.0195 P(cry)=0.9805
+  [216.33s] node 1: cry (too quiet to announce)
+  [220.14s] node 2: asking for the window (seq 14, rms 0.3040, level 0.0300, win 0.2260)
+  [221.99s] node 2: 286/286 fragments in 1.85 s (signal -45 dBm, from -47 to -44; its telemetry reads 
+  [222.01s] node 2: window rms 0.225885  mean 761  peak 33289  crest 4.5
+  [222.16s] node 2: front end 51.2 ms, inference 103.8 ms, P(no_cry)=0.9922 P(cry)=0.0078
+  [222.16s] node 2: no cry
+  [230.52s] node 1: asking for the window (seq 20, rms 0.0150, level 0.0120, win 0.0210)
+  [231.56s] node 1: 286/286 fragments in 1.03 s (signal -21 dBm, from -22 to -20; its telemetry reads 
+  [231.57s] node 1: window rms 0.020697  mean 79  peak 2449  crest 3.6
+  [231.73s] node 1: front end 51.2 ms, inference 103.9 ms, P(no_cry)=0.0000 P(cry)=0.9961
+  [231.73s] node 1: ALERT — cry
+  [233.39s] node 3: asking for the window (seq 10, rms 0.0300, level 0.0130, win 0.0160)
+  [235.27s] node 3: 286/286 fragments in 1.86 s (signal -49 dBm, from -52 to -48; its telemetry reads 
+  [235.28s] node 3: window rms 0.016365  mean -45  peak 2412  crest 4.5
+  [235.43s] node 3: front end 47.8 ms, inference 103.6 ms, P(no_cry)=0.2578 P(cry)=0.7422
+  [235.43s] node 3: no cry
+  [240.77s] node 2: asking for the window (seq 15, rms 0.2550, level 0.0300, win 0.1800)
+  [241.81s] node 2: 286/286 fragments in 1.03 s (signal -45 dBm, from -47 to -45; its telemetry reads 
+  [241.83s] node 2: window rms 0.180126  mean -8  peak 21405  crest 3.6
+  [241.98s] node 2: front end 48.4 ms, inference 106.0 ms, P(no_cry)=0.0195 P(cry)=0.9805
+  [241.98s] node 2: cry (unconfirmed)
+  [242.48s] node 3: asking for the window (seq 11, rms 0.0160, level 0.0160, win 0.0240)
+  [244.33s] node 3: 286/286 fragments in 1.84 s (signal -49 dBm, from -51 to -48; its telemetry reads 
+  [244.34s] node 3: window rms 0.024274  mean -242  peak 1925  crest 2.4
+  [244.49s] node 3: front end 48.9 ms, inference 103.9 ms, P(no_cry)=0.9961 P(cry)=0.0000
+  [244.49s] node 3: no cry
+  [262.20s] node 2: asking for the window (seq 17, rms 0.3590, level 0.0200, win 0.1730)
+  [264.68s] node 2: 286/286 fragments in 2.46 s (signal -44 dBm, from -46 to -41; its telemetry reads 
+  [264.69s] node 2: window rms 0.172633  mean -670  peak 33389  crest 5.9
+  [264.85s] node 2: front end 48.1 ms, inference 108.6 ms, P(no_cry)=0.8398 P(cry)=0.1602
+  [264.85s] node 2: no cry
+  [265.55s] node 3: asking for the window (seq 12, rms 0.0560, level 0.0140, win 0.0190)
+  [268.17s] node 3: 286/286 fragments in 2.60 s (signal -49 dBm, from -52 to -49; its telemetry reads 
+  [268.19s] node 3: window rms 0.019009  mean -89  peak 2610  crest 4.2
+  [268.34s] node 3: front end 48.1 ms, inference 109.2 ms, P(no_cry)=0.6172 P(cry)=0.3828
+  [268.34s] node 3: no cry
+  [274.62s] node 1: asking for the window (seq 45, rms 0.0240, level 0.0130, win 0.0340)
+  [275.69s] node 1: 286/286 fragments in 1.06 s (signal -21 dBm, from -22 to -20; its telemetry reads 
+  [275.71s] node 1: window rms 0.033705  mean 466  peak 4133  crest 3.7
+  [275.86s] node 1: front end 51.2 ms, inference 104.5 ms, P(no_cry)=0.9648 P(cry)=0.0352
+  [275.86s] node 1: no cry
+  [279.23s] node 3: asking for the window (seq 13, rms 0.0120, level 0.0110, win 0.0290)
+  [280.31s] node 3: 286/286 fragments in 1.06 s (signal -49 dBm, from -51 to -48; its telemetry reads 
+  [280.33s] node 3: window rms 0.028638  mean 44  peak 4175  crest 4.4
+  [280.48s] node 3: front end 48.5 ms, inference 104.2 ms, P(no_cry)=0.5312 P(cry)=0.4688
+  [280.48s] node 3: no cry
+  [283.01s] node 2: asking for the window (seq 18, rms 0.2020, level 0.0300, win 0.0980)
+  [284.09s] node 2: 286/286 fragments in 1.07 s (signal -44 dBm, from -46 to -41; its telemetry reads 
+  [284.10s] node 2: window rms 0.097503  mean -397  peak 22175  crest 6.9
+  [284.26s] node 2: front end 47.8 ms, inference 108.5 ms, P(no_cry)=0.0039 P(cry)=0.9961
+  [284.26s] node 2: ALERT — cry
+  [292.98s] node 2: asking for the window (seq 19, rms 0.0730, level 0.0180, win 0.1190)
+  [294.07s] node 2: 286/286 fragments in 1.07 s (signal -54 dBm, from -64 to -51; its telemetry reads 
+  [294.09s] node 2: window rms 0.118625  mean -207  peak 15786  crest 4.1
+  [294.24s] node 2: front end 48.7 ms, inference 103.7 ms, P(no_cry)=0.9805 P(cry)=0.0195
+  [294.24s] node 2: no cry
+  [295.43s] node 1: asking for the window (seq 46, rms 0.0240, level 0.0100, win 0.0160)
+  [297.24s] node 1: 286/286 fragments in 1.81 s (signal -22 dBm, from -23 to -21; its telemetry reads 
+  [297.26s] node 1: window rms 0.016085  mean 39  peak 1385  crest 2.6
+  [297.41s] node 1: front end 48.4 ms, inference 103.8 ms, P(no_cry)=0.8906 P(cry)=0.1094
+  [297.41s] node 1: no cry
+  [301.31s] node 3: asking for the window (seq 14, rms 0.0110, level 0.0090, win 0.0300)
+  [302.39s] node 3: 286/286 fragments in 1.06 s (signal -50 dBm, from -52 to -49; its telemetry reads 
+  [302.40s] node 3: window rms 0.030001  mean -150  peak 1894  crest 1.9
+  [302.56s] node 3: front end 48.3 ms, inference 108.3 ms, P(no_cry)=0.6680 P(cry)=0.3320
+  [302.56s] node 3: no cry
+  [312.89s] node 3: asking for the window (seq 15, rms 0.0280, level 0.0180, win 0.0360)
+  [314.71s] node 3: 286/286 fragments in 1.80 s (signal -53 dBm, from -55 to -50; its telemetry reads 
+  [314.72s] node 3: window rms 0.036122  mean -256  peak 3140  crest 2.7
+  [314.87s] node 3: front end 48.1 ms, inference 107.2 ms, P(no_cry)=0.9766 P(cry)=0.0234
+  [314.88s] node 3: no cry
+  [338.36s] node 3: asking for the window (seq 17, rms 0.0180, level 0.0120, win 0.0250)
+  [340.21s] node 3: 286/286 fragments in 1.84 s (signal -56 dBm, from -58 to -55; its telemetry reads 
+  [340.22s] node 3: window rms 0.025410  mean -68  peak 2170  crest 2.6
+  [340.39s] node 3: front end 48.1 ms, inference 114.4 ms, P(no_cry)=0.9297 P(cry)=0.0703
+  [340.39s] node 3: no cry
+  [348.87s] node 3: asking for the window (seq 18, rms 0.0810, level 0.0260, win 0.0430)
+  [350.71s] node 3: 286/286 fragments in 1.83 s (signal -57 dBm, from -59 to -54; its telemetry reads 
+  [350.72s] node 3: window rms 0.042779  mean -405  peak 3879  crest 2.8
+  [350.88s] node 3: front end 48.3 ms, inference 109.8 ms, P(no_cry)=0.6953 P(cry)=0.3047
+  [350.88s] node 3: no cry
+  [376.03s] node 3: asking for the window (seq 21, rms 0.0130, level 0.0120, win 0.0160)
+  [377.85s] node 3: 286/286 fragments in 1.81 s (signal -54 dBm, from -56 to -52; its telemetry reads 
+  [377.87s] node 3: window rms 0.016305  mean 32  peak 1610  crest 3.0
+  [378.02s] node 3: front end 53.2 ms, inference 103.8 ms, P(no_cry)=0.9805 P(cry)=0.0195
+  [378.02s] node 3: no cry
+  [383.98s] node 3: asking for the window (seq 22, rms 0.0340, level 0.0190, win 0.0680)
+  [385.02s] node 3: 286/286 fragments in 1.03 s (signal -52 dBm, from -53 to -49; its telemetry reads 
+  [385.03s] node 3: window rms 0.067947  mean 61  peak 4279  crest 1.9
+  [385.19s] node 3: front end 48.3 ms, inference 108.5 ms, P(no_cry)=0.9688 P(cry)=0.0312
+  [385.19s] node 3: no cry
+  [389.58s] node 1: asking for the window (seq 108, rms 0.0270, level 0.0110, win 0.0160)
+  [390.64s] node 1: 286/286 fragments in 1.04 s (signal -21 dBm, from -23 to -20; its telemetry reads 
+  [390.65s] node 1: window rms 0.016497  mean -21  peak 3295  crest 6.1
+  [390.81s] node 1: front end 47.8 ms, inference 108.9 ms, P(no_cry)=0.9492 P(cry)=0.0508
+  [390.81s] node 1: no cry
+  [412.06s] node 3: asking for the window (seq 25, rms 0.0260, level 0.0120, win 0.0160)
+  [413.10s] node 3: 286/286 fragments in 1.03 s (signal -47 dBm, from -48 to -45; its telemetry reads 
+  [413.12s] node 3: window rms 0.015608  mean 60  peak 1265  crest 2.5
+  [413.27s] node 3: front end 48.6 ms, inference 104.0 ms, P(no_cry)=0.0508 P(cry)=0.9492
+  [413.27s] node 3: no cry
+
+=== 195 marks, 37 verdicts, 6 cry verdicts
+  node 3: no cry
+  node 3: no cry
+  node 3: no cry
+  node 3: no cry
+  node 3: no cry
+  node 3: no cry
+  node 3: ALERT — cry
+  node 3: no cry
+  node 2: no cry
+  node 1: no cry
+  node 3: ALERT — cry
+  node 3: ALERT — cry
+  node 1: no cry
+  node 1: ALERT — cry
+  node 2: no cry
+  node 3: no cry
+  node 2: no cry
+  node 3: no cry
+  node 2: no cry
+  node 1: ALERT — cry
+  node 3: no cry
+  node 3: no cry
+  node 2: no cry
+  node 3: no cry
+  node 1: no cry
+  node 3: no cry
+  node 2: ALERT — cry
+  node 2: no cry
+  node 1: no cry
+  node 3: no cry
+  node 3: no cry
+  node 3: no cry
+  node 3: no cry
+  node 3: no cry
+  node 3: no cry
+  node 1: no cry
+  node 3: no cry

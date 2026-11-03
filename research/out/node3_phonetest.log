@@ -1,0 +1,4000 @@
+ESP-ROM:esp32c3-api1-20210207
+Build:Feb  7 2021
+rst:0x15 (USB_UART_CHIP_RESET),boot:0xd (SPI_FAST_FLASH_BOOT)
+Saved PC:0x40053b30
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fcd5820,len:0x110c
+load:0x403cbf10,len:0xb54
+load:0x403ce710,len:0x2f9c
+entry 0x403cbf10
+
+CryNet node firmware — Stage 2b
+node id 3 (saved; the MAC would have said 1)
+I2S ready: 16 kHz, mono, 32-bit slots -> int16
+ESP-NOW protocol version 2
+ESP-NOW ready on channel 6
+commands: status | stats | freeze | burst | id <n> | help
+rms 0.0099  floor 0.0099  level 0.0297  
+rms 0.0199  floor 0.0099  level 0.0298  
+rms 0.0276  floor 0.0100  level 0.0299  
+rms 0.0404  floor 0.0100  level 0.0300  
+rms 0.0486  floor 0.0101  level 0.0300  EVENT
+rms 0.0563  floor 0.0102  level 0.0300  EVENT
+rms 0.0649  floor 0.0103  level 0.0300  EVENT
+rms 0.0657  floor 0.0104  level 0.0300  EVENT
+rms 0.0657  floor 0.0105  level 0.0300  EVENT
+rms 0.0692  floor 0.0106  level 0.0300  EVENT
+rms 0.0700  floor 0.0108  level 0.0300  EVENT
+rms 0.0723  floor 0.0109  level 0.0300  EVENT
+rms 0.0728  floor 0.0110  level 0.0300  EVENT
+rms 0.0727  floor 0.0111  level 0.0300  EVENT
+rms 0.0701  floor 0.0112  level 0.0300  EVENT
+rms 0.0653  floor 0.0113  level 0.0300  EVENT
+rms 0.0580  floor 0.0114  level 0.0300  EVENT
+rms 0.0494  floor 0.0115  level 0.0300  EVENT
+rms 0.0368  floor 0.0116  level 0.0300  EVENT
+rms 0.0364  floor 0.0116  level 0.0300  EVENT
+rms 0.0371  floor 0.0117  level 0.0300  EVENT
+rms 0.0362  floor 0.0117  level 0.0300  EVENT
+rms 0.0349  floor 0.0118  level 0.0300  EVENT
+rms 0.0358  floor 0.0118  level 0.0300  EVENT
+rms 0.0382  floor 0.0119  level 0.0300  EVENT
+rms 0.0481  floor 0.0119  level 0.0300  EVENT
+rms 0.0564  floor 0.0120  level 0.0300  EVENT
+rms 0.0490  floor 0.0121  level 0.0300  EVENT
+rms 0.0290  floor 0.0121  level 0.0300  
+rms 0.0103  floor 0.0103  level 0.0300  
+rms 0.0128  floor 0.0103  level 0.0300  
+rms 0.0184  floor 0.0103  level 0.0300  
+rms 0.0204  floor 0.0103  level 0.0300  
+rms 0.0205  floor 0.0103  level 0.0300  
+rms 0.0175  floor 0.0103  level 0.0300  
+rms 0.0097  floor 0.0097  level 0.0290  
+rms 0.0045  floor 0.0045  level 0.0134  
+rms 0.0076  floor 0.0045  level 0.0135  
+froze window, burst seq 1  level 0.0135  win rms 0.0205
+rms 0.0092  floor 0.0045  level 0.0135  
+rms 0.0096  floor 0.0045  level 0.0135  
+rms 0.0035  floor 0.0035  level 0.0104  
+rms 0.0053  floor 0.0035  level 0.0104  
+rms 0.0059  floor 0.0035  level 0.0104  
+rms 0.0029  floor 0.0029  level 0.0087  
+rms 0.0033  floor 0.0029  level 0.0087  
+rms 0.0043  floor 0.0029  level 0.0087  
+rms 0.0062  floor 0.0029  level 0.0087  
+rms 0.0112  floor 0.0029  level 0.0087  
+rms 0.0132  floor 0.0029  level 0.0088  EVENT
+request: seq 1 first 0 count 286
+served 286 fragments of 286 in 823 ms
+hub is 30:30:F9:17:2F:80
+rms 0.0039  floor 0.0029  level 0.0088  
+rms 0.0043  floor 0.0029  level 0.0088  
+rms 0.0051  floor 0.0029  level 0.0088  
+resend request: seq 1
+resent 10 fragments of seq 1
+rms 0.0052  floor 0.0029  level 0.0088  
+rms 0.0035  floor 0.0029  level 0.0088  
+rms 0.0029  floor 0.0029  level 0.0088  
+rms 0.0052  floor 0.0029  level 0.0088  
+rms 0.0068  floor 0.0029  level 0.0088  
+rms 0.0083  floor 0.0029  level 0.0088  
+rms 0.0062  floor 0.0030  level 0.0089  
+rms 0.0048  floor 0.0030  level 0.0089  
+rms 0.0043  floor 0.0030  level 0.0089  
+rms 0.0027  floor 0.0027  level 0.0082  
+rms 0.0045  floor 0.0028  level 0.0083  
+rms 0.0041  floor 0.0028  level 0.0083  
+rms 0.0039  floor 0.0028  level 0.0083  
+rms 0.0037  floor 0.0028  level 0.0083  
+rms 0.0043  floor 0.0028  level 0.0083  
+rms 0.0078  floor 0.0028  level 0.0083  
+rms 0.0118  floor 0.0028  level 0.0084  
+rms 0.0137  floor 0.0028  level 0.0084  EVENT
+rms 0.0199  floor 0.0028  level 0.0085  EVENT
+rms 0.0120  floor 0.0029  level 0.0086  EVENT
+rms 0.0054  floor 0.0029  level 0.0086  
+rms 0.0031  floor 0.0029  level 0.0086  
+rms 0.0038  floor 0.0029  level 0.0086  
+rms 0.0053  floor 0.0029  level 0.0086  
+rms 0.0097  floor 0.0029  level 0.0087  
+rms 0.0196  floor 0.0029  level 0.0088  EVENT
+rms 0.0087  floor 0.0029  level 0.0088  
+rms 0.0106  floor 0.0030  level 0.0089  
+rms 0.0196  floor 0.0030  level 0.0090  EVENT
+rms 0.0118  floor 0.0030  level 0.0090  EVENT
+rms 0.0053  floor 0.0030  level 0.0090  
+rms 0.0041  floor 0.0030  level 0.0090  
+rms 0.0043  floor 0.0030  level 0.0090  
+rms 0.0046  floor 0.0030  level 0.0090  
+rms 0.0043  floor 0.0030  level 0.0090  
+rms 0.0051  floor 0.0030  level 0.0091  
+rms 0.0163  floor 0.0030  level 0.0091  
+rms 0.0300  floor 0.0031  level 0.0093  EVENT
+rms 0.0233  floor 0.0031  level 0.0094  EVENT
+rms 0.0115  floor 0.0032  level 0.0095  EVENT
+rms 0.0209  floor 0.0032  level 0.0096  EVENT
+rms 0.0471  floor 0.0033  level 0.0098  EVENT
+rms 0.0397  floor 0.0034  level 0.0101  EVENT
+rms 0.0214  floor 0.0034  level 0.0102  EVENT
+rms 0.0082  floor 0.0034  level 0.0102  
+rms 0.0059  floor 0.0034  level 0.0102  
+rms 0.0119  floor 0.0034  level 0.0103  
+rms 0.0117  floor 0.0034  level 0.0103  EVENT
+rms 0.0089  floor 0.0034  level 0.0103  
+rms 0.0086  floor 0.0035  level 0.0104  
+rms 0.0061  floor 0.0035  level 0.0104  
+rms 0.0065  floor 0.0035  level 0.0104  
+rms 0.0055  floor 0.0035  level 0.0104  
+rms 0.0044  floor 0.0035  level 0.0104  
+rms 0.0035  floor 0.0035  level 0.0104  
+rms 0.0049  floor 0.0035  level 0.0104  
+rms 0.0164  floor 0.0035  level 0.0105  
+rms 0.0138  floor 0.0035  level 0.0106  EVENT
+rms 0.0066  floor 0.0035  level 0.0106  
+rms 0.0120  floor 0.0035  level 0.0106  
+rms 0.0048  floor 0.0035  level 0.0106  
+rms 0.0118  floor 0.0036  level 0.0107  
+rms 0.0265  floor 0.0036  level 0.0108  EVENT
+rms 0.0279  floor 0.0037  level 0.0110  EVENT
+rms 0.0452  floor 0.0037  level 0.0112  EVENT
+rms 0.0352  floor 0.0038  level 0.0114  EVENT
+rms 0.0219  floor 0.0038  level 0.0115  EVENT
+rms 0.0732  floor 0.0040  level 0.0119  EVENT
+rms 0.0856  floor 0.0041  level 0.0124  EVENT
+rms 0.0602  floor 0.0042  level 0.0127  EVENT
+rms 0.0284  floor 0.0043  level 0.0129  EVENT
+rms 0.0075  floor 0.0043  level 0.0129  
+rms 0.0166  floor 0.0043  level 0.0130  
+rms 0.0191  floor 0.0044  level 0.0131  EVENT
+rms 0.0163  floor 0.0044  level 0.0131  EVENT
+rms 0.0132  floor 0.0044  level 0.0132  EVENT
+rms 0.0112  floor 0.0044  level 0.0132  
+rms 0.0226  floor 0.0045  level 0.0134  
+rms 0.0181  floor 0.0045  level 0.0134  EVENT
+rms 0.0068  floor 0.0045  level 0.0134  
+rms 0.0158  floor 0.0045  level 0.0135  
+rms 0.0096  floor 0.0045  level 0.0135  
+rms 0.0073  floor 0.0045  level 0.0136  
+rms 0.0221  floor 0.0046  level 0.0137  
+rms 0.0143  floor 0.0046  level 0.0137  EVENT
+rms 0.0091  floor 0.0046  level 0.0138  
+rms 0.0099  floor 0.0046  level 0.0138  
+froze window, burst seq 2  level 0.0138  win rms 0.0265
+rms 0.0074  floor 0.0046  level 0.0138  
+rms 0.0139  floor 0.0046  level 0.0139  
+rms 0.0174  floor 0.0046  level 0.0139  EVENT
+request: seq 2 first 0 count 286
+served 286 fragments of 286 in 729 ms
+rms 0.0150  floor 0.0047  level 0.0140  EVENT
+rms 0.0142  floor 0.0047  level 0.0141  EVENT
+resend request: seq 2
+resent 35 fragments of seq 2
+rms 0.0177  floor 0.0047  level 0.0141  EVENT
+rms 0.0174  floor 0.0047  level 0.0142  EVENT
+rms 0.0071  floor 0.0047  level 0.0142  
+rms 0.0044  floor 0.0044  level 0.0133  
+rms 0.0040  floor 0.0040  level 0.0119  
+rms 0.0163  floor 0.0040  level 0.0120  
+resend request: seq 2
+resent 4 fragments of seq 2
+rms 0.0245  floor 0.0040  level 0.0121  EVENT
+rms 0.0137  floor 0.0041  level 0.0122  EVENT
+rms 0.0049  floor 0.0041  level 0.0122  
+rms 0.0122  floor 0.0041  level 0.0122  
+rms 0.0142  floor 0.0041  level 0.0123  
+rms 0.0101  floor 0.0041  level 0.0123  
+rms 0.0266  floor 0.0041  level 0.0124  
+rms 0.0343  floor 0.0042  level 0.0126  EVENT
+rms 0.0288  floor 0.0043  level 0.0128  EVENT
+rms 0.0178  floor 0.0043  level 0.0129  EVENT
+rms 0.0062  floor 0.0043  level 0.0129  
+rms 0.0083  floor 0.0043  level 0.0129  
+rms 0.0203  floor 0.0043  level 0.0130  
+rms 0.0373  floor 0.0044  level 0.0132  EVENT
+rms 0.0332  floor 0.0045  level 0.0134  EVENT
+rms 0.0143  floor 0.0045  level 0.0134  EVENT
+rms 0.0137  floor 0.0045  level 0.0135  EVENT
+rms 0.0299  floor 0.0045  level 0.0136  EVENT
+rms 0.0197  floor 0.0046  level 0.0137  EVENT
+rms 0.0090  floor 0.0046  level 0.0137  
+rms 0.0051  floor 0.0046  level 0.0137  
+rms 0.0207  floor 0.0046  level 0.0138  
+rms 0.0297  floor 0.0047  level 0.0140  EVENT
+rms 0.0225  floor 0.0047  level 0.0141  EVENT
+rms 0.0097  floor 0.0047  level 0.0141  
+rms 0.0081  floor 0.0047  level 0.0142  
+rms 0.0360  floor 0.0048  level 0.0143  
+rms 0.0371  floor 0.0048  level 0.0145  EVENT
+rms 0.0311  floor 0.0049  level 0.0147  EVENT
+rms 0.0271  floor 0.0049  level 0.0148  EVENT
+rms 0.0229  floor 0.0050  level 0.0149  EVENT
+rms 0.0079  floor 0.0050  level 0.0149  
+rms 0.0204  floor 0.0050  level 0.0150  
+rms 0.0277  floor 0.0051  level 0.0152  EVENT
+rms 0.0314  floor 0.0051  level 0.0153  EVENT
+rms 0.0380  floor 0.0052  level 0.0155  EVENT
+rms 0.0222  floor 0.0052  level 0.0156  EVENT
+rms 0.0106  floor 0.0052  level 0.0157  
+rms 0.0160  floor 0.0052  level 0.0157  
+rms 0.0210  floor 0.0053  level 0.0158  EVENT
+rms 0.0085  floor 0.0053  level 0.0158  
+rms 0.0080  floor 0.0053  level 0.0159  
+rms 0.0226  floor 0.0053  level 0.0160  
+rms 0.0117  floor 0.0053  level 0.0160  
+rms 0.0155  floor 0.0054  level 0.0161  
+rms 0.0168  floor 0.0054  level 0.0161  
+rms 0.0054  floor 0.0054  level 0.0161  
+rms 0.0082  floor 0.0054  level 0.0161  
+rms 0.0181  floor 0.0054  level 0.0162  
+rms 0.0055  floor 0.0054  level 0.0162  
+rms 0.0193  floor 0.0054  level 0.0163  
+rms 0.0204  floor 0.0055  level 0.0164  EVENT
+rms 0.0090  floor 0.0055  level 0.0164  
+rms 0.0038  floor 0.0038  level 0.0113  
+rms 0.0033  floor 0.0033  level 0.0099  
+rms 0.0040  floor 0.0033  level 0.0099  
+rms 0.0053  floor 0.0033  level 0.0099  
+rms 0.0164  floor 0.0033  level 0.0100  
+rms 0.0090  floor 0.0034  level 0.0101  
+rms 0.0168  floor 0.0034  level 0.0101  
+rms 0.0105  floor 0.0034  level 0.0102  EVENT
+rms 0.0053  floor 0.0034  level 0.0102  
+rms 0.0081  floor 0.0034  level 0.0102  
+rms 0.0218  floor 0.0034  level 0.0103  
+rms 0.0145  floor 0.0035  level 0.0104  EVENT
+rms 0.0086  floor 0.0035  level 0.0104  
+rms 0.0196  floor 0.0035  level 0.0105  
+rms 0.0102  floor 0.0035  level 0.0106  
+rms 0.0035  floor 0.0035  level 0.0104  
+rms 0.0232  floor 0.0035  level 0.0106  
+rms 0.0227  floor 0.0036  level 0.0107  EVENT
+rms 0.0119  floor 0.0036  level 0.0107  EVENT
+rms 0.0060  floor 0.0036  level 0.0107  
+rms 0.0085  floor 0.0036  level 0.0108  
+rms 0.0188  floor 0.0036  level 0.0109  
+rms 0.0226  floor 0.0037  level 0.0110  EVENT
+rms 0.0142  floor 0.0037  level 0.0110  EVENT
+rms 0.0064  floor 0.0037  level 0.0110  
+rms 0.0041  floor 0.0037  level 0.0110  
+rms 0.0039  floor 0.0037  level 0.0111  
+rms 0.0032  floor 0.0032  level 0.0095  
+rms 0.0034  floor 0.0032  level 0.0095  
+rms 0.0037  floor 0.0032  level 0.0095  
+rms 0.0037  floor 0.0032  level 0.0095  
+rms 0.0049  floor 0.0032  level 0.0095  
+rms 0.0049  floor 0.0032  level 0.0095  
+rms 0.0036  floor 0.0032  level 0.0095  
+rms 0.0130  floor 0.0032  level 0.0096  
+rms 0.0117  floor 0.0032  level 0.0096  EVENT
+rms 0.0133  floor 0.0032  level 0.0097  EVENT
+rms 0.0116  floor 0.0033  level 0.0098  EVENT
+rms 0.0056  floor 0.0033  level 0.0098  
+rms 0.0054  floor 0.0033  level 0.0098  
+rms 0.0058  floor 0.0033  level 0.0098  
+rms 0.0198  floor 0.0033  level 0.0099  
+rms 0.0183  floor 0.0033  level 0.0100  EVENT
+rms 0.0065  floor 0.0033  level 0.0100  
+rms 0.0039  floor 0.0033  level 0.0100  
+rms 0.0199  floor 0.0034  level 0.0101  
+rms 0.0161  floor 0.0034  level 0.0102  EVENT
+rms 0.0057  floor 0.0034  level 0.0102  
+rms 0.0101  floor 0.0034  level 0.0102  
+rms 0.0230  floor 0.0035  level 0.0104  
+rms 0.0149  floor 0.0035  level 0.0104  EVENT
+rms 0.0054  floor 0.0035  level 0.0104  
+rms 0.0058  floor 0.0035  level 0.0104  
+rms 0.0073  floor 0.0035  level 0.0105  
+rms 0.0062  floor 0.0035  level 0.0105  
+rms 0.0152  floor 0.0035  level 0.0106  
+rms 0.0177  floor 0.0035  level 0.0106  EVENT
+rms 0.0053  floor 0.0036  level 0.0107  
+rms 0.0156  floor 0.0036  level 0.0107  
+rms 0.0125  floor 0.0036  level 0.0108  EVENT
+rms 0.0047  floor 0.0036  level 0.0108  
+rms 0.0174  floor 0.0036  level 0.0109  
+rms 0.0197  floor 0.0037  level 0.0110  EVENT
+rms 0.0097  floor 0.0037  level 0.0110  
+rms 0.0051  floor 0.0037  level 0.0110  
+rms 0.0227  floor 0.0037  level 0.0111  
+rms 0.0277  floor 0.0038  level 0.0113  EVENT
+rms 0.0196  floor 0.0038  level 0.0114  EVENT
+rms 0.0149  floor 0.0038  level 0.0114  EVENT
+rms 0.0089  floor 0.0038  level 0.0115  
+rms 0.0071  floor 0.0038  level 0.0115  
+rms 0.0134  floor 0.0038  level 0.0115  
+rms 0.0368  floor 0.0039  level 0.0117  EVENT
+rms 0.0465  floor 0.0040  level 0.0120  EVENT
+rms 0.0420  floor 0.0041  level 0.0122  EVENT
+rms 0.0310  floor 0.0041  level 0.0124  EVENT
+rms 0.0113  floor 0.0041  level 0.0124  
+rms 0.0069  floor 0.0041  level 0.0124  
+rms 0.0183  floor 0.0042  level 0.0125  
+rms 0.0355  floor 0.0042  level 0.0127  EVENT
+rms 0.0473  floor 0.0043  level 0.0130  EVENT
+rms 0.0304  floor 0.0044  level 0.0131  EVENT
+rms 0.0124  floor 0.0044  level 0.0132  
+rms 0.0037  floor 0.0037  level 0.0111  
+rms 0.0048  floor 0.0037  level 0.0111  
+rms 0.0040  floor 0.0037  level 0.0111  
+rms 0.0144  floor 0.0037  level 0.0112  
+rms 0.0120  floor 0.0037  level 0.0112  EVENT
+rms 0.0078  floor 0.0038  level 0.0113  
+rms 0.0193  floor 0.0038  level 0.0114  
+rms 0.0129  floor 0.0038  level 0.0114  EVENT
+rms 0.0107  floor 0.0038  level 0.0115  
+rms 0.0182  floor 0.0038  level 0.0115  
+rms 0.0106  floor 0.0039  level 0.0116  
+rms 0.0052  floor 0.0039  level 0.0116  
+rms 0.0032  floor 0.0032  level 0.0097  
+rms 0.0199  floor 0.0033  level 0.0098  
+rms 0.0146  floor 0.0033  level 0.0099  EVENT
+rms 0.0065  floor 0.0033  level 0.0099  
+rms 0.0125  floor 0.0033  level 0.0100  
+rms 0.0283  floor 0.0034  level 0.0101  EVENT
+rms 0.0218  floor 0.0034  level 0.0102  EVENT
+rms 0.0105  floor 0.0034  level 0.0103  EVENT
+rms 0.0047  floor 0.0034  level 0.0103  
+rms 0.0033  floor 0.0033  level 0.0100  
+rms 0.0069  floor 0.0033  level 0.0100  
+rms 0.0082  floor 0.0034  level 0.0101  
+rms 0.0077  floor 0.0034  level 0.0101  
+rms 0.0180  floor 0.0034  level 0.0102  
+rms 0.0210  floor 0.0034  level 0.0103  EVENT
+rms 0.0091  floor 0.0034  level 0.0103  
+rms 0.0042  floor 0.0034  level 0.0103  
+rms 0.0143  floor 0.0035  level 0.0104  
+rms 0.0202  floor 0.0035  level 0.0105  EVENT
+rms 0.0100  floor 0.0035  level 0.0105  
+rms 0.0182  floor 0.0035  level 0.0106  
+rms 0.0265  floor 0.0036  level 0.0107  EVENT
+rms 0.0149  floor 0.0036  level 0.0108  EVENT
+rms 0.0060  floor 0.0036  level 0.0108  
+rms 0.0030  floor 0.0030  level 0.0091  
+rms 0.0062  floor 0.0031  level 0.0092  
+rms 0.0075  floor 0.0031  level 0.0092  
+rms 0.0056  floor 0.0031  level 0.0092  
+rms 0.0267  floor 0.0031  level 0.0093  
+rms 0.0444  floor 0.0032  level 0.0096  EVENT
+rms 0.0273  floor 0.0032  level 0.0097  EVENT
+rms 0.0100  floor 0.0033  level 0.0098  EVENT
+rms 0.0048  floor 0.0033  level 0.0098  
+rms 0.0053  floor 0.0033  level 0.0098  
+rms 0.0080  floor 0.0033  level 0.0098  
+rms 0.0048  floor 0.0033  level 0.0098  
+rms 0.0051  floor 0.0033  level 0.0098  
+rms 0.0094  floor 0.0033  level 0.0099  
+rms 0.0123  floor 0.0033  level 0.0099  
+rms 0.0199  floor 0.0033  level 0.0100  EVENT
+rms 0.0453  floor 0.0034  level 0.0103  EVENT
+rms 0.0370  floor 0.0035  level 0.0105  EVENT
+rms 0.0228  floor 0.0035  level 0.0106  EVENT
+rms 0.0126  floor 0.0036  level 0.0107  EVENT
+rms 0.0382  floor 0.0036  level 0.0109  EVENT
+rms 0.0329  floor 0.0037  level 0.0110  EVENT
+rms 0.0113  floor 0.0037  level 0.0111  EVENT
+rms 0.0287  floor 0.0037  level 0.0112  EVENT
+rms 0.0101  floor 0.0038  level 0.0113  
+rms 0.0183  floor 0.0038  level 0.0114  
+rms 0.0287  floor 0.0038  level 0.0115  EVENT
+rms 0.0198  floor 0.0039  level 0.0116  EVENT
+rms 0.0131  floor 0.0039  level 0.0117  EVENT
+rms 0.0058  floor 0.0039  level 0.0117  
+rms 0.0045  floor 0.0039  level 0.0117  
+rms 0.0149  floor 0.0039  level 0.0117  
+rms 0.0181  floor 0.0039  level 0.0118  EVENT
+rms 0.0090  floor 0.0040  level 0.0119  
+rms 0.0174  floor 0.0040  level 0.0119  
+froze window, burst seq 3  level 0.0120  win rms 0.0232
+rms 0.0186  floor 0.0040  level 0.0120  EVENT
+request: seq 3 first 0 count 286
+served 286 fragments of 286 in 736 ms
+rms 0.0072  floor 0.0040  level 0.0121  
+rms 0.0167  floor 0.0040  level 0.0121  
+rms 0.0104  floor 0.0041  level 0.0122  
+resend request: seq 3
+resent 6 fragments of seq 3
+rms 0.0053  floor 0.0041  level 0.0122  
+rms 0.0051  floor 0.0041  level 0.0122  
+rms 0.0207  floor 0.0041  level 0.0123  
+rms 0.0139  floor 0.0041  level 0.0123  EVENT
+rms 0.0056  floor 0.0041  level 0.0123  
+rms 0.0151  floor 0.0041  level 0.0124  
+rms 0.0177  floor 0.0042  level 0.0125  EVENT
+rms 0.0066  floor 0.0042  level 0.0125  
+rms 0.0182  floor 0.0042  level 0.0126  
+rms 0.0161  floor 0.0042  level 0.0127  EVENT
+rms 0.0065  floor 0.0042  level 0.0127  
+rms 0.0210  floor 0.0043  level 0.0128  
+rms 0.0170  floor 0.0043  level 0.0129  EVENT
+rms 0.0069  floor 0.0043  level 0.0129  
+rms 0.0259  floor 0.0043  level 0.0130  
+rms 0.0366  floor 0.0044  level 0.0132  EVENT
+rms 0.0259  floor 0.0044  level 0.0133  EVENT
+rms 0.0096  floor 0.0045  level 0.0134  
+rms 0.0222  floor 0.0045  level 0.0135  
+rms 0.0410  floor 0.0046  level 0.0137  EVENT
+rms 0.0300  floor 0.0046  level 0.0138  EVENT
+rms 0.0193  floor 0.0046  level 0.0139  EVENT
+rms 0.0085  floor 0.0046  level 0.0139  
+rms 0.0025  floor 0.0025  level 0.0074  
+rms 0.0081  floor 0.0025  level 0.0075  
+rms 0.0160  floor 0.0025  level 0.0076  EVENT
+rms 0.0237  floor 0.0026  level 0.0077  EVENT
+rms 0.0102  floor 0.0026  level 0.0077  EVENT
+rms 0.0120  floor 0.0026  level 0.0078  EVENT
+rms 0.0149  floor 0.0026  level 0.0079  EVENT
+rms 0.0079  floor 0.0026  level 0.0079  EVENT
+rms 0.0036  floor 0.0026  level 0.0079  
+rms 0.0042  floor 0.0026  level 0.0079  
+rms 0.0075  floor 0.0026  level 0.0079  
+rms 0.0225  floor 0.0027  level 0.0081  
+rms 0.0136  floor 0.0027  level 0.0081  EVENT
+rms 0.0074  floor 0.0027  level 0.0082  
+rms 0.0139  floor 0.0027  level 0.0082  
+rms 0.0072  floor 0.0027  level 0.0082  
+rms 0.0048  floor 0.0028  level 0.0083  
+rms 0.0033  floor 0.0028  level 0.0083  
+rms 0.0032  floor 0.0028  level 0.0083  
+rms 0.0040  floor 0.0028  level 0.0083  
+rms 0.0041  floor 0.0028  level 0.0083  
+rms 0.0038  floor 0.0028  level 0.0083  
+rms 0.0031  floor 0.0028  level 0.0083  
+rms 0.0038  floor 0.0028  level 0.0083  
+rms 0.0035  floor 0.0028  level 0.0083  
+rms 0.0040  floor 0.0028  level 0.0083  
+rms 0.0028  floor 0.0028  level 0.0083  
+rms 0.0049  floor 0.0028  level 0.0083  
+rms 0.0037  floor 0.0028  level 0.0083  
+rms 0.0033  floor 0.0028  level 0.0083  
+rms 0.0157  floor 0.0028  level 0.0084  
+rms 0.0175  floor 0.0028  level 0.0085  EVENT
+rms 0.0035  floor 0.0028  level 0.0085  
+rms 0.0182  floor 0.0029  level 0.0086  
+rms 0.0157  floor 0.0029  level 0.0087  EVENT
+rms 0.0054  floor 0.0029  level 0.0087  
+rms 0.0155  floor 0.0029  level 0.0088  
+rms 0.0243  floor 0.0030  level 0.0089  EVENT
+rms 0.0153  floor 0.0030  level 0.0090  EVENT
+rms 0.0102  floor 0.0030  level 0.0090  EVENT
+rms 0.0065  floor 0.0030  level 0.0090  
+rms 0.0247  floor 0.0031  level 0.0092  
+rms 0.0369  floor 0.0031  level 0.0094  EVENT
+rms 0.0292  floor 0.0032  level 0.0095  EVENT
+rms 0.0141  floor 0.0032  level 0.0096  EVENT
+rms 0.0048  floor 0.0032  level 0.0096  
+rms 0.0087  floor 0.0032  level 0.0096  
+rms 0.0148  floor 0.0032  level 0.0097  
+rms 0.0352  floor 0.0033  level 0.0099  EVENT
+rms 0.0396  floor 0.0034  level 0.0101  EVENT
+rms 0.0391  floor 0.0034  level 0.0103  EVENT
+rms 0.0600  floor 0.0036  level 0.0107  EVENT
+rms 0.0868  floor 0.0037  level 0.0112  EVENT
+rms 0.1122  floor 0.0039  level 0.0118  EVENT
+rms 0.0887  floor 0.0041  level 0.0123  EVENT
+rms 0.0648  floor 0.0042  level 0.0127  EVENT
+rms 0.0647  floor 0.0043  level 0.0130  EVENT
+rms 0.0563  floor 0.0045  level 0.0134  EVENT
+rms 0.0590  floor 0.0046  level 0.0137  EVENT
+rms 0.0630  floor 0.0047  level 0.0140  EVENT
+rms 0.0767  floor 0.0048  level 0.0145  EVENT
+rms 0.0972  floor 0.0050  level 0.0150  EVENT
+rms 0.1215  floor 0.0052  level 0.0157  EVENT
+rms 0.1103  floor 0.0054  level 0.0163  EVENT
+rms 0.0796  floor 0.0056  level 0.0168  EVENT
+rms 0.0584  floor 0.0057  level 0.0171  EVENT
+rms 0.0741  floor 0.0058  level 0.0175  EVENT
+rms 0.0644  floor 0.0060  level 0.0179  EVENT
+rms 0.0747  floor 0.0061  level 0.0183  EVENT
+rms 0.1173  floor 0.0063  level 0.0190  EVENT
+rms 0.1364  floor 0.0066  level 0.0197  EVENT
+rms 0.1470  floor 0.0069  level 0.0206  EVENT
+froze window, burst seq 4  level 0.0214  win rms 0.0959  (cry mode)
+rms 0.1510  floor 0.0071  level 0.0214  EVENT
+request: seq 4 first 0 count 286
+served 286 fragments of 286 in 738 ms
+rms 0.0923  floor 0.0073  level 0.0219  EVENT
+rms 0.0852  floor 0.0075  level 0.0224  EVENT
+rms 0.0729  floor 0.0076  level 0.0228  EVENT
+resend request: seq 4
+resent 4 fragments of seq 4
+rms 0.0454  floor 0.0077  level 0.0230  EVENT
+rms 0.0290  floor 0.0077  level 0.0232  EVENT
+rms 0.0330  floor 0.0078  level 0.0233  EVENT
+rms 0.0250  floor 0.0078  level 0.0234  EVENT
+rms 0.0102  floor 0.0078  level 0.0234  
+rms 0.0054  floor 0.0054  level 0.0161  
+rms 0.0049  floor 0.0049  level 0.0148  
+rms 0.0192  floor 0.0050  level 0.0149  
+rms 0.0236  floor 0.0050  level 0.0150  EVENT
+rms 0.0294  floor 0.0051  level 0.0152  EVENT
+rms 0.0321  floor 0.0051  level 0.0154  EVENT
+rms 0.0153  floor 0.0051  level 0.0154  
+rms 0.0159  floor 0.0052  level 0.0155  
+rms 0.0172  floor 0.0052  level 0.0156  EVENT
+rms 0.0255  floor 0.0052  level 0.0157  EVENT
+rms 0.0243  floor 0.0053  level 0.0158  EVENT
+rms 0.0426  floor 0.0053  level 0.0160  EVENT
+rms 0.0985  floor 0.0055  level 0.0166  EVENT
+rms 0.0737  floor 0.0057  level 0.0170  EVENT
+rms 0.0389  floor 0.0057  level 0.0172  EVENT
+rms 0.0721  floor 0.0059  level 0.0176  EVENT
+rms 0.1169  floor 0.0061  level 0.0182  EVENT
+rms 0.0822  floor 0.0062  level 0.0187  EVENT
+rms 0.0534  floor 0.0063  level 0.0190  EVENT
+rms 0.0380  floor 0.0064  level 0.0192  EVENT
+rms 0.0501  floor 0.0065  level 0.0194  EVENT
+rms 0.0574  floor 0.0066  level 0.0197  EVENT
+rms 0.0383  floor 0.0066  level 0.0199  EVENT
+rms 0.0453  floor 0.0067  level 0.0202  EVENT
+rms 0.0635  floor 0.0068  level 0.0205  EVENT
+rms 0.0902  floor 0.0070  level 0.0210  EVENT
+rms 0.0959  floor 0.0072  level 0.0215  EVENT
+rms 0.0809  floor 0.0073  level 0.0220  EVENT
+rms 0.0355  floor 0.0074  level 0.0222  EVENT
+rms 0.0169  floor 0.0074  level 0.0222  
+rms 0.0173  floor 0.0074  level 0.0223  
+rms 0.0150  floor 0.0074  level 0.0223  
+rms 0.0126  floor 0.0074  level 0.0223  
+rms 0.0098  floor 0.0075  level 0.0224  
+rms 0.0351  floor 0.0075  level 0.0225  
+rms 0.0471  floor 0.0076  level 0.0228  EVENT
+rms 0.0520  floor 0.0077  level 0.0230  EVENT
+rms 0.0328  floor 0.0077  level 0.0232  EVENT
+rms 0.0198  floor 0.0078  level 0.0233  
+rms 0.0166  floor 0.0078  level 0.0233  
+rms 0.0199  floor 0.0078  level 0.0234  
+rms 0.0118  floor 0.0078  level 0.0234  
+rms 0.0086  floor 0.0078  level 0.0234  
+rms 0.0697  floor 0.0079  level 0.0238  
+rms 0.1128  floor 0.0081  level 0.0244  EVENT
+rms 0.1266  floor 0.0084  level 0.0251  EVENT
+rms 0.1422  floor 0.0086  level 0.0259  EVENT
+rms 0.1633  floor 0.0089  level 0.0268  EVENT
+rms 0.1586  floor 0.0092  level 0.0277  EVENT
+rms 0.1446  floor 0.0095  level 0.0286  EVENT
+rms 0.0968  floor 0.0097  level 0.0291  EVENT
+rms 0.0826  floor 0.0098  level 0.0295  EVENT
+rms 0.0843  floor 0.0100  level 0.0300  EVENT
+rms 0.0927  floor 0.0102  level 0.0300  EVENT
+rms 0.0853  floor 0.0103  level 0.0300  EVENT
+rms 0.0897  floor 0.0105  level 0.0300  EVENT
+rms 0.0938  floor 0.0106  level 0.0300  EVENT
+rms 0.0864  floor 0.0108  level 0.0300  EVENT
+rms 0.0797  floor 0.0109  level 0.0300  EVENT
+rms 0.0843  floor 0.0111  level 0.0300  EVENT
+rms 0.0896  floor 0.0112  level 0.0300  EVENT
+rms 0.0907  floor 0.0114  level 0.0300  EVENT
+rms 0.1044  floor 0.0116  level 0.0300  EVENT
+rms 0.0954  floor 0.0117  level 0.0300  EVENT
+rms 0.0772  floor 0.0119  level 0.0300  EVENT
+rms 0.0625  floor 0.0120  level 0.0300  EVENT
+rms 0.0512  floor 0.0120  level 0.0300  EVENT
+rms 0.0393  floor 0.0121  level 0.0300  EVENT
+rms 0.0402  floor 0.0122  level 0.0300  EVENT
+rms 0.0454  floor 0.0122  level 0.0300  EVENT
+rms 0.0398  floor 0.0123  level 0.0300  EVENT
+rms 0.0262  floor 0.0123  level 0.0300  
+rms 0.0356  floor 0.0124  level 0.0300  
+rms 0.0381  floor 0.0124  level 0.0300  EVENT
+rms 0.0236  floor 0.0124  level 0.0300  
+rms 0.0133  floor 0.0124  level 0.0300  
+rms 0.0159  floor 0.0124  level 0.0300  
+rms 0.0339  floor 0.0125  level 0.0300  
+rms 0.0373  floor 0.0125  level 0.0300  EVENT
+rms 0.0221  floor 0.0125  level 0.0300  
+rms 0.0098  floor 0.0098  level 0.0293  
+rms 0.0169  floor 0.0098  level 0.0294  
+rms 0.0264  floor 0.0098  level 0.0295  
+rms 0.1201  floor 0.0100  level 0.0300  
+rms 0.1722  floor 0.0104  level 0.0300  EVENT
+rms 0.1866  floor 0.0107  level 0.0300  EVENT
+rms 0.1712  floor 0.0110  level 0.0300  EVENT
+rms 0.1698  floor 0.0114  level 0.0300  EVENT
+rms 0.1655  floor 0.0117  level 0.0300  EVENT
+rms 0.1567  floor 0.0120  level 0.0300  EVENT
+rms 0.1292  floor 0.0122  level 0.0300  EVENT
+rms 0.0724  floor 0.0123  level 0.0300  EVENT
+rms 0.0471  floor 0.0124  level 0.0300  EVENT
+rms 0.0334  floor 0.0124  level 0.0300  EVENT
+rms 0.0194  floor 0.0124  level 0.0300  
+rms 0.0253  floor 0.0125  level 0.0300  
+rms 0.0186  floor 0.0125  level 0.0300  
+rms 0.1038  floor 0.0127  level 0.0300  
+rms 0.2086  floor 0.0131  level 0.0300  EVENT
+rms 0.1792  floor 0.0134  level 0.0300  EVENT
+rms 0.1286  floor 0.0136  level 0.0300  EVENT
+rms 0.1385  floor 0.0139  level 0.0300  EVENT
+rms 0.1045  floor 0.0141  level 0.0300  EVENT
+rms 0.0749  floor 0.0142  level 0.0300  EVENT
+rms 0.0629  floor 0.0143  level 0.0300  EVENT
+rms 0.0494  floor 0.0143  level 0.0300  EVENT
+rms 0.0476  floor 0.0144  level 0.0300  EVENT
+rms 0.0451  floor 0.0145  level 0.0300  EVENT
+rms 0.0451  floor 0.0145  level 0.0300  EVENT
+rms 0.0351  floor 0.0146  level 0.0300  EVENT
+rms 0.0163  floor 0.0146  level 0.0300  
+rms 0.0165  floor 0.0146  level 0.0300  
+rms 0.0412  floor 0.0146  level 0.0300  
+rms 0.0420  floor 0.0147  level 0.0300  EVENT
+rms 0.0301  floor 0.0147  level 0.0300  EVENT
+rms 0.0157  floor 0.0147  level 0.0300  
+rms 0.0049  floor 0.0049  level 0.0146  
+rms 0.0067  floor 0.0049  level 0.0146  
+rms 0.0125  floor 0.0049  level 0.0146  
+rms 0.0162  floor 0.0049  level 0.0147  
+rms 0.0153  floor 0.0049  level 0.0148  EVENT
+rms 0.0149  floor 0.0049  level 0.0148  EVENT
+rms 0.0310  floor 0.0050  level 0.0150  EVENT
+rms 0.0359  floor 0.0051  level 0.0152  EVENT
+rms 0.0445  floor 0.0051  level 0.0154  EVENT
+rms 0.0313  floor 0.0052  level 0.0156  EVENT
+rms 0.0188  floor 0.0052  level 0.0156  EVENT
+rms 0.0412  floor 0.0053  level 0.0159  EVENT
+rms 0.0408  floor 0.0054  level 0.0161  EVENT
+rms 0.0284  floor 0.0054  level 0.0162  EVENT
+rms 0.0260  floor 0.0054  level 0.0163  EVENT
+rms 0.0215  floor 0.0055  level 0.0164  EVENT
+rms 0.0099  floor 0.0055  level 0.0164  
+rms 0.0223  floor 0.0055  level 0.0166  
+rms 0.0282  floor 0.0056  level 0.0167  EVENT
+rms 0.0321  floor 0.0056  level 0.0168  EVENT
+rms 0.0390  floor 0.0057  level 0.0170  EVENT
+rms 0.0474  floor 0.0058  level 0.0173  EVENT
+rms 0.0544  floor 0.0059  level 0.0176  EVENT
+rms 0.0335  floor 0.0059  level 0.0178  EVENT
+rms 0.0504  floor 0.0060  level 0.0180  EVENT
+rms 0.0771  floor 0.0061  level 0.0184  EVENT
+rms 0.0664  floor 0.0063  level 0.0188  EVENT
+rms 0.0390  floor 0.0063  level 0.0190  EVENT
+rms 0.0345  floor 0.0064  level 0.0192  EVENT
+rms 0.0376  floor 0.0065  level 0.0194  EVENT
+rms 0.0253  floor 0.0065  level 0.0195  EVENT
+rms 0.0144  floor 0.0065  level 0.0195  
+rms 0.0411  floor 0.0066  level 0.0197  
+rms 0.0922  floor 0.0067  level 0.0202  EVENT
+rms 0.1360  floor 0.0070  level 0.0210  EVENT
+rms 0.1393  floor 0.0073  level 0.0218  EVENT
+rms 0.1379  floor 0.0075  level 0.0226  EVENT
+rms 0.1261  floor 0.0078  level 0.0233  EVENT
+rms 0.1172  floor 0.0080  level 0.0240  EVENT
+rms 0.1157  floor 0.0082  level 0.0246  EVENT
+rms 0.1125  floor 0.0084  level 0.0252  EVENT
+rms 0.1013  floor 0.0086  level 0.0258  EVENT
+rms 0.0858  floor 0.0088  level 0.0263  EVENT
+rms 0.0852  floor 0.0089  level 0.0267  EVENT
+rms 0.0707  floor 0.0090  level 0.0271  EVENT
+rms 0.0405  floor 0.0091  level 0.0273  EVENT
+rms 0.0464  floor 0.0092  level 0.0275  EVENT
+rms 0.0592  floor 0.0093  level 0.0278  EVENT
+rms 0.0769  floor 0.0094  level 0.0282  EVENT
+rms 0.0565  floor 0.0095  level 0.0285  EVENT
+rms 0.0414  floor 0.0096  level 0.0287  EVENT
+rms 0.0151  floor 0.0096  level 0.0287  
+rms 0.0132  floor 0.0096  level 0.0287  
+rms 0.0213  floor 0.0096  level 0.0288  
+rms 0.0161  floor 0.0096  level 0.0288  
+rms 0.0059  floor 0.0059  level 0.0178  
+rms 0.0082  floor 0.0059  level 0.0178  
+rms 0.0198  floor 0.0060  level 0.0179  
+rms 0.0182  floor 0.0060  level 0.0180  EVENT
+rms 0.0211  floor 0.0060  level 0.0181  EVENT
+rms 0.0207  floor 0.0061  level 0.0182  EVENT
+rms 0.0190  floor 0.0061  level 0.0182  EVENT
+rms 0.0221  floor 0.0061  level 0.0183  EVENT
+rms 0.0382  floor 0.0062  level 0.0185  EVENT
+rms 0.0230  floor 0.0062  level 0.0186  EVENT
+rms 0.0512  floor 0.0063  level 0.0189  EVENT
+rms 0.1017  floor 0.0065  level 0.0195  EVENT
+rms 0.0941  floor 0.0067  level 0.0200  EVENT
+rms 0.0495  floor 0.0067  level 0.0202  EVENT
+rms 0.0111  floor 0.0068  level 0.0203  
+rms 0.0246  floor 0.0068  level 0.0204  
+rms 0.0358  floor 0.0069  level 0.0206  EVENT
+rms 0.0450  floor 0.0069  level 0.0208  EVENT
+rms 0.0397  floor 0.0070  level 0.0210  EVENT
+rms 0.0267  floor 0.0070  level 0.0211  EVENT
+rms 0.0221  floor 0.0071  level 0.0212  EVENT
+rms 0.0170  floor 0.0071  level 0.0212  
+rms 0.0101  floor 0.0071  level 0.0213  
+rms 0.0092  floor 0.0071  level 0.0213  
+rms 0.0053  floor 0.0053  level 0.0158  
+rms 0.0162  floor 0.0053  level 0.0159  
+rms 0.0376  floor 0.0054  level 0.0161  EVENT
+rms 0.0266  floor 0.0054  level 0.0162  EVENT
+rms 0.0148  floor 0.0054  level 0.0163  
+rms 0.0412  floor 0.0055  level 0.0165  
+rms 0.0267  floor 0.0055  level 0.0166  EVENT
+rms 0.0257  floor 0.0056  level 0.0167  EVENT
+rms 0.0539  floor 0.0057  level 0.0170  EVENT
+rms 0.0271  floor 0.0057  level 0.0171  EVENT
+rms 0.0068  floor 0.0057  level 0.0172  
+rms 0.0040  floor 0.0040  level 0.0119  
+froze window, burst seq 5  level 0.0120  win rms 0.0260
+rms 0.0116  floor 0.0040  level 0.0120  
+rms 0.0241  floor 0.0040  level 0.0121  
+request: seq 5 first 0 count 286
+served 286 fragments of 286 in 735 ms
+rms 0.0799  floor 0.0042  level 0.0126  EVENT
+rms 0.0417  floor 0.0043  level 0.0128  EVENT
+rms 0.0104  floor 0.0043  level 0.0128  
+resend request: seq 5
+resent 10 fragments of seq 5
+rms 0.0390  floor 0.0043  level 0.0130  
+rms 0.0709  floor 0.0045  level 0.0134  EVENT
+rms 0.0647  floor 0.0046  level 0.0138  EVENT
+rms 0.0341  floor 0.0047  level 0.0140  EVENT
+rms 0.0442  floor 0.0047  level 0.0142  EVENT
+rms 0.0686  floor 0.0049  level 0.0146  EVENT
+rms 0.0506  floor 0.0050  level 0.0149  EVENT
+rms 0.0197  floor 0.0050  level 0.0149  EVENT
+rms 0.1114  floor 0.0052  level 0.0156  EVENT
+rms 0.1467  floor 0.0055  level 0.0164  EVENT
+rms 0.1598  floor 0.0058  level 0.0174  EVENT
+rms 0.1559  floor 0.0061  level 0.0183  EVENT
+rms 0.1517  floor 0.0064  level 0.0191  EVENT
+rms 0.1346  floor 0.0066  level 0.0199  EVENT
+rms 0.1199  floor 0.0069  level 0.0206  EVENT
+rms 0.0318  floor 0.0069  level 0.0207  EVENT
+rms 0.0711  floor 0.0070  level 0.0211  EVENT
+rms 0.0214  floor 0.0071  level 0.0212  EVENT
+rms 0.0100  floor 0.0071  level 0.0212  
+rms 0.0132  floor 0.0071  level 0.0213  
+rms 0.0192  floor 0.0071  level 0.0213  
+rms 0.0330  floor 0.0072  level 0.0215  
+rms 0.0540  floor 0.0073  level 0.0218  EVENT
+rms 0.0578  floor 0.0074  level 0.0221  EVENT
+rms 0.0608  floor 0.0075  level 0.0224  EVENT
+rms 0.0406  floor 0.0075  level 0.0226  EVENT
+rms 0.0267  floor 0.0076  level 0.0227  EVENT
+rms 0.0134  floor 0.0076  level 0.0227  
+rms 0.0062  floor 0.0062  level 0.0185  
+rms 0.0270  floor 0.0062  level 0.0186  
+rms 0.0481  floor 0.0063  level 0.0189  EVENT
+rms 0.0366  floor 0.0063  level 0.0190  EVENT
+rms 0.0238  floor 0.0064  level 0.0191  EVENT
+rms 0.1337  floor 0.0066  level 0.0199  EVENT
+rms 0.1651  floor 0.0070  level 0.0209  EVENT
+rms 0.1814  floor 0.0073  level 0.0219  EVENT
+rms 0.1549  floor 0.0076  level 0.0228  EVENT
+rms 0.1317  floor 0.0078  level 0.0235  EVENT
+rms 0.1293  floor 0.0081  level 0.0243  EVENT
+rms 0.1420  floor 0.0084  level 0.0251  EVENT
+rms 0.1263  floor 0.0086  level 0.0258  EVENT
+rms 0.1204  floor 0.0088  level 0.0264  EVENT
+rms 0.0624  floor 0.0089  level 0.0268  EVENT
+rms 0.0406  floor 0.0090  level 0.0270  EVENT
+rms 0.0429  floor 0.0091  level 0.0272  EVENT
+rms 0.0285  floor 0.0091  level 0.0273  EVENT
+rms 0.0142  floor 0.0091  level 0.0273  
+rms 0.0429  floor 0.0092  level 0.0275  
+rms 0.0504  floor 0.0093  level 0.0278  EVENT
+rms 0.0573  floor 0.0093  level 0.0280  EVENT
+rms 0.0404  floor 0.0094  level 0.0282  EVENT
+rms 0.0262  floor 0.0094  level 0.0283  
+rms 0.0365  floor 0.0095  level 0.0285  
+rms 0.0469  floor 0.0096  level 0.0287  EVENT
+rms 0.0727  floor 0.0097  level 0.0291  EVENT
+rms 0.1135  floor 0.0099  level 0.0297  EVENT
+rms 0.1356  floor 0.0102  level 0.0300  EVENT
+rms 0.1050  floor 0.0103  level 0.0300  EVENT
+rms 0.1056  floor 0.0105  level 0.0300  EVENT
+rms 0.1015  floor 0.0107  level 0.0300  EVENT
+froze window, burst seq 6  level 0.0300  win rms 0.0774  (cry mode)
+rms 0.1062  floor 0.0109  level 0.0300  EVENT
+rms 0.0515  floor 0.0110  level 0.0300  EVENT
+rms 0.0748  floor 0.0111  level 0.0300  EVENT
+rms 0.0944  floor 0.0113  level 0.0300  EVENT
+rms 0.0590  floor 0.0114  level 0.0300  EVENT
+rms 0.0649  floor 0.0115  level 0.0300  EVENT
+rms 0.0501  floor 0.0116  level 0.0300  EVENT
+request: seq 6 first 0 count 286
+served 286 fragments of 286 in 743 ms
+rms 0.0473  floor 0.0116  level 0.0300  EVENT
+rms 0.0359  floor 0.0117  level 0.0300  EVENT
+resend request: seq 6
+rms 0.0273  floor 0.0117  level 0.0300  
+resent 13 fragments of seq 6
+rms 0.0263  floor 0.0117  level 0.0300  
+rms 0.0210  floor 0.0118  level 0.0300  
+rms 0.0132  floor 0.0118  level 0.0300  
+rms 0.0060  floor 0.0060  level 0.0180  
+rms 0.0041  floor 0.0041  level 0.0123  
+rms 0.0070  floor 0.0041  level 0.0123  
+rms 0.0138  floor 0.0041  level 0.0123  
+rms 0.0380  floor 0.0042  level 0.0125  EVENT
+rms 0.0657  floor 0.0043  level 0.0129  EVENT
+rms 0.0291  floor 0.0044  level 0.0131  EVENT
+rms 0.0181  floor 0.0044  level 0.0131  EVENT
+rms 0.0492  floor 0.0045  level 0.0134  EVENT
+rms 0.1141  floor 0.0047  level 0.0141  EVENT
+rms 0.1136  floor 0.0049  level 0.0147  EVENT
+rms 0.1187  floor 0.0051  level 0.0154  EVENT
+rms 0.0947  floor 0.0053  level 0.0159  EVENT
+rms 0.0190  floor 0.0053  level 0.0160  EVENT
+rms 0.0749  floor 0.0055  level 0.0164  EVENT
+rms 0.0225  floor 0.0055  level 0.0165  EVENT
+rms 0.0261  floor 0.0056  level 0.0167  EVENT
+rms 0.0300  floor 0.0056  level 0.0168  EVENT
+rms 0.0520  floor 0.0057  level 0.0171  EVENT
+rms 0.1093  floor 0.0059  level 0.0177  EVENT
+rms 0.1733  floor 0.0062  level 0.0187  EVENT
+rms 0.1654  floor 0.0066  level 0.0197  EVENT
+rms 0.1546  floor 0.0069  level 0.0206  EVENT
+rms 0.0786  floor 0.0070  level 0.0210  EVENT
+rms 0.1956  floor 0.0074  level 0.0221  EVENT
+rms 0.1349  floor 0.0076  level 0.0229  EVENT
+rms 0.0818  floor 0.0078  level 0.0233  EVENT
+rms 0.0902  floor 0.0079  level 0.0238  EVENT
+rms 0.1599  floor 0.0082  level 0.0247  EVENT
+rms 0.1396  floor 0.0085  level 0.0255  EVENT
+rms 0.1003  floor 0.0087  level 0.0261  EVENT
+rms 0.1486  floor 0.0090  level 0.0269  EVENT
+rms 0.1585  floor 0.0093  level 0.0278  EVENT
+rms 0.1849  floor 0.0096  level 0.0289  EVENT
+rms 0.1780  floor 0.0100  level 0.0299  EVENT
+rms 0.1096  floor 0.0102  level 0.0300  EVENT
+rms 0.0446  floor 0.0102  level 0.0300  EVENT
+rms 0.0693  floor 0.0103  level 0.0300  EVENT
+rms 0.1017  floor 0.0105  level 0.0300  EVENT
+rms 0.0933  floor 0.0107  level 0.0300  EVENT
+rms 0.0836  floor 0.0108  level 0.0300  EVENT
+rms 0.0819  floor 0.0110  level 0.0300  EVENT
+rms 0.0744  floor 0.0111  level 0.0300  EVENT
+rms 0.0687  floor 0.0112  level 0.0300  EVENT
+rms 0.0618  floor 0.0113  level 0.0300  EVENT
+rms 0.0521  floor 0.0114  level 0.0300  EVENT
+rms 0.0148  floor 0.0114  level 0.0300  
+rms 0.0163  floor 0.0114  level 0.0300  
+rms 0.0246  floor 0.0114  level 0.0300  
+rms 0.0096  floor 0.0096  level 0.0287  
+rms 0.0137  floor 0.0096  level 0.0288  
+rms 0.0099  floor 0.0096  level 0.0288  
+rms 0.0346  floor 0.0096  level 0.0289  
+rms 0.0686  floor 0.0098  level 0.0293  EVENT
+rms 0.0972  floor 0.0099  level 0.0298  EVENT
+rms 0.0851  floor 0.0101  level 0.0300  EVENT
+rms 0.0409  floor 0.0101  level 0.0300  EVENT
+rms 0.0084  floor 0.0084  level 0.0251  
+rms 0.0120  floor 0.0084  level 0.0251  
+rms 0.0182  floor 0.0084  level 0.0252  
+rms 0.0395  floor 0.0085  level 0.0254  
+rms 0.0317  floor 0.0085  level 0.0255  EVENT
+rms 0.0137  floor 0.0085  level 0.0255  
+rms 0.0393  floor 0.0086  level 0.0257  
+rms 0.0416  floor 0.0086  level 0.0259  EVENT
+rms 0.0431  floor 0.0087  level 0.0261  EVENT
+rms 0.0410  floor 0.0088  level 0.0263  EVENT
+rms 0.0276  floor 0.0088  level 0.0264  EVENT
+rms 0.0790  floor 0.0089  level 0.0268  EVENT
+rms 0.1127  floor 0.0092  level 0.0275  EVENT
+rms 0.0892  floor 0.0093  level 0.0279  EVENT
+rms 0.0632  floor 0.0094  level 0.0283  EVENT
+rms 0.0545  floor 0.0095  level 0.0285  EVENT
+rms 0.0407  floor 0.0096  level 0.0287  EVENT
+rms 0.0410  floor 0.0096  level 0.0289  EVENT
+rms 0.0457  floor 0.0097  level 0.0291  EVENT
+rms 0.0367  floor 0.0098  level 0.0293  EVENT
+rms 0.0373  floor 0.0098  level 0.0295  EVENT
+rms 0.0958  floor 0.0100  level 0.0300  EVENT
+rms 0.0819  floor 0.0101  level 0.0300  EVENT
+rms 0.0153  floor 0.0101  level 0.0300  
+rms 0.0407  floor 0.0102  level 0.0300  
+rms 0.0383  floor 0.0103  level 0.0300  EVENT
+rms 0.1353  floor 0.0105  level 0.0300  EVENT
+rms 0.1963  floor 0.0109  level 0.0300  EVENT
+rms 0.1636  floor 0.0112  level 0.0300  EVENT
+rms 0.0488  floor 0.0113  level 0.0300  EVENT
+rms 0.0864  floor 0.0114  level 0.0300  EVENT
+rms 0.0538  floor 0.0115  level 0.0300  EVENT
+rms 0.0457  floor 0.0116  level 0.0300  EVENT
+rms 0.1007  floor 0.0117  level 0.0300  EVENT
+rms 0.1314  floor 0.0120  level 0.0300  EVENT
+rms 0.0904  floor 0.0121  level 0.0300  EVENT
+rms 0.0241  floor 0.0122  level 0.0300  
+rms 0.0117  floor 0.0117  level 0.0300  
+rms 0.0066  floor 0.0066  level 0.0199  
+rms 0.0217  floor 0.0067  level 0.0200  
+rms 0.0223  floor 0.0067  level 0.0201  EVENT
+rms 0.0103  floor 0.0067  level 0.0201  
+rms 0.0058  floor 0.0058  level 0.0175  
+rms 0.0122  floor 0.0059  level 0.0176  
+rms 0.0162  floor 0.0059  level 0.0176  
+rms 0.0289  floor 0.0059  level 0.0178  
+rms 0.0206  floor 0.0059  level 0.0178  EVENT
+rms 0.0080  floor 0.0060  level 0.0179  
+rms 0.0129  floor 0.0060  level 0.0179  
+rms 0.0230  floor 0.0060  level 0.0180  
+rms 0.0150  floor 0.0060  level 0.0181  
+rms 0.0215  floor 0.0060  level 0.0181  
+rms 0.0493  floor 0.0061  level 0.0184  EVENT
+rms 0.0394  floor 0.0062  level 0.0186  EVENT
+rms 0.0172  floor 0.0062  level 0.0187  
+rms 0.0435  floor 0.0063  level 0.0189  
+rms 0.0598  floor 0.0064  level 0.0192  EVENT
+rms 0.0526  floor 0.0065  level 0.0195  EVENT
+rms 0.0379  floor 0.0066  level 0.0197  EVENT
+rms 0.0117  floor 0.0066  level 0.0197  
+rms 0.0208  floor 0.0066  level 0.0198  
+rms 0.0269  floor 0.0066  level 0.0199  EVENT
+rms 0.0147  floor 0.0067  level 0.0200  
+rms 0.0121  floor 0.0067  level 0.0200  
+rms 0.0197  floor 0.0067  level 0.0201  
+rms 0.0176  floor 0.0067  level 0.0201  
+rms 0.0069  floor 0.0067  level 0.0201  
+rms 0.0159  floor 0.0067  level 0.0202  
+rms 0.0329  floor 0.0068  level 0.0204  
+rms 0.0573  floor 0.0069  level 0.0207  EVENT
+rms 0.0522  floor 0.0070  level 0.0209  EVENT
+rms 0.0386  floor 0.0070  level 0.0211  EVENT
+rms 0.0987  floor 0.0072  level 0.0217  EVENT
+rms 0.1645  floor 0.0075  level 0.0226  EVENT
+rms 0.1861  floor 0.0079  level 0.0237  EVENT
+rms 0.1477  floor 0.0082  level 0.0245  EVENT
+rms 0.1424  floor 0.0084  level 0.0253  EVENT
+rms 0.1655  floor 0.0088  level 0.0263  EVENT
+rms 0.1592  floor 0.0091  level 0.0272  EVENT
+rms 0.1107  floor 0.0093  level 0.0278  EVENT
+rms 0.0462  floor 0.0093  level 0.0280  EVENT
+rms 0.0938  floor 0.0095  level 0.0285  EVENT
+rms 0.0633  floor 0.0096  level 0.0288  EVENT
+rms 0.0823  floor 0.0098  level 0.0293  EVENT
+rms 0.1104  floor 0.0100  level 0.0299  EVENT
+rms 0.1079  floor 0.0102  level 0.0300  EVENT
+rms 0.0996  floor 0.0103  level 0.0300  EVENT
+rms 0.0756  floor 0.0105  level 0.0300  EVENT
+rms 0.0635  floor 0.0106  level 0.0300  EVENT
+rms 0.0541  floor 0.0107  level 0.0300  EVENT
+rms 0.0371  floor 0.0107  level 0.0300  EVENT
+rms 0.0327  floor 0.0108  level 0.0300  EVENT
+rms 0.0317  floor 0.0108  level 0.0300  EVENT
+rms 0.0395  floor 0.0109  level 0.0300  EVENT
+rms 0.0575  floor 0.0109  level 0.0300  EVENT
+rms 0.0375  floor 0.0110  level 0.0300  EVENT
+rms 0.0610  floor 0.0111  level 0.0300  EVENT
+rms 0.0261  floor 0.0111  level 0.0300  
+rms 0.0106  floor 0.0106  level 0.0300  
+rms 0.0149  floor 0.0106  level 0.0300  
+rms 0.0600  floor 0.0107  level 0.0300  
+rms 0.0990  floor 0.0109  level 0.0300  EVENT
+rms 0.0768  floor 0.0111  level 0.0300  EVENT
+rms 0.0499  floor 0.0111  level 0.0300  EVENT
+rms 0.0800  floor 0.0113  level 0.0300  EVENT
+rms 0.1896  floor 0.0116  level 0.0300  EVENT
+rms 0.2026  floor 0.0120  level 0.0300  EVENT
+rms 0.2247  floor 0.0124  level 0.0300  EVENT
+rms 0.1810  floor 0.0128  level 0.0300  EVENT
+rms 0.1604  floor 0.0131  level 0.0300  EVENT
+rms 0.2100  floor 0.0135  level 0.0300  EVENT
+rms 0.1931  floor 0.0138  level 0.0300  EVENT
+rms 0.1677  floor 0.0141  level 0.0300  EVENT
+rms 0.1331  floor 0.0144  level 0.0300  EVENT
+rms 0.1187  floor 0.0146  level 0.0300  EVENT
+rms 0.1061  floor 0.0148  level 0.0300  EVENT
+rms 0.0277  floor 0.0148  level 0.0300  
+rms 0.0977  floor 0.0149  level 0.0300  
+rms 0.0625  floor 0.0150  level 0.0300  EVENT
+rms 0.0790  floor 0.0152  level 0.0300  EVENT
+rms 0.1915  floor 0.0155  level 0.0300  EVENT
+rms 0.1945  floor 0.0159  level 0.0300  EVENT
+rms 0.1329  floor 0.0161  level 0.0300  EVENT
+rms 0.0965  floor 0.0163  level 0.0300  EVENT
+rms 0.1748  floor 0.0166  level 0.0300  EVENT
+rms 0.2025  floor 0.0170  level 0.0300  EVENT
+rms 0.1932  floor 0.0173  level 0.0300  EVENT
+rms 0.1860  floor 0.0177  level 0.0300  EVENT
+rms 0.2141  floor 0.0180  level 0.0300  EVENT
+rms 0.2130  floor 0.0184  level 0.0300  EVENT
+rms 0.1599  floor 0.0187  level 0.0300  EVENT
+rms 0.0783  floor 0.0188  level 0.0300  EVENT
+rms 0.0365  floor 0.0189  level 0.0300  EVENT
+rms 0.0561  floor 0.0189  level 0.0300  EVENT
+rms 0.0437  floor 0.0190  level 0.0300  EVENT
+rms 0.0382  floor 0.0190  level 0.0300  EVENT
+rms 0.0680  floor 0.0191  level 0.0300  EVENT
+rms 0.1344  floor 0.0194  level 0.0300  EVENT
+rms 0.1663  floor 0.0197  level 0.0300  EVENT
+rms 0.1884  floor 0.0200  level 0.0300  EVENT
+rms 0.2258  floor 0.0204  level 0.0300  EVENT
+rms 0.2075  floor 0.0208  level 0.0300  EVENT
+rms 0.1791  floor 0.0211  level 0.0300  EVENT
+rms 0.2083  floor 0.0215  level 0.0300  EVENT
+rms 0.1705  floor 0.0218  level 0.0300  EVENT
+froze window, burst seq 7  level 0.0300  win rms 0.1586  (cry mode)
+rms 0.1202  floor 0.0220  level 0.0300  EVENT
+request: seq 7 first 0 count 286
+served 286 fragments of 286 in 750 ms
+rms 0.1028  floor 0.0221  level 0.0300  EVENT
+rms 0.1811  floor 0.0224  level 0.0300  EVENT
+rms 0.1271  floor 0.0227  level 0.0300  EVENT
+resend request: seq 7
+resent 17 fragments of seq 7
+rms 0.0990  floor 0.0228  level 0.0300  EVENT
+rms 0.1236  floor 0.0230  level 0.0300  EVENT
+rms 0.1309  floor 0.0232  level 0.0300  EVENT
+rms 0.1926  floor 0.0236  level 0.0300  EVENT
+rms 0.1782  floor 0.0239  level 0.0300  EVENT
+rms 0.1469  floor 0.0241  level 0.0300  EVENT
+rms 0.1279  floor 0.0243  level 0.0300  EVENT
+rms 0.1440  floor 0.0246  level 0.0300  EVENT
+rms 0.0774  floor 0.0247  level 0.0300  EVENT
+rms 0.0639  floor 0.0248  level 0.0300  EVENT
+rms 0.1642  floor 0.0250  level 0.0300  EVENT
+rms 0.2215  floor 0.0254  level 0.0300  EVENT
+rms 0.1229  floor 0.0256  level 0.0300  EVENT
+rms 0.0569  floor 0.0257  level 0.0300  EVENT
+rms 0.0342  floor 0.0257  level 0.0300  EVENT
+rms 0.0333  floor 0.0257  level 0.0300  EVENT
+rms 0.0838  floor 0.0258  level 0.0300  EVENT
+rms 0.1560  floor 0.0261  level 0.0300  EVENT
+rms 0.0932  floor 0.0262  level 0.0300  EVENT
+rms 0.0437  floor 0.0263  level 0.0300  EVENT
+rms 0.0735  floor 0.0264  level 0.0300  EVENT
+rms 0.1235  floor 0.0265  level 0.0300  EVENT
+rms 0.1298  floor 0.0268  level 0.0300  EVENT
+rms 0.0769  floor 0.0269  level 0.0300  EVENT
+rms 0.0679  floor 0.0269  level 0.0300  EVENT
+rms 0.0284  floor 0.0269  level 0.0300  
+rms 0.0369  floor 0.0270  level 0.0300  
+rms 0.0203  floor 0.0203  level 0.0300  
+rms 0.0277  floor 0.0203  level 0.0300  
+rms 0.0387  floor 0.0203  level 0.0300  
+rms 0.0721  floor 0.0204  level 0.0300  EVENT
+rms 0.0612  floor 0.0205  level 0.0300  EVENT
+rms 0.0227  floor 0.0205  level 0.0300  
+rms 0.0414  floor 0.0205  level 0.0300  
+rms 0.0790  floor 0.0207  level 0.0300  EVENT
+rms 0.0723  floor 0.0208  level 0.0300  EVENT
+rms 0.0301  floor 0.0208  level 0.0300  EVENT
+rms 0.0347  floor 0.0208  level 0.0300  EVENT
+rms 0.0312  floor 0.0208  level 0.0300  EVENT
+rms 0.0182  floor 0.0182  level 0.0300  
+rms 0.0312  floor 0.0182  level 0.0300  
+rms 0.0374  floor 0.0183  level 0.0300  EVENT
+rms 0.0968  floor 0.0184  level 0.0300  EVENT
+rms 0.0619  floor 0.0185  level 0.0300  EVENT
+rms 0.0136  floor 0.0136  level 0.0300  
+rms 0.0618  floor 0.0137  level 0.0300  
+rms 0.0950  floor 0.0139  level 0.0300  EVENT
+rms 0.0782  floor 0.0140  level 0.0300  EVENT
+rms 0.0417  floor 0.0140  level 0.0300  EVENT
+rms 0.0189  floor 0.0141  level 0.0300  
+rms 0.0210  floor 0.0141  level 0.0300  
+rms 0.0157  floor 0.0141  level 0.0300  
+rms 0.0237  floor 0.0141  level 0.0300  
+rms 0.0174  floor 0.0141  level 0.0300  
+rms 0.0182  floor 0.0141  level 0.0300  
+rms 0.0174  floor 0.0141  level 0.0300  
+rms 0.0092  floor 0.0092  level 0.0275  
+rms 0.0238  floor 0.0092  level 0.0275  
+rms 0.0183  floor 0.0092  level 0.0276  
+rms 0.0070  floor 0.0070  level 0.0211  
+rms 0.0051  floor 0.0051  level 0.0154  
+rms 0.0067  floor 0.0052  level 0.0155  
+rms 0.0182  floor 0.0052  level 0.0155  
+rms 0.0159  floor 0.0052  level 0.0156  EVENT
+rms 0.0123  floor 0.0052  level 0.0156  
+rms 0.0102  floor 0.0052  level 0.0157  
+rms 0.0271  floor 0.0053  level 0.0158  
+rms 0.0354  floor 0.0053  level 0.0160  EVENT
+rms 0.0544  floor 0.0054  level 0.0163  EVENT
+rms 0.0534  floor 0.0055  level 0.0166  EVENT
+rms 0.0223  floor 0.0056  level 0.0167  EVENT
+rms 0.0495  floor 0.0056  level 0.0169  EVENT
+rms 0.0201  floor 0.0057  level 0.0170  EVENT
+rms 0.0259  floor 0.0057  level 0.0171  EVENT
+rms 0.0906  floor 0.0059  level 0.0176  EVENT
+rms 0.0488  floor 0.0060  level 0.0179  EVENT
+rms 0.0153  floor 0.0060  level 0.0180  
+rms 0.0059  floor 0.0059  level 0.0177  
+rms 0.0069  floor 0.0059  level 0.0177  
+rms 0.0283  floor 0.0059  level 0.0178  
+rms 0.0654  floor 0.0061  level 0.0182  EVENT
+rms 0.0512  floor 0.0061  level 0.0184  EVENT
+rms 0.0660  floor 0.0063  level 0.0188  EVENT
+rms 0.0481  floor 0.0064  level 0.0191  EVENT
+rms 0.0105  floor 0.0064  level 0.0191  
+rms 0.0187  floor 0.0064  level 0.0191  
+rms 0.0178  floor 0.0064  level 0.0192  
+rms 0.0191  floor 0.0064  level 0.0193  
+rms 0.0255  floor 0.0065  level 0.0194  
+rms 0.0670  floor 0.0066  level 0.0198  EVENT
+rms 0.0444  floor 0.0067  level 0.0200  EVENT
+rms 0.0145  floor 0.0067  level 0.0200  
+rms 0.0167  floor 0.0067  level 0.0201  
+rms 0.0131  floor 0.0067  level 0.0201  
+rms 0.0385  floor 0.0068  level 0.0203  
+rms 0.0569  floor 0.0069  level 0.0206  EVENT
+rms 0.0617  floor 0.0070  level 0.0210  EVENT
+rms 0.0956  floor 0.0072  level 0.0215  EVENT
+rms 0.0513  floor 0.0073  level 0.0218  EVENT
+rms 0.0185  floor 0.0073  level 0.0218  
+rms 0.0120  floor 0.0073  level 0.0219  
+rms 0.0210  floor 0.0073  level 0.0219  
+rms 0.0391  floor 0.0074  level 0.0221  
+rms 0.0543  floor 0.0075  level 0.0224  EVENT
+rms 0.0348  floor 0.0075  level 0.0226  EVENT
+rms 0.0096  floor 0.0075  level 0.0226  
+rms 0.0262  floor 0.0076  level 0.0227  
+rms 0.0347  floor 0.0076  level 0.0229  EVENT
+rms 0.0150  floor 0.0076  level 0.0229  
+rms 0.0296  floor 0.0077  level 0.0230  
+rms 0.0270  floor 0.0077  level 0.0232  EVENT
+rms 0.0148  floor 0.0077  level 0.0232  
+rms 0.0118  floor 0.0077  level 0.0232  
+rms 0.0079  floor 0.0077  level 0.0232  
+rms 0.0401  floor 0.0078  level 0.0234  
+rms 0.0291  floor 0.0078  level 0.0235  EVENT
+rms 0.0107  floor 0.0079  level 0.0236  
+rms 0.0062  floor 0.0062  level 0.0186  
+rms 0.0091  floor 0.0062  level 0.0186  
+rms 0.0050  floor 0.0050  level 0.0149  
+rms 0.0049  floor 0.0049  level 0.0146  
+rms 0.0310  floor 0.0049  level 0.0147  
+rms 0.0346  floor 0.0050  level 0.0149  EVENT
+rms 0.0252  floor 0.0050  level 0.0150  EVENT
+rms 0.0295  floor 0.0051  level 0.0152  EVENT
+rms 0.0160  floor 0.0051  level 0.0152  EVENT
+rms 0.0099  floor 0.0051  level 0.0153  
+rms 0.0050  floor 0.0050  level 0.0150  
+rms 0.0094  floor 0.0050  level 0.0150  
+rms 0.0252  floor 0.0050  level 0.0151  
+rms 0.0223  floor 0.0051  level 0.0152  EVENT
+rms 0.0156  floor 0.0051  level 0.0153  EVENT
+rms 0.0111  floor 0.0051  level 0.0153  
+rms 0.0087  floor 0.0051  level 0.0154  
+rms 0.0068  floor 0.0051  level 0.0154  
+rms 0.0055  floor 0.0051  level 0.0154  
+rms 0.0088  floor 0.0051  level 0.0154  
+rms 0.0273  floor 0.0052  level 0.0155  
+rms 0.0290  floor 0.0052  level 0.0157  EVENT
+rms 0.0098  floor 0.0052  level 0.0157  
+rms 0.0079  floor 0.0052  level 0.0157  
+rms 0.0201  floor 0.0053  level 0.0158  
+rms 0.0098  floor 0.0053  level 0.0158  
+rms 0.0094  floor 0.0053  level 0.0159  
+rms 0.0206  floor 0.0053  level 0.0160  
+rms 0.0183  floor 0.0053  level 0.0160  EVENT
+rms 0.0078  floor 0.0053  level 0.0160  
+rms 0.0158  floor 0.0054  level 0.0161  
+rms 0.0201  floor 0.0054  level 0.0162  
+rms 0.0285  floor 0.0054  level 0.0163  EVENT
+rms 0.0472  floor 0.0055  level 0.0166  EVENT
+rms 0.0363  floor 0.0056  level 0.0168  EVENT
+rms 0.0429  floor 0.0057  level 0.0170  EVENT
+rms 0.0437  floor 0.0057  level 0.0172  EVENT
+rms 0.0576  floor 0.0058  level 0.0175  EVENT
+rms 0.0268  floor 0.0059  level 0.0177  EVENT
+rms 0.0235  floor 0.0059  level 0.0178  EVENT
+rms 0.0384  floor 0.0060  level 0.0180  EVENT
+rms 0.0326  floor 0.0060  level 0.0181  EVENT
+rms 0.0080  floor 0.0060  level 0.0181  
+rms 0.0070  floor 0.0060  level 0.0181  
+rms 0.0303  floor 0.0061  level 0.0183  
+rms 0.0576  floor 0.0062  level 0.0186  EVENT
+rms 0.0252  floor 0.0062  level 0.0187  EVENT
+rms 0.0140  floor 0.0063  level 0.0188  
+rms 0.0314  floor 0.0063  level 0.0189  
+rms 0.0285  floor 0.0063  level 0.0190  EVENT
+rms 0.0128  floor 0.0064  level 0.0191  
+rms 0.0112  floor 0.0064  level 0.0191  
+rms 0.0144  floor 0.0064  level 0.0192  
+rms 0.0123  floor 0.0064  level 0.0192  
+rms 0.0246  floor 0.0064  level 0.0193  
+rms 0.0317  floor 0.0065  level 0.0195  EVENT
+rms 0.0216  floor 0.0065  level 0.0195  EVENT
+rms 0.0241  floor 0.0065  level 0.0196  EVENT
+rms 0.0475  floor 0.0066  level 0.0199  EVENT
+rms 0.0577  floor 0.0067  level 0.0202  EVENT
+rms 0.0383  floor 0.0068  level 0.0204  EVENT
+rms 0.0259  floor 0.0068  level 0.0205  EVENT
+rms 0.0132  floor 0.0068  level 0.0205  
+rms 0.0061  floor 0.0061  level 0.0183  
+rms 0.0062  floor 0.0061  level 0.0183  
+rms 0.0113  floor 0.0061  level 0.0183  
+rms 0.0127  floor 0.0061  level 0.0183  
+rms 0.0123  floor 0.0061  level 0.0184  
+rms 0.0103  floor 0.0061  level 0.0184  
+rms 0.0062  floor 0.0061  level 0.0184  
+rms 0.0056  floor 0.0056  level 0.0169  
+rms 0.0054  floor 0.0054  level 0.0162  
+rms 0.0059  floor 0.0054  level 0.0162  
+rms 0.0061  floor 0.0054  level 0.0162  
+rms 0.0108  floor 0.0054  level 0.0163  
+rms 0.0270  floor 0.0055  level 0.0164  
+rms 0.0219  floor 0.0055  level 0.0165  EVENT
+rms 0.0115  floor 0.0055  level 0.0165  
+rms 0.0071  floor 0.0055  level 0.0165  
+rms 0.0202  floor 0.0055  level 0.0166  
+rms 0.0144  floor 0.0056  level 0.0167  
+rms 0.0067  floor 0.0056  level 0.0167  
+rms 0.0037  floor 0.0037  level 0.0112  
+rms 0.0150  floor 0.0038  level 0.0113  
+rms 0.0102  floor 0.0038  level 0.0113  
+rms 0.0056  floor 0.0038  level 0.0113  
+rms 0.0211  floor 0.0038  level 0.0114  
+rms 0.0154  floor 0.0038  level 0.0115  EVENT
+rms 0.0089  floor 0.0038  level 0.0115  
+rms 0.0045  floor 0.0038  level 0.0115  
+rms 0.0061  floor 0.0039  level 0.0116  
+rms 0.0061  floor 0.0039  level 0.0116  
+rms 0.0140  floor 0.0039  level 0.0116  
+rms 0.0314  floor 0.0039  level 0.0118  EVENT
+rms 0.0201  floor 0.0040  level 0.0119  EVENT
+rms 0.0088  floor 0.0040  level 0.0119  
+froze window, burst seq 8  level 0.0121  win rms 0.0156
+rms 0.0272  floor 0.0040  level 0.0121  
+request: seq 8 first 0 count 286
+served 286 fragments of 286 in 754 ms
+rms 0.0160  floor 0.0040  level 0.0121  EVENT
+rms 0.0472  floor 0.0041  level 0.0124  EVENT
+resend request: seq 8
+resent 12 fragments of seq 8
+rms 0.0481  floor 0.0042  level 0.0127  EVENT
+rms 0.0259  floor 0.0043  level 0.0128  EVENT
+rms 0.0079  floor 0.0043  level 0.0128  
+rms 0.0134  floor 0.0043  level 0.0129  
+rms 0.0277  floor 0.0043  level 0.0130  EVENT
+rms 0.0319  floor 0.0044  level 0.0132  EVENT
+rms 0.0176  floor 0.0044  level 0.0132  EVENT
+rms 0.0112  floor 0.0044  level 0.0133  
+resend request: seq 8
+resent 1 fragments of seq 8
+rms 0.0152  floor 0.0045  level 0.0134  
+rms 0.0257  floor 0.0045  level 0.0135  EVENT
+rms 0.0762  floor 0.0046  level 0.0139  EVENT
+rms 0.0698  floor 0.0048  level 0.0143  EVENT
+rms 0.0254  floor 0.0048  level 0.0144  EVENT
+rms 0.0602  floor 0.0049  level 0.0148  EVENT
+rms 0.0374  floor 0.0050  level 0.0150  EVENT
+rms 0.0235  floor 0.0050  level 0.0151  EVENT
+rms 0.0427  floor 0.0051  level 0.0153  EVENT
+rms 0.0281  floor 0.0051  level 0.0154  EVENT
+rms 0.0095  floor 0.0052  level 0.0155  
+rms 0.0253  floor 0.0052  level 0.0156  
+rms 0.0464  floor 0.0053  level 0.0158  EVENT
+rms 0.0366  floor 0.0053  level 0.0160  EVENT
+rms 0.0188  floor 0.0054  level 0.0161  EVENT
+rms 0.0486  floor 0.0055  level 0.0164  EVENT
+rms 0.0969  floor 0.0056  level 0.0169  EVENT
+rms 0.0712  floor 0.0058  level 0.0173  EVENT
+rms 0.0277  floor 0.0058  level 0.0174  EVENT
+rms 0.0158  floor 0.0058  level 0.0175  
+rms 0.0332  floor 0.0059  level 0.0176  
+rms 0.0384  floor 0.0059  level 0.0178  EVENT
+rms 0.0509  floor 0.0060  level 0.0181  EVENT
+rms 0.0607  floor 0.0061  level 0.0184  EVENT
+rms 0.0608  floor 0.0063  level 0.0188  EVENT
+rms 0.0516  floor 0.0063  level 0.0190  EVENT
+rms 0.0203  floor 0.0064  level 0.0191  EVENT
+rms 0.0381  floor 0.0064  level 0.0193  EVENT
+rms 0.0643  floor 0.0066  level 0.0197  EVENT
+rms 0.0473  floor 0.0066  level 0.0199  EVENT
+rms 0.0209  floor 0.0067  level 0.0200  EVENT
+rms 0.0057  floor 0.0057  level 0.0172  
+rms 0.0050  floor 0.0050  level 0.0150  
+rms 0.0039  floor 0.0039  level 0.0118  
+rms 0.0066  floor 0.0039  level 0.0118  
+rms 0.0146  floor 0.0039  level 0.0118  
+rms 0.0092  floor 0.0040  level 0.0119  
+rms 0.0083  floor 0.0040  level 0.0119  
+rms 0.0060  floor 0.0040  level 0.0119  
+rms 0.0035  floor 0.0035  level 0.0104  
+rms 0.0203  floor 0.0035  level 0.0105  
+rms 0.0286  floor 0.0035  level 0.0106  EVENT
+rms 0.0210  floor 0.0036  level 0.0108  EVENT
+rms 0.0115  floor 0.0036  level 0.0108  EVENT
+rms 0.0129  floor 0.0036  level 0.0109  EVENT
+rms 0.0280  floor 0.0037  level 0.0110  EVENT
+rms 0.0297  floor 0.0037  level 0.0112  EVENT
+rms 0.0193  floor 0.0038  level 0.0113  EVENT
+rms 0.0114  floor 0.0038  level 0.0113  EVENT
+rms 0.0078  floor 0.0038  level 0.0113  
+rms 0.0312  floor 0.0038  level 0.0115  
+rms 0.0334  floor 0.0039  level 0.0117  EVENT
+rms 0.0139  floor 0.0039  level 0.0117  EVENT
+rms 0.0097  floor 0.0039  level 0.0118  
+rms 0.0093  floor 0.0039  level 0.0118  
+rms 0.0106  floor 0.0039  level 0.0118  
+rms 0.0156  floor 0.0040  level 0.0119  
+rms 0.0095  floor 0.0040  level 0.0119  
+rms 0.0325  floor 0.0040  level 0.0121  
+rms 0.0674  floor 0.0042  level 0.0125  EVENT
+rms 0.0655  floor 0.0043  level 0.0129  EVENT
+rms 0.0441  floor 0.0044  level 0.0131  EVENT
+rms 0.0138  floor 0.0044  level 0.0131  EVENT
+rms 0.0211  floor 0.0044  level 0.0132  EVENT
+rms 0.0376  floor 0.0045  level 0.0134  EVENT
+rms 0.0385  floor 0.0046  level 0.0137  EVENT
+rms 0.0403  floor 0.0046  level 0.0139  EVENT
+rms 0.0336  floor 0.0047  level 0.0140  EVENT
+rms 0.0156  floor 0.0047  level 0.0141  EVENT
+rms 0.0086  floor 0.0047  level 0.0141  
+rms 0.0044  floor 0.0044  level 0.0131  
+rms 0.0035  floor 0.0035  level 0.0106  
+rms 0.0032  floor 0.0032  level 0.0097  
+rms 0.0138  floor 0.0033  level 0.0098  
+rms 0.0111  floor 0.0033  level 0.0098  EVENT
+rms 0.0051  floor 0.0033  level 0.0098  
+rms 0.0159  floor 0.0033  level 0.0099  
+rms 0.0198  floor 0.0033  level 0.0100  EVENT
+rms 0.0088  floor 0.0033  level 0.0100  
+froze window, burst seq 9  level 0.0101  win rms 0.0273
+rms 0.0179  floor 0.0034  level 0.0101  
+rms 0.0185  floor 0.0034  level 0.0102  EVENT
+request: seq 9 first 0 count 286
+served 286 fragments of 286 in 752 ms
+rms 0.0128  floor 0.0034  level 0.0103  EVENT
+rms 0.0096  floor 0.0034  level 0.0103  
+rms 0.0304  floor 0.0035  level 0.0105  
+resend request: seq 9
+resent 10 fragments of seq 9
+rms 0.0278  floor 0.0035  level 0.0106  EVENT
+rms 0.0114  floor 0.0036  level 0.0107  EVENT
+rms 0.0131  floor 0.0036  level 0.0107  EVENT
+rms 0.0295  floor 0.0036  level 0.0109  EVENT
+rms 0.0307  floor 0.0037  level 0.0110  EVENT
+rms 0.0239  floor 0.0037  level 0.0112  EVENT
+rms 0.0197  floor 0.0038  level 0.0113  EVENT
+rms 0.0127  floor 0.0038  level 0.0113  EVENT
+rms 0.0058  floor 0.0038  level 0.0113  
+rms 0.0082  floor 0.0038  level 0.0114  
+rms 0.0138  floor 0.0038  level 0.0114  
+rms 0.0137  floor 0.0038  level 0.0115  EVENT
+rms 0.0129  floor 0.0038  level 0.0115  EVENT
+rms 0.0167  floor 0.0039  level 0.0116  EVENT
+rms 0.0202  floor 0.0039  level 0.0117  EVENT
+rms 0.0160  floor 0.0039  level 0.0118  EVENT
+rms 0.0066  floor 0.0039  level 0.0118  
+rms 0.0109  floor 0.0039  level 0.0118  
+rms 0.0118  floor 0.0040  level 0.0119  
+rms 0.0042  floor 0.0040  level 0.0119  
+rms 0.0042  floor 0.0040  level 0.0119  
+rms 0.0200  floor 0.0040  level 0.0120  
+rms 0.0180  floor 0.0040  level 0.0121  EVENT
+rms 0.0093  floor 0.0040  level 0.0121  
+rms 0.0116  floor 0.0040  level 0.0121  
+rms 0.0229  floor 0.0041  level 0.0123  
+rms 0.0159  floor 0.0041  level 0.0123  EVENT
+rms 0.0117  floor 0.0041  level 0.0124  
+rms 0.0255  floor 0.0042  level 0.0125  
+rms 0.0408  floor 0.0042  level 0.0127  EVENT
+rms 0.0348  floor 0.0043  level 0.0129  EVENT
+rms 0.0233  floor 0.0043  level 0.0130  EVENT
+rms 0.0143  floor 0.0044  level 0.0131  EVENT
+rms 0.0056  floor 0.0044  level 0.0131  
+rms 0.0090  floor 0.0044  level 0.0131  
+rms 0.0116  floor 0.0044  level 0.0132  
+rms 0.0146  floor 0.0044  level 0.0132  
+rms 0.0181  floor 0.0044  level 0.0133  EVENT
+rms 0.0177  floor 0.0045  level 0.0134  EVENT
+rms 0.0114  floor 0.0045  level 0.0134  
+rms 0.0071  floor 0.0045  level 0.0134  
+rms 0.0142  floor 0.0045  level 0.0135  
+rms 0.0087  floor 0.0045  level 0.0135  
+rms 0.0088  floor 0.0045  level 0.0135  
+rms 0.0171  floor 0.0045  level 0.0136  
+rms 0.0092  floor 0.0045  level 0.0136  
+rms 0.0136  floor 0.0046  level 0.0137  
+rms 0.0102  floor 0.0046  level 0.0137  
+rms 0.0045  floor 0.0045  level 0.0135  
+rms 0.0036  floor 0.0036  level 0.0109  
+rms 0.0105  floor 0.0036  level 0.0109  
+rms 0.0158  floor 0.0037  level 0.0110  
+rms 0.0041  floor 0.0037  level 0.0110  
+rms 0.0161  floor 0.0037  level 0.0111  
+rms 0.0184  floor 0.0037  level 0.0112  EVENT
+rms 0.0085  floor 0.0037  level 0.0112  
+rms 0.0165  floor 0.0038  level 0.0113  
+rms 0.0217  floor 0.0038  level 0.0114  EVENT
+rms 0.0124  floor 0.0038  level 0.0114  EVENT
+rms 0.0035  floor 0.0035  level 0.0105  
+rms 0.0091  floor 0.0035  level 0.0106  
+rms 0.0226  floor 0.0036  level 0.0107  
+rms 0.0104  floor 0.0036  level 0.0107  
+rms 0.0025  floor 0.0025  level 0.0075  
+rms 0.0229  floor 0.0025  level 0.0076  
+rms 0.0196  floor 0.0026  level 0.0077  EVENT
+rms 0.0088  floor 0.0026  level 0.0077  EVENT
+rms 0.0045  floor 0.0026  level 0.0077  
+rms 0.0093  floor 0.0026  level 0.0078  
+rms 0.0285  floor 0.0026  level 0.0079  EVENT
+rms 0.0229  floor 0.0027  level 0.0080  EVENT
+rms 0.0466  floor 0.0028  level 0.0083  EVENT
+rms 0.0809  floor 0.0029  level 0.0088  EVENT
+rms 0.0748  floor 0.0031  level 0.0092  EVENT
+rms 0.0403  floor 0.0031  level 0.0094  EVENT
+rms 0.0170  floor 0.0032  level 0.0095  EVENT
+rms 0.0182  floor 0.0032  level 0.0096  EVENT
+rms 0.0289  floor 0.0033  level 0.0098  EVENT
+rms 0.0343  floor 0.0033  level 0.0099  EVENT
+rms 0.0349  floor 0.0034  level 0.0101  EVENT
+rms 0.0333  floor 0.0034  level 0.0103  EVENT
+rms 0.0137  floor 0.0035  level 0.0104  EVENT
+rms 0.0150  floor 0.0035  level 0.0104  EVENT
+rms 0.0121  floor 0.0035  level 0.0105  EVENT
+rms 0.0036  floor 0.0035  level 0.0105  
+rms 0.0075  floor 0.0035  level 0.0105  
+rms 0.0181  floor 0.0035  level 0.0106  
+rms 0.0249  floor 0.0036  level 0.0107  EVENT
+rms 0.0182  floor 0.0036  level 0.0108  EVENT
+rms 0.0094  floor 0.0036  level 0.0109  
+rms 0.0090  floor 0.0036  level 0.0109  
+rms 0.0055  floor 0.0036  level 0.0109  
+rms 0.0101  floor 0.0036  level 0.0109  
+rms 0.0149  floor 0.0037  level 0.0110  
+rms 0.0111  floor 0.0037  level 0.0111  EVENT
+rms 0.0229  floor 0.0037  level 0.0112  EVENT
+rms 0.0226  floor 0.0038  level 0.0113  EVENT
+rms 0.0128  floor 0.0038  level 0.0113  EVENT
+rms 0.0055  floor 0.0038  level 0.0114  
+rms 0.0084  floor 0.0038  level 0.0114  
+rms 0.0266  floor 0.0038  level 0.0115  
+rms 0.0149  floor 0.0039  level 0.0116  EVENT
+rms 0.0136  floor 0.0039  level 0.0116  EVENT
+rms 0.0289  floor 0.0039  level 0.0118  EVENT
+rms 0.0176  floor 0.0040  level 0.0119  EVENT
+rms 0.0064  floor 0.0040  level 0.0119  
+rms 0.0038  floor 0.0038  level 0.0114  
+rms 0.0089  floor 0.0038  level 0.0114  
+rms 0.0116  floor 0.0038  level 0.0114  
+rms 0.0222  floor 0.0038  level 0.0115  EVENT
+rms 0.0158  floor 0.0039  level 0.0116  EVENT
+rms 0.0159  floor 0.0039  level 0.0117  EVENT
+rms 0.0181  floor 0.0039  level 0.0118  EVENT
+rms 0.0156  floor 0.0039  level 0.0118  EVENT
+rms 0.0129  floor 0.0040  level 0.0119  EVENT
+rms 0.0110  floor 0.0040  level 0.0119  
+rms 0.0171  floor 0.0040  level 0.0120  
+rms 0.0373  floor 0.0041  level 0.0122  EVENT
+rms 0.0546  floor 0.0042  level 0.0125  EVENT
+rms 0.0493  floor 0.0043  level 0.0128  EVENT
+rms 0.0337  floor 0.0043  level 0.0130  EVENT
+rms 0.0103  floor 0.0043  level 0.0130  
+rms 0.0214  floor 0.0044  level 0.0131  
+rms 0.0250  floor 0.0044  level 0.0132  EVENT
+rms 0.0289  floor 0.0045  level 0.0134  EVENT
+rms 0.0341  floor 0.0045  level 0.0136  EVENT
+rms 0.0217  floor 0.0046  level 0.0137  EVENT
+rms 0.0089  floor 0.0046  level 0.0137  
+rms 0.0102  floor 0.0046  level 0.0137  
+rms 0.0231  floor 0.0046  level 0.0138  
+rms 0.0462  floor 0.0047  level 0.0141  EVENT
+rms 0.0328  floor 0.0047  level 0.0142  EVENT
+rms 0.0099  floor 0.0048  level 0.0143  
+rms 0.0174  floor 0.0048  level 0.0144  
+rms 0.0262  floor 0.0048  level 0.0145  EVENT
+rms 0.0297  floor 0.0049  level 0.0146  EVENT
+rms 0.0127  floor 0.0049  level 0.0147  
+rms 0.0183  floor 0.0049  level 0.0148  
+rms 0.0147  floor 0.0049  level 0.0148  
+rms 0.0120  floor 0.0050  level 0.0149  
+rms 0.0576  floor 0.0051  level 0.0152  
+rms 0.0692  floor 0.0052  level 0.0156  EVENT
+rms 0.0494  floor 0.0053  level 0.0158  EVENT
+rms 0.0192  floor 0.0053  level 0.0159  EVENT
+rms 0.0118  floor 0.0053  level 0.0159  
+rms 0.0239  floor 0.0054  level 0.0161  
+rms 0.0311  floor 0.0054  level 0.0162  EVENT
+rms 0.0354  floor 0.0055  level 0.0164  EVENT
+rms 0.0298  floor 0.0055  level 0.0165  EVENT
+rms 0.0194  floor 0.0055  level 0.0166  EVENT
+rms 0.0112  floor 0.0056  level 0.0167  
+rms 0.0107  floor 0.0056  level 0.0167  
+rms 0.0113  floor 0.0056  level 0.0167  
+rms 0.0120  floor 0.0056  level 0.0168  
+rms 0.0144  floor 0.0056  level 0.0168  
+rms 0.0077  floor 0.0056  level 0.0168  
+rms 0.0130  floor 0.0056  level 0.0169  
+rms 0.0101  floor 0.0056  level 0.0169  
+rms 0.0083  floor 0.0056  level 0.0169  
+rms 0.0127  floor 0.0057  level 0.0170  
+rms 0.0169  floor 0.0057  level 0.0170  
+rms 0.0064  floor 0.0057  level 0.0170  
+rms 0.0134  floor 0.0057  level 0.0171  
+rms 0.0150  floor 0.0057  level 0.0171  
+rms 0.0160  floor 0.0057  level 0.0172  
+rms 0.0147  floor 0.0057  level 0.0172  
+rms 0.0118  floor 0.0058  level 0.0173  
+rms 0.0226  floor 0.0058  level 0.0174  
+rms 0.0219  floor 0.0058  level 0.0175  EVENT
+rms 0.0120  floor 0.0058  level 0.0175  
+rms 0.0046  floor 0.0046  level 0.0137  
+rms 0.0053  floor 0.0046  level 0.0137  
+rms 0.0186  floor 0.0046  level 0.0137  
+rms 0.0116  floor 0.0046  level 0.0138  
+rms 0.0097  floor 0.0046  level 0.0138  
+rms 0.0180  floor 0.0046  level 0.0139  
+rms 0.0113  floor 0.0046  level 0.0139  
+rms 0.0133  floor 0.0047  level 0.0140  
+rms 0.0141  floor 0.0047  level 0.0140  
+rms 0.0115  floor 0.0047  level 0.0141  
+rms 0.0223  floor 0.0047  level 0.0142  
+rms 0.0179  floor 0.0048  level 0.0143  EVENT
+rms 0.0090  floor 0.0048  level 0.0143  
+rms 0.0076  floor 0.0048  level 0.0143  
+rms 0.0124  floor 0.0048  level 0.0144  
+rms 0.0134  floor 0.0048  level 0.0144  
+rms 0.0213  floor 0.0048  level 0.0145  
+rms 0.0143  floor 0.0049  level 0.0146  
+rms 0.0137  floor 0.0049  level 0.0146  
+rms 0.0167  floor 0.0049  level 0.0147  
+rms 0.0154  floor 0.0049  level 0.0148  EVENT
+rms 0.0114  floor 0.0049  level 0.0148  
+rms 0.0063  floor 0.0049  level 0.0148  
+rms 0.0054  floor 0.0049  level 0.0148  
+rms 0.0074  floor 0.0049  level 0.0148  
+rms 0.0215  floor 0.0050  level 0.0149  
+rms 0.0250  floor 0.0050  level 0.0150  EVENT
+rms 0.0141  floor 0.0050  level 0.0151  
+rms 0.0126  floor 0.0050  level 0.0151  
+rms 0.0224  floor 0.0051  level 0.0152  
+rms 0.0259  floor 0.0051  level 0.0154  EVENT
+rms 0.0233  floor 0.0052  level 0.0155  EVENT
+rms 0.0185  floor 0.0052  level 0.0156  EVENT
+rms 0.0111  floor 0.0052  level 0.0156  
+rms 0.0043  floor 0.0043  level 0.0128  
+rms 0.0070  floor 0.0043  level 0.0128  
+rms 0.0135  floor 0.0043  level 0.0129  
+rms 0.0112  floor 0.0043  level 0.0129  
+rms 0.0066  floor 0.0043  level 0.0129  
+rms 0.0100  floor 0.0043  level 0.0130  
+froze window, burst seq 10  level 0.0131  win rms 0.0164
+rms 0.0265  floor 0.0044  level 0.0131  
+rms 0.0299  floor 0.0044  level 0.0133  EVENT
+request: seq 10 first 0 count 286
+served 286 fragments of 286 in 753 ms
+rms 0.0192  floor 0.0045  level 0.0134  EVENT
+rms 0.0175  floor 0.0045  level 0.0134  EVENT
+rms 0.0419  floor 0.0046  level 0.0137  EVENT
+resend request: seq 10
+resent 11 fragments of seq 10
+rms 0.0219  floor 0.0046  level 0.0138  EVENT
+rms 0.0493  floor 0.0047  level 0.0140  EVENT
+rms 0.0391  floor 0.0047  level 0.0142  EVENT
+rms 0.0112  floor 0.0048  level 0.0143  
+rms 0.0303  floor 0.0048  level 0.0144  
+rms 0.0355  floor 0.0049  level 0.0146  EVENT
+rms 0.0162  floor 0.0049  level 0.0147  EVENT
+rms 0.0042  floor 0.0042  level 0.0126  
+resend request: seq 10
+resent 2 fragments of seq 10
+rms 0.0150  floor 0.0042  level 0.0126  
+rms 0.0190  floor 0.0042  level 0.0127  EVENT
+rms 0.0078  floor 0.0042  level 0.0127  
+rms 0.0166  floor 0.0043  level 0.0128  
+rms 0.0293  floor 0.0043  level 0.0130  EVENT
+rms 0.0139  floor 0.0043  level 0.0130  EVENT
+rms 0.0222  floor 0.0044  level 0.0131  EVENT
+rms 0.0281  floor 0.0044  level 0.0133  EVENT
+rms 0.0279  floor 0.0045  level 0.0134  EVENT
+rms 0.0821  floor 0.0046  level 0.0139  EVENT
+rms 0.0813  floor 0.0048  level 0.0143  EVENT
+rms 0.0378  floor 0.0048  level 0.0145  EVENT
+rms 0.0173  floor 0.0049  level 0.0146  EVENT
+rms 0.0415  floor 0.0049  level 0.0148  EVENT
+rms 0.0606  floor 0.0051  level 0.0152  EVENT
+rms 0.0490  floor 0.0051  level 0.0154  EVENT
+rms 0.0229  floor 0.0052  level 0.0155  EVENT
+rms 0.0085  floor 0.0052  level 0.0156  
+rms 0.0041  floor 0.0041  level 0.0123  
+rms 0.0121  floor 0.0041  level 0.0124  
+rms 0.0204  floor 0.0042  level 0.0125  
+rms 0.0168  floor 0.0042  level 0.0126  EVENT
+rms 0.0114  floor 0.0042  level 0.0126  
+rms 0.0065  floor 0.0042  level 0.0126  
+rms 0.0059  floor 0.0042  level 0.0126  
+rms 0.0082  floor 0.0042  level 0.0126  
+rms 0.0211  floor 0.0042  level 0.0127  
+rms 0.0226  floor 0.0043  level 0.0129  EVENT
+rms 0.0125  floor 0.0043  level 0.0129  
+rms 0.0061  floor 0.0043  level 0.0129  
+rms 0.0056  floor 0.0043  level 0.0129  
+rms 0.0201  floor 0.0043  level 0.0130  
+rms 0.0242  floor 0.0044  level 0.0131  EVENT
+rms 0.0128  floor 0.0044  level 0.0132  
+rms 0.0186  floor 0.0044  level 0.0133  
+rms 0.0187  floor 0.0045  level 0.0134  EVENT
+rms 0.0215  floor 0.0045  level 0.0135  EVENT
+rms 0.0136  floor 0.0045  level 0.0135  EVENT
+rms 0.0640  floor 0.0046  level 0.0139  EVENT
+rms 0.0954  floor 0.0048  level 0.0144  EVENT
+rms 0.0608  floor 0.0049  level 0.0148  EVENT
+rms 0.0195  floor 0.0049  level 0.0148  EVENT
+rms 0.0180  floor 0.0050  level 0.0149  EVENT
+rms 0.0346  floor 0.0050  level 0.0151  EVENT
+rms 0.0365  floor 0.0051  level 0.0153  EVENT
+rms 0.0471  floor 0.0052  level 0.0155  EVENT
+rms 0.0462  floor 0.0053  level 0.0158  EVENT
+rms 0.0349  floor 0.0053  level 0.0160  EVENT
+rms 0.0176  floor 0.0053  level 0.0160  EVENT
+rms 0.0095  floor 0.0054  level 0.0161  
+rms 0.0266  floor 0.0054  level 0.0162  
+rms 0.0295  floor 0.0054  level 0.0163  EVENT
+rms 0.0203  floor 0.0055  level 0.0164  EVENT
+rms 0.0131  floor 0.0055  level 0.0165  
+rms 0.0140  floor 0.0055  level 0.0165  
+rms 0.0167  floor 0.0055  level 0.0166  
+rms 0.0222  floor 0.0056  level 0.0167  EVENT
+rms 0.0239  floor 0.0056  level 0.0168  EVENT
+rms 0.0169  floor 0.0056  level 0.0169  
+rms 0.0105  floor 0.0056  level 0.0169  
+froze window, burst seq 11  level 0.0169  win rms 0.0243
+rms 0.0123  floor 0.0056  level 0.0169  
+rms 0.0115  floor 0.0057  level 0.0170  
+rms 0.0115  floor 0.0057  level 0.0170  
+rms 0.0098  floor 0.0057  level 0.0170  
+rms 0.0148  floor 0.0057  level 0.0171  
+rms 0.0114  floor 0.0057  level 0.0171  
+rms 0.0064  floor 0.0057  level 0.0171  
+rms 0.0209  floor 0.0057  level 0.0172  
+rms 0.0139  floor 0.0058  level 0.0173  
+rms 0.0053  floor 0.0053  level 0.0159  
+rms 0.0058  floor 0.0053  level 0.0159  
+rms 0.0192  floor 0.0053  level 0.0160  
+rms 0.0157  floor 0.0053  level 0.0160  
+request: seq 11 first 0 count 286
+served 286 fragments of 286 in 751 ms
+rms 0.0066  floor 0.0053  level 0.0160  
+rms 0.0051  floor 0.0051  level 0.0153  
+resend request: seq 11
+resent 15 fragments of seq 11
+rms 0.0162  floor 0.0051  level 0.0153  
+rms 0.0157  floor 0.0051  level 0.0154  EVENT
+rms 0.0058  floor 0.0051  level 0.0154  
+rms 0.0192  floor 0.0052  level 0.0155  
+rms 0.0139  floor 0.0052  level 0.0155  
+rms 0.0054  floor 0.0052  level 0.0155  
+rms 0.0065  floor 0.0052  level 0.0155  
+rms 0.0078  floor 0.0052  level 0.0156  
+resend request: seq 11
+resent 1 fragments of seq 11
+rms 0.0144  floor 0.0052  level 0.0156  
+rms 0.0201  floor 0.0052  level 0.0157  
+rms 0.0076  floor 0.0052  level 0.0157  
+rms 0.0079  floor 0.0052  level 0.0157  
+rms 0.0183  floor 0.0053  level 0.0158  
+rms 0.0097  floor 0.0053  level 0.0158  
+rms 0.0151  floor 0.0053  level 0.0159  
+rms 0.0206  floor 0.0053  level 0.0160  
+rms 0.0069  floor 0.0053  level 0.0160  
+rms 0.0053  floor 0.0053  level 0.0158  
+rms 0.0184  floor 0.0053  level 0.0159  
+rms 0.0199  floor 0.0053  level 0.0160  EVENT
+rms 0.0137  floor 0.0054  level 0.0161  
+rms 0.0076  floor 0.0054  level 0.0161  
+rms 0.0035  floor 0.0035  level 0.0105  
+rms 0.0112  floor 0.0035  level 0.0106  
+rms 0.0223  floor 0.0036  level 0.0107  EVENT
+rms 0.0092  floor 0.0036  level 0.0107  
+rms 0.0148  floor 0.0036  level 0.0108  
+rms 0.0154  floor 0.0036  level 0.0109  EVENT
+rms 0.0050  floor 0.0036  level 0.0109  
+rms 0.0050  floor 0.0036  level 0.0109  
+rms 0.0144  floor 0.0036  level 0.0109  
+rms 0.0212  floor 0.0037  level 0.0110  EVENT
+rms 0.0121  floor 0.0037  level 0.0111  EVENT
+rms 0.0111  floor 0.0037  level 0.0111  
+rms 0.0157  floor 0.0037  level 0.0112  
+rms 0.0144  floor 0.0038  level 0.0113  EVENT
+rms 0.0119  floor 0.0038  level 0.0113  EVENT
+rms 0.0148  floor 0.0038  level 0.0114  EVENT
+rms 0.0102  floor 0.0038  level 0.0114  
+rms 0.0115  floor 0.0038  level 0.0115  
+rms 0.0144  floor 0.0038  level 0.0115  
+rms 0.0102  floor 0.0039  level 0.0116  
+rms 0.0090  floor 0.0039  level 0.0116  
+rms 0.0155  floor 0.0039  level 0.0117  
+rms 0.0114  floor 0.0039  level 0.0117  
+rms 0.0115  floor 0.0039  level 0.0118  
+rms 0.0117  floor 0.0039  level 0.0118  
+rms 0.0129  floor 0.0040  level 0.0119  
+rms 0.0146  floor 0.0040  level 0.0119  EVENT
+rms 0.0130  floor 0.0040  level 0.0120  EVENT
+rms 0.0186  floor 0.0040  level 0.0121  EVENT
+rms 0.0153  floor 0.0040  level 0.0121  EVENT
+rms 0.0076  floor 0.0041  level 0.0122  
+rms 0.0047  floor 0.0041  level 0.0122  
+rms 0.0044  floor 0.0041  level 0.0122  
+rms 0.0047  floor 0.0041  level 0.0122  
+rms 0.0051  floor 0.0041  level 0.0122  
+rms 0.0038  floor 0.0038  level 0.0114  
+rms 0.0052  floor 0.0038  level 0.0114  
+rms 0.0145  floor 0.0038  level 0.0115  
+rms 0.0149  floor 0.0038  level 0.0115  EVENT
+rms 0.0140  floor 0.0039  level 0.0116  EVENT
+rms 0.0179  floor 0.0039  level 0.0117  EVENT
+rms 0.0118  floor 0.0039  level 0.0117  EVENT
+rms 0.0113  floor 0.0039  level 0.0118  
+rms 0.0081  floor 0.0039  level 0.0118  
+rms 0.0120  floor 0.0039  level 0.0118  
+rms 0.0410  floor 0.0040  level 0.0121  EVENT
+rms 0.0463  floor 0.0041  level 0.0123  EVENT
+rms 0.0267  floor 0.0042  level 0.0125  EVENT
+rms 0.0095  floor 0.0042  level 0.0125  
+rms 0.0266  floor 0.0042  level 0.0126  
+rms 0.0392  floor 0.0043  level 0.0128  EVENT
+rms 0.0262  floor 0.0043  level 0.0130  EVENT
+rms 0.0131  floor 0.0043  level 0.0130  EVENT
+rms 0.0089  floor 0.0043  level 0.0130  
+rms 0.0159  floor 0.0044  level 0.0131  
+rms 0.0166  floor 0.0044  level 0.0132  EVENT
+rms 0.0094  floor 0.0044  level 0.0132  
+rms 0.0084  floor 0.0044  level 0.0132  
+rms 0.0056  floor 0.0044  level 0.0133  
+rms 0.0038  floor 0.0038  level 0.0115  
+rms 0.0025  floor 0.0025  level 0.0076  
+rms 0.0023  floor 0.0023  level 0.0070  
+rms 0.0023  floor 0.0023  level 0.0069  
+rms 0.0145  floor 0.0023  level 0.0070  
+rms 0.0179  floor 0.0024  level 0.0071  EVENT
+rms 0.0118  floor 0.0024  level 0.0071  EVENT
+rms 0.0206  floor 0.0024  level 0.0072  EVENT
+rms 0.0201  floor 0.0024  level 0.0073  EVENT
+rms 0.0102  floor 0.0025  level 0.0074  EVENT
+rms 0.0053  floor 0.0025  level 0.0074  
+rms 0.0123  floor 0.0025  level 0.0075  
+rms 0.0391  floor 0.0026  level 0.0077  EVENT
+rms 0.0374  floor 0.0026  level 0.0079  EVENT
+rms 0.0210  floor 0.0027  level 0.0080  EVENT
+rms 0.0096  floor 0.0027  level 0.0081  EVENT
+rms 0.0053  floor 0.0027  level 0.0081  
+rms 0.0044  floor 0.0027  level 0.0081  
+rms 0.0084  floor 0.0027  level 0.0081  
+rms 0.0249  floor 0.0027  level 0.0082  EVENT
+rms 0.0436  floor 0.0028  level 0.0085  EVENT
+rms 0.0487  floor 0.0029  level 0.0088  EVENT
+rms 0.0327  floor 0.0030  level 0.0089  EVENT
+rms 0.0183  floor 0.0030  level 0.0090  EVENT
+rms 0.0054  floor 0.0030  level 0.0091  
+rms 0.0050  floor 0.0030  level 0.0091  
+rms 0.0057  floor 0.0030  level 0.0091  
+rms 0.0042  floor 0.0030  level 0.0091  
+rms 0.0040  floor 0.0030  level 0.0091  
+rms 0.0062  floor 0.0030  level 0.0091  
+rms 0.0089  floor 0.0030  level 0.0091  
+rms 0.0120  floor 0.0031  level 0.0092  
+rms 0.0167  floor 0.0031  level 0.0093  EVENT
+rms 0.0302  floor 0.0031  level 0.0094  EVENT
+rms 0.0171  floor 0.0032  level 0.0095  EVENT
+rms 0.0082  floor 0.0032  level 0.0096  
+rms 0.0159  floor 0.0032  level 0.0096  
+rms 0.0061  floor 0.0032  level 0.0097  
+rms 0.0042  floor 0.0032  level 0.0097  
+rms 0.0090  floor 0.0032  level 0.0097  
+rms 0.0082  floor 0.0032  level 0.0097  
+rms 0.0037  floor 0.0032  level 0.0097  
+rms 0.0050  floor 0.0032  level 0.0097  
+rms 0.0255  floor 0.0033  level 0.0099  
+rms 0.0232  floor 0.0033  level 0.0100  EVENT
+rms 0.0071  floor 0.0033  level 0.0100  
+rms 0.0133  floor 0.0034  level 0.0101  
+rms 0.0245  floor 0.0034  level 0.0102  EVENT
+rms 0.0190  floor 0.0034  level 0.0103  EVENT
+rms 0.0099  floor 0.0034  level 0.0103  
+rms 0.0105  floor 0.0035  level 0.0104  
+rms 0.0093  floor 0.0035  level 0.0104  
+rms 0.0184  floor 0.0035  level 0.0105  
+rms 0.0157  floor 0.0035  level 0.0106  EVENT
+rms 0.0055  floor 0.0035  level 0.0106  
+rms 0.0160  floor 0.0036  level 0.0107  
+rms 0.0250  floor 0.0036  level 0.0108  EVENT
+rms 0.0185  floor 0.0036  level 0.0109  EVENT
+rms 0.0103  floor 0.0036  level 0.0109  
+rms 0.0093  floor 0.0036  level 0.0109  
+rms 0.0187  floor 0.0037  level 0.0110  
+rms 0.0173  floor 0.0037  level 0.0111  EVENT
+rms 0.0133  floor 0.0037  level 0.0112  EVENT
+rms 0.0377  floor 0.0038  level 0.0114  EVENT
+rms 0.0270  floor 0.0038  level 0.0115  EVENT
+rms 0.0127  floor 0.0039  level 0.0116  EVENT
+rms 0.0248  floor 0.0039  level 0.0117  EVENT
+rms 0.0271  floor 0.0039  level 0.0118  EVENT
+rms 0.0204  floor 0.0040  level 0.0119  EVENT
+rms 0.0106  floor 0.0040  level 0.0120  
+rms 0.0062  floor 0.0040  level 0.0120  
+rms 0.0143  floor 0.0040  level 0.0121  
+rms 0.0223  floor 0.0041  level 0.0122  EVENT
+rms 0.0303  floor 0.0041  level 0.0123  EVENT
+rms 0.0308  floor 0.0042  level 0.0125  EVENT
+rms 0.0172  floor 0.0042  level 0.0126  EVENT
+rms 0.0065  floor 0.0042  level 0.0126  
+rms 0.0033  floor 0.0033  level 0.0098  
+rms 0.0109  floor 0.0033  level 0.0098  
+rms 0.0113  floor 0.0033  level 0.0099  EVENT
+rms 0.0032  floor 0.0032  level 0.0095  
+rms 0.0162  floor 0.0032  level 0.0096  
+rms 0.0182  floor 0.0032  level 0.0097  EVENT
+rms 0.0083  floor 0.0032  level 0.0097  
+rms 0.0095  floor 0.0033  level 0.0098  
+rms 0.0131  floor 0.0033  level 0.0098  
+rms 0.0172  floor 0.0033  level 0.0099  EVENT
+rms 0.0089  floor 0.0033  level 0.0099  
+rms 0.0171  floor 0.0033  level 0.0100  
+rms 0.0231  floor 0.0034  level 0.0101  EVENT
+rms 0.0313  floor 0.0034  level 0.0103  EVENT
+rms 0.0314  floor 0.0035  level 0.0105  EVENT
+rms 0.0288  floor 0.0035  level 0.0106  EVENT
+rms 0.0285  floor 0.0036  level 0.0108  EVENT
+rms 0.0173  floor 0.0036  level 0.0108  EVENT
+rms 0.0088  floor 0.0036  level 0.0109  
+rms 0.0059  floor 0.0036  level 0.0109  
+rms 0.0142  floor 0.0037  level 0.0110  
+rms 0.0177  floor 0.0037  level 0.0110  EVENT
+rms 0.0173  floor 0.0037  level 0.0111  EVENT
+rms 0.0378  floor 0.0038  level 0.0113  EVENT
+rms 0.0289  floor 0.0038  level 0.0115  EVENT
+rms 0.0213  floor 0.0039  level 0.0116  EVENT
+rms 0.0337  floor 0.0039  level 0.0118  EVENT
+rms 0.0227  floor 0.0040  level 0.0119  EVENT
+rms 0.0142  floor 0.0040  level 0.0119  EVENT
+rms 0.0160  floor 0.0040  level 0.0120  EVENT
+rms 0.0092  floor 0.0040  level 0.0120  
+rms 0.0086  floor 0.0040  level 0.0121  
+rms 0.0093  floor 0.0040  level 0.0121  
+rms 0.0140  floor 0.0041  level 0.0122  
+rms 0.0280  floor 0.0041  level 0.0123  EVENT
+rms 0.0167  floor 0.0041  level 0.0124  EVENT
+rms 0.0058  floor 0.0041  level 0.0124  
+rms 0.0100  floor 0.0041  level 0.0124  
+rms 0.0220  floor 0.0042  level 0.0125  
+rms 0.0149  floor 0.0042  level 0.0126  EVENT
+rms 0.0085  floor 0.0042  level 0.0126  
+froze window, burst seq 12  level 0.0126  win rms 0.0190
+rms 0.0087  floor 0.0042  level 0.0126  
+rms 0.0147  floor 0.0042  level 0.0127  
+rms 0.0079  floor 0.0042  level 0.0127  
+rms 0.0114  floor 0.0043  level 0.0128  
+rms 0.0157  floor 0.0043  level 0.0128  
+rms 0.0081  floor 0.0043  level 0.0129  
+rms 0.0053  floor 0.0043  level 0.0129  
+rms 0.0129  floor 0.0043  level 0.0129  
+rms 0.0112  floor 0.0043  level 0.0130  
+rms 0.0149  floor 0.0043  level 0.0130  
+rms 0.0190  floor 0.0044  level 0.0131  EVENT
+rms 0.0118  floor 0.0044  level 0.0132  
+rms 0.0107  floor 0.0044  level 0.0132  
+rms 0.0238  floor 0.0044  level 0.0133  
+rms 0.0203  floor 0.0045  level 0.0134  EVENT
+rms 0.0116  floor 0.0045  level 0.0135  
+rms 0.0054  floor 0.0045  level 0.0135  
+rms 0.0065  floor 0.0045  level 0.0135  
+rms 0.0052  floor 0.0045  level 0.0135  
+rms 0.0137  floor 0.0045  level 0.0135  
+rms 0.0094  floor 0.0045  level 0.0136  
+rms 0.0424  floor 0.0046  level 0.0138  
+rms 0.0565  floor 0.0047  level 0.0141  EVENT
+request: seq 12 first 0 count 286
+served 286 fragments of 286 in 754 ms
+rms 0.0238  floor 0.0047  level 0.0142  EVENT
+rms 0.0268  floor 0.0048  level 0.0143  EVENT
+resend request: seq 12
+rms 0.0168  floor 0.0048  level 0.0144  EVENT
+resent 19 fragments of seq 12
+rms 0.0084  floor 0.0048  level 0.0144  
+rms 0.0063  floor 0.0048  level 0.0144  
+rms 0.0126  floor 0.0048  level 0.0145  
+rms 0.0072  floor 0.0048  level 0.0145  
+rms 0.0133  floor 0.0049  level 0.0146  
+rms 0.0176  floor 0.0049  level 0.0146  
+rms 0.0090  floor 0.0049  level 0.0147  
+resend request: seq 12
+resent 2 fragments of seq 12
+rms 0.0047  floor 0.0047  level 0.0140  
+rms 0.0097  floor 0.0047  level 0.0140  
+rms 0.0171  floor 0.0047  level 0.0141  
+rms 0.0107  floor 0.0047  level 0.0141  
+rms 0.0099  floor 0.0047  level 0.0141  
+rms 0.0071  floor 0.0047  level 0.0142  
+rms 0.0248  floor 0.0048  level 0.0143  
+rms 0.0210  floor 0.0048  level 0.0144  EVENT
+resend request: seq 12
+resent 1 fragments of seq 12
+rms 0.0088  floor 0.0048  level 0.0144  
+rms 0.0131  floor 0.0048  level 0.0144  
+rms 0.0189  floor 0.0048  level 0.0145  
+rms 0.0092  floor 0.0049  level 0.0146  
+rms 0.0208  floor 0.0049  level 0.0147  
+rms 0.0232  floor 0.0049  level 0.0148  EVENT
+rms 0.0149  floor 0.0049  level 0.0148  EVENT
+rms 0.0059  floor 0.0049  level 0.0148  
+rms 0.0131  floor 0.0050  level 0.0149  
+rms 0.0253  floor 0.0050  level 0.0150  
+rms 0.0232  floor 0.0050  level 0.0151  EVENT
+rms 0.0096  floor 0.0050  level 0.0151  
+rms 0.0128  floor 0.0051  level 0.0152  
+rms 0.0144  floor 0.0051  level 0.0152  
+rms 0.0052  floor 0.0051  level 0.0152  
+rms 0.0099  floor 0.0051  level 0.0153  
+rms 0.0195  floor 0.0051  level 0.0154  
+rms 0.0088  floor 0.0051  level 0.0154  
+rms 0.0148  floor 0.0051  level 0.0154  
+rms 0.0170  floor 0.0052  level 0.0155  
+rms 0.0080  floor 0.0052  level 0.0155  
+rms 0.0038  floor 0.0038  level 0.0115  
+rms 0.0041  floor 0.0038  level 0.0115  
+rms 0.0049  floor 0.0038  level 0.0115  
+rms 0.0168  floor 0.0039  level 0.0116  
+rms 0.0154  floor 0.0039  level 0.0117  EVENT
+rms 0.0116  floor 0.0039  level 0.0117  
+rms 0.0209  floor 0.0039  level 0.0118  
+rms 0.0156  floor 0.0040  level 0.0119  EVENT
+rms 0.0057  floor 0.0040  level 0.0119  
+rms 0.0177  floor 0.0040  level 0.0120  
+rms 0.0224  floor 0.0040  level 0.0121  EVENT
+rms 0.0133  floor 0.0041  level 0.0122  EVENT
+rms 0.0062  floor 0.0041  level 0.0122  
+rms 0.0101  floor 0.0041  level 0.0122  
+rms 0.0119  floor 0.0041  level 0.0123  
+rms 0.0155  floor 0.0041  level 0.0123  
+rms 0.0116  floor 0.0041  level 0.0124  
+rms 0.0141  floor 0.0041  level 0.0124  
+rms 0.0114  floor 0.0042  level 0.0125  
+rms 0.0157  floor 0.0042  level 0.0125  
+rms 0.0171  floor 0.0042  level 0.0126  EVENT
+rms 0.0103  floor 0.0042  level 0.0127  
+rms 0.0052  floor 0.0042  level 0.0127  
+rms 0.0113  floor 0.0042  level 0.0127  
+rms 0.0182  floor 0.0043  level 0.0128  
+rms 0.0089  floor 0.0043  level 0.0128  
+rms 0.0169  floor 0.0043  level 0.0129  
+rms 0.0139  floor 0.0043  level 0.0130  EVENT
+rms 0.0088  floor 0.0043  level 0.0130  
+rms 0.0065  floor 0.0043  level 0.0130  
+rms 0.0066  floor 0.0043  level 0.0130  
+rms 0.0068  floor 0.0043  level 0.0130  
+rms 0.0153  floor 0.0044  level 0.0131  
+rms 0.0272  floor 0.0044  level 0.0132  EVENT
+rms 0.0171  floor 0.0044  level 0.0133  EVENT
+rms 0.0091  floor 0.0044  level 0.0133  
+rms 0.0189  floor 0.0045  level 0.0134  
+rms 0.0098  floor 0.0045  level 0.0134  
+rms 0.0105  floor 0.0045  level 0.0135  
+rms 0.0244  floor 0.0045  level 0.0136  
+rms 0.0154  floor 0.0046  level 0.0137  EVENT
+rms 0.0049  floor 0.0046  level 0.0137  
+rms 0.0079  floor 0.0046  level 0.0137  
+rms 0.0059  floor 0.0046  level 0.0137  
+rms 0.0137  floor 0.0046  level 0.0138  
+rms 0.0107  floor 0.0046  level 0.0138  
+rms 0.0175  floor 0.0046  level 0.0139  
+rms 0.0161  floor 0.0046  level 0.0139  EVENT
+rms 0.0052  floor 0.0046  level 0.0139  
+rms 0.0093  floor 0.0047  level 0.0140  
+rms 0.0172  floor 0.0047  level 0.0140  
+rms 0.0222  floor 0.0047  level 0.0141  EVENT
+rms 0.0116  floor 0.0047  level 0.0142  
+rms 0.0266  floor 0.0048  level 0.0143  
+rms 0.0234  floor 0.0048  level 0.0144  EVENT
+rms 0.0570  floor 0.0049  level 0.0147  EVENT
+rms 0.0352  floor 0.0050  level 0.0149  EVENT
+rms 0.0142  floor 0.0050  level 0.0150  
+rms 0.0314  floor 0.0050  level 0.0151  
+rms 0.0506  floor 0.0051  level 0.0154  EVENT
+rms 0.0527  floor 0.0052  level 0.0157  EVENT
+rms 0.0401  floor 0.0053  level 0.0159  EVENT
+rms 0.0315  floor 0.0054  level 0.0161  EVENT
+rms 0.0945  floor 0.0055  level 0.0166  EVENT
+rms 0.0849  floor 0.0057  level 0.0171  EVENT
+rms 0.0329  floor 0.0057  level 0.0172  EVENT
+rms 0.0103  floor 0.0058  level 0.0173  
+rms 0.0319  floor 0.0058  level 0.0174  
+rms 0.0448  floor 0.0059  level 0.0177  EVENT
+rms 0.0483  floor 0.0060  level 0.0179  EVENT
+rms 0.0330  floor 0.0060  level 0.0181  EVENT
+rms 0.0160  floor 0.0060  level 0.0181  
+rms 0.0065  floor 0.0060  level 0.0181  
+rms 0.0127  floor 0.0061  level 0.0182  
+rms 0.0113  floor 0.0061  level 0.0182  
+rms 0.0078  floor 0.0061  level 0.0182  
+rms 0.0208  floor 0.0061  level 0.0183  
+rms 0.0209  floor 0.0061  level 0.0184  EVENT
+rms 0.0092  floor 0.0061  level 0.0184  
+rms 0.0046  floor 0.0046  level 0.0138  
+rms 0.0035  floor 0.0035  level 0.0106  
+rms 0.0056  floor 0.0035  level 0.0106  
+rms 0.0083  floor 0.0035  level 0.0106  
+froze window, burst seq 13  level 0.0107  win rms 0.0286
+rms 0.0088  floor 0.0036  level 0.0107  
+rms 0.0046  floor 0.0036  level 0.0107  
+rms 0.0081  floor 0.0036  level 0.0107  
+rms 0.0165  floor 0.0036  level 0.0108  
+rms 0.0075  floor 0.0036  level 0.0108  
+rms 0.0051  floor 0.0036  level 0.0108  
+rms 0.0169  floor 0.0036  level 0.0109  
+rms 0.0123  floor 0.0036  level 0.0109  EVENT
+request: seq 13 first 0 count 286
+served 286 fragments of 286 in 752 ms
+rms 0.0106  floor 0.0037  level 0.0110  
+rms 0.0094  floor 0.0037  level 0.0110  
+rms 0.0085  floor 0.0037  level 0.0110  
+resend request: seq 13
+resent 11 fragments of seq 13
+rms 0.0151  floor 0.0037  level 0.0111  
+rms 0.0088  floor 0.0037  level 0.0111  
+rms 0.0048  floor 0.0037  level 0.0111  
+rms 0.0110  floor 0.0037  level 0.0112  
+rms 0.0166  floor 0.0038  level 0.0113  
+rms 0.0093  floor 0.0038  level 0.0113  
+rms 0.0136  floor 0.0038  level 0.0114  
+rms 0.0113  floor 0.0038  level 0.0114  
+rms 0.0055  floor 0.0038  level 0.0114  
+rms 0.0115  floor 0.0038  level 0.0115  
+rms 0.0175  floor 0.0038  level 0.0115  EVENT
+rms 0.0104  floor 0.0039  level 0.0116  
+rms 0.0110  floor 0.0039  level 0.0116  
+rms 0.0080  floor 0.0039  level 0.0117  
+rms 0.0227  floor 0.0039  level 0.0118  
+rms 0.0195  floor 0.0040  level 0.0119  EVENT
+rms 0.0118  floor 0.0040  level 0.0119  
+rms 0.0355  floor 0.0040  level 0.0121  
+rms 0.0315  floor 0.0041  level 0.0123  EVENT
+rms 0.0121  floor 0.0041  level 0.0123  
+rms 0.0046  floor 0.0041  level 0.0123  
+rms 0.0058  floor 0.0041  level 0.0123  
+rms 0.0048  floor 0.0041  level 0.0123  
+rms 0.0038  floor 0.0038  level 0.0113  
+rms 0.0143  floor 0.0038  level 0.0113  
+rms 0.0301  floor 0.0038  level 0.0115  EVENT
+rms 0.0176  floor 0.0039  level 0.0116  EVENT
+rms 0.0225  floor 0.0039  level 0.0117  EVENT
+rms 0.0202  floor 0.0039  level 0.0118  EVENT
+rms 0.0098  floor 0.0039  level 0.0118  
+rms 0.0135  floor 0.0040  level 0.0119  
+rms 0.0184  floor 0.0040  level 0.0120  EVENT
+rms 0.0109  floor 0.0040  level 0.0120  
+rms 0.0139  floor 0.0040  level 0.0121  
+rms 0.0101  floor 0.0040  level 0.0121  
+rms 0.0061  floor 0.0040  level 0.0121  
+rms 0.0061  floor 0.0040  level 0.0121  
+rms 0.0113  floor 0.0041  level 0.0122  
+rms 0.0186  floor 0.0041  level 0.0123  
+rms 0.0102  floor 0.0041  level 0.0123  
+rms 0.0091  floor 0.0041  level 0.0123  
+rms 0.0173  floor 0.0041  level 0.0124  
+rms 0.0178  floor 0.0042  level 0.0125  EVENT
+rms 0.0092  floor 0.0042  level 0.0125  
+rms 0.0046  floor 0.0042  level 0.0125  
+rms 0.0143  floor 0.0042  level 0.0126  
+rms 0.0214  floor 0.0042  level 0.0127  EVENT
+rms 0.0148  floor 0.0043  level 0.0128  EVENT
+rms 0.0117  floor 0.0043  level 0.0128  
+rms 0.0124  floor 0.0043  level 0.0129  
+rms 0.0092  floor 0.0043  level 0.0129  
+rms 0.0093  floor 0.0043  level 0.0129  
+rms 0.0121  floor 0.0043  level 0.0130  
+rms 0.0079  floor 0.0043  level 0.0130  
+rms 0.0059  floor 0.0043  level 0.0130  
+rms 0.0047  floor 0.0043  level 0.0130  
+rms 0.0050  floor 0.0043  level 0.0130  
+rms 0.0067  floor 0.0043  level 0.0130  
+rms 0.0102  floor 0.0043  level 0.0130  
+rms 0.0155  floor 0.0044  level 0.0131  
+rms 0.0145  floor 0.0044  level 0.0132  EVENT
+rms 0.0130  floor 0.0044  level 0.0132  
+rms 0.0137  floor 0.0044  level 0.0133  
+rms 0.0094  floor 0.0044  level 0.0133  
+rms 0.0055  floor 0.0044  level 0.0133  
+rms 0.0052  floor 0.0044  level 0.0133  
+rms 0.0043  floor 0.0043  level 0.0128  
+rms 0.0059  floor 0.0043  level 0.0128  
+rms 0.0087  floor 0.0043  level 0.0129  
+rms 0.0141  floor 0.0043  level 0.0129  
+rms 0.0183  floor 0.0043  level 0.0130  EVENT
+rms 0.0275  floor 0.0044  level 0.0131  EVENT
+rms 0.0633  floor 0.0045  level 0.0135  EVENT
+rms 0.0332  floor 0.0046  level 0.0137  EVENT
+rms 0.0389  floor 0.0046  level 0.0139  EVENT
+rms 0.0789  floor 0.0048  level 0.0143  EVENT
+rms 0.0628  floor 0.0049  level 0.0147  EVENT
+rms 0.0238  floor 0.0049  level 0.0148  EVENT
+rms 0.0103  floor 0.0049  level 0.0148  
+rms 0.0218  floor 0.0050  level 0.0149  
+rms 0.0274  floor 0.0050  level 0.0151  EVENT
+rms 0.0193  floor 0.0050  level 0.0151  EVENT
+rms 0.0110  floor 0.0051  level 0.0152  
+rms 0.0061  floor 0.0051  level 0.0152  
+rms 0.0045  floor 0.0045  level 0.0135  
+rms 0.0166  floor 0.0045  level 0.0136  
+rms 0.0242  floor 0.0046  level 0.0137  EVENT
+rms 0.0118  floor 0.0046  level 0.0137  
+rms 0.0044  floor 0.0044  level 0.0131  
+rms 0.0192  floor 0.0044  level 0.0132  
+rms 0.0154  floor 0.0044  level 0.0133  EVENT
+rms 0.0054  floor 0.0044  level 0.0133  
+rms 0.0217  floor 0.0045  level 0.0134  
+rms 0.0254  floor 0.0045  level 0.0135  EVENT
+rms 0.0094  floor 0.0045  level 0.0135  
+rms 0.0154  floor 0.0045  level 0.0136  
+rms 0.0218  floor 0.0046  level 0.0137  EVENT
+rms 0.0119  floor 0.0046  level 0.0138  
+rms 0.0060  floor 0.0046  level 0.0138  
+rms 0.0024  floor 0.0024  level 0.0072  
+rms 0.0155  floor 0.0024  level 0.0073  
+rms 0.0138  floor 0.0024  level 0.0073  EVENT
+rms 0.0073  floor 0.0025  level 0.0074  
+rms 0.0221  floor 0.0025  level 0.0075  
+rms 0.0144  floor 0.0025  level 0.0076  EVENT
+rms 0.0073  floor 0.0025  level 0.0076  
+rms 0.0421  floor 0.0026  level 0.0078  
+rms 0.0421  floor 0.0027  level 0.0081  EVENT
+rms 0.0138  floor 0.0027  level 0.0081  EVENT
+rms 0.0402  floor 0.0028  level 0.0083  EVENT
+rms 0.0347  floor 0.0028  level 0.0085  EVENT
+rms 0.0143  floor 0.0029  level 0.0086  EVENT
+rms 0.0066  floor 0.0029  level 0.0086  
+rms 0.0064  floor 0.0029  level 0.0087  
+rms 0.0116  floor 0.0029  level 0.0087  
+rms 0.0124  floor 0.0029  level 0.0088  EVENT
+rms 0.0063  floor 0.0029  level 0.0088  
+rms 0.0066  floor 0.0029  level 0.0088  
+rms 0.0110  floor 0.0030  level 0.0089  
+rms 0.0110  floor 0.0030  level 0.0089  EVENT
+rms 0.0109  floor 0.0030  level 0.0089  EVENT
+rms 0.0221  floor 0.0030  level 0.0091  EVENT
+rms 0.0399  floor 0.0031  level 0.0093  EVENT
+rms 0.0350  floor 0.0032  level 0.0095  EVENT
+rms 0.0127  floor 0.0032  level 0.0095  EVENT
+rms 0.0165  floor 0.0032  level 0.0096  EVENT
+rms 0.0155  floor 0.0032  level 0.0097  EVENT
+rms 0.0213  floor 0.0033  level 0.0098  EVENT
+rms 0.0171  floor 0.0033  level 0.0099  EVENT
+rms 0.0127  floor 0.0033  level 0.0099  EVENT
+rms 0.0109  floor 0.0033  level 0.0100  EVENT
+rms 0.0088  floor 0.0033  level 0.0100  
+rms 0.0067  floor 0.0033  level 0.0100  
+rms 0.0046  floor 0.0033  level 0.0100  
+rms 0.0050  floor 0.0034  level 0.0101  
+rms 0.0033  floor 0.0033  level 0.0099  
+rms 0.0096  floor 0.0033  level 0.0100  
+rms 0.0299  floor 0.0034  level 0.0101  
+rms 0.0303  floor 0.0034  level 0.0103  EVENT
+rms 0.0200  floor 0.0035  level 0.0104  EVENT
+rms 0.0075  floor 0.0035  level 0.0104  
+rms 0.0147  floor 0.0035  level 0.0105  
+rms 0.0262  floor 0.0035  level 0.0106  EVENT
+rms 0.0345  floor 0.0036  level 0.0108  EVENT
+rms 0.0237  floor 0.0036  level 0.0109  EVENT
+rms 0.0116  floor 0.0037  level 0.0110  EVENT
+rms 0.0036  floor 0.0036  level 0.0109  
+rms 0.0057  floor 0.0036  level 0.0109  
+rms 0.0081  floor 0.0036  level 0.0109  
+rms 0.0070  floor 0.0036  level 0.0109  
+rms 0.0075  floor 0.0037  level 0.0110  
+rms 0.0036  floor 0.0036  level 0.0107  
+rms 0.0133  floor 0.0036  level 0.0107  
+rms 0.0169  floor 0.0036  level 0.0108  EVENT
+rms 0.0067  floor 0.0036  level 0.0108  
+rms 0.0182  floor 0.0036  level 0.0109  
+rms 0.0176  floor 0.0037  level 0.0110  EVENT
+rms 0.0529  floor 0.0038  level 0.0113  EVENT
+rms 0.0448  floor 0.0038  level 0.0115  EVENT
+rms 0.0101  floor 0.0039  level 0.0116  
+rms 0.0351  floor 0.0039  level 0.0117  
+rms 0.0406  floor 0.0040  level 0.0120  EVENT
+rms 0.0321  floor 0.0040  level 0.0121  EVENT
+rms 0.0141  floor 0.0041  level 0.0122  EVENT
+rms 0.0051  floor 0.0041  level 0.0122  
+rms 0.0154  floor 0.0041  level 0.0123  
+rms 0.0078  floor 0.0041  level 0.0123  
+rms 0.0131  floor 0.0041  level 0.0123  
+rms 0.0281  floor 0.0042  level 0.0125  EVENT
+rms 0.0183  floor 0.0042  level 0.0126  EVENT
+rms 0.0194  floor 0.0042  level 0.0127  EVENT
+rms 0.0072  floor 0.0042  level 0.0127  
+rms 0.0124  floor 0.0042  level 0.0127  
+rms 0.0078  floor 0.0043  level 0.0128  
+rms 0.0124  floor 0.0043  level 0.0128  
+rms 0.0124  floor 0.0043  level 0.0129  
+rms 0.0053  floor 0.0043  level 0.0129  
+rms 0.0145  floor 0.0043  level 0.0129  
+rms 0.0194  floor 0.0043  level 0.0130  EVENT
+rms 0.0147  floor 0.0044  level 0.0131  EVENT
+rms 0.0106  floor 0.0044  level 0.0131  
+rms 0.0143  floor 0.0044  level 0.0132  
+rms 0.0276  floor 0.0044  level 0.0133  EVENT
+rms 0.0315  floor 0.0045  level 0.0135  EVENT
+rms 0.0375  floor 0.0046  level 0.0137  EVENT
+rms 0.0326  floor 0.0046  level 0.0138  EVENT
+rms 0.0406  floor 0.0047  level 0.0141  EVENT
+rms 0.0204  floor 0.0047  level 0.0141  EVENT
+rms 0.0327  floor 0.0048  level 0.0143  EVENT
+rms 0.0472  floor 0.0049  level 0.0146  EVENT
+rms 0.0269  floor 0.0049  level 0.0147  EVENT
+rms 0.0179  floor 0.0049  level 0.0148  EVENT
+rms 0.0130  floor 0.0049  level 0.0148  
+rms 0.0359  floor 0.0050  level 0.0150  
+rms 0.0400  floor 0.0051  level 0.0152  EVENT
+rms 0.0215  floor 0.0051  level 0.0153  EVENT
+rms 0.0384  floor 0.0052  level 0.0155  EVENT
+rms 0.0302  floor 0.0052  level 0.0157  EVENT
+rms 0.0269  floor 0.0053  level 0.0158  EVENT
+rms 0.0265  floor 0.0053  level 0.0159  EVENT
+rms 0.0130  floor 0.0053  level 0.0160  
+rms 0.0197  floor 0.0054  level 0.0161  
+rms 0.0402  floor 0.0054  level 0.0163  EVENT
+rms 0.0348  floor 0.0055  level 0.0164  EVENT
+froze window, burst seq 14  level 0.0165  win rms 0.0300
+rms 0.0205  floor 0.0055  level 0.0165  EVENT
+rms 0.0125  floor 0.0055  level 0.0166  
+rms 0.0068  floor 0.0055  level 0.0166  
+rms 0.0031  floor 0.0031  level 0.0092  
+rms 0.0071  floor 0.0031  level 0.0092  
+rms 0.0122  floor 0.0031  level 0.0092  
+rms 0.0108  floor 0.0031  level 0.0093  EVENT
+request: seq 14 first 0 count 286
+served 286 fragments of 286 in 754 ms
+rms 0.0106  floor 0.0031  level 0.0093  EVENT
+rms 0.0164  floor 0.0031  level 0.0094  EVENT
+rms 0.0079  floor 0.0031  level 0.0094  
+resend request: seq 14
+resent 7 fragments of seq 14
+rms 0.0157  floor 0.0032  level 0.0095  
+rms 0.0143  floor 0.0032  level 0.0096  EVENT
+rms 0.0049  floor 0.0032  level 0.0096  
+rms 0.0042  floor 0.0032  level 0.0096  
+rms 0.0056  floor 0.0032  level 0.0096  
+rms 0.0104  floor 0.0032  level 0.0097  
+rms 0.0109  floor 0.0032  level 0.0097  EVENT
+rms 0.0052  floor 0.0032  level 0.0097  
+rms 0.0086  floor 0.0032  level 0.0097  
+rms 0.0189  floor 0.0033  level 0.0098  
+rms 0.0376  floor 0.0033  level 0.0100  EVENT
+rms 0.0430  floor 0.0034  level 0.0103  EVENT
+rms 0.0207  floor 0.0035  level 0.0104  EVENT
+rms 0.0040  floor 0.0035  level 0.0104  
+rms 0.0195  floor 0.0035  level 0.0105  
+rms 0.0231  floor 0.0035  level 0.0106  EVENT
+rms 0.0128  floor 0.0036  level 0.0107  EVENT
+rms 0.0042  floor 0.0036  level 0.0107  
+rms 0.0055  floor 0.0036  level 0.0107  
+rms 0.0108  floor 0.0036  level 0.0107  
+rms 0.0249  floor 0.0036  level 0.0108  EVENT
+rms 0.0174  floor 0.0036  level 0.0109  EVENT
+rms 0.0052  floor 0.0036  level 0.0109  
+rms 0.0056  floor 0.0036  level 0.0109  
+rms 0.0053  floor 0.0037  level 0.0110  
+rms 0.0054  floor 0.0037  level 0.0110  
+rms 0.0050  floor 0.0037  level 0.0110  
+rms 0.0081  floor 0.0037  level 0.0110  
+rms 0.0300  floor 0.0037  level 0.0112  
+rms 0.0358  floor 0.0038  level 0.0114  EVENT
+rms 0.0264  floor 0.0038  level 0.0115  EVENT
+rms 0.0097  floor 0.0038  level 0.0115  
+rms 0.0075  floor 0.0038  level 0.0115  
+rms 0.0195  floor 0.0039  level 0.0116  
+rms 0.0073  floor 0.0039  level 0.0117  
+rms 0.0046  floor 0.0039  level 0.0117  
+rms 0.0280  floor 0.0039  level 0.0118  
+rms 0.0396  floor 0.0040  level 0.0120  EVENT
+rms 0.0176  floor 0.0040  level 0.0121  EVENT
+rms 0.0035  floor 0.0035  level 0.0106  
+rms 0.0046  floor 0.0035  level 0.0106  
+rms 0.0046  floor 0.0036  level 0.0107  
+rms 0.0041  floor 0.0036  level 0.0107  
+rms 0.0148  floor 0.0036  level 0.0107  
+rms 0.0629  floor 0.0037  level 0.0111  EVENT
+rms 0.0712  floor 0.0038  level 0.0115  EVENT
+rms 0.0503  floor 0.0039  level 0.0118  EVENT
+rms 0.0197  floor 0.0040  level 0.0119  EVENT
+rms 0.0157  floor 0.0040  level 0.0119  EVENT
+rms 0.0359  floor 0.0040  level 0.0121  EVENT
+rms 0.0418  floor 0.0041  level 0.0123  EVENT
+rms 0.0450  floor 0.0042  level 0.0126  EVENT
+rms 0.0507  floor 0.0043  level 0.0129  EVENT
+rms 0.0327  floor 0.0043  level 0.0130  EVENT
+rms 0.0139  floor 0.0044  level 0.0131  EVENT
+rms 0.0116  floor 0.0044  level 0.0131  
+rms 0.0306  floor 0.0044  level 0.0133  
+rms 0.0304  floor 0.0045  level 0.0135  EVENT
+rms 0.0266  floor 0.0045  level 0.0136  EVENT
+rms 0.0179  floor 0.0046  level 0.0137  EVENT
+rms 0.0092  floor 0.0046  level 0.0137  
+rms 0.0078  floor 0.0046  level 0.0137  
+rms 0.0224  floor 0.0046  level 0.0138  
+rms 0.0303  floor 0.0047  level 0.0140  EVENT
+rms 0.0364  floor 0.0047  level 0.0142  EVENT
+rms 0.0318  floor 0.0048  level 0.0143  EVENT
+rms 0.0160  floor 0.0048  level 0.0144  EVENT
+rms 0.0120  floor 0.0048  level 0.0144  
+rms 0.0357  floor 0.0049  level 0.0146  
+rms 0.0338  floor 0.0049  level 0.0148  EVENT
+rms 0.0164  floor 0.0050  level 0.0149  EVENT
+rms 0.0180  floor 0.0050  level 0.0149  EVENT
+rms 0.0433  floor 0.0051  level 0.0152  EVENT
+rms 0.0391  floor 0.0051  level 0.0154  EVENT
+rms 0.0241  floor 0.0052  level 0.0155  EVENT
+rms 0.0085  floor 0.0052  level 0.0155  
+rms 0.0042  floor 0.0042  level 0.0127  
+rms 0.0073  floor 0.0042  level 0.0127  
+rms 0.0245  floor 0.0043  level 0.0128  
+rms 0.0209  floor 0.0043  level 0.0129  EVENT
+rms 0.0055  floor 0.0043  level 0.0129  
+rms 0.0202  floor 0.0043  level 0.0130  
+rms 0.0479  floor 0.0044  level 0.0133  EVENT
+rms 0.0852  floor 0.0046  level 0.0137  EVENT
+rms 0.0916  floor 0.0048  level 0.0143  EVENT
+rms 0.0664  floor 0.0049  level 0.0146  EVENT
+rms 0.0524  floor 0.0050  level 0.0149  EVENT
+rms 0.0417  floor 0.0050  level 0.0151  EVENT
+rms 0.0135  floor 0.0051  level 0.0152  
+rms 0.0251  floor 0.0051  level 0.0153  
+rms 0.0392  floor 0.0052  level 0.0155  EVENT
+rms 0.0435  floor 0.0052  level 0.0157  EVENT
+rms 0.0291  floor 0.0053  level 0.0159  EVENT
+rms 0.0188  floor 0.0053  level 0.0160  EVENT
+rms 0.0145  floor 0.0053  level 0.0160  
+rms 0.0170  floor 0.0054  level 0.0161  
+rms 0.0299  floor 0.0054  level 0.0162  EVENT
+rms 0.0580  floor 0.0055  level 0.0166  EVENT
+rms 0.0615  floor 0.0056  level 0.0169  EVENT
+rms 0.0578  floor 0.0057  level 0.0172  EVENT
+rms 0.0475  floor 0.0058  level 0.0175  EVENT
+rms 0.0254  floor 0.0059  level 0.0176  EVENT
+rms 0.0104  floor 0.0059  level 0.0176  
+rms 0.0154  floor 0.0059  level 0.0177  
+froze window, burst seq 15  level 0.0178  win rms 0.0361
+rms 0.0246  floor 0.0059  level 0.0178  
+rms 0.0280  floor 0.0060  level 0.0179  EVENT
+request: seq 15 first 0 count 286
+served 286 fragments of 286 in 745 ms
+rms 0.0423  floor 0.0060  level 0.0181  EVENT
+rms 0.0286  floor 0.0061  level 0.0183  EVENT
+resend request: seq 15
+resent 10 fragments of seq 15
+rms 0.0207  floor 0.0061  level 0.0183  EVENT
+rms 0.0144  floor 0.0061  level 0.0184  
+rms 0.0085  floor 0.0061  level 0.0184  
+rms 0.0303  floor 0.0062  level 0.0186  
+rms 0.0597  floor 0.0063  level 0.0189  EVENT
+rms 0.0669  floor 0.0064  level 0.0192  EVENT
+rms 0.0465  floor 0.0065  level 0.0195  EVENT
+rms 0.0205  floor 0.0065  level 0.0196  EVENT
+resend request: seq 15
+resent 1 fragments of seq 15
+rms 0.0554  floor 0.0066  level 0.0199  EVENT
+rms 0.0627  floor 0.0067  level 0.0202  EVENT
+rms 0.0266  floor 0.0068  level 0.0203  EVENT
+rms 0.0118  floor 0.0068  level 0.0203  
+rms 0.0300  floor 0.0068  level 0.0205  
+rms 0.0253  floor 0.0069  level 0.0206  EVENT
+rms 0.0182  floor 0.0069  level 0.0207  
+rms 0.0125  floor 0.0069  level 0.0207  
+rms 0.0099  floor 0.0069  level 0.0207  
+rms 0.0055  floor 0.0055  level 0.0164  
+rms 0.0038  floor 0.0038  level 0.0115  
+rms 0.0053  floor 0.0038  level 0.0115  
+rms 0.0044  floor 0.0038  level 0.0115  
+rms 0.0206  floor 0.0039  level 0.0116  
+rms 0.0198  floor 0.0039  level 0.0117  EVENT
+rms 0.0598  floor 0.0040  level 0.0120  EVENT
+rms 0.0537  floor 0.0041  level 0.0123  EVENT
+rms 0.0180  floor 0.0041  level 0.0124  EVENT
+rms 0.0050  floor 0.0041  level 0.0124  
+rms 0.0181  floor 0.0042  level 0.0125  
+rms 0.0382  floor 0.0042  level 0.0127  EVENT
+rms 0.0353  floor 0.0043  level 0.0129  EVENT
+rms 0.0173  floor 0.0043  level 0.0130  EVENT
+rms 0.0047  floor 0.0043  level 0.0130  
+rms 0.0046  floor 0.0043  level 0.0130  
+rms 0.0115  floor 0.0043  level 0.0130  
+rms 0.0197  floor 0.0044  level 0.0131  
+rms 0.0315  floor 0.0044  level 0.0133  EVENT
+rms 0.0209  floor 0.0045  level 0.0134  EVENT
+rms 0.0065  floor 0.0045  level 0.0134  
+rms 0.0127  floor 0.0045  level 0.0134  
+rms 0.0216  floor 0.0045  level 0.0135  
+rms 0.0133  floor 0.0045  level 0.0136  
+rms 0.0194  floor 0.0046  level 0.0137  
+rms 0.0059  floor 0.0046  level 0.0137  
+rms 0.0075  floor 0.0046  level 0.0137  
+rms 0.0224  floor 0.0046  level 0.0138  
+rms 0.0276  floor 0.0046  level 0.0139  EVENT
+rms 0.0157  floor 0.0047  level 0.0140  EVENT
+rms 0.0138  floor 0.0047  level 0.0141  
+rms 0.0184  floor 0.0047  level 0.0141  
+rms 0.0090  floor 0.0047  level 0.0142  
+rms 0.0182  floor 0.0047  level 0.0142  
+rms 0.0508  floor 0.0048  level 0.0145  EVENT
+rms 0.0473  floor 0.0049  level 0.0148  EVENT
+rms 0.0325  floor 0.0050  level 0.0149  EVENT
+rms 0.0156  floor 0.0050  level 0.0150  EVENT
+rms 0.0052  floor 0.0050  level 0.0150  
+rms 0.0103  floor 0.0050  level 0.0150  
+rms 0.0185  floor 0.0050  level 0.0151  
+rms 0.0205  floor 0.0051  level 0.0152  EVENT
+rms 0.0241  floor 0.0051  level 0.0153  EVENT
+rms 0.0300  floor 0.0052  level 0.0155  EVENT
+rms 0.0127  floor 0.0052  level 0.0155  
+rms 0.0065  floor 0.0052  level 0.0155  
+rms 0.0053  floor 0.0052  level 0.0155  
+rms 0.0065  floor 0.0052  level 0.0155  
+rms 0.0171  floor 0.0052  level 0.0156  
+rms 0.0070  floor 0.0052  level 0.0156  
+rms 0.0165  floor 0.0052  level 0.0157  
+rms 0.0284  floor 0.0053  level 0.0158  EVENT
+rms 0.0198  floor 0.0053  level 0.0159  EVENT
+rms 0.0074  floor 0.0053  level 0.0159  
+rms 0.0113  floor 0.0053  level 0.0160  
+rms 0.0338  floor 0.0054  level 0.0161  
+rms 0.0357  floor 0.0054  level 0.0163  EVENT
+rms 0.0291  floor 0.0055  level 0.0165  EVENT
+rms 0.0178  floor 0.0055  level 0.0165  EVENT
+rms 0.0094  floor 0.0055  level 0.0166  
+rms 0.0066  floor 0.0055  level 0.0166  
+rms 0.0153  floor 0.0055  level 0.0166  
+rms 0.0190  floor 0.0056  level 0.0167  
+rms 0.0256  floor 0.0056  level 0.0168  EVENT
+rms 0.0123  floor 0.0056  level 0.0169  
+rms 0.0138  floor 0.0056  level 0.0169  
+rms 0.0142  floor 0.0057  level 0.0170  
+rms 0.0048  floor 0.0048  level 0.0144  
+rms 0.0299  floor 0.0049  level 0.0146  
+rms 0.0321  floor 0.0049  level 0.0147  EVENT
+rms 0.0136  floor 0.0049  level 0.0148  
+rms 0.0033  floor 0.0033  level 0.0099  
+rms 0.0086  floor 0.0033  level 0.0099  
+rms 0.0229  floor 0.0033  level 0.0100  
+rms 0.0196  floor 0.0034  level 0.0101  EVENT
+rms 0.0092  floor 0.0034  level 0.0102  
+rms 0.0068  floor 0.0034  level 0.0102  
+rms 0.0050  floor 0.0034  level 0.0102  
+rms 0.0074  floor 0.0034  level 0.0102  
+rms 0.0089  floor 0.0034  level 0.0102  
+rms 0.0094  floor 0.0034  level 0.0103  
+rms 0.0074  floor 0.0034  level 0.0103  
+rms 0.0037  floor 0.0034  level 0.0103  
+rms 0.0054  floor 0.0034  level 0.0103  
+rms 0.0087  floor 0.0035  level 0.0104  
+rms 0.0190  floor 0.0035  level 0.0104  
+rms 0.0223  floor 0.0035  level 0.0106  EVENT
+rms 0.0103  floor 0.0035  level 0.0106  
+rms 0.0069  floor 0.0035  level 0.0106  
+rms 0.0051  floor 0.0035  level 0.0106  
+rms 0.0079  floor 0.0036  level 0.0107  
+rms 0.0083  floor 0.0036  level 0.0107  
+rms 0.0052  floor 0.0036  level 0.0107  
+rms 0.0040  floor 0.0036  level 0.0107  
+rms 0.0043  floor 0.0036  level 0.0107  
+rms 0.0049  floor 0.0036  level 0.0107  
+rms 0.0060  floor 0.0036  level 0.0107  
+rms 0.0086  floor 0.0036  level 0.0108  
+rms 0.0094  floor 0.0036  level 0.0108  
+rms 0.0244  floor 0.0036  level 0.0109  
+rms 0.0253  floor 0.0037  level 0.0110  EVENT
+rms 0.0177  floor 0.0037  level 0.0111  EVENT
+rms 0.0134  floor 0.0037  level 0.0112  EVENT
+rms 0.0079  floor 0.0037  level 0.0112  
+rms 0.0040  floor 0.0037  level 0.0112  
+rms 0.0036  floor 0.0036  level 0.0108  
+rms 0.0069  floor 0.0036  level 0.0108  
+rms 0.0081  floor 0.0036  level 0.0108  
+rms 0.0099  floor 0.0036  level 0.0109  
+rms 0.0109  floor 0.0036  level 0.0109  
+rms 0.0111  floor 0.0037  level 0.0110  EVENT
+rms 0.0200  floor 0.0037  level 0.0111  EVENT
+rms 0.0191  floor 0.0037  level 0.0112  EVENT
+rms 0.0102  floor 0.0037  level 0.0112  
+rms 0.0094  floor 0.0037  level 0.0112  
+rms 0.0046  floor 0.0037  level 0.0112  
+rms 0.0090  floor 0.0038  level 0.0113  
+rms 0.0215  floor 0.0038  level 0.0114  
+rms 0.0164  floor 0.0038  level 0.0114  EVENT
+rms 0.0054  floor 0.0038  level 0.0115  
+rms 0.0176  floor 0.0038  level 0.0115  
+rms 0.0157  floor 0.0039  level 0.0116  EVENT
+rms 0.0100  floor 0.0039  level 0.0116  
+rms 0.0054  floor 0.0039  level 0.0117  
+rms 0.0038  floor 0.0038  level 0.0113  
+rms 0.0073  floor 0.0038  level 0.0113  
+rms 0.0213  floor 0.0038  level 0.0114  
+rms 0.0127  floor 0.0038  level 0.0115  EVENT
+rms 0.0108  floor 0.0038  level 0.0115  
+rms 0.0256  floor 0.0039  level 0.0116  
+rms 0.0252  floor 0.0039  level 0.0118  EVENT
+rms 0.0180  floor 0.0039  level 0.0118  EVENT
+rms 0.0094  floor 0.0040  level 0.0119  
+rms 0.0056  floor 0.0040  level 0.0119  
+rms 0.0041  floor 0.0040  level 0.0119  
+rms 0.0089  floor 0.0040  level 0.0119  
+rms 0.0102  floor 0.0040  level 0.0120  
+rms 0.0106  floor 0.0040  level 0.0120  
+rms 0.0121  floor 0.0040  level 0.0120  
+rms 0.0254  floor 0.0041  level 0.0122  EVENT
+rms 0.0254  floor 0.0041  level 0.0123  EVENT
+rms 0.0194  floor 0.0041  level 0.0124  EVENT
+rms 0.0171  floor 0.0042  level 0.0125  EVENT
+rms 0.0063  floor 0.0042  level 0.0125  
+rms 0.0122  floor 0.0042  level 0.0125  
+rms 0.0228  floor 0.0042  level 0.0126  
+rms 0.0268  floor 0.0043  level 0.0128  EVENT
+rms 0.0125  floor 0.0043  level 0.0128  
+rms 0.0076  floor 0.0043  level 0.0128  
+rms 0.0182  floor 0.0043  level 0.0129  
+rms 0.0117  floor 0.0043  level 0.0130  
+rms 0.0068  floor 0.0043  level 0.0130  
+rms 0.0276  floor 0.0044  level 0.0131  
+rms 0.0546  floor 0.0045  level 0.0134  EVENT
+rms 0.0568  floor 0.0046  level 0.0137  EVENT
+rms 0.0370  floor 0.0046  level 0.0139  EVENT
+rms 0.0176  floor 0.0047  level 0.0140  EVENT
+rms 0.0170  floor 0.0047  level 0.0141  EVENT
+rms 0.0346  floor 0.0048  level 0.0143  EVENT
+rms 0.0460  floor 0.0048  level 0.0145  EVENT
+rms 0.0242  floor 0.0049  level 0.0146  EVENT
+rms 0.0081  floor 0.0049  level 0.0147  
+rms 0.0079  floor 0.0049  level 0.0147  
+rms 0.0116  floor 0.0049  level 0.0147  
+rms 0.0198  floor 0.0049  level 0.0148  
+rms 0.0136  floor 0.0050  level 0.0149  
+rms 0.0177  floor 0.0050  level 0.0149  
+rms 0.0349  floor 0.0050  level 0.0151  EVENT
+rms 0.0391  floor 0.0051  level 0.0153  EVENT
+rms 0.0253  floor 0.0051  level 0.0154  EVENT
+rms 0.0100  floor 0.0052  level 0.0155  
+rms 0.0087  floor 0.0052  level 0.0155  
+rms 0.0111  floor 0.0052  level 0.0155  
+rms 0.0076  floor 0.0052  level 0.0155  
+rms 0.0152  floor 0.0052  level 0.0156  
+rms 0.0284  floor 0.0052  level 0.0157  
+rms 0.0292  floor 0.0053  level 0.0159  EVENT
+rms 0.0172  floor 0.0053  level 0.0159  EVENT
+rms 0.0107  floor 0.0053  level 0.0160  
+rms 0.0240  floor 0.0054  level 0.0161  
+rms 0.0284  floor 0.0054  level 0.0162  EVENT
+rms 0.0347  floor 0.0055  level 0.0164  EVENT
+rms 0.0271  floor 0.0055  level 0.0165  EVENT
+rms 0.0123  floor 0.0055  level 0.0166  
+rms 0.0043  floor 0.0043  level 0.0129  
+rms 0.0035  floor 0.0035  level 0.0105  
+rms 0.0053  floor 0.0035  level 0.0105  
+rms 0.0100  floor 0.0035  level 0.0105  
+rms 0.0090  floor 0.0035  level 0.0106  
+rms 0.0064  floor 0.0035  level 0.0106  
+rms 0.0061  floor 0.0035  level 0.0106  
+rms 0.0071  floor 0.0035  level 0.0106  
+rms 0.0059  floor 0.0035  level 0.0106  
+rms 0.0049  floor 0.0036  level 0.0107  
+rms 0.0038  floor 0.0036  level 0.0107  
+rms 0.0051  floor 0.0036  level 0.0107  
+froze window, burst seq 16  level 0.0107  win rms 0.0123
+rms 0.0054  floor 0.0036  level 0.0107  
+rms 0.0168  floor 0.0036  level 0.0108  
+rms 0.0439  floor 0.0037  level 0.0110  EVENT
+rms 0.0616  floor 0.0038  level 0.0113  EVENT
+rms 0.0529  floor 0.0039  level 0.0116  EVENT
+rms 0.0356  floor 0.0039  level 0.0118  EVENT
+rms 0.0119  floor 0.0040  level 0.0119  EVENT
+rms 0.0112  floor 0.0040  level 0.0119  
+rms 0.0244  floor 0.0040  level 0.0120  
+rms 0.0388  floor 0.0041  level 0.0123  EVENT
+rms 0.0361  floor 0.0041  level 0.0124  EVENT
+rms 0.0150  floor 0.0042  level 0.0125  EVENT
+rms 0.0066  floor 0.0042  level 0.0125  
+rms 0.0106  floor 0.0042  level 0.0126  
+rms 0.0331  floor 0.0042  level 0.0127  
+rms 0.0293  floor 0.0043  level 0.0129  EVENT
+rms 0.0167  floor 0.0043  level 0.0130  EVENT
+rms 0.0096  floor 0.0043  level 0.0130  
+rms 0.0077  floor 0.0043  level 0.0130  
+rms 0.0090  floor 0.0043  level 0.0130  
+rms 0.0099  floor 0.0044  level 0.0131  
+rms 0.0068  floor 0.0044  level 0.0131  
+froze window, burst seq 17  level 0.0114  win rms 0.0254
+rms 0.0038  floor 0.0038  level 0.0114  
+rms 0.0097  floor 0.0038  level 0.0115  
+rms 0.0116  floor 0.0038  level 0.0115  
+rms 0.0065  floor 0.0038  level 0.0115  
+rms 0.0038  floor 0.0038  level 0.0113  
+rms 0.0072  floor 0.0038  level 0.0113  
+rms 0.0065  floor 0.0038  level 0.0113  
+rms 0.0047  floor 0.0038  level 0.0113  
+rms 0.0088  floor 0.0038  level 0.0114  
+rms 0.0143  floor 0.0038  level 0.0114  
+rms 0.0182  floor 0.0038  level 0.0115  EVENT
+request: seq 17 first 0 count 286
+served 286 fragments of 286 in 754 ms
+rms 0.0050  floor 0.0038  level 0.0115  
+rms 0.0148  floor 0.0039  level 0.0116  
+resend request: seq 17
+resent 16 fragments of seq 17
+rms 0.0113  floor 0.0039  level 0.0116  
+rms 0.0063  floor 0.0039  level 0.0117  
+rms 0.0036  floor 0.0036  level 0.0107  
+rms 0.0062  floor 0.0036  level 0.0107  
+rms 0.0153  floor 0.0036  level 0.0108  
+rms 0.0230  floor 0.0036  level 0.0109  EVENT
+rms 0.0124  floor 0.0036  level 0.0109  EVENT
+rms 0.0103  floor 0.0037  level 0.0110  
+resend request: seq 17
+resent 3 fragments of seq 17
+rms 0.0121  floor 0.0037  level 0.0110  
+rms 0.0098  floor 0.0037  level 0.0111  
+rms 0.0073  floor 0.0037  level 0.0111  
+rms 0.0065  floor 0.0037  level 0.0111  
+rms 0.0056  floor 0.0037  level 0.0111  
+rms 0.0052  floor 0.0037  level 0.0111  
+rms 0.0060  floor 0.0037  level 0.0111  
+rms 0.0120  floor 0.0037  level 0.0112  
+rms 0.0191  floor 0.0038  level 0.0113  EVENT
+rms 0.0225  floor 0.0038  level 0.0114  EVENT
+rms 0.0342  floor 0.0039  level 0.0116  EVENT
+rms 0.0428  floor 0.0039  level 0.0118  EVENT
+rms 0.0246  floor 0.0040  level 0.0119  EVENT
+rms 0.0073  floor 0.0040  level 0.0120  
+rms 0.0265  floor 0.0040  level 0.0121  
+rms 0.0394  floor 0.0041  level 0.0123  EVENT
+rms 0.0411  floor 0.0042  level 0.0125  EVENT
+rms 0.0439  floor 0.0043  level 0.0128  EVENT
+rms 0.0264  floor 0.0043  level 0.0129  EVENT
+rms 0.0429  floor 0.0044  level 0.0131  EVENT
+rms 0.0634  floor 0.0045  level 0.0135  EVENT
+rms 0.0476  floor 0.0046  level 0.0137  EVENT
+rms 0.0239  floor 0.0046  level 0.0139  EVENT
+rms 0.0557  floor 0.0047  level 0.0142  EVENT
+rms 0.0386  floor 0.0048  level 0.0144  EVENT
+rms 0.0127  floor 0.0048  level 0.0144  
+rms 0.0225  floor 0.0048  level 0.0145  
+rms 0.0443  floor 0.0049  level 0.0148  EVENT
+rms 0.0320  floor 0.0050  level 0.0149  EVENT
+rms 0.0598  floor 0.0051  level 0.0153  EVENT
+rms 0.0755  floor 0.0052  level 0.0157  EVENT
+rms 0.0168  floor 0.0052  level 0.0157  EVENT
+rms 0.0336  floor 0.0053  level 0.0159  EVENT
+rms 0.0662  floor 0.0054  level 0.0163  EVENT
+rms 0.1041  floor 0.0056  level 0.0169  EVENT
+rms 0.0504  floor 0.0057  level 0.0171  EVENT
+rms 0.0520  floor 0.0058  level 0.0174  EVENT
+rms 0.0815  floor 0.0060  level 0.0179  EVENT
+rms 0.0492  floor 0.0060  level 0.0181  EVENT
+rms 0.0284  floor 0.0061  level 0.0183  EVENT
+rms 0.0560  floor 0.0062  level 0.0186  EVENT
+rms 0.0301  floor 0.0062  level 0.0187  EVENT
+rms 0.0137  floor 0.0063  level 0.0188  
+rms 0.0367  floor 0.0063  level 0.0189  
+rms 0.0345  floor 0.0064  level 0.0191  EVENT
+rms 0.0279  floor 0.0064  level 0.0192  EVENT
+rms 0.0123  floor 0.0064  level 0.0193  
+rms 0.0098  floor 0.0064  level 0.0193  
+rms 0.0683  floor 0.0066  level 0.0197  
+rms 0.0701  floor 0.0067  level 0.0200  EVENT
+rms 0.0199  floor 0.0067  level 0.0201  
+rms 0.0409  floor 0.0068  level 0.0203  
+rms 0.0517  floor 0.0069  level 0.0206  EVENT
+rms 0.0340  floor 0.0069  level 0.0208  EVENT
+rms 0.0567  floor 0.0070  level 0.0211  EVENT
+rms 0.0187  floor 0.0070  level 0.0211  
+rms 0.0362  floor 0.0071  level 0.0213  
+rms 0.0418  floor 0.0072  level 0.0215  EVENT
+rms 0.0251  floor 0.0072  level 0.0216  EVENT
+rms 0.0655  floor 0.0073  level 0.0220  EVENT
+rms 0.0938  floor 0.0075  level 0.0225  EVENT
+rms 0.0594  floor 0.0076  level 0.0228  EVENT
+rms 0.0405  floor 0.0077  level 0.0230  EVENT
+rms 0.0688  floor 0.0078  level 0.0234  EVENT
+rms 0.0491  floor 0.0079  level 0.0236  EVENT
+rms 0.0373  floor 0.0079  level 0.0238  EVENT
+rms 0.0503  floor 0.0080  level 0.0240  EVENT
+rms 0.0261  floor 0.0081  level 0.0242  EVENT
+rms 0.0073  floor 0.0073  level 0.0218  
+rms 0.0544  floor 0.0074  level 0.0221  
+rms 0.0714  floor 0.0075  level 0.0224  EVENT
+rms 0.0497  floor 0.0076  level 0.0227  EVENT
+rms 0.0182  floor 0.0076  level 0.0228  
+rms 0.0528  floor 0.0077  level 0.0230  
+rms 0.0668  floor 0.0078  level 0.0234  EVENT
+rms 0.0328  floor 0.0078  level 0.0235  EVENT
+rms 0.0417  floor 0.0079  level 0.0237  EVENT
+rms 0.0323  floor 0.0080  level 0.0239  EVENT
+rms 0.0124  floor 0.0080  level 0.0239  
+rms 0.0337  floor 0.0080  level 0.0241  
+froze window, burst seq 18  level 0.0243  win rms 0.0428
+rms 0.0489  floor 0.0081  level 0.0243  EVENT
+rms 0.0687  floor 0.0082  level 0.0247  EVENT
+rms 0.0407  floor 0.0083  level 0.0249  EVENT
+rms 0.0213  floor 0.0083  level 0.0249  
+rms 0.0447  floor 0.0084  level 0.0252  
+rms 0.0231  floor 0.0084  level 0.0252  
+rms 0.0523  floor 0.0085  level 0.0255  
+rms 0.0807  floor 0.0086  level 0.0259  EVENT
+request: seq 18 first 0 count 286
+served 286 fragments of 286 in 753 ms
+rms 0.0195  floor 0.0087  level 0.0260  
+rms 0.0409  floor 0.0087  level 0.0262  
+rms 0.0417  floor 0.0088  level 0.0264  EVENT
+resend request: seq 18
+resent 16 fragments of seq 18
+rms 0.0496  floor 0.0089  level 0.0266  EVENT
+rms 0.0659  floor 0.0090  level 0.0270  EVENT
+rms 0.0327  floor 0.0090  level 0.0271  EVENT
+rms 0.0106  floor 0.0090  level 0.0271  
+rms 0.0149  floor 0.0091  level 0.0272  
+rms 0.0222  floor 0.0091  level 0.0273  
+rms 0.0184  floor 0.0091  level 0.0273  
+resend request: seq 18
+resent 2 fragments of seq 18
+rms 0.0052  floor 0.0052  level 0.0156  
+rms 0.0264  floor 0.0052  level 0.0157  
+rms 0.0414  floor 0.0053  level 0.0159  EVENT
+rms 0.0336  floor 0.0054  level 0.0161  EVENT
+rms 0.0176  floor 0.0054  level 0.0162  EVENT
+rms 0.0204  floor 0.0054  level 0.0163  EVENT
+rms 0.0101  floor 0.0054  level 0.0163  
+rms 0.0105  floor 0.0054  level 0.0163  
+rms 0.0316  floor 0.0055  level 0.0165  
+rms 0.0228  floor 0.0055  level 0.0166  EVENT
+rms 0.0054  floor 0.0054  level 0.0161  
+rms 0.0055  floor 0.0054  level 0.0161  
+rms 0.0272  floor 0.0054  level 0.0162  
+rms 0.0324  floor 0.0055  level 0.0164  EVENT
+rms 0.0266  floor 0.0055  level 0.0165  EVENT
+rms 0.0176  floor 0.0055  level 0.0166  EVENT
+rms 0.0118  floor 0.0055  level 0.0166  
+rms 0.0077  floor 0.0056  level 0.0167  
+rms 0.0146  floor 0.0056  level 0.0167  
+rms 0.0166  floor 0.0056  level 0.0168  
+rms 0.0191  floor 0.0056  level 0.0169  
+rms 0.0378  floor 0.0057  level 0.0171  EVENT
+rms 0.0177  floor 0.0057  level 0.0171  EVENT
+rms 0.0455  floor 0.0058  level 0.0174  EVENT
+rms 0.0924  floor 0.0060  level 0.0179  EVENT
+rms 0.1156  floor 0.0062  level 0.0185  EVENT
+rms 0.1081  floor 0.0064  level 0.0192  EVENT
+rms 0.0817  floor 0.0065  level 0.0196  EVENT
+rms 0.0340  floor 0.0066  level 0.0198  EVENT
+rms 0.0291  floor 0.0066  level 0.0199  EVENT
+rms 0.0585  floor 0.0067  level 0.0202  EVENT
+rms 0.0867  floor 0.0069  level 0.0207  EVENT
+rms 0.1002  floor 0.0071  level 0.0213  EVENT
+rms 0.0881  floor 0.0072  level 0.0217  EVENT
+rms 0.0982  floor 0.0074  level 0.0223  EVENT
+rms 0.0997  floor 0.0076  level 0.0228  EVENT
+rms 0.0356  floor 0.0077  level 0.0230  EVENT
+rms 0.0316  floor 0.0077  level 0.0231  EVENT
+rms 0.0698  floor 0.0078  level 0.0235  EVENT
+rms 0.0830  floor 0.0080  level 0.0240  EVENT
+rms 0.0540  floor 0.0081  level 0.0242  EVENT
+rms 0.0134  floor 0.0081  level 0.0243  
+rms 0.0069  floor 0.0069  level 0.0208  
+rms 0.0302  floor 0.0070  level 0.0210  
+rms 0.0339  floor 0.0070  level 0.0211  EVENT
+rms 0.0197  floor 0.0071  level 0.0212  
+rms 0.0052  floor 0.0052  level 0.0155  
+rms 0.0133  floor 0.0052  level 0.0155  
+rms 0.0191  floor 0.0052  level 0.0156  
+rms 0.0163  floor 0.0052  level 0.0157  EVENT
+rms 0.0149  floor 0.0052  level 0.0157  
+rms 0.0177  floor 0.0053  level 0.0158  
+rms 0.0301  floor 0.0053  level 0.0160  EVENT
+rms 0.0345  floor 0.0054  level 0.0161  EVENT
+rms 0.0202  floor 0.0054  level 0.0162  EVENT
+rms 0.0057  floor 0.0054  level 0.0162  
+rms 0.0113  floor 0.0054  level 0.0163  
+rms 0.0130  floor 0.0054  level 0.0163  
+rms 0.0263  floor 0.0055  level 0.0164  
+rms 0.0333  floor 0.0055  level 0.0166  EVENT
+rms 0.0216  floor 0.0056  level 0.0167  EVENT
+rms 0.0063  floor 0.0056  level 0.0167  
+rms 0.0061  floor 0.0056  level 0.0167  
+rms 0.0139  floor 0.0056  level 0.0168  
+rms 0.0103  floor 0.0056  level 0.0168  
+rms 0.0111  floor 0.0056  level 0.0168  
+rms 0.0168  floor 0.0056  level 0.0169  
+rms 0.0201  floor 0.0057  level 0.0170  
+rms 0.0245  floor 0.0057  level 0.0171  EVENT
+rms 0.0130  floor 0.0057  level 0.0171  
+rms 0.0047  floor 0.0047  level 0.0140  
+rms 0.0173  floor 0.0047  level 0.0141  
+rms 0.0128  floor 0.0047  level 0.0141  
+rms 0.0099  floor 0.0047  level 0.0141  
+rms 0.0276  floor 0.0048  level 0.0143  
+rms 0.0275  floor 0.0048  level 0.0144  EVENT
+rms 0.0199  floor 0.0048  level 0.0145  EVENT
+rms 0.0074  floor 0.0048  level 0.0145  
+rms 0.0056  floor 0.0048  level 0.0145  
+rms 0.0131  floor 0.0049  level 0.0146  
+rms 0.0188  floor 0.0049  level 0.0147  
+rms 0.0330  floor 0.0049  level 0.0148  EVENT
+rms 0.0340  floor 0.0050  level 0.0150  EVENT
+rms 0.0394  floor 0.0051  level 0.0152  EVENT
+rms 0.0232  floor 0.0051  level 0.0153  EVENT
+rms 0.0633  floor 0.0052  level 0.0157  EVENT
+rms 0.0362  floor 0.0053  level 0.0159  EVENT
+rms 0.0126  floor 0.0053  level 0.0159  
+rms 0.0218  floor 0.0053  level 0.0160  
+rms 0.0181  floor 0.0054  level 0.0161  EVENT
+rms 0.0071  floor 0.0054  level 0.0161  
+rms 0.0480  floor 0.0054  level 0.0163  
+rms 0.0806  floor 0.0056  level 0.0168  EVENT
+rms 0.0561  floor 0.0057  level 0.0171  EVENT
+rms 0.0117  floor 0.0057  level 0.0171  
+rms 0.0170  floor 0.0057  level 0.0172  
+rms 0.0388  floor 0.0058  level 0.0174  
+rms 0.0391  floor 0.0059  level 0.0176  EVENT
+rms 0.0280  floor 0.0059  level 0.0177  EVENT
+rms 0.0153  floor 0.0059  level 0.0178  
+rms 0.0074  floor 0.0059  level 0.0178  
+rms 0.0062  floor 0.0059  level 0.0178  
+rms 0.0076  floor 0.0059  level 0.0178  
+rms 0.0057  floor 0.0057  level 0.0171  
+rms 0.0076  floor 0.0057  level 0.0172  
+rms 0.0063  floor 0.0057  level 0.0172  
+rms 0.0203  floor 0.0057  level 0.0172  
+rms 0.0340  floor 0.0058  level 0.0174  EVENT
+rms 0.0366  floor 0.0059  level 0.0176  EVENT
+rms 0.0281  floor 0.0059  level 0.0177  EVENT
+rms 0.0118  floor 0.0059  level 0.0178  
+rms 0.0157  floor 0.0059  level 0.0178  
+rms 0.0408  floor 0.0060  level 0.0180  
+rms 0.0365  floor 0.0061  level 0.0182  EVENT
+rms 0.0223  floor 0.0061  level 0.0183  EVENT
+rms 0.0100  floor 0.0061  level 0.0183  
+rms 0.0176  floor 0.0061  level 0.0184  
+rms 0.0236  floor 0.0062  level 0.0185  
+rms 0.0121  floor 0.0062  level 0.0185  
+rms 0.0065  floor 0.0062  level 0.0185  
+rms 0.0092  floor 0.0062  level 0.0186  
+rms 0.0096  floor 0.0062  level 0.0186  
+rms 0.0076  floor 0.0062  level 0.0186  
+rms 0.0204  floor 0.0062  level 0.0187  
+rms 0.0354  floor 0.0063  level 0.0189  EVENT
+rms 0.0229  floor 0.0063  level 0.0190  EVENT
+rms 0.0111  floor 0.0063  level 0.0190  
+rms 0.0225  floor 0.0064  level 0.0191  
+rms 0.0175  floor 0.0064  level 0.0191  
+rms 0.0165  floor 0.0064  level 0.0192  
+rms 0.0497  floor 0.0065  level 0.0195  
+rms 0.0260  floor 0.0065  level 0.0196  EVENT
+rms 0.0374  floor 0.0066  level 0.0198  EVENT
+rms 0.0230  floor 0.0066  level 0.0199  EVENT
+rms 0.0061  floor 0.0061  level 0.0182  
+rms 0.0127  floor 0.0061  level 0.0182  
+rms 0.0093  floor 0.0061  level 0.0183  
+rms 0.0150  floor 0.0061  level 0.0183  
+rms 0.0219  floor 0.0061  level 0.0184  
+rms 0.0310  floor 0.0062  level 0.0186  EVENT
+rms 0.0254  floor 0.0062  level 0.0187  EVENT
+rms 0.0157  floor 0.0062  level 0.0187  
+rms 0.0510  floor 0.0063  level 0.0190  
+rms 0.0485  floor 0.0064  level 0.0192  EVENT
+rms 0.0544  floor 0.0065  level 0.0195  EVENT
+rms 0.0602  floor 0.0066  level 0.0199  EVENT
+rms 0.0512  floor 0.0067  level 0.0201  EVENT
+rms 0.0374  floor 0.0068  level 0.0203  EVENT
+rms 0.0217  floor 0.0068  level 0.0204  EVENT
+rms 0.0049  floor 0.0049  level 0.0147  
+rms 0.0140  floor 0.0049  level 0.0147  
+rms 0.0222  floor 0.0049  level 0.0148  
+rms 0.0194  floor 0.0050  level 0.0149  EVENT
+rms 0.0206  floor 0.0050  level 0.0150  EVENT
+rms 0.0221  floor 0.0050  level 0.0151  EVENT
+rms 0.0135  floor 0.0051  level 0.0152  
+rms 0.0182  floor 0.0051  level 0.0152  
+rms 0.0312  floor 0.0051  level 0.0154  EVENT
+rms 0.0277  floor 0.0052  level 0.0155  EVENT
+rms 0.0514  floor 0.0053  level 0.0158  EVENT
+rms 0.0518  floor 0.0054  level 0.0161  EVENT
+rms 0.0563  floor 0.0055  level 0.0164  EVENT
+rms 0.0483  floor 0.0056  level 0.0167  EVENT
+rms 0.0327  floor 0.0056  level 0.0168  EVENT
+rms 0.0148  floor 0.0056  level 0.0169  
+rms 0.0059  floor 0.0056  level 0.0169  
+rms 0.0064  floor 0.0056  level 0.0169  
+rms 0.0053  floor 0.0053  level 0.0158  
+rms 0.0131  floor 0.0053  level 0.0158  
+rms 0.0168  floor 0.0053  level 0.0159  
+rms 0.0120  floor 0.0053  level 0.0159  
+rms 0.0103  floor 0.0053  level 0.0160  
+rms 0.0096  floor 0.0053  level 0.0160  
+rms 0.0326  floor 0.0054  level 0.0161  
+rms 0.0456  floor 0.0055  level 0.0164  EVENT
+rms 0.0448  floor 0.0055  level 0.0166  EVENT
+rms 0.0264  floor 0.0056  level 0.0167  EVENT
+rms 0.0194  floor 0.0056  level 0.0168  EVENT
+rms 0.0161  floor 0.0056  level 0.0169  
+rms 0.0124  floor 0.0056  level 0.0169  
+rms 0.0078  floor 0.0056  level 0.0169  
+rms 0.0034  floor 0.0034  level 0.0102  
+rms 0.0103  floor 0.0034  level 0.0102  
+rms 0.0111  floor 0.0034  level 0.0103  EVENT
+rms 0.0108  floor 0.0034  level 0.0103  EVENT
+rms 0.0081  floor 0.0034  level 0.0103  
+rms 0.0070  floor 0.0035  level 0.0104  
+rms 0.0074  floor 0.0035  level 0.0104  
+rms 0.0077  floor 0.0035  level 0.0104  
+rms 0.0074  floor 0.0035  level 0.0104  
+rms 0.0077  floor 0.0035  level 0.0105  
+rms 0.0166  floor 0.0035  level 0.0105  
+rms 0.0228  floor 0.0035  level 0.0106  EVENT
+rms 0.0121  floor 0.0036  level 0.0107  EVENT
+rms 0.0061  floor 0.0036  level 0.0107  
+rms 0.0070  floor 0.0036  level 0.0107  
+rms 0.0180  floor 0.0036  level 0.0108  
+froze window, burst seq 19  level 0.0109  win rms 0.0088
+rms 0.0083  floor 0.0036  level 0.0109  
+rms 0.0128  floor 0.0036  level 0.0109  
+rms 0.0123  floor 0.0037  level 0.0110  EVENT
+rms 0.0066  floor 0.0037  level 0.0110  
+rms 0.0045  floor 0.0037  level 0.0110  
+rms 0.0100  floor 0.0037  level 0.0110  
+rms 0.0165  floor 0.0037  level 0.0111  
+rms 0.0152  floor 0.0037  level 0.0112  EVENT
+rms 0.0119  floor 0.0037  level 0.0112  EVENT
+rms 0.0168  floor 0.0038  level 0.0113  EVENT
+rms 0.0089  floor 0.0038  level 0.0113  
+rms 0.0048  floor 0.0038  level 0.0113  
+rms 0.0120  floor 0.0038  level 0.0114  
+rms 0.0195  floor 0.0038  level 0.0115  EVENT
+rms 0.0137  floor 0.0038  level 0.0115  EVENT
+rms 0.0087  floor 0.0039  level 0.0116  
+rms 0.0184  floor 0.0039  level 0.0116  
+rms 0.0116  floor 0.0039  level 0.0117  
+rms 0.0101  floor 0.0039  level 0.0117  
+rms 0.0291  floor 0.0040  level 0.0119  
+rms 0.0182  floor 0.0040  level 0.0120  EVENT
+rms 0.0063  floor 0.0040  level 0.0120  
+froze window, burst seq 20  level 0.0120  win rms 0.0138
+rms 0.0094  floor 0.0040  level 0.0120  
+rms 0.0249  floor 0.0040  level 0.0121  
+rms 0.0194  floor 0.0041  level 0.0122  EVENT
+rms 0.0106  floor 0.0041  level 0.0123  
+rms 0.0041  floor 0.0041  level 0.0122  
+rms 0.0054  floor 0.0041  level 0.0122  
+rms 0.0052  floor 0.0041  level 0.0122  
+rms 0.0078  floor 0.0041  level 0.0122  
+rms 0.0049  floor 0.0041  level 0.0122  
+rms 0.0097  floor 0.0041  level 0.0123  
+rms 0.0353  floor 0.0042  level 0.0125  
+rms 0.0303  floor 0.0042  level 0.0126  EVENT
+rms 0.0157  floor 0.0042  level 0.0127  EVENT
+rms 0.0234  floor 0.0043  level 0.0128  EVENT
+rms 0.0323  floor 0.0043  level 0.0130  EVENT
+rms 0.0206  floor 0.0044  level 0.0131  EVENT
+rms 0.0064  floor 0.0044  level 0.0131  
+rms 0.0072  floor 0.0044  level 0.0131  
+rms 0.0068  floor 0.0044  level 0.0131  
+rms 0.0116  floor 0.0044  level 0.0132  
+rms 0.0039  floor 0.0039  level 0.0118  
+rms 0.0062  floor 0.0039  level 0.0118  
+froze window, burst seq 21  level 0.0118  win rms 0.0163
+rms 0.0063  floor 0.0039  level 0.0118  
+rms 0.0050  floor 0.0039  level 0.0118  
+rms 0.0052  floor 0.0039  level 0.0118  
+rms 0.0044  floor 0.0039  level 0.0118  
+rms 0.0040  floor 0.0039  level 0.0118  
+rms 0.0051  floor 0.0039  level 0.0118  
+rms 0.0065  floor 0.0039  level 0.0118  
+rms 0.0048  floor 0.0039  level 0.0118  
+rms 0.0055  floor 0.0040  level 0.0119  
+rms 0.0082  floor 0.0040  level 0.0119  
+rms 0.0119  floor 0.0040  level 0.0119  
+rms 0.0097  floor 0.0040  level 0.0120  
+rms 0.0191  floor 0.0040  level 0.0121  
+rms 0.0127  floor 0.0040  level 0.0121  EVENT
+request: seq 21 first 0 count 286
+served 286 fragments of 286 in 752 ms
+rms 0.0427  floor 0.0041  level 0.0123  EVENT
+rms 0.0286  floor 0.0042  level 0.0125  EVENT
+resend request: seq 21
+resent 12 fragments of seq 21
+rms 0.0096  floor 0.0042  level 0.0125  
+rms 0.0061  floor 0.0042  level 0.0125  
+rms 0.0059  floor 0.0042  level 0.0125  
+rms 0.0085  floor 0.0042  level 0.0126  
+rms 0.0182  floor 0.0042  level 0.0126  
+rms 0.0407  floor 0.0043  level 0.0129  EVENT
+rms 0.0281  floor 0.0043  level 0.0130  EVENT
+rms 0.0078  floor 0.0043  level 0.0130  
+resend request: seq 21
+resent 2 fragments of seq 21
+rms 0.0189  floor 0.0044  level 0.0131  
+rms 0.0223  floor 0.0044  level 0.0132  EVENT
+rms 0.0096  floor 0.0044  level 0.0133  
+rms 0.0173  floor 0.0044  level 0.0133  
+rms 0.0236  floor 0.0045  level 0.0134  EVENT
+rms 0.0156  floor 0.0045  level 0.0135  EVENT
+rms 0.0121  floor 0.0045  level 0.0136  
+rms 0.0085  floor 0.0045  level 0.0136  
+rms 0.0058  floor 0.0045  level 0.0136  
+rms 0.0038  floor 0.0038  level 0.0115  
+rms 0.0073  floor 0.0038  level 0.0115  
+rms 0.0057  floor 0.0038  level 0.0115  
+rms 0.0084  floor 0.0038  level 0.0115  
+rms 0.0113  floor 0.0039  level 0.0116  
+rms 0.0314  floor 0.0039  level 0.0117  
+rms 0.0315  floor 0.0040  level 0.0119  EVENT
+rms 0.0105  floor 0.0040  level 0.0120  
+rms 0.0135  floor 0.0040  level 0.0120  
+rms 0.0067  floor 0.0040  level 0.0120  
+rms 0.0060  floor 0.0040  level 0.0120  
+rms 0.0041  floor 0.0040  level 0.0120  
+rms 0.0035  floor 0.0035  level 0.0106  
+rms 0.0048  floor 0.0036  level 0.0107  
+rms 0.0061  floor 0.0036  level 0.0107  
+rms 0.0035  floor 0.0035  level 0.0106  
+rms 0.0077  floor 0.0035  level 0.0106  
+rms 0.0190  floor 0.0036  level 0.0107  
+rms 0.0371  floor 0.0036  level 0.0109  EVENT
+rms 0.0300  floor 0.0037  level 0.0110  EVENT
+rms 0.0192  floor 0.0037  level 0.0111  EVENT
+rms 0.0186  floor 0.0037  level 0.0112  EVENT
+rms 0.0098  floor 0.0038  level 0.0113  
+rms 0.0250  floor 0.0038  level 0.0114  
+rms 0.0500  floor 0.0039  level 0.0117  EVENT
+rms 0.0310  floor 0.0039  level 0.0118  EVENT
+rms 0.0076  floor 0.0039  level 0.0118  
+rms 0.0389  floor 0.0040  level 0.0121  
+rms 0.0642  floor 0.0041  level 0.0124  EVENT
+rms 0.0373  floor 0.0042  level 0.0126  EVENT
+rms 0.0127  floor 0.0042  level 0.0127  EVENT
+rms 0.0304  floor 0.0043  level 0.0128  EVENT
+rms 0.0927  floor 0.0045  level 0.0134  EVENT
+rms 0.1123  floor 0.0047  level 0.0140  EVENT
+rms 0.0694  floor 0.0048  level 0.0144  EVENT
+rms 0.0318  floor 0.0049  level 0.0146  EVENT
+rms 0.0317  floor 0.0049  level 0.0147  EVENT
+rms 0.0540  floor 0.0050  level 0.0150  EVENT
+rms 0.0463  floor 0.0051  level 0.0153  EVENT
+rms 0.0124  floor 0.0051  level 0.0153  
+rms 0.0047  floor 0.0047  level 0.0141  
+rms 0.0437  floor 0.0048  level 0.0144  
+rms 0.0639  floor 0.0049  level 0.0147  EVENT
+rms 0.0433  floor 0.0050  level 0.0149  EVENT
+rms 0.0182  floor 0.0050  level 0.0150  EVENT
+rms 0.0646  floor 0.0051  level 0.0154  EVENT
+rms 0.0961  floor 0.0053  level 0.0159  EVENT
+rms 0.0853  floor 0.0055  level 0.0164  EVENT
+rms 0.0457  floor 0.0056  level 0.0167  EVENT
+rms 0.1149  floor 0.0058  level 0.0173  EVENT
+rms 0.1203  floor 0.0060  level 0.0180  EVENT
+rms 0.0733  floor 0.0061  level 0.0184  EVENT
+froze window, burst seq 22  level 0.0186  win rms 0.0679  (cry mode)
+rms 0.0342  floor 0.0062  level 0.0186  EVENT
+request: seq 22 first 0 count 286
+served 286 fragments of 286 in 754 ms
+rms 0.0389  floor 0.0063  level 0.0188  EVENT
+rms 0.0666  floor 0.0064  level 0.0191  EVENT
+resend request: seq 22
+resent 12 fragments of seq 22
+rms 0.0551  floor 0.0065  level 0.0194  EVENT
+rms 0.0186  floor 0.0065  level 0.0195  
+rms 0.0431  floor 0.0066  level 0.0197  
+rms 0.0427  floor 0.0066  level 0.0199  EVENT
+rms 0.0205  floor 0.0067  level 0.0200  EVENT
+rms 0.0119  floor 0.0067  level 0.0200  
+rms 0.0323  floor 0.0067  level 0.0202  
+rms 0.0400  floor 0.0068  level 0.0204  EVENT
+rms 0.0202  floor 0.0068  level 0.0205  
+rms 0.0173  floor 0.0068  level 0.0205  
+rms 0.0371  floor 0.0069  level 0.0207  
+rms 0.0469  floor 0.0070  level 0.0210  EVENT
+rms 0.0290  floor 0.0070  level 0.0211  EVENT
+rms 0.0116  floor 0.0070  level 0.0211  
+rms 0.0123  floor 0.0071  level 0.0212  
+rms 0.0232  floor 0.0071  level 0.0212  
+rms 0.0196  floor 0.0071  level 0.0213  
+rms 0.0134  floor 0.0071  level 0.0214  
+rms 0.0152  floor 0.0071  level 0.0214  
+rms 0.0124  floor 0.0071  level 0.0214  
+rms 0.0666  floor 0.0073  level 0.0218  
+rms 0.1155  floor 0.0075  level 0.0224  EVENT
+rms 0.0792  floor 0.0076  level 0.0229  EVENT
+rms 0.0235  floor 0.0077  level 0.0230  EVENT
+rms 0.0236  floor 0.0077  level 0.0231  EVENT
+rms 0.0352  floor 0.0077  level 0.0232  EVENT
+rms 0.0316  floor 0.0078  level 0.0234  EVENT
+rms 0.0423  floor 0.0079  level 0.0236  EVENT
+rms 0.0608  floor 0.0080  level 0.0239  EVENT
+rms 0.0626  floor 0.0081  level 0.0242  EVENT
+rms 0.0363  floor 0.0081  level 0.0244  EVENT
+rms 0.0187  floor 0.0082  level 0.0245  
+rms 0.0349  floor 0.0082  level 0.0246  
+rms 0.0237  floor 0.0082  level 0.0247  
+rms 0.0154  floor 0.0083  level 0.0248  
+rms 0.0305  floor 0.0083  level 0.0249  
+rms 0.0373  floor 0.0084  level 0.0251  EVENT
+rms 0.0114  floor 0.0084  level 0.0251  
+rms 0.0291  floor 0.0084  level 0.0252  
+rms 0.0140  floor 0.0084  level 0.0252  
+rms 0.0227  floor 0.0084  level 0.0253  
+rms 0.0433  floor 0.0085  level 0.0255  
+rms 0.0345  floor 0.0086  level 0.0257  EVENT
+rms 0.0194  floor 0.0086  level 0.0258  
+rms 0.0095  floor 0.0086  level 0.0258  
+rms 0.0427  floor 0.0087  level 0.0260  
+rms 0.0588  floor 0.0088  level 0.0263  EVENT
+rms 0.0447  floor 0.0088  level 0.0265  EVENT
+rms 0.0113  floor 0.0088  level 0.0265  
+rms 0.0291  floor 0.0089  level 0.0266  
+rms 0.0446  floor 0.0089  level 0.0268  EVENT
+rms 0.0201  floor 0.0090  level 0.0269  
+rms 0.0384  floor 0.0090  level 0.0271  
+rms 0.0327  floor 0.0091  level 0.0272  EVENT
+rms 0.0452  floor 0.0091  level 0.0274  EVENT
+rms 0.0901  floor 0.0093  level 0.0279  EVENT
+rms 0.0575  floor 0.0094  level 0.0282  EVENT
+rms 0.0215  floor 0.0094  level 0.0283  
+rms 0.0131  floor 0.0094  level 0.0283  
+rms 0.0342  floor 0.0095  level 0.0285  
+rms 0.0381  floor 0.0095  level 0.0286  EVENT
+rms 0.0429  floor 0.0096  level 0.0288  EVENT
+rms 0.0438  floor 0.0097  level 0.0290  EVENT
+rms 0.0308  floor 0.0097  level 0.0292  EVENT
+rms 0.0276  floor 0.0098  level 0.0293  
+rms 0.0331  floor 0.0098  level 0.0294  
+rms 0.0221  floor 0.0098  level 0.0295  
+rms 0.0307  floor 0.0099  level 0.0296  
+rms 0.0113  floor 0.0099  level 0.0296  
+rms 0.0109  floor 0.0099  level 0.0296  
+rms 0.0321  floor 0.0099  level 0.0298  
+rms 0.0425  floor 0.0100  level 0.0299  EVENT
+rms 0.0211  floor 0.0100  level 0.0300  
+rms 0.0040  floor 0.0040  level 0.0120  
+rms 0.0080  floor 0.0040  level 0.0120  
+rms 0.0151  floor 0.0040  level 0.0121  
+rms 0.0373  floor 0.0041  level 0.0123  EVENT
+rms 0.0312  floor 0.0041  level 0.0124  EVENT
+rms 0.0485  floor 0.0042  level 0.0127  EVENT
+rms 0.0823  floor 0.0044  level 0.0132  EVENT
+rms 0.0508  floor 0.0045  level 0.0135  EVENT
+rms 0.0130  floor 0.0045  level 0.0135  
+rms 0.0184  floor 0.0045  level 0.0136  
+rms 0.0260  floor 0.0046  level 0.0137  EVENT
+rms 0.0207  floor 0.0046  level 0.0138  EVENT
+rms 0.0150  floor 0.0046  level 0.0139  EVENT
+rms 0.0097  floor 0.0046  level 0.0139  
+rms 0.0079  floor 0.0046  level 0.0139  
+rms 0.0135  floor 0.0047  level 0.0140  
+rms 0.0360  floor 0.0047  level 0.0142  
+rms 0.0322  floor 0.0048  level 0.0143  EVENT
+rms 0.0121  floor 0.0048  level 0.0144  
+rms 0.0193  floor 0.0048  level 0.0145  
+rms 0.0309  floor 0.0049  level 0.0146  EVENT
+rms 0.0215  floor 0.0049  level 0.0147  EVENT
+rms 0.0078  floor 0.0049  level 0.0147  
+rms 0.0123  floor 0.0049  level 0.0148  
+rms 0.0322  floor 0.0050  level 0.0149  
+rms 0.0324  floor 0.0050  level 0.0151  EVENT
+rms 0.0110  floor 0.0050  level 0.0151  
+rms 0.0059  floor 0.0051  level 0.0152  
+rms 0.0113  floor 0.0051  level 0.0152  
+rms 0.0191  floor 0.0051  level 0.0153  
+rms 0.0292  floor 0.0051  level 0.0154  EVENT
+rms 0.0201  floor 0.0052  level 0.0155  EVENT
+rms 0.0107  floor 0.0052  level 0.0155  
+rms 0.0273  floor 0.0052  level 0.0157  
+rms 0.0486  floor 0.0053  level 0.0159  EVENT
+rms 0.0381  floor 0.0054  level 0.0161  EVENT
+rms 0.0353  floor 0.0054  level 0.0163  EVENT
+rms 0.0652  floor 0.0056  level 0.0167  EVENT
+rms 0.0525  floor 0.0057  level 0.0170  EVENT
+rms 0.0308  floor 0.0057  level 0.0171  EVENT
+rms 0.0071  floor 0.0057  level 0.0171  
+rms 0.0093  floor 0.0057  level 0.0171  
+rms 0.0136  floor 0.0057  level 0.0172  
+rms 0.0142  floor 0.0057  level 0.0172  
+rms 0.0229  floor 0.0058  level 0.0173  
+rms 0.0421  floor 0.0059  level 0.0176  EVENT
+rms 0.0296  floor 0.0059  level 0.0177  EVENT
+rms 0.0093  floor 0.0059  level 0.0177  
+rms 0.0064  floor 0.0059  level 0.0177  
+rms 0.0076  floor 0.0059  level 0.0177  
+rms 0.0203  floor 0.0059  level 0.0178  
+rms 0.0167  floor 0.0060  level 0.0179  
+rms 0.0083  floor 0.0060  level 0.0179  
+rms 0.0042  floor 0.0042  level 0.0127  
+rms 0.0122  floor 0.0043  level 0.0128  
+rms 0.0222  floor 0.0043  level 0.0129  
+rms 0.0138  floor 0.0043  level 0.0129  EVENT
+rms 0.0166  floor 0.0043  level 0.0130  EVENT
+rms 0.0200  floor 0.0044  level 0.0131  EVENT
+rms 0.0131  floor 0.0044  level 0.0131  
+rms 0.0104  floor 0.0044  level 0.0132  
+rms 0.0144  floor 0.0044  level 0.0132  
+rms 0.0088  floor 0.0044  level 0.0133  
+rms 0.0113  floor 0.0044  level 0.0133  
+rms 0.0192  floor 0.0045  level 0.0134  
+rms 0.0104  floor 0.0045  level 0.0134  
+rms 0.0039  floor 0.0039  level 0.0117  
+rms 0.0061  floor 0.0039  level 0.0117  
+rms 0.0218  floor 0.0039  level 0.0118  
+rms 0.0250  floor 0.0040  level 0.0120  EVENT
+rms 0.0201  floor 0.0040  level 0.0121  EVENT
+rms 0.0119  floor 0.0040  level 0.0121  
+rms 0.0095  floor 0.0040  level 0.0121  
+rms 0.0266  floor 0.0041  level 0.0123  
+rms 0.0397  floor 0.0042  level 0.0125  EVENT
+rms 0.0315  floor 0.0042  level 0.0127  EVENT
+rms 0.0163  floor 0.0042  level 0.0127  EVENT
+rms 0.0058  floor 0.0042  level 0.0127  
+rms 0.0079  floor 0.0043  level 0.0128  
+rms 0.0112  floor 0.0043  level 0.0128  
+rms 0.0117  floor 0.0043  level 0.0128  
+rms 0.0116  floor 0.0043  level 0.0129  
+rms 0.0131  floor 0.0043  level 0.0129  
+rms 0.0285  floor 0.0044  level 0.0131  EVENT
+rms 0.0248  floor 0.0044  level 0.0132  EVENT
+rms 0.0126  floor 0.0044  level 0.0133  
+rms 0.0042  floor 0.0042  level 0.0127  
+rms 0.0099  floor 0.0042  level 0.0127  
+rms 0.0158  floor 0.0043  level 0.0128  
+rms 0.0217  floor 0.0043  level 0.0129  EVENT
+rms 0.0106  floor 0.0043  level 0.0129  
+rms 0.0037  floor 0.0037  level 0.0111  
+rms 0.0038  floor 0.0037  level 0.0111  
+rms 0.0037  floor 0.0037  level 0.0111  
+rms 0.0040  floor 0.0037  level 0.0111  
+rms 0.0035  floor 0.0035  level 0.0106  
+rms 0.0034  floor 0.0034  level 0.0101  
+rms 0.0036  floor 0.0034  level 0.0101  
+rms 0.0043  floor 0.0034  level 0.0101  
+rms 0.0036  floor 0.0034  level 0.0101  
+rms 0.0032  floor 0.0032  level 0.0097  
+rms 0.0039  floor 0.0032  level 0.0097  
+rms 0.0032  floor 0.0032  level 0.0097  
+rms 0.0045  floor 0.0032  level 0.0097  
+rms 0.0056  floor 0.0032  level 0.0097  
+rms 0.0123  floor 0.0033  level 0.0098  
+rms 0.0243  floor 0.0033  level 0.0099  EVENT
+rms 0.0095  floor 0.0033  level 0.0099  
+rms 0.0159  floor 0.0033  level 0.0100  
+rms 0.0298  floor 0.0034  level 0.0102  EVENT
+rms 0.0129  floor 0.0034  level 0.0102  EVENT
+rms 0.0239  floor 0.0034  level 0.0103  EVENT
+rms 0.0473  floor 0.0035  level 0.0106  EVENT
+rms 0.0346  floor 0.0036  level 0.0108  EVENT
+rms 0.0208  floor 0.0036  level 0.0109  EVENT
+rms 0.0069  floor 0.0036  level 0.0109  
+rms 0.0046  floor 0.0036  level 0.0109  
+rms 0.0073  floor 0.0036  level 0.0109  
+rms 0.0090  floor 0.0037  level 0.0110  
+rms 0.0068  floor 0.0037  level 0.0110  
+rms 0.0048  floor 0.0037  level 0.0110  
+rms 0.0042  floor 0.0037  level 0.0110  
+rms 0.0035  floor 0.0035  level 0.0105  
+rms 0.0044  floor 0.0035  level 0.0105  
+rms 0.0043  floor 0.0035  level 0.0105  
+rms 0.0047  floor 0.0035  level 0.0106  
+rms 0.0113  floor 0.0035  level 0.0106  
+rms 0.0174  floor 0.0036  level 0.0107  EVENT
+rms 0.0073  floor 0.0036  level 0.0107  
+rms 0.0112  floor 0.0036  level 0.0107  
+rms 0.0108  floor 0.0036  level 0.0108  EVENT
+rms 0.0047  floor 0.0036  level 0.0108  
+rms 0.0232  floor 0.0036  level 0.0109  
+rms 0.0207  floor 0.0037  level 0.0110  EVENT
+rms 0.0065  floor 0.0037  level 0.0110  
+rms 0.0086  floor 0.0037  level 0.0111  
+rms 0.0246  floor 0.0037  level 0.0112  
+rms 0.0189  floor 0.0038  level 0.0113  EVENT
+rms 0.0089  floor 0.0038  level 0.0113  
+rms 0.0037  floor 0.0037  level 0.0112  
+rms 0.0134  floor 0.0038  level 0.0113  
+rms 0.0170  floor 0.0038  level 0.0114  EVENT
+rms 0.0062  floor 0.0038  level 0.0114  
+rms 0.0094  floor 0.0038  level 0.0114  
+rms 0.0196  floor 0.0038  level 0.0115  
+rms 0.0093  floor 0.0039  level 0.0116  
+rms 0.0029  floor 0.0029  level 0.0088  
+froze window, burst seq 23  level 0.0089  win rms 0.0140
+rms 0.0174  floor 0.0030  level 0.0089  
+rms 0.0177  floor 0.0030  level 0.0090  EVENT
+rms 0.0046  floor 0.0030  level 0.0090  
+rms 0.0170  floor 0.0030  level 0.0091  
+rms 0.0153  floor 0.0030  level 0.0091  EVENT
+rms 0.0047  floor 0.0030  level 0.0091  
+rms 0.0134  floor 0.0031  level 0.0092  
+rms 0.0191  floor 0.0031  level 0.0093  EVENT
+rms 0.0059  floor 0.0031  level 0.0093  
+rms 0.0167  floor 0.0031  level 0.0094  
+rms 0.0178  floor 0.0032  level 0.0095  EVENT
+rms 0.0070  floor 0.0032  level 0.0095  
+rms 0.0168  floor 0.0032  level 0.0096  
+rms 0.0200  floor 0.0032  level 0.0097  EVENT
+rms 0.0088  floor 0.0032  level 0.0097  
+rms 0.0061  floor 0.0032  level 0.0097  
+rms 0.0217  floor 0.0033  level 0.0099  
+rms 0.0171  floor 0.0033  level 0.0099  EVENT
+rms 0.0091  floor 0.0033  level 0.0100  
+rms 0.0043  floor 0.0033  level 0.0100  
+rms 0.0041  floor 0.0033  level 0.0100  
+froze window, burst seq 24  level 0.0100  win rms 0.0133
+rms 0.0042  floor 0.0033  level 0.0100  
+rms 0.0036  floor 0.0033  level 0.0100  
+rms 0.0042  floor 0.0033  level 0.0100  
+rms 0.0040  floor 0.0033  level 0.0100  
+rms 0.0042  floor 0.0033  level 0.0100  
+rms 0.0063  floor 0.0033  level 0.0100  
+rms 0.0190  floor 0.0034  level 0.0101  
+rms 0.0142  floor 0.0034  level 0.0102  EVENT
+rms 0.0147  floor 0.0034  level 0.0102  EVENT
+rms 0.0111  floor 0.0034  level 0.0103  EVENT
+rms 0.0122  floor 0.0034  level 0.0103  EVENT
+rms 0.0249  floor 0.0035  level 0.0105  EVENT
+rms 0.0121  floor 0.0035  level 0.0105  EVENT
+rms 0.0111  floor 0.0035  level 0.0106  EVENT
+rms 0.0135  floor 0.0035  level 0.0106  EVENT
+rms 0.0066  floor 0.0036  level 0.0107  
+rms 0.0110  floor 0.0036  level 0.0107  
+rms 0.0314  floor 0.0036  level 0.0109  EVENT
+rms 0.0221  floor 0.0037  level 0.0110  EVENT
+rms 0.0062  floor 0.0037  level 0.0110  
+rms 0.0095  floor 0.0037  level 0.0110  
+rms 0.0124  floor 0.0037  level 0.0111  
+rms 0.0223  floor 0.0037  level 0.0112  EVENT
+rms 0.0123  floor 0.0037  level 0.0112  EVENT
+rms 0.0165  floor 0.0038  level 0.0113  EVENT
+rms 0.0140  floor 0.0038  level 0.0114  EVENT
+rms 0.0047  floor 0.0038  level 0.0114  
+froze window, burst seq 25  level 0.0114  win rms 0.0156
+rms 0.0044  floor 0.0038  level 0.0114  
+rms 0.0071  floor 0.0038  level 0.0114  
+rms 0.0127  floor 0.0038  level 0.0115  
+rms 0.0259  floor 0.0039  level 0.0116  EVENT
+request: seq 25 first 0 count 286
+served 286 fragments of 286 in 756 ms
+rms 0.0066  floor 0.0039  level 0.0116  
+rms 0.0110  floor 0.0039  level 0.0117  
+resend request: seq 25
+resent 4 fragments of seq 25
+rms 0.0193  floor 0.0039  level 0.0117  
+rms 0.0110  floor 0.0039  level 0.0118  
+rms 0.0040  floor 0.0039  level 0.0118  
+rms 0.0060  floor 0.0039  level 0.0118  
+rms 0.0177  floor 0.0040  level 0.0119  
+rms 0.0093  floor 0.0040  level 0.0119  
+rms 0.0111  floor 0.0040  level 0.0120  
+rms 0.0173  floor 0.0040  level 0.0120  
+rms 0.0073  floor 0.0040  level 0.0121  
+rms 0.0048  floor 0.0040  level 0.0121  
+rms 0.0091  floor 0.0040  level 0.0121  
+rms 0.0216  floor 0.0041  level 0.0122  
+rms 0.0108  floor 0.0041  level 0.0122  
+rms 0.0131  floor 0.0041  level 0.0123  
+rms 0.0180  floor 0.0041  level 0.0124  EVENT
+rms 0.0104  floor 0.0041  level 0.0124  
+rms 0.0057  floor 0.0041  level 0.0124  
+rms 0.0051  floor 0.0041  level 0.0124  
+rms 0.0053  floor 0.0041  level 0.0124  
+rms 0.0186  floor 0.0042  level 0.0125  
+rms 0.0096  floor 0.0042  level 0.0126  
+rms 0.0094  floor 0.0042  level 0.0126  
+rms 0.0200  floor 0.0042  level 0.0127  
+rms 0.0112  floor 0.0042  level 0.0127  
+rms 0.0033  floor 0.0033  level 0.0100  
+rms 0.0040  floor 0.0033  level 0.0100  
+rms 0.0047  floor 0.0033  level 0.0100  
+rms 0.0159  floor 0.0034  level 0.0101  
+rms 0.0159  floor 0.0034  level 0.0102  EVENT
+rms 0.0154  floor 0.0034  level 0.0102  EVENT
+rms 0.0208  floor 0.0035  level 0.0104  EVENT
+rms 0.0082  floor 0.0035  level 0.0104  
+rms 0.0129  floor 0.0035  level 0.0104  
+rms 0.0196  floor 0.0035  level 0.0105  EVENT
+rms 0.0094  floor 0.0035  level 0.0106  
+rms 0.0051  floor 0.0035  level 0.0106  
+rms 0.0039  floor 0.0035  level 0.0106  
+rms 0.0044  floor 0.0035  level 0.0106  
+rms 0.0035  floor 0.0035  level 0.0106  
+rms 0.0036  floor 0.0035  level 0.0106  
+rms 0.0049  floor 0.0035  level 0.0106  
+rms 0.0107  floor 0.0035  level 0.0106  
+rms 0.0204  floor 0.0036  level 0.0107  EVENT
+rms 0.0131  floor 0.0036  level 0.0108  EVENT
+rms 0.0060  floor 0.0036  level 0.0108  
+rms 0.0041  floor 0.0036  level 0.0108  
+rms 0.0034  floor 0.0034  level 0.0102  
+rms 0.0084  floor 0.0034  level 0.0103  
+rms 0.0225  floor 0.0035  level 0.0104  
+rms 0.0140  floor 0.0035  level 0.0104  EVENT
+rms 0.0050  floor 0.0035  level 0.0104  
+rms 0.0054  floor 0.0035  level 0.0105  
+rms 0.0071  floor 0.0035  level 0.0105  
+rms 0.0201  floor 0.0035  level 0.0106  
+rms 0.0168  floor 0.0036  level 0.0107  EVENT
+rms 0.0292  floor 0.0036  level 0.0108  EVENT
+rms 0.0438  floor 0.0037  level 0.0111  EVENT
+rms 0.0216  floor 0.0037  level 0.0112  EVENT
+rms 0.0217  floor 0.0038  level 0.0113  EVENT
+rms 0.0253  floor 0.0038  level 0.0114  EVENT
+rms 0.0071  floor 0.0038  level 0.0114  
+rms 0.0270  floor 0.0039  level 0.0116  
+rms 0.0259  floor 0.0039  level 0.0117  EVENT
+rms 0.0058  floor 0.0039  level 0.0117  
+rms 0.0159  floor 0.0039  level 0.0118  
+rms 0.0230  floor 0.0040  level 0.0119  EVENT
+rms 0.0317  floor 0.0040  level 0.0121  EVENT
+rms 0.0156  floor 0.0040  level 0.0121  EVENT
+rms 0.0114  floor 0.0041  level 0.0122  
+rms 0.0205  floor 0.0041  level 0.0123  
+rms 0.0346  floor 0.0042  level 0.0125  EVENT
+rms 0.0315  floor 0.0042  level 0.0126  EVENT
+rms 0.0176  floor 0.0042  level 0.0127  EVENT
+rms 0.0072  floor 0.0042  level 0.0127  
+rms 0.0160  floor 0.0043  level 0.0128  
+rms 0.0181  floor 0.0043  level 0.0129  EVENT
+rms 0.0114  floor 0.0043  level 0.0129  
+rms 0.0028  floor 0.0028  level 0.0083  
+rms 0.0036  floor 0.0028  level 0.0083  
+rms 0.0068  floor 0.0028  level 0.0083  
+rms 0.0159  floor 0.0028  level 0.0084  
+rms 0.0186  floor 0.0028  level 0.0085  EVENT
+rms 0.0074  floor 0.0028  level 0.0085  
+rms 0.0038  floor 0.0028  level 0.0085  
+rms 0.0051  floor 0.0028  level 0.0085  
+rms 0.0151  floor 0.0029  level 0.0086  
+rms 0.0133  floor 0.0029  level 0.0087  EVENT
+rms 0.0078  floor 0.0029  level 0.0087  
+rms 0.0131  floor 0.0029  level 0.0088  
+rms 0.0055  floor 0.0029  level 0.0088  
+rms 0.0132  floor 0.0030  level 0.0089  
+rms 0.0223  floor 0.0030  level 0.0090  EVENT
+rms 0.0132  floor 0.0030  level 0.0090  EVENT
+rms 0.0084  floor 0.0030  level 0.0091  
+rms 0.0038  floor 0.0030  level 0.0091  
+rms 0.0050  floor 0.0030  level 0.0091  
+rms 0.0060  floor 0.0030  level 0.0091  
+rms 0.0082  floor 0.0030  level 0.0091  
+rms 0.0083  floor 0.0031  level 0.0092  
+rms 0.0120  floor 0.0031  level 0.0092  
+rms 0.0191  floor 0.0031  level 0.0093  EVENT
+rms 0.0068  floor 0.0031  level 0.0093  
+rms 0.0139  floor 0.0031  level 0.0094  
+rms 0.0143  floor 0.0032  level 0.0095  EVENT
+rms 0.0055  floor 0.0032  level 0.0095  
+rms 0.0039  floor 0.0032  level 0.0095  
+rms 0.0036  floor 0.0032  level 0.0095  
+rms 0.0042  floor 0.0032  level 0.0095  
+rms 0.0113  floor 0.0032  level 0.0095  
+rms 0.0229  floor 0.0032  level 0.0097  EVENT
+rms 0.0149  floor 0.0032  level 0.0097  EVENT
+rms 0.0096  floor 0.0033  level 0.0098  
+rms 0.0048  floor 0.0033  level 0.0098  
+rms 0.0061  floor 0.0033  level 0.0098  
+rms 0.0070  floor 0.0033  level 0.0098  
+rms 0.0094  floor 0.0033  level 0.0098  
+rms 0.0102  floor 0.0033  level 0.0099  
+rms 0.0218  floor 0.0033  level 0.0100  EVENT
+rms 0.0205  floor 0.0034  level 0.0101  EVENT
+rms 0.0116  floor 0.0034  level 0.0102  EVENT
+rms 0.0051  floor 0.0034  level 0.0102  
+rms 0.0080  floor 0.0034  level 0.0102  
+rms 0.0165  floor 0.0034  level 0.0103  
+rms 0.0092  floor 0.0034  level 0.0103  
+rms 0.0098  floor 0.0034  level 0.0103  
+rms 0.0312  floor 0.0035  level 0.0105  
+rms 0.0281  floor 0.0036  level 0.0107  EVENT
+rms 0.0181  floor 0.0036  level 0.0107  EVENT
+rms 0.0086  floor 0.0036  level 0.0108  
+rms 0.0321  floor 0.0036  level 0.0109  
+rms 0.0401  floor 0.0037  level 0.0112  EVENT
+rms 0.0258  floor 0.0038  level 0.0113  EVENT
+rms 0.0074  floor 0.0038  level 0.0113  
+rms 0.0127  floor 0.0038  level 0.0114  
+rms 0.0169  floor 0.0038  level 0.0115  EVENT
+rms 0.0289  floor 0.0039  level 0.0116  EVENT
+rms 0.0268  floor 0.0039  level 0.0117  EVENT
+rms 0.0122  floor 0.0039  level 0.0118  EVENT
+rms 0.0052  floor 0.0039  level 0.0118  
+rms 0.0124  floor 0.0039  level 0.0118  
+rms 0.0114  floor 0.0040  level 0.0119  
+rms 0.0109  floor 0.0040  level 0.0119  
+rms 0.0174  floor 0.0040  level 0.0120  
+rms 0.0084  floor 0.0040  level 0.0120  
+rms 0.0056  floor 0.0040  level 0.0121  
+rms 0.0075  floor 0.0040  level 0.0121  
+rms 0.0178  floor 0.0041  level 0.0122  
+rms 0.0149  floor 0.0041  level 0.0122  EVENT
+rms 0.0068  floor 0.0041  level 0.0122  
+rms 0.0028  floor 0.0028  level 0.0084  
+rms 0.0094  floor 0.0028  level 0.0084  
+rms 0.0226  floor 0.0028  level 0.0085  EVENT
+rms 0.0131  floor 0.0029  level 0.0086  EVENT
+rms 0.0043  floor 0.0029  level 0.0086  
+rms 0.0171  floor 0.0029  level 0.0087  
+rms 0.0244  floor 0.0029  level 0.0088  EVENT
+rms 0.0114  floor 0.0029  level 0.0088  EVENT
+rms 0.0039  floor 0.0030  level 0.0089  
+rms 0.0216  floor 0.0030  level 0.0090  
+rms 0.0259  floor 0.0030  level 0.0091  EVENT
+rms 0.0174  floor 0.0031  level 0.0092  EVENT
+rms 0.0054  floor 0.0031  level 0.0092  
+rms 0.0228  floor 0.0031  level 0.0093  
+rms 0.0310  floor 0.0032  level 0.0095  EVENT
+rms 0.0157  floor 0.0032  level 0.0096  EVENT
+rms 0.0041  floor 0.0032  level 0.0096  
+rms 0.0030  floor 0.0030  level 0.0089  
+rms 0.0053  floor 0.0030  level 0.0089  
+rms 0.0098  floor 0.0030  level 0.0090  
+rms 0.0097  floor 0.0030  level 0.0090  EVENT
+rms 0.0048  floor 0.0030  level 0.0090  
+rms 0.0093  floor 0.0030  level 0.0091  
+rms 0.0145  floor 0.0030  level 0.0091  EVENT
+rms 0.0231  floor 0.0031  level 0.0092  EVENT
+rms 0.0320  floor 0.0031  level 0.0094  EVENT
+rms 0.0203  floor 0.0032  level 0.0095  EVENT
+rms 0.0089  floor 0.0032  level 0.0096  
+rms 0.0057  floor 0.0032  level 0.0096  
+rms 0.0041  floor 0.0032  level 0.0096  
+rms 0.0043  floor 0.0032  level 0.0096  
+rms 0.0038  floor 0.0032  level 0.0096  
+rms 0.0135  floor 0.0032  level 0.0097  
+rms 0.0125  floor 0.0032  level 0.0097  EVENT
+rms 0.0055  floor 0.0032  level 0.0097  
+rms 0.0040  floor 0.0032  level 0.0097  
+rms 0.0087  floor 0.0033  level 0.0098  
+rms 0.0088  floor 0.0033  level 0.0098  
+rms 0.0172  floor 0.0033  level 0.0099  
+rms 0.0202  floor 0.0033  level 0.0100  EVENT
+rms 0.0085  floor 0.0033  level 0.0100  
+rms 0.0065  floor 0.0033  level 0.0100  
+rms 0.0246  floor 0.0034  level 0.0102  
+rms 0.0183  floor 0.0034  level 0.0102  EVENT
+rms 0.0081  floor 0.0034  level 0.0103  
+rms 0.0051  floor 0.0034  level 0.0103  
+rms 0.0101  floor 0.0034  level 0.0103  
+rms 0.0211  floor 0.0035  level 0.0104  
+rms 0.0138  floor 0.0035  level 0.0105  EVENT
+rms 0.0053  floor 0.0035  level 0.0105  
+rms 0.0034  floor 0.0034  level 0.0103  
+rms 0.0087  floor 0.0035  level 0.0104  
+rms 0.0186  floor 0.0035  level 0.0104  
+rms 0.0091  floor 0.0035  level 0.0105  
+rms 0.0030  floor 0.0030  level 0.0089  
+rms 0.0121  floor 0.0030  level 0.0090  
+rms 0.0148  floor 0.0030  level 0.0090  EVENT
+rms 0.0087  floor 0.0030  level 0.0091  
+rms 0.0084  floor 0.0030  level 0.0091  
+rms 0.0089  floor 0.0030  level 0.0091  
+rms 0.0066  floor 0.0031  level 0.0092  
+rms 0.0047  floor 0.0031  level 0.0092  
+rms 0.0081  floor 0.0031  level 0.0092  
+froze window, burst seq 26  level 0.0093  win rms 0.0118
+rms 0.0262  floor 0.0031  level 0.0093  
+rms 0.0208  floor 0.0031  level 0.0094  EVENT
+rms 0.0091  floor 0.0032  level 0.0095  
+rms 0.0072  floor 0.0032  level 0.0095  
+rms 0.0199  floor 0.0032  level 0.0096  
+rms 0.0147  floor 0.0032  level 0.0097  EVENT
+rms 0.0089  floor 0.0032  level 0.0097  
+rms 0.0052  floor 0.0032  level 0.0097  
+rms 0.0038  floor 0.0032  level 0.0097  
+rms 0.0085  floor 0.0033  level 0.0098  
+rms 0.0240  floor 0.0033  level 0.0099  
+rms 0.0226  floor 0.0033  level 0.0100  EVENT
+rms 0.0088  floor 0.0033  level 0.0100  
+rms 0.0191  floor 0.0034  level 0.0101  
+rms 0.0253  floor 0.0034  level 0.0103  EVENT
+rms 0.0136  floor 0.0034  level 0.0103  EVENT
+rms 0.0029  floor 0.0029  level 0.0088  
+rms 0.0054  floor 0.0029  level 0.0088  
+rms 0.0137  floor 0.0030  level 0.0089  
+rms 0.0212  floor 0.0030  level 0.0090  EVENT
+rms 0.0077  floor 0.0030  level 0.0090  
+froze window, burst seq 27  level 0.0090  win rms 0.0149
+rms 0.0093  floor 0.0030  level 0.0090  
+rms 0.0203  floor 0.0030  level 0.0091  EVENT
+rms 0.0089  floor 0.0031  level 0.0092  
+rms 0.0041  floor 0.0031  level 0.0092  
+rms 0.0141  floor 0.0031  level 0.0093  
+rms 0.0197  floor 0.0031  level 0.0094  EVENT
+rms 0.0090  floor 0.0031  level 0.0094  
+rms 0.0064  floor 0.0031  level 0.0094  
+rms 0.0204  floor 0.0032  level 0.0095  
+rms 0.0200  floor 0.0032  level 0.0096  EVENT
+rms 0.0124  floor 0.0032  level 0.0097  EVENT
+rms 0.0060  floor 0.0032  level 0.0097  
+rms 0.0046  floor 0.0032  level 0.0097  
+rms 0.0047  floor 0.0032  level 0.0097  
+rms 0.0059  floor 0.0032  level 0.0097  
+rms 0.0059  floor 0.0032  level 0.0097  
+rms 0.0062  floor 0.0033  level 0.0098  
+rms 0.0205  floor 0.0033  level 0.0099  
+rms 0.0213  floor 0.0033  level 0.0100  EVENT
+rms 0.0103  floor 0.0033  level 0.0100  EVENT
+rms 0.0115  floor 0.0034  level 0.0101  EVENT
+froze window, burst seq 28  level 0.0102  win rms 0.0136
+rms 0.0212  floor 0.0034  level 0.0102  EVENT
+rms 0.0072  floor 0.0034  level 0.0102  
+rms 0.0055  floor 0.0034  level 0.0102  
+rms 0.0057  floor 0.0034  level 0.0102  
+rms 0.0037  floor 0.0034  level 0.0102  
+rms 0.0033  floor 0.0033  level 0.0099  
+rms 0.0042  floor 0.0033  level 0.0099  
+rms 0.0035  floor 0.0033  level 0.0099  
+rms 0.0040  floor 0.0033  level 0.0099  
+rms 0.0075  floor 0.0033  level 0.0100  
+rms 0.0248  floor 0.0034  level 0.0101  
+rms 0.0162  floor 0.0034  level 0.0102  EVENT
+rms 0.0044  floor 0.0034  level 0.0102  
+rms 0.0205  floor 0.0034  level 0.0103  
+rms 0.0133  floor 0.0034  level 0.0103  EVENT
+rms 0.0202  floor 0.0035  level 0.0104  EVENT
+rms 0.0188  floor 0.0035  level 0.0105  EVENT
+rms 0.0125  floor 0.0035  level 0.0106  EVENT
+rms 0.0272  floor 0.0036  level 0.0107  EVENT
+rms 0.0182  floor 0.0036  level 0.0108  EVENT
+rms 0.0068  floor 0.0036  level 0.0108  
+rms 0.0026  floor 0.0026  level 0.0078  
+rms 0.0129  floor 0.0026  level 0.0078  
+rms 0.0195  floor 0.0027  level 0.0080  EVENT
+rms 0.0099  floor 0.0027  level 0.0080  EVENT
+rms 0.0045  floor 0.0027  level 0.0080  
+rms 0.0156  floor 0.0027  level 0.0081  
+rms 0.0199  floor 0.0027  level 0.0082  EVENT
+rms 0.0115  floor 0.0027  level 0.0082  EVENT
+rms 0.0037  floor 0.0027  level 0.0082  
+rms 0.0053  floor 0.0028  level 0.0083  
+froze window, burst seq 29  level 0.0083  win rms 0.0147
+rms 0.0133  floor 0.0028  level 0.0083  
+rms 0.0104  floor 0.0028  level 0.0084  EVENT
+rms 0.0120  floor 0.0028  level 0.0084  EVENT
+rms 0.0113  floor 0.0028  level 0.0085  EVENT
+rms 0.0170  floor 0.0029  level 0.0086  EVENT
+rms 0.0227  floor 0.0029  level 0.0087  EVENT
+rms 0.0068  floor 0.0029  level 0.0087  
+rms 0.0239  floor 0.0029  level 0.0088  
+rms 0.0260  floor 0.0030  level 0.0090  EVENT
+rms 0.0134  floor 0.0030  level 0.0090  EVENT
+rms 0.0049  floor 0.0030  level 0.0090  
+rms 0.0072  floor 0.0030  level 0.0091  
+rms 0.0227  floor 0.0031  level 0.0092  
+rms 0.0184  floor 0.0031  level 0.0093  EVENT
+rms 0.0108  floor 0.0031  level 0.0093  EVENT
+rms 0.0037  floor 0.0031  level 0.0093  
+rms 0.0049  floor 0.0031  level 0.0093  
+rms 0.0154  floor 0.0031  level 0.0094  
+rms 0.0104  floor 0.0032  level 0.0095  EVENT
+rms 0.0041  floor 0.0032  level 0.0095  
+rms 0.0147  floor 0.0032  level 0.0095  
+froze window, burst seq 30  level 0.0096  win rms 0.0149
+rms 0.0155  floor 0.0032  level 0.0096  EVENT
+rms 0.0100  floor 0.0032  level 0.0096  EVENT
+rms 0.0188  floor 0.0032  level 0.0097  EVENT
+rms 0.0098  floor 0.0033  level 0.0098  EVENT
+rms 0.0188  floor 0.0033  level 0.0099  EVENT
+rms 0.0068  floor 0.0033  level 0.0099  
+rms 0.0272  floor 0.0033  level 0.0100  
+rms 0.0187  floor 0.0034  level 0.0101  EVENT
+rms 0.0156  floor 0.0034  level 0.0102  EVENT
+rms 0.0164  floor 0.0034  level 0.0103  EVENT
+rms 0.0224  floor 0.0035  level 0.0104  EVENT
+rms 0.0279  floor 0.0035  level 0.0105  EVENT
+rms 0.0154  floor 0.0035  level 0.0106  EVENT
+rms 0.0070  floor 0.0035  level 0.0106  
+rms 0.0155  floor 0.0036  level 0.0107  
+rms 0.0254  floor 0.0036  level 0.0108  EVENT
+rms 0.0319  floor 0.0037  level 0.0110  EVENT
+rms 0.0238  floor 0.0037  level 0.0111  EVENT
+rms 0.0209  floor 0.0037  level 0.0112  EVENT
+rms 0.0205  floor 0.0038  level 0.0113  EVENT
+rms 0.0152  floor 0.0038  level 0.0114  EVENT
+froze window, burst seq 31  level 0.0114  win rms 0.0198
+rms 0.0067  floor 0.0038  level 0.0114  
+rms 0.0260  floor 0.0038  level 0.0115  
+rms 0.0703  floor 0.0040  level 0.0119  EVENT
+request: seq 31 first 0 count 286
+served 286 fragments of 286 in 745 ms
+rms 0.0245  floor 0.0040  level 0.0121  EVENT
+rms 0.0243  floor 0.0041  level 0.0122  EVENT
+resend request: seq 31
+resent 26 fragments of seq 31
+rms 0.0346  floor 0.0041  level 0.0124  EVENT
+rms 0.0272  floor 0.0042  level 0.0125  EVENT
+rms 0.0186  floor 0.0042  level 0.0126  EVENT
+rms 0.0097  floor 0.0042  level 0.0126  
+rms 0.0099  floor 0.0042  level 0.0127  
+rms 0.0275  floor 0.0043  level 0.0128  
+rms 0.0428  floor 0.0043  level 0.0130  EVENT
+resend request: seq 31
+resent 3 fragments of seq 31
+rms 0.0238  floor 0.0044  level 0.0132  EVENT
+rms 0.0093  floor 0.0044  level 0.0132  
+rms 0.0206  floor 0.0044  level 0.0133  
+rms 0.0266  floor 0.0045  level 0.0134  EVENT
+rms 0.0102  floor 0.0045  level 0.0134  
+rms 0.0269  floor 0.0045  level 0.0136  
+rms 0.0410  floor 0.0046  level 0.0138  EVENT
+rms 0.0367  floor 0.0047  level 0.0140  EVENT
+rms 0.0326  floor 0.0047  level 0.0142  EVENT
+rms 0.0246  floor 0.0048  level 0.0143  EVENT
+rms 0.0108  floor 0.0048  level 0.0143  
+rms 0.0076  floor 0.0048  level 0.0143  
+rms 0.0158  floor 0.0048  level 0.0144  
+rms 0.0214  floor 0.0048  level 0.0145  EVENT
+rms 0.0294  floor 0.0049  level 0.0146  EVENT
+rms 0.0501  floor 0.0050  level 0.0149  EVENT
+rms 0.0518  floor 0.0051  level 0.0152  EVENT
+rms 0.0323  floor 0.0051  level 0.0154  EVENT
+rms 0.0124  floor 0.0051  level 0.0154  
+rms 0.0113  floor 0.0051  level 0.0154  
+rms 0.0171  floor 0.0052  level 0.0155  
+rms 0.0277  floor 0.0052  level 0.0156  EVENT
+rms 0.0177  floor 0.0052  level 0.0157  EVENT
+rms 0.0101  floor 0.0053  level 0.0158  
+rms 0.0040  floor 0.0040  level 0.0120  
+rms 0.0032  floor 0.0032  level 0.0097  
+rms 0.0045  floor 0.0033  level 0.0098  
+rms 0.0189  floor 0.0033  level 0.0098  
+rms 0.0198  floor 0.0033  level 0.0099  EVENT
+rms 0.0154  floor 0.0033  level 0.0100  EVENT
+rms 0.0168  floor 0.0034  level 0.0101  EVENT
+rms 0.0131  floor 0.0034  level 0.0102  EVENT
+rms 0.0554  floor 0.0035  level 0.0105  EVENT
+rms 0.0667  floor 0.0036  level 0.0108  EVENT
+rms 0.0437  floor 0.0037  level 0.0111  EVENT
+rms 0.0171  floor 0.0037  level 0.0112  EVENT
+rms 0.0133  floor 0.0037  level 0.0112  EVENT
+rms 0.0242  floor 0.0038  level 0.0113  EVENT
+rms 0.0243  floor 0.0038  level 0.0115  EVENT
+rms 0.0163  floor 0.0038  level 0.0115  EVENT
+rms 0.0118  floor 0.0039  level 0.0116  EVENT
+rms 0.0103  floor 0.0039  level 0.0116  
+rms 0.0232  floor 0.0039  level 0.0117  
+rms 0.0210  floor 0.0040  level 0.0119  EVENT
+rms 0.0064  floor 0.0040  level 0.0119  
+rms 0.0142  floor 0.0040  level 0.0119  
+rms 0.0192  floor 0.0040  level 0.0120  EVENT
+rms 0.0060  floor 0.0040  level 0.0120  
+rms 0.0182  floor 0.0040  level 0.0121  
+rms 0.0211  floor 0.0041  level 0.0122  EVENT
+rms 0.0074  floor 0.0041  level 0.0122  
+rms 0.0153  floor 0.0041  level 0.0123  
+rms 0.0174  floor 0.0041  level 0.0124  EVENT
+rms 0.0105  floor 0.0041  level 0.0124  
+rms 0.0068  floor 0.0041  level 0.0124  
+rms 0.0338  floor 0.0042  level 0.0126  
+rms 0.0449  floor 0.0043  level 0.0129  EVENT
+rms 0.0148  floor 0.0043  level 0.0129  EVENT
+rms 0.0180  floor 0.0043  level 0.0130  EVENT
+rms 0.0409  floor 0.0044  level 0.0132  EVENT
+rms 0.0528  floor 0.0045  level 0.0135  EVENT
+rms 0.0368  floor 0.0046  level 0.0137  EVENT
+rms 0.0118  floor 0.0046  level 0.0138  
+rms 0.0070  floor 0.0046  level 0.0138  
+rms 0.0100  floor 0.0046  level 0.0138  
+rms 0.0078  floor 0.0046  level 0.0138  
+rms 0.0056  floor 0.0046  level 0.0138  
+rms 0.0048  floor 0.0046  level 0.0138  
+rms 0.0068  floor 0.0046  level 0.0138  
+rms 0.0083  floor 0.0046  level 0.0139  
+rms 0.0065  floor 0.0046  level 0.0139  
+rms 0.0217  floor 0.0047  level 0.0140  
+rms 0.0261  floor 0.0047  level 0.0141  EVENT
+rms 0.0132  floor 0.0047  level 0.0142  
+rms 0.0062  floor 0.0047  level 0.0142  
+rms 0.0186  floor 0.0047  level 0.0142  
+rms 0.0133  floor 0.0048  level 0.0143  
+rms 0.0033  floor 0.0033  level 0.0100  
+rms 0.0035  floor 0.0033  level 0.0100  
+rms 0.0182  floor 0.0033  level 0.0100  
+rms 0.0174  floor 0.0034  level 0.0101  EVENT
+rms 0.0039  floor 0.0034  level 0.0101  
+rms 0.0078  floor 0.0034  level 0.0102  
+rms 0.0166  floor 0.0034  level 0.0102  
+rms 0.0163  floor 0.0034  level 0.0103  EVENT
+rms 0.0089  floor 0.0034  level 0.0103  
+rms 0.0051  floor 0.0035  level 0.0104  
+rms 0.0044  floor 0.0035  level 0.0104  
+rms 0.0054  floor 0.0035  level 0.0104  
+rms 0.0161  floor 0.0035  level 0.0105  
+rms 0.0056  floor 0.0035  level 0.0105  
+rms 0.0180  floor 0.0035  level 0.0106  
+rms 0.0166  floor 0.0035  level 0.0106  EVENT
+rms 0.0074  floor 0.0036  level 0.0107  
+rms 0.0056  floor 0.0036  level 0.0107  
+rms 0.0061  floor 0.0036  level 0.0107  
+rms 0.0065  floor 0.0036  level 0.0107  
+rms 0.0045  floor 0.0036  level 0.0107  
+rms 0.0066  floor 0.0036  level 0.0107  
+rms 0.0235  floor 0.0036  level 0.0108  
+rms 0.0196  floor 0.0036  level 0.0109  EVENT
+rms 0.0073  floor 0.0037  level 0.0110  
+rms 0.0179  floor 0.0037  level 0.0110  
+rms 0.0113  floor 0.0037  level 0.0111  EVENT
+rms 0.0058  floor 0.0037  level 0.0111  
+rms 0.0156  floor 0.0037  level 0.0112  
+rms 0.0210  floor 0.0038  level 0.0113  EVENT
+rms 0.0358  floor 0.0038  level 0.0115  EVENT
+rms 0.0160  floor 0.0038  level 0.0115  EVENT
+rms 0.0197  floor 0.0039  level 0.0116  EVENT
+rms 0.0496  floor 0.0040  level 0.0119  EVENT
+rms 0.0386  floor 0.0040  level 0.0121  EVENT
+rms 0.0169  floor 0.0041  level 0.0122  EVENT
+rms 0.0184  floor 0.0041  level 0.0123  EVENT
+rms 0.0248  floor 0.0041  level 0.0124  EVENT
+rms 0.0125  floor 0.0042  level 0.0125  EVENT
+rms 0.0037  floor 0.0037  level 0.0110  
+rms 0.0048  floor 0.0037  level 0.0110  
+rms 0.0067  floor 0.0037  level 0.0110  
+rms 0.0082  floor 0.0037  level 0.0111  
+rms 0.0047  floor 0.0037  level 0.0111  
+rms 0.0179  floor 0.0037  level 0.0112  
+rms 0.0505  floor 0.0038  level 0.0114  EVENT
+rms 0.0488  floor 0.0039  level 0.0117  EVENT
+rms 0.0346  floor 0.0040  level 0.0119  EVENT
+rms 0.0133  floor 0.0040  level 0.0120  EVENT
+rms 0.0185  floor 0.0040  level 0.0120  EVENT
+rms 0.0319  floor 0.0041  level 0.0122  EVENT
+rms 0.0319  floor 0.0041  level 0.0124  EVENT
+rms 0.0391  floor 0.0042  level 0.0126  EVENT
+rms 0.0222  floor 0.0042  level 0.0127  EVENT
+rms 0.0074  floor 0.0042  level 0.0127  
+rms 0.0117  floor 0.0043  level 0.0128  
+rms 0.0112  floor 0.0043  level 0.0128  
+rms 0.0059  floor 0.0043  level 0.0128  
+rms 0.0040  floor 0.0040  level 0.0119  
+rms 0.0159  floor 0.0040  level 0.0119  
+rms 0.0150  floor 0.0040  level 0.0120  EVENT
+rms 0.0083  floor 0.0040  level 0.0120  
+rms 0.0156  floor 0.0040  level 0.0121  
+rms 0.0084  floor 0.0040  level 0.0121  
+rms 0.0035  floor 0.0035  level 0.0106  
+rms 0.0047  floor 0.0035  level 0.0106  
+rms 0.0156  floor 0.0036  level 0.0107  
+rms 0.0097  floor 0.0036  level 0.0107  
+rms 0.0044  floor 0.0036  level 0.0107  
+rms 0.0224  floor 0.0036  level 0.0108  
+rms 0.0162  floor 0.0036  level 0.0109  EVENT
+rms 0.0094  floor 0.0036  level 0.0109  
+rms 0.0033  floor 0.0033  level 0.0100  
+rms 0.0035  floor 0.0033  level 0.0100  
+rms 0.0032  floor 0.0032  level 0.0095  
+rms 0.0111  floor 0.0032  level 0.0096  
+rms 0.0163  floor 0.0032  level 0.0096  EVENT
+rms 0.0065  floor 0.0032  level 0.0097  
+rms 0.0040  floor 0.0032  level 0.0097  
+rms 0.0166  floor 0.0033  level 0.0098  
+rms 0.0147  floor 0.0033  level 0.0098  EVENT
+rms 0.0047  floor 0.0033  level 0.0098  
+rms 0.0029  floor 0.0029  level 0.0086  
+rms 0.0073  floor 0.0029  level 0.0086  
+rms 0.0158  floor 0.0029  level 0.0087  
+rms 0.0056  floor 0.0029  level 0.0087  
+rms 0.0189  floor 0.0029  level 0.0088  
+rms 0.0142  floor 0.0030  level 0.0089  EVENT
+rms 0.0056  floor 0.0030  level 0.0089  
+rms 0.0030  floor 0.0030  level 0.0089  
+rms 0.0048  floor 0.0030  level 0.0089  
+rms 0.0043  floor 0.0030  level 0.0089  
+rms 0.0040  floor 0.0030  level 0.0089  
+rms 0.0040  floor 0.0030  level 0.0089  
+rms 0.0063  floor 0.0030  level 0.0089  
+rms 0.0175  floor 0.0030  level 0.0090  
+rms 0.0126  floor 0.0030  level 0.0091  EVENT
+rms 0.0067  floor 0.0030  level 0.0091  
+rms 0.0036  floor 0.0030  level 0.0091  
+rms 0.0073  floor 0.0030  level 0.0091  
+rms 0.0131  floor 0.0031  level 0.0092  
+rms 0.0086  floor 0.0031  level 0.0092  
+rms 0.0041  floor 0.0031  level 0.0092  
+rms 0.0146  floor 0.0031  level 0.0093  
+rms 0.0130  floor 0.0031  level 0.0094  EVENT
+rms 0.0153  floor 0.0031  level 0.0094  EVENT
+rms 0.0207  floor 0.0032  level 0.0095  EVENT
+rms 0.0129  floor 0.0032  level 0.0096  EVENT
+rms 0.0074  floor 0.0032  level 0.0096  
+rms 0.0041  floor 0.0032  level 0.0096  
+rms 0.0041  floor 0.0032  level 0.0096  
+rms 0.0061  floor 0.0032  level 0.0097  
+rms 0.0079  floor 0.0032  level 0.0097  
+rms 0.0204  floor 0.0033  level 0.0098  
+rms 0.0218  floor 0.0033  level 0.0099  EVENT
+rms 0.0085  floor 0.0033  level 0.0099  
+rms 0.0048  floor 0.0033  level 0.0099  
+rms 0.0081  floor 0.0033  level 0.0100  
+rms 0.0152  floor 0.0033  level 0.0100  
+rms 0.0092  floor 0.0034  level 0.0101  
+rms 0.0093  floor 0.0034  level 0.0101  
+rms 0.0142  floor 0.0034  level 0.0102  
+rms 0.0084  floor 0.0034  level 0.0102  
+rms 0.0051  floor 0.0034  level 0.0102  
+rms 0.0194  floor 0.0034  level 0.0103  
+froze window, burst seq 32  level 0.0104  win rms 0.0133
+rms 0.0209  floor 0.0035  level 0.0104  EVENT
+rms 0.0124  floor 0.0035  level 0.0105  EVENT
+rms 0.0037  floor 0.0035  level 0.0105  
+rms 0.0084  floor 0.0035  level 0.0105  
+rms 0.0209  floor 0.0035  level 0.0106  
+rms 0.0109  floor 0.0035  level 0.0106  EVENT
+rms 0.0135  floor 0.0036  level 0.0107  EVENT
+rms 0.0298  floor 0.0036  level 0.0109  EVENT
+rms 0.0282  floor 0.0037  level 0.0110  EVENT
+rms 0.0189  floor 0.0037  level 0.0111  EVENT
+rms 0.0089  floor 0.0037  level 0.0111  
+rms 0.0285  floor 0.0038  level 0.0113  
+rms 0.0429  floor 0.0038  level 0.0115  EVENT
+rms 0.0291  floor 0.0039  level 0.0117  EVENT
+rms 0.0081  floor 0.0039  level 0.0117  
+rms 0.0043  floor 0.0039  level 0.0117  
+rms 0.0045  floor 0.0039  level 0.0117  
+rms 0.0084  floor 0.0039  level 0.0117  
+rms 0.0079  floor 0.0039  level 0.0117  
+rms 0.0032  floor 0.0032  level 0.0095  
+rms 0.0073  floor 0.0032  level 0.0095  
+froze window, burst seq 33  level 0.0096  win rms 0.0183
+rms 0.0114  floor 0.0032  level 0.0096  
+rms 0.0190  floor 0.0032  level 0.0097  EVENT
+rms 0.0239  floor 0.0033  level 0.0098  EVENT
+request: seq 33 first 0 count 286
+served 286 fragments of 286 in 754 ms
+rms 0.0159  floor 0.0033  level 0.0099  EVENT
+rms 0.0211  floor 0.0033  level 0.0100  EVENT
+resend request: seq 33
+resent 11 fragments of seq 33
+rms 0.0192  floor 0.0034  level 0.0101  EVENT
+rms 0.0359  floor 0.0034  level 0.0103  EVENT
+rms 0.0254  floor 0.0035  level 0.0104  EVENT
+rms 0.0386  floor 0.0035  level 0.0106  EVENT
+rms 0.0559  floor 0.0036  level 0.0109  EVENT
+rms 0.0369  floor 0.0037  level 0.0111  EVENT
+rms 0.0174  floor 0.0037  level 0.0112  EVENT
+rms 0.0083  floor 0.0037  level 0.0112  
+rms 0.0210  floor 0.0038  level 0.0113  
+rms 0.0453  floor 0.0039  level 0.0116  EVENT
+rms 0.0242  floor 0.0039  level 0.0117  EVENT
+rms 0.0127  floor 0.0039  level 0.0118  EVENT
+rms 0.0354  floor 0.0040  level 0.0119  EVENT
+rms 0.0294  floor 0.0040  level 0.0121  EVENT
+rms 0.0163  floor 0.0041  level 0.0122  EVENT
+rms 0.0061  floor 0.0041  level 0.0122  
+rms 0.0112  floor 0.0041  level 0.0122  
+rms 0.0118  floor 0.0041  level 0.0123  
+rms 0.0103  floor 0.0041  level 0.0123  
+rms 0.0095  floor 0.0041  level 0.0123  
+rms 0.0089  floor 0.0041  level 0.0124  
+rms 0.0098  floor 0.0041  level 0.0124  
+rms 0.0176  floor 0.0042  level 0.0125  
+rms 0.0271  floor 0.0042  level 0.0126  EVENT
+rms 0.0144  floor 0.0042  level 0.0127  EVENT
+rms 0.0039  floor 0.0039  level 0.0118  
+rms 0.0211  floor 0.0040  level 0.0119  
+rms 0.0201  floor 0.0040  level 0.0120  EVENT
+rms 0.0121  floor 0.0040  level 0.0121  EVENT
+rms 0.0056  floor 0.0040  level 0.0121  
+rms 0.0225  floor 0.0041  level 0.0122  
+rms 0.0382  floor 0.0041  level 0.0124  EVENT
+rms 0.0237  floor 0.0042  level 0.0125  EVENT
+rms 0.0094  floor 0.0042  level 0.0126  
+rms 0.0238  floor 0.0042  level 0.0127  
+rms 0.0339  floor 0.0043  level 0.0128  EVENT
+rms 0.0189  floor 0.0043  level 0.0129  EVENT
+rms 0.0068  floor 0.0043  level 0.0130  
+rms 0.0159  floor 0.0043  level 0.0130  
+rms 0.0136  floor 0.0044  level 0.0131  EVENT
+rms 0.0074  floor 0.0044  level 0.0131  
+rms 0.0261  floor 0.0044  level 0.0132  
+rms 0.0253  floor 0.0045  level 0.0134  EVENT
+rms 0.0131  floor 0.0045  level 0.0134  
+rms 0.0060  floor 0.0045  level 0.0134  
+rms 0.0046  floor 0.0045  level 0.0134  
+rms 0.0050  floor 0.0045  level 0.0134  
+rms 0.0059  floor 0.0045  level 0.0134  
+rms 0.0131  floor 0.0045  level 0.0135  
+rms 0.0275  floor 0.0045  level 0.0136  
+rms 0.0351  floor 0.0046  level 0.0138  EVENT
+rms 0.0153  floor 0.0046  level 0.0139  EVENT
+rms 0.0126  floor 0.0046  level 0.0139  
+rms 0.0255  floor 0.0047  level 0.0140  
+rms 0.0187  floor 0.0047  level 0.0141  EVENT
+rms 0.0074  floor 0.0047  level 0.0141  
+rms 0.0214  floor 0.0047  level 0.0142  
+rms 0.0159  floor 0.0048  level 0.0143  EVENT
+rms 0.0180  floor 0.0048  level 0.0144  EVENT
+rms 0.0245  floor 0.0048  level 0.0145  EVENT
+rms 0.0137  floor 0.0049  level 0.0146  
+rms 0.0063  floor 0.0049  level 0.0146  
+rms 0.0096  floor 0.0049  level 0.0146  
+rms 0.0148  floor 0.0049  level 0.0146  
+rms 0.0259  floor 0.0049  level 0.0148  EVENT
+rms 0.0157  floor 0.0049  level 0.0148  EVENT
+rms 0.0061  floor 0.0049  level 0.0148  
+rms 0.0123  floor 0.0050  level 0.0149  
+rms 0.0209  floor 0.0050  level 0.0150  
+rms 0.0128  floor 0.0050  level 0.0150  
+rms 0.0106  floor 0.0050  level 0.0151  
+rms 0.0077  floor 0.0050  level 0.0151  
+rms 0.0047  floor 0.0047  level 0.0142  
+rms 0.0211  floor 0.0048  level 0.0143  
+
+--- captured 171551 bytes from COM38 at 115200 baud ---
