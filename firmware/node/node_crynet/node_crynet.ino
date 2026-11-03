@@ -60,6 +60,7 @@
 #include <esp_wifi.h>
 #include <esp_mac.h>
 #include <ESP_I2S.h>
+#include <Preferences.h>
 
 /* ------------------------------------------------------------------ pins -- */
 
@@ -190,6 +191,7 @@ static uint32_t  g_frozen_crc = 0;    /* CRC-32 of the frozen window's bytes */
 static float     g_frozen_rms = 0.0f; /* the frozen window's own level */
 static uint16_t  g_burst_seq = 0;
 static uint8_t   g_node_id = 1;
+static Preferences g_prefs;   /* a serial-set node id survives reboots here */
 
 static uint16_t  g_telemetry_seq = 0;
 static uint32_t  g_last_tick = 0;
@@ -879,7 +881,8 @@ static void handle_command(char *line) {
         int v = atoi(line + 3);
         if (v >= 1 && v <= 255) {
             g_node_id = (uint8_t)v;
-            Serial.printf("node id %u\n", g_node_id);
+            g_prefs.putUChar("node_id", g_node_id);
+            Serial.printf("node id %u (saved)\n", g_node_id);
         } else {
             Serial.println("id must be 1..255");
         }
@@ -904,11 +907,24 @@ void setup() {
 
     uint8_t mac[6];
     WiFi.macAddress(mac);
-    g_node_id = (uint8_t)((mac[5] & 0x0F) + 1);
+    const uint8_t derived = (uint8_t)((mac[5] & 0x0F) + 1);
+
+    /* A node id set over serial survives reboots in NVS; a board that was
+     * never named keeps the MAC-derived default.  Identical Pro Minis can
+     * derive the same number — the project really did end up with two
+     * boards both calling themselves node 1. */
+    g_prefs.begin("crynet", false);
+    const uint8_t saved = g_prefs.getUChar("node_id", 0);
+    g_node_id = saved ? saved : derived;
 
     Serial.println("\nCryNet node firmware — Stage 2b");
-    Serial.printf("node id %u (derived from the MAC; change it with \"id <n>\")\n",
-                  g_node_id);
+    if (saved) {
+        Serial.printf("node id %u (saved; the MAC would have said %u)\n",
+                      g_node_id, (unsigned)derived);
+    } else {
+        Serial.printf("node id %u (derived from the MAC; change it with \"id <n>\")\n",
+                      g_node_id);
+    }
 
     if (!i2s_start()) {
         Serial.println("FATAL: I2S init failed");
