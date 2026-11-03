@@ -157,10 +157,11 @@ def dashboard(path: Path, cots, linked, crying, cot_id, confidence, level,
     fill(d, 0, 0, W, header_h, C["C_HEADER"])
     draw_text(d, 12, 8, "CRYNET", C["C_ACCENT"], 2)
     draw_text(d, 90, 12, "S3 HUB", C["C_DIM"], 1)
-    draw_pill(d, 196, 11, "RADIO", C["C_GREEN"] if linked else C["C_DIM"])
-    phone_col = (C["C_GREEN"] if clients > 0
-                 else C["C_AMBER"] if ble_ready else C["C_DIM"])
-    draw_pill(d, 258, 11, "PHONE", phone_col)
+    draw_pill(d, 196, 11, "NODE",
+              C["C_GREEN"] if linked else C["C_AMBER"])
+    wearable_col = (C["C_GREEN"] if clients > 0
+                    else C["C_AMBER"] if ble_ready else C["C_DIM"])
+    draw_pill(d, 258, 11, "WEARABLE", wearable_col)
     fill(d, 0, header_h, W, 2, C["C_ACCENT_DIM"])
 
     # ---- the banner: what the system is doing ----
