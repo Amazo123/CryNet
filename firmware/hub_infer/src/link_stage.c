@@ -44,10 +44,16 @@ static const char *TAG = "link";
 #define CRY_HOLD_MS 8000
 
 /* How long the burst may go without a fragment before the hub asks for
- * the missing ones again.  The node paces its fragments about thirteen
- * milliseconds apart, so a gap of one and a half seconds is not a slow
- * burst -- it is a burst that has stopped. */
-#define FRAG_STALL_MS 1200
+ * the missing ones again.  The node paces its fragments about three
+ * milliseconds apart, so a gap of a third of a second is not a slow
+ * burst -- it is a burst that has stopped.
+ *
+ * It was one and a half seconds, which was right when a burst took
+ * three and a half seconds to cross the air and wrong now that a burst
+ * takes less than one: one lost fragment in three hundred was costing
+ * the system a second and a half of dead time while the hub waited to
+ * notice. */
+#define FRAG_STALL_MS 300
 
 /* How long the burst must have been in flight before a stall may be
  * believed.  The node is asked for the window and then starts sending
@@ -58,9 +64,9 @@ static const char *TAG = "link";
  * It was two and a half seconds, which is longer than a whole burst
  * takes now, so a stalled burst was never believed at all: the hub sat
  * out the whole fifteen-second timeout instead.  A burst crosses the
- * air in well under a second, so a second is plenty to tell "the node
- * has started" from "the node has stopped". */
-#define RESEND_MIN_FLIGHT_MS 1000
+ * air in well under a second, so a quarter of a second is plenty to
+ * tell "the node has started" from "the node has stopped". */
+#define RESEND_MIN_FLIGHT_MS 250
 
 /* How many times the hub may ask for the missing fragments of one
  * burst.  Each round costs a few frames of air and covers the handful
@@ -690,6 +696,25 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
                             (now - st->last_resend_us) > stall_us;
                         if (stalled && long_enough && settled &&
                             st->resend_rounds < RESEND_MAX_ROUNDS) {
+                            /* Which fragments?  One in three hundred is
+                             * being lost on the way, and the index says
+                             * whether it is a frame that never left
+                             * the node, a frame the hub's receiver
+                             * dropped, or a frame the hub counted
+                             * twice. */
+                            uint16_t miss[8];
+                            const int n_miss = node_link_burst_missing(
+                                nl, st->node_id, miss,
+                                (int)(sizeof miss / sizeof miss[0]));
+                            if (n_miss > 0) {
+                                ESP_LOGW(TAG, "node %u: missing fragments:",
+                                         st->node_id);
+                                for (int m = 0; m < n_miss; m++) {
+                                    ESP_LOGW(TAG, "  %u of %u",
+                                             (unsigned)miss[m],
+                                             (unsigned)burst.frag_want);
+                                }
+                            }
                             const int asked = node_link_request_missing(
                                 nl, st->node_id, st->request_seq);
                             if (asked > 0) {

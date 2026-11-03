@@ -69,6 +69,8 @@
 #include <esp_mac.h>
 #include <ESP_I2S.h>
 #include <Preferences.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
 
 /* ------------------------------------------------------------------ pins -- */
 
@@ -495,7 +497,7 @@ static uint32_t g_pump_calls = 0;
 static uint32_t g_pump_empty = 0;   /* calls that returned no whole frame */
 static uint32_t g_pump_frames = 0;
 static uint32_t g_pump_max_us = 0;
-static bool     g_window_damaged = false;  /* the live window has a hole */
+static volatile bool     g_window_damaged = false;  /* the live window has a hole */
 static size_t i2s_pump(void) {
     const int64_t t0 = esp_timer_get_time();
     size_t got = g_i2s.readBytes((char *)g_raw, sizeof(g_raw));
@@ -531,6 +533,32 @@ static size_t i2s_pump(void) {
         }
     }
     return frames;
+}
+
+/* The microphone's own task.
+ *
+ * The I2S read blocks until the samples are there, so reading the
+ * microphone from the main loop stopped the main loop for as long as the
+ * audio took to arrive -- sixteen milliseconds, every time.  That was
+ * harmless while a burst took three and a half seconds, and it was not
+ * harmless at all once the radio learned to carry a burst in a fraction
+ * of a second: then the microphone's real-time rate, and not the radio's,
+ * decided how long a burst took, and the system got slower than it had
+ * ever been.
+ *
+ * So the microphone has a task of its own.  It wakes sixteen times a
+ * second, takes what the hardware has produced, and puts it in the
+ * window.  The main loop never waits for audio: the radio is fed as
+ * fast as the radio can carry it, and the node keeps listening while it
+ * is talking. */
+static void capture_task(void *arg)
+{
+    (void)arg;
+    for (;;) {
+        i2s_pump();
+        /* The read itself paces this task: it returns when the samples
+         * have arrived. */
+    }
 }
 
 /* ---------------------------------------------------------------- radio -- */
@@ -588,7 +616,9 @@ static uint32_t g_tx_queued = 0;   /* handed over, not yet acknowledged */
 
 /* How many frames the radio may be holding at once.  The queue is ten
  * deep; four leaves room for the telemetry and the heartbeats that share
- * it, and keeps the far end's receive queue from filling up. */
+ * it, and keeps the far end's receive queue from filling up -- one
+ * fragment in three hundred was being lost on the way to the hub, and
+ * the far end's queue overflowing is the likeliest reason. */
 #define TX_INFLIGHT_MAX 4
 
 /* How many frames the radio is holding right now. */
@@ -813,76 +843,24 @@ static bool radio_queue(const uint8_t *data, size_t len)
     return true;
 }
 
-/* How often the microphone's buffer is emptied while the radio is busy.
- * The driver's DMA holds about a fifth of a second of audio (six
- * descriptors of 240 stereo frames), so a tenth of a second is
- * comfortable. */
-static const uint64_t MIC_DRAIN_INTERVAL_US = 100000;
-
-/* How much audio one drain may take.  The reads block until the samples
- * are there, so a drain that asked for a second of audio would hold the
- * burst up for a second; the buffer only holds a fifth of a second
- * anyway, so there is nothing to gain by asking for more. */
-static const uint32_t MIC_DRAIN_MAX_SAMPLES = 2560;
-
-/* When the microphone's buffer was last emptied. */
-static uint64_t g_last_drain_us = 0;
-
-/* Empty the microphone's buffer, taking only the audio that has arrived
- * since the last time.
- *
- * The reads block until the samples are there, so this takes as long as
- * the audio takes to arrive and no longer: the microphone is the clock
- * here, not a delay. */
-static void drain_mic(void)
-{
-    const uint64_t now = esp_timer_get_time();
-    const uint32_t elapsed_ms = (uint32_t)((now - g_last_drain_us) / 1000);
-    g_last_drain_us = now;
-    if (elapsed_ms == 0u) {
-        return;
-    }
-    /* Sixteen thousand samples a second, in whole reads of 256, and no
-     * more than the buffer holds. */
-    uint32_t samples = elapsed_ms * 16u;
-    if (samples > MIC_DRAIN_MAX_SAMPLES) {
-        samples = MIC_DRAIN_MAX_SAMPLES;
-    }
-    samples = (samples + 255u) & ~255u;
-    for (uint32_t got = 0; got < samples; ) {
-        const size_t n = i2s_pump();
-        if (n == 0) {
-            break;      /* the read came back short: there is no more */
-        }
-        got += n;
-    }
-}
-
 /* Wait until the radio has room for another frame.
  *
- * The microphone is read while we wait, but only as often as it needs to
- * be read.  The Wi-Fi task runs while this task sleeps on the
- * microphone, so the radio keeps moving while the audio is collected and
- * the two costs do not add up.
+ * The microphone is NOT read here, and that is the whole point.  An
+ * earlier version of this code read it while the radio was busy, to
+ * keep the node listening during a burst -- and the burst became
+ * *slower* than it had ever been: a read of the microphone blocks until
+ * the samples are there, so the burst was paced by the rate the
+ * microphone produces audio (sixteen thousand samples a second, and a
+ * read can only ever take what has arrived) rather than by the radio.
+ * The burst measured 7.2 s that way, against 3.4 s before.
  *
- * The old code did not read the microphone at all while a burst was on
- * the air: the samples piled up in the driver's DMA, overflowed, and
- * were lost, so the node went deaf for the length of the burst and threw
- * its live window away afterwards.  Reading it here is what keeps the
- * node listening while it is talking. */
+ * The microphone has its own task now, so the audio is collected while
+ * the radio is busy and this loop only has to wait for the radio. */
 static void radio_wait_room(void)
 {
     const int64_t start_us = esp_timer_get_time();
-    for (;;) {
-        if (tx_inflight() < TX_INFLIGHT_MAX) {
-            return;
-        }
-        const uint64_t now = esp_timer_get_time();
-        if (now - g_last_drain_us > MIC_DRAIN_INTERVAL_US) {
-            drain_mic();
-        } else {
-            delay(1);
-        }
+    while (tx_inflight() >= TX_INFLIGHT_MAX) {
+        delay(1);
         if (esp_timer_get_time() - start_us > 5000000) {
             /* Far longer than the radio should ever take to take a frame;
              * give up rather than hang the node. */
@@ -1193,6 +1171,17 @@ void setup() {
     }
     Serial.println("I2S ready: 16 kHz, mono, 32-bit slots -> int16");
 
+    /* The microphone gets a task of its own, so that the main loop never
+     * waits for audio and the radio is fed as fast as the radio can
+     * carry it.  The task owns the I2S peripheral from here on: nothing
+     * else may read it. */
+    if (xTaskCreate(capture_task, "capture", 4096, NULL, 3, NULL) != pdPASS) {
+        Serial.println("FATAL: the capture task could not be started");
+        while (true) {
+            delay(1000);
+        }
+    }
+
     if (!radio_start()) {
         Serial.println("FATAL: ESP-NOW init failed");
         while (true) {
@@ -1227,19 +1216,13 @@ void loop() {
                           g_hub_mac[3], g_hub_mac[4], g_hub_mac[5]);
         }
     }
-    i2s_pump();
-    /* The microphone has just been read, so the buffer is empty and the
-     * next drain starts from here. */
-    g_last_drain_us = esp_timer_get_time();
-    /* A hole in the live window -- the microphone's buffer ran dry, so
-     * what the window holds is no longer continuous audio.  It is
-     * thrown away and filled again rather than frozen with a gap in
-     * it. */
+    /* The microphone is read by its own task; the main loop does not
+     * wait for audio.  All it has to do here is notice when the audio
+     * came through with a hole in it. */
     if (g_window_damaged) {
         g_filled = 0;
         g_window_damaged = false;
     }
-
     /* The window is only worth measuring once it holds a full 100 ms: the
      * hub's front end removes the mean of the whole two seconds, and a
      * partial window would not match it. */
@@ -1305,13 +1288,25 @@ void loop() {
                 g_cry_mode = false;
             }
             /* Preempt the hold for a loud event.  A cry is typically an
-             * order of magnitude louder than the room, so a crossing at
-             * three times the trigger level is a new event worth an
-             * immediate freeze, even if the previous window is still
-             * being served: the hub abandons the stale burst and asks
-             * for this one instead.  (D-68.) */
-            if (g_frozen_served && g_level > 0.0f &&
-                g_rms >= 3.0f * g_level && g_loud_streak >= 2u) {
+             * order of magnitude louder than the room, so a new event
+             * that is much louder than the window already frozen is
+             * worth an immediate freeze, even if the previous window is
+             * still being served: the hub abandons the stale burst and
+             * asks for this one instead.  (D-68.)
+             *
+             * The comparison is against the level of the window that
+             * was frozen, NOT against the trigger level.  It used to be
+             * the trigger level, and that made the node freeze a new
+             * window every half second while a cry was going on -- the
+             * cry is far above the trigger level, so the hold was
+             * cancelled every time -- and the hub, still waiting for
+             * the window before it, threw that burst away and asked
+             * for the newest one instead.  The hub chased windows it
+             * could never finish assembling, one after another.  The
+             * rule now asks the question that was meant: is this a new
+             * event, or the same one going on? */
+            if (g_frozen_served && g_frozen_rms > 0.0f &&
+                g_rms >= 3.0f * g_frozen_rms && g_loud_streak >= 2u) {
                 g_frozen_served = false;
             }
             /* In cry mode, only a louder event (preempt) may freeze. */
@@ -1492,6 +1487,10 @@ void loop() {
                 }
                 send_fragment(i, true, false);
                 resent++;
+                if (!g_dump_active && Serial) {
+                    Serial.printf("resent fragment %u of %u\n", (unsigned)i,
+                                  (unsigned)FRAG_COUNT);
+                }
             }
             if (Serial) {
                 Serial.printf("resent %u fragments of seq %u\n",
