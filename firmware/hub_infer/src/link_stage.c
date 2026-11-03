@@ -80,16 +80,43 @@ static bool s_swept = false;
  * time and the radio must stay quiet until the last of them is done. */
 static int s_bursts_in_flight = 0;
 
+/* How long the hub's own radio has been deaf.  While a burst is on the
+ * air the Wi-Fi receiver cannot hear anything at all — not that burst's
+ * own fragments, and not any other cot's telemetry — so a node that
+ * says nothing for a few seconds may simply have been talking while
+ * the hub was shouting.  That time is counted here, and it is not held
+ * against the node. */
+static int64_t s_busy_total_us = 0;  /* the deaf time so far */
+static int64_t s_busy_since_us = 0;  /* when the current stretch began */
+static bool    s_radio_deaf = false;
+
+/* The deaf time so far, the stretch in progress included. */
+static int64_t radio_deaf_now_us(int64_t now_us)
+{
+    return s_busy_total_us +
+           (s_radio_deaf ? (now_us - s_busy_since_us) : 0);
+}
+
 static void burst_started(void)
 {
+    const int64_t now = esp_timer_get_time();
+    if (!s_radio_deaf) {
+        s_radio_deaf = true;
+        s_busy_since_us = now;
+    }
     s_bursts_in_flight++;
     ble_alert_set_radio_busy(true);
 }
 
 static void burst_finished(void)
 {
+    const int64_t now = esp_timer_get_time();
     if (s_bursts_in_flight > 0) {
         s_bursts_in_flight--;
+        if (s_bursts_in_flight == 0 && s_radio_deaf) {
+            s_busy_total_us += now - s_busy_since_us;
+            s_radio_deaf = false;
+        }
     }
     ble_alert_set_radio_busy(s_bursts_in_flight > 0);
 }
@@ -97,6 +124,7 @@ static void burst_finished(void)
 typedef struct {
     bool     heard;
     int64_t  last_heard_us;  /* when telemetry last arrived */
+    int64_t  deaf_at_heard_us;  /* and how deaf the hub's radio was then */
     uint8_t  node_id;
     uint16_t seq;
     uint32_t crc;
@@ -152,13 +180,31 @@ typedef struct {
 /* A cot that has stopped answering is offline, and the panel has to say
  * so promptly: the caregiver unplugs a node to move it and reads the
  * panel for the change.  Radio has no disconnect message — the frames
- * just stop — so silence is the only signal there is.  Telemetry
- * arrives about every 100 ms, so two seconds of quiet is twenty missed
- * frames and cannot be one lost burst. */
+ * just stop — so silence is the only signal there is.
+ *
+ * But silence is only evidence if the hub's radio was open to hear it.
+ * A burst takes five or six seconds of airtime, and while it is on the
+ * air the Wi-Fi receiver hears nothing at all — not that burst's own
+ * fragments, and not any other cot's telemetry.  With three cots the
+ * hub's radio is busy most of the time, and a plain two-second timeout
+ * read those gaps as "the node is gone": the cards flickered offline
+ * while every cot was perfectly alive.  So the clock that decides
+ * whether a cot has gone runs on the time the radio was *open*, and the
+ * hub's own deafness is discounted. */
 #define NODE_LIVE_TIMEOUT_US (2LL * 1000000LL)
+
+/* The one cap the discount cannot lift: a cot that has said nothing
+ * for this long is gone, whatever the radio was doing.  It is generous
+ * because with three cots talking the radio is open for only a part of
+ * the time. */
+#define NODE_LIVE_MAX_US (20LL * 1000000LL)
 
 /* One entry per node the hub has heard from. */
 static node_state_t state[NODE_LINK_MAX_NODES];
+
+/* Whether each cot was on the panel the last time round, so that a
+ * change can be announced instead of only shown. */
+static bool s_was_live[NODE_LINK_MAX_NODES];
 
 /* A node is live while its telemetry is recent.  Everything the
  * caregiver sees — the cards, the banner, the NODE pill — reads this,
@@ -166,8 +212,22 @@ static node_state_t state[NODE_LINK_MAX_NODES];
  * forever. */
 static bool node_live(const node_state_t *n, int64_t now_us)
 {
-    return n->heard &&
-           (now_us - n->last_heard_us) < NODE_LIVE_TIMEOUT_US;
+    if (!n->heard) {
+        return false;
+    }
+    const int64_t age = now_us - n->last_heard_us;
+    if (age < NODE_LIVE_TIMEOUT_US) {
+        return true;   /* plainly alive */
+    }
+    if (age > NODE_LIVE_MAX_US) {
+        return false;  /* gone, whatever the radio was doing */
+    }
+    /* Only the silence the hub could have heard through counts. */
+    int64_t deaf = radio_deaf_now_us(now_us) - n->deaf_at_heard_us;
+    if (deaf > age) {
+        deaf = age;
+    }
+    return (age - deaf) < NODE_LIVE_TIMEOUT_US;
 }
 
 /* When the hub came up, for the uptime on the display. */
@@ -412,7 +472,9 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
             if (st == NULL) {
                 continue;
             }
-            st->last_heard_us = esp_timer_get_time();
+            const int64_t heard_at = esp_timer_get_time();
+            st->last_heard_us = heard_at;
+            st->deaf_at_heard_us = radio_deaf_now_us(heard_at);
 
             st->seq = tel.burst_seq;
             st->crc = tel.frozen_crc;
@@ -646,7 +708,27 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
              * a loud telemetry always carries this flag. */
             const bool frozen =
                 (st->flags & CRYNET_PROTO_FLAG_BURST_READY) != 0;
-            if (loud && frozen && st->window_full &&
+            /* Only ask for a window worth the radio.  The node tells the
+             * hub how loud the window it froze was, before the hub asks
+             * for it, and a window quieter than the level the hub would
+             * ever announce is one the hub would refuse as "too quiet
+             * to announce" anyway.  Pulling it spends five or six
+             * seconds of airtime — during which the hub's own receiver
+             * is deaf and no other cot can be heard — for nothing.
+             *
+             * This matters because the cots' triggers sit just above
+             * their own noise floor in a quiet room, so the cots freeze
+             * a window every few seconds and the hub was pulling every
+             * one of them.  With three cots the radio was deaf three
+             * quarters of the time, the fetches stalled and were asked
+             * for again, and a real cry at the third cot could not be
+             * fetched in time to be classified.  The margin below the
+             * gate keeps the hub honest about the level the model
+             * sees, which is not exactly the node's own count. */
+            const bool worth_pulling =
+                (st->frozen_rms <= 0.0f) ||
+                (st->frozen_rms >= 0.8f * CRYNET_MAYBE_MIN_RMS);
+            if (loud && frozen && worth_pulling && st->window_full &&
                 (st->seq != st->last_completed_seq) &&
                 (now - st->last_request_us) > (RECOOLDOWN_MS * 1000)) {
                 if (node_link_request_window(nl, st->node_id, st->seq)) {
@@ -821,6 +903,13 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
             ds.nodes[slot].crying = live && link_stage_crying(state[i].node_id);
             ds.nodes[slot].level = state[i].rms;
             ds.nodes[slot].confidence = state[i].last_confidence;
+            /* Say it when a cot appears or disappears, so the panel's
+             * offline cards can be counted rather than squinted at. */
+            if (live != s_was_live[i]) {
+                s_was_live[i] = live;
+                ESP_LOGI(TAG, "node %u is %s", state[i].node_id,
+                         live ? "online" : "offline");
+            }
         }
         hub_display_update(&ds);
 
