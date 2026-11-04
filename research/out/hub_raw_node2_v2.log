@@ -2561,3 +2561,481 @@ I (198228) link: node 1: rms 0.0140  seq 719  flags 0x07  crc 0x42698176  level 
 I (198268) link: node 3: rms 0.0090  seq 109  flags 0x05  crc 0x78FFB787  level 0.0110  streak 0  win 0.0180  bat 0 mV
 I (198268) link: node 1: rms 0.0060  seq 719  flags 0x05  crc 0x42698176  level 0.0080  streak 0  win 0.0100  bat 0 mV
 I (198558) link: node 3: rms 0.0280  seq 109  flags 0x07  crc 0x78FFB787  level 0.0110  streak 1  win 0.0180  bat 0 mV
+I (198778) link: node 1: rms 0.0130  seq 719  flags 0x07  crc 0x42698176  level 0.0080  streak 1  win 0.0100  bat 0 mV
+I (198878) link: node 1: rms 0.0050  seq 719  flags 0x05  crc 0x42698176  level 0.0080  streak 0  win 0.0100  bat 0 mV
+I (198958) link: node 3: rms 0.0070  seq 109  flags 0x05  crc 0x78FFB787  level 0.0110  streak 0  win 0.0180  bat 0 mV
+I (198978) link: node 1: rms 0.0110  seq 719  flags 0x07  crc 0x42698176  level 0.0080  streak 1  win 0.0100  bat 0 mV
+I (199158) link: node 3: rms 0.0270  seq 109  flags 0x07  crc 0x78FFB787  level 0.0120  streak 1  win 0.0180  bat 0 mV
+I (199178) link: node 1: rms 0.0030  seq 719  flags 0x05  crc 0x42698176  level 0.0080  streak 0  win 0.0100  bat 0 mV
+I (199378) link: node 1: rms 0.0140  seq 719  flags 0x07  crc 0x42698176  level 0.0080  streak 1  win 0.0100  bat 0 mV
+I (199518) link: node 2 is offline
+I (199558) link: node 3: rms 0.0070  seq 109  flags 0x05  crc 0x78FFB787  level 0.0120  streak 0  win 0.0180  bat 0 mV
+I (199618) link: node 1: rms 0.0130  seq 720  flags 0x07  crc 0x5A7F9C66  level 0.0080  streak 3  win 0.0090  bat 0 mV
+I (199758) link: node 3: rms 0.0150  seq 109  flags 0x07  crc 0x78FFB787  level 0.0120  streak 1  win 0.0180  bat 0 mV
+I (199778) link: node 1: rms 0.0040  seq 720  flags 0x05  crc 0x5A7F9C66  level 0.0080  streak 0  win 0.0090  bat 0 mV
+I (199978) link: node 1: rms 0.0250  seq 720  flags 0x07  crc 0x5A7F9C66  level 0.0080  streak 2  win 0.0090  bat 0 mV
+I (200058) link: node 3: rms 0.0110  seq 109  flags 0x05  crc 0x78FFB787  level 0.0120  streak 0  win 0.0180  bat 0 mV
+I (200218) link: node 1: rms 0.0100  seq 721  flags 0x07  crc 0x8B827C88  level 0.0090  streak 4  win 0.0110  bat 0 mV
+I (200258) link: node 3: rms 0.0160  seq 109  flags 0x07  crc 0x78FFB787  level 0.0120  streak 1  win 0.0180  bat 0 mV
+I (200278) link: node 1: rms 0.0030  seq 721  flags 0x05  crc 0x8B827C88  level 0.0080  streak 0  win 0.0110  bat 0 mV
+I (200458) link: node 3: rms 0.0050  seq 109  flags 0x05  crc 0x78FFB787  level 0.0120  streak 0  win 0.0180  bat 0 mV
+I (200558) link: node 3: rms 0.0190  seq 109  flags 0x07  crc 0x78FFB787  level 0.0120  streak 1  win 0.0180  bat 0 mV
+I (200578) link: node 1: rms 0.0090  seq 721  flags 0x07  crc 0x8B827C88  level 0.0080  streak 2  win 0.0110  bat 0 mV
+I (200858) link: node 3: rms 0.0030  seq 109  flags 0x05  crc 0x78FFB787  level 0.0080  streak 0  win 0.0180  bat 0 mV
+I (200978) link: node 1: rms 0.0040  seq 721  flags 0x05  crc 0x8B827C88  level 0.0090  streak 0  win 0.0110  bat 0 mV
+I (201058) link: node 3: rms 0.0150  seq 109  flags 0x07  crc 0x78FFB787  level 0.0080  streak 2  win 0.0180  bat 0 mV
+I (201218) link: node 1: rms 0.0120  seq 722  flags 0x07  crc 0x5CF679E8  level 0.0090  streak 1  win 0.0120  bat 0 mV
+I (201278) link: node 1: rms 0.0050  seq 722  flags 0x05  crc 0x5CF679E8  level 0.0090  streak 0  win 0.0120  bat 0 mV
+I (201358) link: node 3: rms 0.0070  seq 109  flags 0x05  crc 0x78FFB787  level 0.0090  streak 0  win 0.0180  bat 0 mV
+I (201398) link: node 2: rms 0.0020  seq 65  flags 0x05  crc 0x8DCB450E  level 0.0050  streak 0  win 0.0040  bat 0 mV
+I (201398) link: node 2 is online
+I (201460) link: link: 11910 frames off the air, 11910 parsed, 0 bad, 0 bad payload, 61 requests sent, 0 failed
+I (201960) link: node 3: rms 0.0210  seq 109  flags 0x07  crc 0x78FFB787  level 0.0080  streak 1  win 0.0180  bat 0 mV
+I (201980) link: node 1: rms 0.0120  seq 722  flags 0x07  crc 0x5CF679E8  level 0.0060  streak 1  win 0.0120  bat 0 mV
+I (202160) link: node 3: rms 0.0060  seq 109  flags 0x05  crc 0x78FFB787  level 0.0080  streak 0  win 0.0180  bat 0 mV
+I (202180) link: node 1: rms 0.0030  seq 722  flags 0x05  crc 0x5CF679E8  level 0.0060  streak 0  win 0.0120  bat 0 mV
+I (202260) link: node 3: rms 0.0220  seq 109  flags 0x07  crc 0x78FFB787  level 0.0080  streak 1  win 0.0180  bat 0 mV
+I (202560) link: node 3: rms 0.0050  seq 109  flags 0x05  crc 0x78FFB787  level 0.0090  streak 0  win 0.0180  bat 0 mV
+I (202620) link: node 1: rms 0.0050  seq 723  flags 0x05  crc 0x1488119F  level 0.0060  streak 0  win 0.0080  bat 0 mV
+I (202660) link: node 3: rms 0.0120  seq 109  flags 0x07  crc 0x78FFB787  level 0.0090  streak 1  win 0.0180  bat 0 mV
+I (202680) link: node 1: rms 0.0150  seq 723  flags 0x07  crc 0x1488119F  level 0.0060  streak 1  win 0.0080  bat 0 mV
+I (202880) link: node 1: rms 0.0030  seq 723  flags 0x05  crc 0x1488119F  level 0.0070  streak 0  win 0.0080  bat 0 mV
+I (202980) link: node 1: rms 0.0080  seq 723  flags 0x07  crc 0x1488119F  level 0.0070  streak 1  win 0.0080  bat 0 mV
+I (203260) link: node 3: rms 0.0050  seq 109  flags 0x05  crc 0x78FFB787  level 0.0090  streak 0  win 0.0180  bat 0 mV
+I (203320) link: node 1: rms 0.0070  seq 724  flags 0x07  crc 0xEE3CBAC3  level 0.0070  streak 4  win 0.0070  bat 0 mV
+I (203360) link: node 3: rms 0.0120  seq 109  flags 0x07  crc 0x78FFB787  level 0.0090  streak 1  win 0.0180  bat 0 mV
+I (203500) link: node 2 is offline
+I (203580) link: node 1: rms 0.0050  seq 724  flags 0x05  crc 0xEE3CBAC3  level 0.0070  streak 0  win 0.0070  bat 0 mV
+I (203680) link: node 1: rms 0.0090  seq 724  flags 0x07  crc 0xEE3CBAC3  level 0.0070  streak 1  win 0.0070  bat 0 mV
+I (203760) link: node 3: rms 0.0060  seq 109  flags 0x05  crc 0x78FFB787  level 0.0090  streak 0  win 0.0180  bat 0 mV
+I (203860) link: node 3: rms 0.0210  seq 109  flags 0x07  crc 0x78FFB787  level 0.0100  streak 1  win 0.0180  bat 0 mV
+I (203920) link: node 1: rms 0.0140  seq 725  flags 0x07  crc 0xBEC5303B  level 0.0070  streak 3  win 0.0110  bat 0 mV
+I (203980) link: node 1: rms 0.0050  seq 725  flags 0x05  crc 0xBEC5303B  level 0.0070  streak 0  win 0.0110  bat 0 mV
+I (204060) link: node 3: rms 0.0050  seq 109  flags 0x05  crc 0x78FFB787  level 0.0100  streak 0  win 0.0180  bat 0 mV
+I (204180) link: node 1: rms 0.0140  seq 725  flags 0x07  crc 0xBEC5303B  level 0.0070  streak 1  win 0.0110  bat 0 mV
+I (204280) link: node 1: rms 0.0050  seq 725  flags 0x05  crc 0xBEC5303B  level 0.0070  streak 0  win 0.0110  bat 0 mV
+I (204360) link: node 3: rms 0.0180  seq 109  flags 0x07  crc 0x78FFB787  level 0.0100  streak 1  win 0.0180  bat 0 mV
+I (204380) link: node 1: rms 0.0120  seq 725  flags 0x07  crc 0xBEC5303B  level 0.0070  streak 1  win 0.0110  bat 0 mV
+I (204460) link: node 3: rms 0.0070  seq 109  flags 0x05  crc 0x78FFB787  level 0.0100  streak 0  win 0.0180  bat 0 mV
+I (204480) link: node 1: rms 0.0060  seq 725  flags 0x05  crc 0xBEC5303B  level 0.0070  streak 0  win 0.0110  bat 0 mV
+I (204560) link: node 3: rms 0.0170  seq 109  flags 0x07  crc 0x78FFB787  level 0.0100  streak 1  win 0.0180  bat 0 mV
+I (204760) link: node 3: rms 0.0050  seq 109  flags 0x05  crc 0x78FFB787  level 0.0100  streak 0  win 0.0180  bat 0 mV
+I (204780) link: node 1: rms 0.0150  seq 725  flags 0x07  crc 0xBEC5303B  level 0.0070  streak 1  win 0.0110  bat 0 mV
+I (204880) link: node 1: rms 0.0050  seq 725  flags 0x05  crc 0xBEC5303B  level 0.0070  streak 0  win 0.0110  bat 0 mV
+I (204960) link: node 3: rms 0.0130  seq 109  flags 0x07  crc 0x78FFB787  level 0.0100  streak 1  win 0.0180  bat 0 mV
+I (204980) link: node 1: rms 0.0100  seq 725  flags 0x07  crc 0xBEC5303B  level 0.0070  streak 1  win 0.0110  bat 0 mV
+I (205160) link: node 3: rms 0.0070  seq 109  flags 0x05  crc 0x78FFB787  level 0.0100  streak 0  win 0.0180  bat 0 mV
+I (205180) link: node 1: rms 0.0050  seq 725  flags 0x05  crc 0xBEC5303B  level 0.0070  streak 0  win 0.0110  bat 0 mV
+I (205260) link: node 3: rms 0.0120  seq 109  flags 0x07  crc 0x78FFB787  level 0.0100  streak 1  win 0.0180  bat 0 mV
+I (205480) link: node 1: rms 0.0160  seq 725  flags 0x07  crc 0xBEC5303B  level 0.0080  streak 1  win 0.0110  bat 0 mV
+I (205500) link: node 2: rms 0.0030  seq 65  flags 0x04  crc 0x00000000  level 0.0050  streak 0  win 0.0040  bat 0 mV
+I (205500) link: node 2 is online
+I (205562) link: node 3: rms 0.0040  seq 109  flags 0x05  crc 0x78FFB787  level 0.0100  streak 0  win 0.0180  bat 0 mV
+I (205622) link: node 1: rms 0.0100  seq 726  flags 0x07  crc 0xB528B071  level 0.0080  streak 2  win 0.0090  bat 0 mV
+I (205762) link: node 3: rms 0.0200  seq 109  flags 0x07  crc 0x78FFB787  level 0.0100  streak 1  win 0.0180  bat 0 mV
+I (205882) link: node 1: rms 0.0050  seq 726  flags 0x05  crc 0xB528B071  level 0.0080  streak 0  win 0.0090  bat 0 mV
+I (205962) link: node 3: rms 0.0050  seq 109  flags 0x05  crc 0x78FFB787  level 0.0110  streak 0  win 0.0180  bat 0 mV
+I (205982) link: node 1: rms 0.0090  seq 726  flags 0x07  crc 0xB528B071  level 0.0080  streak 1  win 0.0090  bat 0 mV
+I (206062) link: node 3: rms 0.0190  seq 109  flags 0x07  crc 0x78FFB787  level 0.0110  streak 1  win 0.0180  bat 0 mV
+I (206222) link: node 1: rms 0.0120  seq 727  flags 0x07  crc 0x0BFEF63E  level 0.0080  streak 3  win 0.0100  bat 0 mV
+I (206262) link: node 3: rms 0.0070  seq 109  flags 0x05  crc 0x78FFB787  level 0.0110  streak 0  win 0.0180  bat 0 mV
+I (206282) link: node 1: rms 0.0080  seq 727  flags 0x05  crc 0x0BFEF63E  level 0.0080  streak 4  win 0.0100  bat 0 mV
+I (206462) link: node 3: rms 0.0110  seq 109  flags 0x07  crc 0x78FFB787  level 0.0100  streak 1  win 0.0180  bat 0 mV
+I (206462) link: link: 12012 frames off the air, 12012 parsed, 0 bad, 0 bad payload, 61 requests sent, 0 failed
+I (206591) link: node 1: rms 0.0270  seq 727  flags 0x07  crc 0x0BFEF63E  level 0.0080  streak 2  win 0.0100  bat 0 mV
+I (206771) link: node 3: rms 0.0060  seq 109  flags 0x05  crc 0x78FFB787  level 0.0100  streak 0  win 0.0180  bat 0 mV
+I (206871) link: node 3: rms 0.0130  seq 109  flags 0x07  crc 0x78FFB787  level 0.0100  streak 1  win 0.0180  bat 0 mV
+I (206891) link: node 1: rms 0.0050  seq 727  flags 0x05  crc 0x0BFEF63E  level 0.0080  streak 0  win 0.0100  bat 0 mV
+I (207171) link: node 3: rms 0.0080  seq 109  flags 0x05  crc 0x78FFB787  level 0.0110  streak 0  win 0.0180  bat 0 mV
+I (207231) link: node 1: rms 0.0040  seq 728  flags 0x05  crc 0x892DDC6A  level 0.0080  streak 0  win 0.0120  bat 0 mV
+I (207471) link: node 3: rms 0.0170  seq 109  flags 0x07  crc 0x78FFB787  level 0.0100  streak 1  win 0.0180  bat 0 mV
+I (207491) link: node 1: rms 0.0120  seq 728  flags 0x07  crc 0x892DDC6A  level 0.0080  streak 1  win 0.0120  bat 0 mV
+I (207511) link: node 2 is offline
+I (207671) link: node 3: rms 0.0110  seq 109  flags 0x06  crc 0x00000000  level 0.0100  streak 3  win 0.0180  bat 0 mV
+I (207791) link: node 1: rms 0.0080  seq 728  flags 0x05  crc 0x892DDC6A  level 0.0090  streak 0  win 0.0120  bat 0 mV
+I (207971) link: node 3: rms 0.0050  seq 109  flags 0x04  crc 0x00000000  level 0.0100  streak 0  win 0.0180  bat 0 mV
+I (208071) link: node 3: rms 0.0190  seq 109  flags 0x06  crc 0x00000000  level 0.0100  streak 1  win 0.0180  bat 0 mV
+I (208131) link: node 1: rms 0.0150  seq 729  flags 0x07  crc 0x492FABA5  level 0.0090  streak 1  win 0.0120  bat 0 mV
+I (208371) link: node 3: rms 0.0060  seq 109  flags 0x04  crc 0x00000000  level 0.0100  streak 0  win 0.0180  bat 0 mV
+I (208471) link: node 3: rms 0.0120  seq 109  flags 0x06  crc 0x00000000  level 0.0100  streak 1  win 0.0180  bat 0 mV
+I (208491) link: node 1: rms 0.0070  seq 729  flags 0x05  crc 0x492FABA5  level 0.0090  streak 0  win 0.0120  bat 0 mV
+I (208591) link: node 1: rms 0.0110  seq 729  flags 0x07  crc 0x492FABA5  level 0.0090  streak 1  win 0.0120  bat 0 mV
+I (208731) link: node 1: rms 0.0200  seq 730  flags 0x07  crc 0x2BE8B471  level 0.0090  streak 2  win 0.0110  bat 0 mV
+I (208771) link: node 3: rms 0.0060  seq 109  flags 0x04  crc 0x00000000  level 0.0110  streak 0  win 0.0180  bat 0 mV
+I (208871) link: node 3: rms 0.0170  seq 109  flags 0x06  crc 0x00000000  level 0.0110  streak 1  win 0.0180  bat 0 mV
+I (209071) link: node 3: rms 0.0080  seq 109  flags 0x04  crc 0x00000000  level 0.0110  streak 0  win 0.0180  bat 0 mV
+I (209171) link: node 3: rms 0.0220  seq 109  flags 0x06  crc 0x00000000  level 0.0110  streak 1  win 0.0180  bat 0 mV
+I (209331) link: node 1: rms 0.0190  seq 731  flags 0x07  crc 0x6F7B054A  level 0.0100  streak 8  win 0.0170  bat 0 mV
+I (209332) NimBLE: GAP procedure initiated: stop advertising.
+
+I (209336) ble_alert: advertising is off (a phone is connected)
+I (209341) link: node 1: asking for the window (seq 731, rms 0.0190, level 0.0100, win 0.0170)
+I (209370) link: node 3: rms 0.0050  seq 109  flags 0x04  crc 0x00000000  level 0.0110  streak 0  win 0.0180  bat 0 mV
+I (209390) link: node 2: rms 0.0030  seq 65  flags 0x04  crc 0x00000000  level 0.0050  streak 0  win 0.0040  bat 0 mV
+I (209390) link: node 2 is online
+I (209672) link: node 3: rms 0.0120  seq 109  flags 0x06  crc 0x00000000  level 0.0110  streak 1  win 0.0180  bat 0 mV
+I (209872) link: node 3: rms 0.0050  seq 110  flags 0x05  crc 0xDB83A64A  level 0.0110  streak 0  win 0.0170  bat 0 mV
+I (210072) link: node 3: rms 0.0130  seq 110  flags 0x07  crc 0xDB83A64A  level 0.0110  streak 1  win 0.0170  bat 0 mV
+W (210272) link: node 1: missing fragments:
+W (210272) link:   0 of 286
+W (210272) link:   17 of 286
+W (210272) link:   36 of 286
+W (210272) link:   55 of 286
+W (210275) link:   75 of 286
+W (210277) link:   111 of 286
+W (210280) link:   127 of 286
+W (210283) link:   147 of 286
+W (210326) link: node 1: the burst stalled with 272 of 286 fragments (272 frames arrived); asking for the 14 that are missing (signal -21 dBm, from -22 to -20; its telemetry reads -20 dBm)
+W (210331) link: node 1: its radio handed over 288 frames since the burst began, 288 of them left it, 0 were refused, 0 times it had no room
+W (210344) link: node 1: arrival pattern: ################################################################
+I (210373) link: node 1: rms 0.0130  seq 731  flags 0x07  crc 0x6F7B054A  level 0.0100  streak 11  win 0.0170  bat 0 mV
+I (210390) link: node 1: 286/286 fragments in 1.04 s (signal -21 dBm, from -22 to -20; its telemetry reads -22 dBm)
+I (210390) link: node 1: window crc32 0x6F7B054A, the node advertised 0x6F7B054A -> MATCH
+I (210402) link: node 1: window rms 0.017178  mean -52  peak 1445  crest 2.6
+I (210559) link: node 1: front end 51.3 ms, inference 104.3 ms, P(no_cry)=0.9141 P(cry)=0.0859
+I (210560) link: node 1: no cry
+I (210560) NimBLE: GAP procedure initiated: stop advertising.
+
+I (210566) ble_alert: advertising is off (a phone is connected)
+I (210571) NimBLE: GAP procedure initiated: stop advertising.
+
+I (210577) ble_alert: advertising is off (a phone is connected)
+I (210582) link: node 3: asking for the window (seq 110, rms 0.0240, level 0.0120, win 0.0170)
+I (210611) link: node 3: rms 0.0040  seq 110  flags 0x05  crc 0xDB83A64A  level 0.0120  streak 0  win 0.0170  bat 0 mV
+I (210611) link: node 2: rms 0.0020  seq 65  flags 0x04  crc 0x00000000  level 0.0050  streak 0  win 0.0040  bat 0 mV
+I (210941) link: node 1: rms 0.0060  seq 731  flags 0x05  crc 0x6F7B054A  level 0.0100  streak 0  win 0.0170  bat 0 mV
+I (211441) link: node 3: rms 0.0160  seq 110  flags 0x07  crc 0xDB83A64A  level 0.0120  streak 1  win 0.0170  bat 0 mV
+I (211481) link: link: 12660 frames off the air, 12660 parsed, 0 bad, 0 bad payload, 64 requests sent, 0 failed
+W (211501) link: node 3: missing fragments:
+W (211501) link:   4 of 286
+W (211501) link:   23 of 286
+W (211501) link:   41 of 286
+W (211501) link:   60 of 286
+W (211504) link:   79 of 286
+W (211506) link:   80 of 286
+W (211509) link:   98 of 286
+W (211512) link:   117 of 286
+W (211555) link: node 3: the burst stalled with 270 of 286 fragments (270 frames arrived); asking for the 16 that are missing (signal -51 dBm, from -53 to -50; its telemetry reads -50 dBm)
+W (211560) link: node 3: its radio handed over 290 frames since the burst began, 290 of them left it, 0 were refused, 0 times it had no room
+W (211573) link: node 3: arrival pattern: ################################################################
+I (211602) link: node 3: rms 0.0070  seq 110  flags 0x05  crc 0xDB83A64A  level 0.0120  streak 0  win 0.0170  bat 0 mV
+I (211642) link: node 1: rms 0.0080  seq 731  flags 0x07  crc 0x6F7B054A  level 0.0050  streak 2  win 0.0170  bat 0 mV
+I (211762) link: node 3: rms 0.0190  seq 110  flags 0x07  crc 0xDB83A64A  level 0.0090  streak 1  win 0.0170  bat 0 mV
+I (211942) link: node 1: rms 0.0040  seq 731  flags 0x05  crc 0x6F7B054A  level 0.0050  streak 0  win 0.0170  bat 0 mV
+I (211962) link: node 3: rms 0.0060  seq 110  flags 0x05  crc 0xDB83A64A  level 0.0090  streak 0  win 0.0170  bat 0 mV
+I (212142) link: node 1: rms 0.0150  seq 731  flags 0x07  crc 0x6F7B054A  level 0.0050  streak 2  win 0.0170  bat 0 mV
+I (212262) link: node 3: rms 0.0190  seq 110  flags 0x07  crc 0xDB83A64A  level 0.0090  streak 1  win 0.0170  bat 0 mV
+W (212262) link: node 3: missing fragments:
+W (212265) link:   98 of 286
+W (212268) link:   117 of 286
+W (212311) link: node 3: the burst stalled with 284 of 286 fragments (284 frames arrived); asking for the 2 that are missing (signal -51 dBm, from -53 to -50; its telemetry reads -51 dBm)
+W (212316) link: node 3: its radio handed over 314 frames since the burst began, 314 of them left it, 0 were refused, 0 times it had no room
+W (212329) link: node 3: arrival pattern: ################################################################
+I (212374) link: node 3: 286/286 fragments in 1.98 s (signal -51 dBm, from -53 to -50; its telemetry reads -51 dBm)
+I (212375) link: node 3: window crc32 0xDB83A64A, the node advertised 0xDB83A64A -> MATCH
+I (212387) link: node 3: window rms 0.017174  mean 89  peak 1525  crest 2.7
+I (212541) link: node 3: front end 48.6 ms, inference 104.1 ms, P(no_cry)=0.2148 P(cry)=0.7852
+I (212541) link: node 3: no cry
+I (212541) NimBLE: GAP procedure initiated: stop advertising.
+
+I (212548) ble_alert: advertising is off (a phone is connected)
+I (212573) link: node 3: rms 0.0060  seq 110  flags 0x05  crc 0xDB83A64A  level 0.0100  streak 0  win 0.0170  bat 0 mV
+I (212873) link: node 3: rms 0.0100  seq 110  flags 0x07  crc 0xDB83A64A  level 0.0100  streak 1  win 0.0170  bat 0 mV
+I (212973) link: node 3: rms 0.0060  seq 110  flags 0x05  crc 0xDB83A64A  level 0.0100  streak 0  win 0.0170  bat 0 mV
+I (213173) link: node 3: rms 0.0130  seq 110  flags 0x07  crc 0xDB83A64A  level 0.0100  streak 1  win 0.0170  bat 0 mV
+I (213233) link: node 1: rms 0.0170  seq 731  flags 0x07  crc 0x6F7B054A  level 0.0060  streak 12  win 0.0170  bat 0 mV
+I (213493) link: node 2: rms 0.0030  seq 65  flags 0x04  crc 0x00000000  level 0.0050  streak 0  win 0.0040  bat 0 mV
+I (213573) link: node 3: rms 0.0100  seq 110  flags 0x05  crc 0xDB83A64A  level 0.0100  streak 5  win 0.0170  bat 0 mV
+I (213673) link: node 3: rms 0.0130  seq 110  flags 0x07  crc 0xDB83A64A  level 0.0100  streak 6  win 0.0170  bat 0 mV
+I (214033) link: node 1: rms 0.0050  seq 731  flags 0x05  crc 0x6F7B054A  level 0.0060  streak 0  win 0.0170  bat 0 mV
+I (214073) link: node 3: rms 0.0100  seq 110  flags 0x05  crc 0xDB83A64A  level 0.0100  streak 10  win 0.0170  bat 0 mV
+I (214133) link: node 1: rms 0.0160  seq 731  flags 0x07  crc 0x6F7B054A  level 0.0060  streak 1  win 0.0170  bat 0 mV
+I (214273) link: node 3: rms 0.0180  seq 110  flags 0x07  crc 0xDB83A64A  level 0.0110  streak 1  win 0.0170  bat 0 mV
+I (214433) link: node 1: rms 0.0060  seq 731  flags 0x05  crc 0x6F7B054A  level 0.0070  streak 0  win 0.0170  bat 0 mV
+I (214473) link: node 3: rms 0.0080  seq 110  flags 0x05  crc 0xDB83A64A  level 0.0110  streak 0  win 0.0170  bat 0 mV
+I (214733) link: node 1: rms 0.0150  seq 731  flags 0x07  crc 0x6F7B054A  level 0.0070  streak 1  win 0.0170  bat 0 mV
+I (215133) link: node 1: rms 0.0060  seq 731  flags 0x05  crc 0x6F7B054A  level 0.0070  streak 0  win 0.0170  bat 0 mV
+I (215333) link: node 1: rms 0.0110  seq 731  flags 0x07  crc 0x6F7B054A  level 0.0070  streak 1  win 0.0170  bat 0 mV
+I (215473) link: node 3: rms 0.0180  seq 110  flags 0x07  crc 0xDB83A64A  level 0.0080  streak 1  win 0.0170  bat 0 mV
+I (215493) link: node 2 is offline
+I (215633) link: node 1: rms 0.0050  seq 731  flags 0x05  crc 0x6F7B054A  level 0.0070  streak 0  win 0.0170  bat 0 mV
+I (215673) link: node 3: rms 0.0070  seq 110  flags 0x05  crc 0xDB83A64A  level 0.0080  streak 0  win 0.0170  bat 0 mV
+I (215873) link: node 3: rms 0.0150  seq 110  flags 0x07  crc 0xDB83A64A  level 0.0080  streak 1  win 0.0170  bat 0 mV
+I (216073) link: node 3: rms 0.0040  seq 110  flags 0x05  crc 0xDB83A64A  level 0.0080  streak 0  win 0.0170  bat 0 mV
+I (216293) link: node 2: rms 0.0030  seq 65  flags 0x04  crc 0x00000000  level 0.0050  streak 0  win 0.0040  bat 0 mV
+I (216293) link: node 2 is online
+I (216335) link: node 1: rms 0.0100  seq 731  flags 0x07  crc 0x6F7B054A  level 0.0070  streak 1  win 0.0170  bat 0 mV
+I (216495) link: link: 12778 frames off the air, 12778 parsed, 0 bad, 0 bad payload, 66 requests sent, 0 failed
+I (216735) link: node 1: rms 0.0050  seq 731  flags 0x05  crc 0x6F7B054A  level 0.0080  streak 0  win 0.0170  bat 0 mV
+I (216935) link: node 1: rms 0.0080  seq 731  flags 0x07  crc 0x6F7B054A  level 0.0080  streak 1  win 0.0170  bat 0 mV
+I (217035) link: node 1: rms 0.0060  seq 731  flags 0x05  crc 0x6F7B054A  level 0.0080  streak 0  win 0.0170  bat 0 mV
+I (217075) link: node 3: rms 0.0050  seq 110  flags 0x05  crc 0xDB83A64A  level 0.0080  streak 0  win 0.0170  bat 0 mV
+I (217275) link: node 3: rms 0.0110  seq 110  flags 0x07  crc 0xDB83A64A  level 0.0070  streak 1  win 0.0170  bat 0 mV
+I (217495) link: node 2: rms 0.0030  seq 65  flags 0x04  crc 0x00000000  level 0.0050  streak 0  win 0.0040  bat 0 mV
+I (217535) link: node 1: rms 0.0140  seq 731  flags 0x07  crc 0x6F7B054A  level 0.0080  streak 1  win 0.0170  bat 0 mV
+I (217575) link: node 3: rms 0.0050  seq 110  flags 0x05  crc 0xDB83A64A  level 0.0080  streak 0  win 0.0170  bat 0 mV
+I (217775) link: node 3: rms 0.0110  seq 110  flags 0x07  crc 0xDB83A64A  level 0.0080  streak 1  win 0.0170  bat 0 mV
+I (217935) link: node 1: rms 0.0060  seq 731  flags 0x05  crc 0x6F7B054A  level 0.0080  streak 0  win 0.0170  bat 0 mV
+I (218035) link: node 1: rms 0.0150  seq 731  flags 0x07  crc 0x6F7B054A  level 0.0080  streak 1  win 0.0170  bat 0 mV
+I (218075) link: node 3: rms 0.0060  seq 110  flags 0x05  crc 0xDB83A64A  level 0.0080  streak 0  win 0.0170  bat 0 mV
+I (218175) link: node 3: rms 0.0170  seq 110  flags 0x07  crc 0xDB83A64A  level 0.0080  streak 1  win 0.0170  bat 0 mV
+I (218235) link: node 1: rms 0.0070  seq 731  flags 0x05  crc 0x6F7B054A  level 0.0080  streak 0  win 0.0170  bat 0 mV
+I (218335) link: node 1: rms 0.0090  seq 731  flags 0x07  crc 0x6F7B054A  level 0.0080  streak 1  win 0.0170  bat 0 mV
+I (218735) link: node 1: rms 0.0070  seq 731  flags 0x05  crc 0x6F7B054A  level 0.0090  streak 0  win 0.0170  bat 0 mV
+I (218935) link: node 1: rms 0.0200  seq 731  flags 0x07  crc 0x6F7B054A  level 0.0090  streak 1  win 0.0170  bat 0 mV
+I (218975) link: node 3: rms 0.0040  seq 110  flags 0x05  crc 0xDB83A64A  level 0.0090  streak 0  win 0.0170  bat 0 mV
+I (219235) link: node 2: rms 0.0050  seq 66  flags 0x05  crc 0xB3FAF2E7  level 0.0050  streak 1  win 0.0040  bat 0 mV
+I (219275) link: node 3: rms 0.0140  seq 110  flags 0x07  crc 0xDB83A64A  level 0.0090  streak 1  win 0.0170  bat 0 mV
+I (219435) link: node 1: rms 0.0070  seq 731  flags 0x05  crc 0x6F7B054A  level 0.0090  streak 0  win 0.0170  bat 0 mV
+I (219635) link: node 1: rms 0.0250  seq 731  flags 0x07  crc 0x6F7B054A  level 0.0100  streak 1  win 0.0170  bat 0 mV
+I (220035) link: node 1: rms 0.0060  seq 731  flags 0x05  crc 0x6F7B054A  level 0.0100  streak 0  win 0.0170  bat 0 mV
+I (220375) link: node 3: rms 0.0210  seq 110  flags 0x07  crc 0xDB83A64A  level 0.0110  streak 12  win 0.0170  bat 0 mV
+I (220475) link: node 3: rms 0.0080  seq 110  flags 0x05  crc 0xDB83A64A  level 0.0110  streak 0  win 0.0170  bat 0 mV
+I (220535) link: node 1: rms 0.0110  seq 731  flags 0x07  crc 0x6F7B054A  level 0.0100  streak 1  win 0.0170  bat 0 mV
+I (220935) link: node 1: rms 0.0060  seq 731  flags 0x05  crc 0x6F7B054A  level 0.0100  streak 0  win 0.0170  bat 0 mV
+I (221235) link: node 2 is offline
+I (221275) link: node 3: rms 0.0260  seq 110  flags 0x07  crc 0xDB83A64A  level 0.0110  streak 2  win 0.0170  bat 0 mV
+I (221495) link: node 2: rms 0.0030  seq 66  flags 0x05  crc 0xB3FAF2E7  level 0.0050  streak 0  win 0.0040  bat 0 mV
+I (221495) link: node 2 is online
+I (221497) link: link: 12881 frames off the air, 12881 parsed, 0 bad, 0 bad payload, 66 requests sent, 0 failed
+I (221567) link: node 3: rms 0.0080  seq 110  flags 0x05  crc 0xDB83A64A  level 0.0110  streak 0  win 0.0170  bat 0 mV
+I (221767) link: node 3: rms 0.0130  seq 110  flags 0x07  crc 0xDB83A64A  level 0.0110  streak 2  win 0.0170  bat 0 mV
+I (222027) link: node 1: rms 0.0140  seq 731  flags 0x07  crc 0x6F7B054A  level 0.0100  streak 1  win 0.0170  bat 0 mV
+I (222127) link: node 1: rms 0.0100  seq 731  flags 0x05  crc 0x6F7B054A  level 0.0100  streak 2  win 0.0170  bat 0 mV
+I (222167) link: node 3: rms 0.0060  seq 110  flags 0x05  crc 0xDB83A64A  level 0.0110  streak 0  win 0.0170  bat 0 mV
+I (222227) link: node 1: rms 0.0170  seq 731  flags 0x07  crc 0x6F7B054A  level 0.0110  streak 3  win 0.0170  bat 0 mV
+I (222267) link: node 3: rms 0.0180  seq 110  flags 0x07  crc 0xDB83A64A  level 0.0110  streak 1  win 0.0170  bat 0 mV
+I (222427) link: node 1: rms 0.0050  seq 731  flags 0x05  crc 0x6F7B054A  level 0.0110  streak 0  win 0.0170  bat 0 mV
+I (222627) link: node 1: rms 0.0220  seq 731  flags 0x07  crc 0x6F7B054A  level 0.0110  streak 1  win 0.0170  bat 0 mV
+I (222827) link: node 1: rms 0.0090  seq 731  flags 0x05  crc 0x6F7B054A  level 0.0110  streak 0  win 0.0170  bat 0 mV
+I (223027) link: node 1: rms 0.0160  seq 731  flags 0x07  crc 0x6F7B054A  level 0.0110  streak 1  win 0.0170  bat 0 mV
+I (223067) link: node 3: rms 0.0070  seq 110  flags 0x05  crc 0xDB83A64A  level 0.0120  streak 0  win 0.0170  bat 0 mV
+I (223167) link: node 3: rms 0.0230  seq 110  flags 0x07  crc 0xDB83A64A  level 0.0120  streak 1  win 0.0170  bat 0 mV
+I (223227) link: node 1: rms 0.0040  seq 731  flags 0x05  crc 0x6F7B054A  level 0.0110  streak 0  win 0.0170  bat 0 mV
+I (223327) link: node 1: rms 0.0120  seq 731  flags 0x07  crc 0x6F7B054A  level 0.0110  streak 1  win 0.0170  bat 0 mV
+I (223427) link: node 1: rms 0.0070  seq 731  flags 0x05  crc 0x6F7B054A  level 0.0110  streak 0  win 0.0170  bat 0 mV
+I (223507) link: node 2 is offline
+I (223727) link: node 1: rms 0.0140  seq 731  flags 0x07  crc 0x6F7B054A  level 0.0110  streak 1  win 0.0170  bat 0 mV
+I (223827) link: node 1: rms 0.0100  seq 731  flags 0x05  crc 0x6F7B054A  level 0.0110  streak 0  win 0.0170  bat 0 mV
+I (224027) link: node 1: rms 0.0140  seq 731  flags 0x07  crc 0x6F7B054A  level 0.0100  streak 1  win 0.0170  bat 0 mV
+I (224167) link: node 3: rms 0.0470  seq 110  flags 0x07  crc 0xDB83A64A  level 0.0150  streak 11  win 0.0170  bat 0 mV
+I (224227) link: node 1: rms 0.0040  seq 731  flags 0x05  crc 0x6F7B054A  level 0.0100  streak 0  win 0.0170  bat 0 mV
+I (224267) link: node 3: rms 0.0110  seq 110  flags 0x05  crc 0xDB83A64A  level 0.0150  streak 0  win 0.0170  bat 0 mV
+I (224327) link: node 1: rms 0.0120  seq 731  flags 0x07  crc 0x6F7B054A  level 0.0100  streak 1  win 0.0170  bat 0 mV
+I (224367) link: node 3: rms 0.0220  seq 110  flags 0x07  crc 0xDB83A64A  level 0.0150  streak 1  win 0.0170  bat 0 mV
+I (224667) link: node 3: rms 0.0110  seq 110  flags 0x05  crc 0xDB83A64A  level 0.0150  streak 0  win 0.0170  bat 0 mV
+I (224767) link: node 3: rms 0.0160  seq 110  flags 0x07  crc 0xDB83A64A  level 0.0150  streak 1  win 0.0170  bat 0 mV
+I (224867) link: node 3: rms 0.0150  seq 110  flags 0x05  crc 0xDB83A64A  level 0.0160  streak 0  win 0.0170  bat 0 mV
+I (224967) link: node 3: rms 0.0200  seq 110  flags 0x07  crc 0xDB83A64A  level 0.0160  streak 1  win 0.0170  bat 0 mV
+I (225027) link: node 1: rms 0.0060  seq 731  flags 0x05  crc 0x6F7B054A  level 0.0110  streak 0  win 0.0170  bat 0 mV
+I (225107) link: node 2: rms 0.0040  seq 66  flags 0x05  crc 0xB3FAF2E7  level 0.0050  streak 0  win 0.0040  bat 0 mV
+I (225107) link: node 2 is online
+I (225129) link: node 1: rms 0.0310  seq 731  flags 0x07  crc 0x6F7B054A  level 0.0110  streak 1  win 0.0170  bat 0 mV
+I (225309) link: node 3: rms 0.0150  seq 111  flags 0x05  crc 0x874EB8DE  level 0.0160  streak 0  win 0.0390  bat 0 mV
+I (225429) link: node 1: rms 0.0110  seq 731  flags 0x05  crc 0x6F7B054A  level 0.0120  streak 0  win 0.0170  bat 0 mV
+I (225589) link: node 2: rms 0.0050  seq 66  flags 0x07  crc 0xB3FAF2E7  level 0.0050  streak 1  win 0.0040  bat 0 mV
+I (225629) link: node 1: rms 0.0200  seq 731  flags 0x07  crc 0x6F7B054A  level 0.0120  streak 1  win 0.0170  bat 0 mV
+I (225689) link: node 2: rms 0.0020  seq 66  flags 0x05  crc 0xB3FAF2E7  level 0.0050  streak 0  win 0.0040  bat 0 mV
+I (225829) link: node 1: rms 0.0080  seq 731  flags 0x05  crc 0x6F7B054A  level 0.0120  streak 0  win 0.0170  bat 0 mV
+I (225969) link: node 3: rms 0.0130  seq 111  flags 0x07  crc 0x874EB8DE  level 0.0130  streak 1  win 0.0390  bat 0 mV
+I (226069) NimBLE: GAP procedure initiated: stop advertising.
+
+I (226070) ble_alert: advertising is off (a phone is connected)
+I (226070) link: node 3: asking for the window (seq 111, rms 0.0480, level 0.0130, win 0.0390)
+I (226238) link: node 1: rms 0.0290  seq 731  flags 0x07  crc 0x6F7B054A  level 0.0120  streak 1  win 0.0170  bat 0 mV
+I (226438) link: node 1: rms 0.0070  seq 731  flags 0x05  crc 0x6F7B054A  level 0.0120  streak 0  win 0.0170  bat 0 mV
+I (226498) link: link: 13143 frames off the air, 13143 parsed, 0 bad, 0 bad payload, 67 requests sent, 0 failed
+I (226538) link: node 1: rms 0.0310  seq 731  flags 0x07  crc 0x6F7B054A  level 0.0120  streak 1  win 0.0170  bat 0 mV
+I (226738) link: node 1: rms 0.0040  seq 731  flags 0x05  crc 0x6F7B054A  level 0.0110  streak 0  win 0.0170  bat 0 mV
+I (226798) link: node 2: rms 0.0030  seq 66  flags 0x05  crc 0xB3FAF2E7  level 0.0050  streak 0  win 0.0040  bat 0 mV
+I (226838) link: node 1: rms 0.0150  seq 731  flags 0x07  crc 0x6F7B054A  level 0.0120  streak 1  win 0.0170  bat 0 mV
+I (226938) link: node 1: rms 0.0090  seq 731  flags 0x05  crc 0x6F7B054A  level 0.0120  streak 0  win 0.0170  bat 0 mV
+W (227018) link: node 3: missing fragments:
+W (227018) link:   5 of 286
+W (227018) link:   43 of 286
+W (227018) link:   81 of 286
+W (227018) link:   119 of 286
+W (227021) link:   157 of 286
+W (227024) link:   195 of 286
+W (227026) link:   270 of 286
+W (227070) link: node 3: the burst stalled with 279 of 286 fragments (279 frames arrived); asking for the 7 that are missing (signal -48 dBm, from -50 to -46; its telemetry reads -49 dBm)
+W (227075) link: node 3: its radio handed over 288 frames since the burst began, 288 of them left it, 0 were refused, 0 times it had no room
+W (227087) link: node 3: arrival pattern: ###########################################.####################
+I (227117) link: node 3: rms 0.0140  seq 111  flags 0x07  crc 0x874EB8DE  level 0.0140  streak 5  win 0.0390  bat 0 mV
+I (227137) link: node 1: rms 0.0120  seq 731  flags 0x07  crc 0x6F7B054A  level 0.0120  streak 1  win 0.0170  bat 0 mV
+I (227137) link: node 3: rms 0.0090  seq 111  flags 0x05  crc 0x874EB8DE  level 0.0140  streak 0  win 0.0390  bat 0 mV
+I (227227) link: node 1: rms 0.0060  seq 731  flags 0x05  crc 0x6F7B054A  level 0.0120  streak 0  win 0.0170  bat 0 mV
+I (227327) link: node 3: rms 0.0230  seq 111  flags 0x07  crc 0x874EB8DE  level 0.0140  streak 1  win 0.0390  bat 0 mV
+I (227427) link: node 1: rms 0.0090  seq 731  flags 0x07  crc 0x6F7B054A  level 0.0070  streak 1  win 0.0170  bat 0 mV
+I (227627) link: node 3: rms 0.0070  seq 111  flags 0x05  crc 0x874EB8DE  level 0.0140  streak 0  win 0.0390  bat 0 mV
+I (227727) link: node 3: rms 0.0250  seq 111  flags 0x07  crc 0x874EB8DE  level 0.0140  streak 1  win 0.0390  bat 0 mV
+W (227807) link: node 3: missing fragments:
+W (227807) link:   43 of 286
+W (227847) link: node 3: the burst stalled with 285 of 286 fragments (285 frames arrived); asking for the 1 that are missing (signal -48 dBm, from -50 to -46; its telemetry reads -48 dBm)
+W (227852) link: node 3: its radio handed over 303 frames since the burst began, 303 of them left it, 0 were refused, 0 times it had no room
+W (227865) link: node 3: arrival pattern: ################################################################
+I (227894) link: node 1: rms 0.0050  seq 731  flags 0x05  crc 0x6F7B054A  level 0.0080  streak 0  win 0.0170  bat 0 mV
+I (227911) link: node 3: 286/286 fragments in 1.83 s (signal -48 dBm, from -50 to -46; its telemetry reads -49 dBm)
+I (227911) link: node 3: window crc32 0x874EB8DE, the node advertised 0x874EB8DE -> MATCH
+I (227924) link: node 3: window rms 0.038895  mean 143  peak 2550  crest 2.0
+I (228080) link: node 3: front end 51.2 ms, inference 103.6 ms, P(no_cry)=0.9766 P(cry)=0.0234
+I (228080) link: node 3: no cry
+I (228080) NimBLE: GAP procedure initiated: stop advertising.
+
+I (228086) ble_alert: advertising is off (a phone is connected)
+I (228111) link: node 1: rms 0.0130  seq 731  flags 0x07  crc 0x6F7B054A  level 0.0080  streak 1  win 0.0170  bat 0 mV
+I (228111) link: node 3: rms 0.0050  seq 111  flags 0x05  crc 0x874EB8DE  level 0.0140  streak 0  win 0.0390  bat 0 mV
+I (228241) link: node 3: rms 0.0180  seq 111  flags 0x07  crc 0x874EB8DE  level 0.0140  streak 1  win 0.0390  bat 0 mV
+I (228541) link: node 1: rms 0.0060  seq 731  flags 0x05  crc 0x6F7B054A  level 0.0080  streak 0  win 0.0170  bat 0 mV
+I (228541) link: node 3: rms 0.0070  seq 111  flags 0x05  crc 0x874EB8DE  level 0.0150  streak 0  win 0.0390  bat 0 mV
+I (228731) link: node 3: rms 0.0200  seq 111  flags 0x07  crc 0x874EB8DE  level 0.0150  streak 1  win 0.0390  bat 0 mV
+I (228831) link: node 3: rms 0.0110  seq 111  flags 0x05  crc 0x874EB8DE  level 0.0150  streak 0  win 0.0390  bat 0 mV
+I (228931) link: node 1: rms 0.0100  seq 731  flags 0x07  crc 0x6F7B054A  level 0.0080  streak 1  win 0.0170  bat 0 mV
+I (228931) link: node 3: rms 0.0260  seq 111  flags 0x07  crc 0x874EB8DE  level 0.0150  streak 1  win 0.0390  bat 0 mV
+I (229141) link: node 3: rms 0.0100  seq 111  flags 0x05  crc 0x874EB8DE  level 0.0150  streak 0  win 0.0390  bat 0 mV
+I (229241) link: node 1: rms 0.0060  seq 731  flags 0x05  crc 0x6F7B054A  level 0.0090  streak 0  win 0.0170  bat 0 mV
+I (229341) link: node 1: rms 0.0060  seq 731  flags 0x04  crc 0x00000000  level 0.0090  streak 0  win 0.0170  bat 0 mV
+I (229341) link: node 3: rms 0.0210  seq 111  flags 0x07  crc 0x874EB8DE  level 0.0150  streak 1  win 0.0390  bat 0 mV
+I (229431) link: node 1: rms 0.0100  seq 731  flags 0x06  crc 0x00000000  level 0.0090  streak 1  win 0.0170  bat 0 mV
+I (229491) link: node 2: rms 0.0030  seq 66  flags 0x05  crc 0xB3FAF2E7  level 0.0050  streak 0  win 0.0040  bat 0 mV
+I (229731) link: node 1: rms 0.0080  seq 731  flags 0x04  crc 0x00000000  level 0.0090  streak 0  win 0.0170  bat 0 mV
+I (229731) link: node 3: rms 0.0090  seq 111  flags 0x05  crc 0x874EB8DE  level 0.0160  streak 0  win 0.0390  bat 0 mV
+I (230081) link: node 1: rms 0.0060  seq 732  flags 0x05  crc 0x828AD71A  level 0.0090  streak 0  win 0.0140  bat 0 mV
+I (230141) link: node 1: rms 0.0140  seq 732  flags 0x07  crc 0x828AD71A  level 0.0090  streak 1  win 0.0140  bat 0 mV
+I (230241) link: node 3: rms 0.0210  seq 111  flags 0x07  crc 0x874EB8DE  level 0.0130  streak 2  win 0.0390  bat 0 mV
+I (230541) link: node 1: rms 0.0060  seq 732  flags 0x05  crc 0x828AD71A  level 0.0090  streak 0  win 0.0140  bat 0 mV
+I (230541) link: node 3: rms 0.0110  seq 111  flags 0x05  crc 0x874EB8DE  level 0.0140  streak 0  win 0.0390  bat 0 mV
+I (230771) link: node 1: rms 0.0030  seq 733  flags 0x05  crc 0xAA1935CF  level 0.0090  streak 0  win 0.0130  bat 0 mV
+I (230931) link: node 1: rms 0.0120  seq 733  flags 0x07  crc 0xAA1935CF  level 0.0090  streak 1  win 0.0130  bat 0 mV
+I (231031) link: node 1: rms 0.0040  seq 733  flags 0x05  crc 0xAA1935CF  level 0.0090  streak 0  win 0.0130  bat 0 mV
+I (231031) link: node 3: rms 0.0210  seq 111  flags 0x07  crc 0x874EB8DE  level 0.0100  streak 1  win 0.0390  bat 0 mV
+I (231141) link: node 1: rms 0.0100  seq 733  flags 0x07  crc 0xAA1935CF  level 0.0090  streak 1  win 0.0130  bat 0 mV
+I (231241) link: node 1: rms 0.0090  seq 733  flags 0x05  crc 0xAA1935CF  level 0.0090  streak 2  win 0.0130  bat 0 mV
+I (231341) link: node 1: rms 0.0100  seq 733  flags 0x07  crc 0xAA1935CF  level 0.0090  streak 3  win 0.0130  bat 0 mV
+I (231341) link: node 3: rms 0.0060  seq 111  flags 0x05  crc 0x874EB8DE  level 0.0100  streak 0  win 0.0390  bat 0 mV
+I (231511) link: node 2 is offline
+I (231511) link: link: 13373 frames off the air, 13373 parsed, 0 bad, 0 bad payload, 69 requests sent, 0 failed
+I (231632) link: node 1: rms 0.0050  seq 733  flags 0x05  crc 0xAA1935CF  level 0.0090  streak 0  win 0.0130  bat 0 mV
+I (231932) link: node 3: rms 0.0140  seq 111  flags 0x07  crc 0x874EB8DE  level 0.0100  streak 1  win 0.0390  bat 0 mV
+I (231972) link: node 1: rms 0.0160  seq 734  flags 0x07  crc 0xB055ECD3  level 0.0090  streak 1  win 0.0110  bat 0 mV
+I (232032) link: node 1: rms 0.0070  seq 734  flags 0x05  crc 0xB055ECD3  level 0.0090  streak 0  win 0.0110  bat 0 mV
+I (232132) link: node 3: rms 0.0060  seq 111  flags 0x05  crc 0x874EB8DE  level 0.0100  streak 0  win 0.0390  bat 0 mV
+I (232232) link: node 1: rms 0.0100  seq 734  flags 0x07  crc 0xB055ECD3  level 0.0090  streak 1  win 0.0110  bat 0 mV
+I (232332) link: node 3: rms 0.0160  seq 111  flags 0x07  crc 0x874EB8DE  level 0.0100  streak 1  win 0.0390  bat 0 mV
+I (232432) link: node 3: rms 0.0090  seq 111  flags 0x05  crc 0x874EB8DE  level 0.0100  streak 0  win 0.0390  bat 0 mV
+I (232532) link: node 1: rms 0.0050  seq 734  flags 0x05  crc 0xB055ECD3  level 0.0100  streak 0  win 0.0110  bat 0 mV
+I (232632) link: node 3: rms 0.0170  seq 111  flags 0x07  crc 0x874EB8DE  level 0.0100  streak 1  win 0.0390  bat 0 mV
+I (232732) link: node 1: rms 0.0160  seq 734  flags 0x07  crc 0xB055ECD3  level 0.0100  streak 1  win 0.0110  bat 0 mV
+I (232832) link: node 3: rms 0.0100  seq 111  flags 0x05  crc 0x874EB8DE  level 0.0100  streak 3  win 0.0390  bat 0 mV
+I (232872) link: node 1: rms 0.0090  seq 735  flags 0x05  crc 0x55C5E08A  level 0.0100  streak 0  win 0.0100  bat 0 mV
+I (232932) link: node 1: rms 0.0120  seq 735  flags 0x07  crc 0x55C5E08A  level 0.0100  streak 1  win 0.0100  bat 0 mV
+I (233032) link: node 1: rms 0.0080  seq 735  flags 0x05  crc 0x55C5E08A  level 0.0100  streak 0  win 0.0100  bat 0 mV
+I (233132) link: node 3: rms 0.0130  seq 111  flags 0x07  crc 0x874EB8DE  level 0.0100  streak 1  win 0.0390  bat 0 mV
+I (233232) link: node 3: rms 0.0090  seq 111  flags 0x05  crc 0x874EB8DE  level 0.0100  streak 0  win 0.0390  bat 0 mV
+I (233332) link: node 3: rms 0.0160  seq 111  flags 0x07  crc 0x874EB8DE  level 0.0100  streak 1  win 0.0390  bat 0 mV
+I (233432) link: node 1: rms 0.0250  seq 735  flags 0x07  crc 0x55C5E08A  level 0.0100  streak 1  win 0.0100  bat 0 mV
+I (233432) link: node 3: rms 0.0060  seq 111  flags 0x05  crc 0x874EB8DE  level 0.0110  streak 0  win 0.0390  bat 0 mV
+I (233502) link: node 2: rms 0.0070  seq 66  flags 0x07  crc 0xB3FAF2E7  level 0.0050  streak 1  win 0.0040  bat 0 mV
+I (233502) link: node 2 is online
+I (233524) link: node 3: rms 0.0210  seq 111  flags 0x07  crc 0x874EB8DE  level 0.0110  streak 1  win 0.0390  bat 0 mV
+I (233624) link: node 1: rms 0.0100  seq 735  flags 0x05  crc 0x55C5E08A  level 0.0100  streak 3  win 0.0100  bat 0 mV
+I (233824) link: node 3: rms 0.0030  seq 111  flags 0x05  crc 0x874EB8DE  level 0.0080  streak 0  win 0.0390  bat 0 mV
+I (234064) link: node 1: rms 0.0120  seq 736  flags 0x07  crc 0x9CC10884  level 0.0100  streak 1  win 0.0110  bat 0 mV
+I (234324) link: node 1: rms 0.0070  seq 736  flags 0x05  crc 0x9CC10884  level 0.0100  streak 0  win 0.0110  bat 0 mV
+I (234684) link: node 1: rms 0.0110  seq 737  flags 0x07  crc 0x52EEA807  level 0.0090  streak 1  win 0.0120  bat 0 mV
+I (234824) link: node 1: rms 0.0060  seq 737  flags 0x05  crc 0x52EEA807  level 0.0090  streak 0  win 0.0120  bat 0 mV
+I (234824) link: node 3: rms 0.0070  seq 111  flags 0x05  crc 0x874EB8DE  level 0.0080  streak 0  win 0.0390  bat 0 mV
+I (235034) link: node 1: rms 0.0090  seq 737  flags 0x07  crc 0x52EEA807  level 0.0090  streak 1  win 0.0120  bat 0 mV
+I (235034) link: node 3: rms 0.0180  seq 111  flags 0x07  crc 0x874EB8DE  level 0.0090  streak 1  win 0.0390  bat 0 mV
+I (235224) link: node 3: rms 0.0060  seq 111  flags 0x05  crc 0x874EB8DE  level 0.0090  streak 0  win 0.0390  bat 0 mV
+I (235284) link: node 1: rms 0.0110  seq 738  flags 0x07  crc 0xAFC2FD3E  level 0.0090  streak 3  win 0.0110  bat 0 mV
+I (235424) link: node 3: rms 0.0160  seq 111  flags 0x07  crc 0x874EB8DE  level 0.0090  streak 1  win 0.0390  bat 0 mV
+I (235504) link: node 2 is offline
+I (235624) link: node 3: rms 0.0030  seq 111  flags 0x05  crc 0x874EB8DE  level 0.0090  streak 0  win 0.0390  bat 0 mV
+I (235724) link: node 1: rms 0.0050  seq 738  flags 0x05  crc 0xAFC2FD3E  level 0.0090  streak 0  win 0.0110  bat 0 mV
+I (235724) link: node 3: rms 0.0130  seq 111  flags 0x07  crc 0x874EB8DE  level 0.0090  streak 1  win 0.0390  bat 0 mV
+I (235874) link: node 1: rms 0.0020  seq 739  flags 0x05  crc 0x9B549F65  level 0.0070  streak 0  win 0.0100  bat 0 mV
+I (235934) link: node 2: rms 0.0020  seq 67  flags 0x05  crc 0xD41C6808  level 0.0050  streak 0  win 0.0040  bat 0 mV
+I (235934) link: node 2 is online
+I (236036) link: node 1: rms 0.0150  seq 739  flags 0x07  crc 0x9B549F65  level 0.0070  streak 1  win 0.0100  bat 0 mV
+I (236036) link: node 3: rms 0.0050  seq 111  flags 0x05  crc 0x874EB8DE  level 0.0090  streak 0  win 0.0390  bat 0 mV
+I (236126) link: node 3: rms 0.0090  seq 111  flags 0x07  crc 0x874EB8DE  level 0.0090  streak 1  win 0.0390  bat 0 mV
+I (236426) link: node 3: rms 0.0090  seq 111  flags 0x05  crc 0x874EB8DE  level 0.0090  streak 4  win 0.0390  bat 0 mV
+I (236526) link: link: 13477 frames off the air, 13477 parsed, 0 bad, 0 bad payload, 69 requests sent, 0 failed
+I (236626) link: node 3: rms 0.0100  seq 111  flags 0x07  crc 0x874EB8DE  level 0.0090  streak 1  win 0.0390  bat 0 mV
+I (236666) link: node 1: rms 0.0200  seq 740  flags 0x07  crc 0xF73D6A45  level 0.0080  streak 7  win 0.0160  bat 0 mV
+I (236666) NimBLE: GAP procedure initiated: stop advertising.
+
+I (236671) ble_alert: advertising is off (a phone is connected)
+I (236676) link: node 1: asking for the window (seq 740, rms 0.0200, level 0.0080, win 0.0160)
+I (236825) link: node 3: rms 0.0080  seq 111  flags 0x05  crc 0x874EB8DE  level 0.0100  streak 0  win 0.0390  bat 0 mV
+I (236925) link: node 3: rms 0.0240  seq 111  flags 0x07  crc 0x874EB8DE  level 0.0100  streak 1  win 0.0390  bat 0 mV
+I (237005) link: node 2: rms 0.0040  seq 67  flags 0x05  crc 0xD41C6808  level 0.0050  streak 0  win 0.0040  bat 0 mV
+I (237125) link: node 3: rms 0.0070  seq 111  flags 0x05  crc 0x874EB8DE  level 0.0100  streak 0  win 0.0390  bat 0 mV
+I (237425) link: node 1: rms 0.0080  seq 740  flags 0x05  crc 0xF73D6A45  level 0.0080  streak 8  win 0.0160  bat 0 mV
+I (237525) link: node 3: rms 0.0190  seq 111  flags 0x07  crc 0x874EB8DE  level 0.0100  streak 1  win 0.0390  bat 0 mV
+W (237605) link: node 1: missing fragments:
+W (237605) link:   25 of 286
+W (237605) link:   44 of 286
+W (237605) link:   63 of 286
+W (237605) link:   82 of 286
+W (237608) link:   120 of 286
+W (237611) link:   158 of 286
+W (237613) link:   196 of 286
+W (237616) link:   234 of 286
+W (237659) link: node 1: the burst stalled with 277 of 286 fragments (277 frames arrived); asking for the 9 that are missing (signal -20 dBm, from -22 to -19; its telemetry reads -20 dBm)
+W (237664) link: node 1: its radio handed over 288 frames since the burst began, 288 of them left it, 0 were refused, 0 times it had no room
+W (237677) link: node 1: arrival pattern: ################################################################
+I (237723) link: node 1: 286/286 fragments in 1.04 s (signal -20 dBm, from -22 to -19; its telemetry reads -20 dBm)
+I (237723) link: node 1: window crc32 0xF73D6A45, the node advertised 0xF73D6A45 -> MATCH
+I (237736) link: node 1: window rms 0.016288  mean 77  peak 1262  crest 2.4
+I (237891) link: node 1: front end 50.7 ms, inference 103.7 ms, P(no_cry)=0.9531 P(cry)=0.0469
+I (237892) link: node 1: no cry
+I (237892) NimBLE: GAP procedure initiated: stop advertising.
+
+I (237898) ble_alert: advertising is off (a phone is connected)
+I (238023) link: node 1: rms 0.0100  seq 740  flags 0x07  crc 0xF73D6A45  level 0.0070  streak 1  win 0.0160  bat 0 mV
+I (238023) link: node 3: rms 0.0040  seq 111  flags 0x05  crc 0x874EB8DE  level 0.0100  streak 0  win 0.0390  bat 0 mV
+I (238233) link: node 3: rms 0.0110  seq 111  flags 0x07  crc 0x874EB8DE  level 0.0100  streak 1  win 0.0390  bat 0 mV
+I (238333) link: node 1: rms 0.0070  seq 740  flags 0x05  crc 0xF73D6A45  level 0.0070  streak 4  win 0.0160  bat 0 mV
+I (238533) link: node 1: rms 0.0080  seq 740  flags 0x07  crc 0xF73D6A45  level 0.0070  streak 1  win 0.0160  bat 0 mV
+I (238633) link: node 3: rms 0.0070  seq 111  flags 0x05  crc 0x874EB8DE  level 0.0110  streak 0  win 0.0390  bat 0 mV
+I (238833) link: node 1: rms 0.0070  seq 740  flags 0x05  crc 0xF73D6A45  level 0.0070  streak 4  win 0.0160  bat 0 mV
+I (238833) link: node 3: rms 0.0230  seq 111  flags 0x07  crc 0x874EB8DE  level 0.0110  streak 1  win 0.0390  bat 0 mV
+I (239123) link: node 1: rms 0.0160  seq 740  flags 0x07  crc 0xF73D6A45  level 0.0070  streak 1  win 0.0160  bat 0 mV
+I (239323) link: node 1: rms 0.0040  seq 740  flags 0x05  crc 0xF73D6A45  level 0.0080  streak 0  win 0.0160  bat 0 mV
+I (239323) link: node 3: rms 0.0080  seq 111  flags 0x05  crc 0x874EB8DE  level 0.0110  streak 0  win 0.0390  bat 0 mV
+I (239533) link: node 1: rms 0.0150  seq 740  flags 0x07  crc 0xF73D6A45  level 0.0080  streak 1  win 0.0160  bat 0 mV
+I (239633) link: node 3: rms 0.0110  seq 111  flags 0x07  crc 0x874EB8DE  level 0.0110  streak 1  win 0.0390  bat 0 mV
+I (239733) link: node 1: rms 0.0050  seq 740  flags 0x05  crc 0xF73D6A45  level 0.0080  streak 0  win 0.0160  bat 0 mV
+I (239893) link: node 2 is offline
+I (240033) link: node 1: rms 0.0150  seq 740  flags 0x07  crc 0xF73D6A45  level 0.0080  streak 1  win 0.0160  bat 0 mV
+I (240033) link: node 3: rms 0.0030  seq 111  flags 0x05  crc 0x874EB8DE  level 0.0090  streak 0  win 0.0390  bat 0 mV
+I (240123) link: node 1: rms 0.0060  seq 740  flags 0x05  crc 0xF73D6A45  level 0.0080  streak 0  win 0.0160  bat 0 mV
+I (240223) link: node 3: rms 0.0210  seq 111  flags 0x07  crc 0x874EB8DE  level 0.0090  streak 1  win 0.0390  bat 0 mV
+I (240323) link: node 1: rms 0.0100  seq 740  flags 0x07  crc 0xF73D6A45  level 0.0080  streak 1  win 0.0160  bat 0 mV
+I (240423) link: node 1: rms 0.0030  seq 740  flags 0x05  crc 0xF73D6A45  level 0.0080  streak 0  win 0.0160  bat 0 mV
+I (240423) link: node 3: rms 0.0080  seq 111  flags 0x05  crc 0x874EB8DE  level 0.0090  streak 0  win 0.0390  bat 0 mV
+I (240533) link: node 3: rms 0.0260  seq 111  flags 0x07  crc 0x874EB8DE  level 0.0090  streak 1  win 0.0390  bat 0 mV
+I (240633) link: node 1: rms 0.0150  seq 740  flags 0x07  crc 0xF73D6A45  level 0.0080  streak 1  win 0.0160  bat 0 mV
+I (240733) link: node 1: rms 0.0060  seq 740  flags 0x05  crc 0xF73D6A45  level 0.0080  streak 0  win 0.0160  bat 0 mV
+I (240733) link: node 3: rms 0.0060  seq 111  flags 0x05  crc 0x874EB8DE  level 0.0090  streak 0  win 0.0390  bat 0 mV
+I (240823) link: node 3: rms 0.0170  seq 111  flags 0x07  crc 0x874EB8DE  level 0.0100  streak 1  win 0.0390  bat 0 mV
+I (240923) link: node 1: rms 0.0130  seq 740  flags 0x07  crc 0xF73D6A45  level 0.0080  streak 1  win 0.0160  bat 0 mV
+I (241023) link: node 1: rms 0.0050  seq 740  flags 0x05  crc 0xF73D6A45  level 0.0080  streak 0  win 0.0160  bat 0 mV
+I (241123) link: node 1: rms 0.0130  seq 740  flags 0x07  crc 0xF73D6A45  level 0.0080  streak 1  win 0.0160  bat 0 mV
+I (241223) link: node 3: rms 0.0040  seq 111  flags 0x05  crc 0x874EB8DE  level 0.0100  streak 0  win 0.0390  bat 0 mV
+I (241323) link: node 1: rms 0.0050  seq 740  flags 0x05  crc 0xF73D6A45  level 0.0080  streak 0  win 0.0160  bat 0 mV
+I (241423) link: node 3: rms 0.0180  seq 111  flags 0x07  crc 0x874EB8DE  level 0.0100  streak 1  win 0.0390  bat 0 mV
+I (241503) link: node 2: rms 0.0020  seq 67  flags 0x05  crc 0xD41C6808  level 0.0050  streak 0  win 0.0040  bat 0 mV
+I (241503) link: node 2 is online
+I (241545) link: link: 13864 frames off the air, 13864 parsed, 0 bad, 0 bad payload, 71 requests sent, 0 failed
+I (241625) link: node 1: rms 0.0220  seq 740  flags 0x07  crc 0xF73D6A45  level 0.0080  streak 1  win 0.0160  bat 0 mV
+I (241625) link: node 3: rms 0.0090  seq 111  flags 0x05  crc 0x874EB8DE  level 0.0100  streak 0  win 0.0390  bat 0 mV
+I (241735) link: node 3: rms 0.0200  seq 111  flags 0x07  crc 0x874EB8DE  level 0.0100  streak 1  win 0.0390  bat 0 mV
+I (241835) link: node 3: rms 0.0100  seq 111  flags 0x05  crc 0x874EB8DE  level 0.0100  streak 2  win 0.0390  bat 0 mV
+I (241935) link: node 1: rms 0.0050  seq 740  flags 0x05  crc 0xF73D6A45  level 0.0090  streak 0  win 0.0160  bat 0 mV
+I (242135) link: node 1: rms 0.0120  seq 740  flags 0x07  crc 0xF73D6A45  level 0.0090  streak 1  win 0.0160  bat 0 mV
+I (242235) link: node 3: rms 0.0170  seq 111  flags 0x07  crc 0x874EB8DE  level 0.0100  streak 1  win 0.0390  bat 0 mV
+I (242435) link: node 1: rms 0.0030  seq 740  flags 0x05  crc 0xF73D6A45 
+--- captured 307654 bytes from COM32 at 115200 baud ---

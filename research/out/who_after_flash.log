@@ -1,0 +1,112 @@
+===== COM37 =====
+ESP-ROM:esp32c3-api1-20210207
+Build:Feb  7 2021
+rst:0x15 (USB_UART_CHIP_RESET),boot:0xd (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4038aa94
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fcd5820,len:0x110c
+load:0x403cbf10,len:0xb54
+load:0x403ce710,len:0x2f9c
+entry 0x403cbf10
+
+CryNet node firmware — Stage 2b
+node id 2 (saved; the MAC would have said 1)
+I2S ready: 16 kHz, mono, 32-bit slots -> int16
+ESP-NOW protocol version 2
+ESP-NOW ready on channel 6
+commands: status | stats | freeze | burst | id <n> | help
+rms 0.0086  floor 0.0086  level 0.0259  
+rms 0.0028  floor 0.0028  level 0.0084  
+rms 0.0128  floor 0.0028  level 0.0084  
+rms 0.0216  floor 0.0028  level 0.0085  EVENT
+rms 0.0276  floor 0.0029  level 0.0087  EVENT
+rms 0.0371  floor 0.0030  level 0.0089  EVENT
+rms 0.0493  floor 0.0031  level 0.0092  EVENT
+rms 0.0558  floor 0.0032  level 0.0095  EVENT
+rms 0.0609  floor 0.0033  level 0.0098  EVENT
+rms 0.0648  floor 0.0034  level 0.0102  EVENT
+rms 0.0660  floor 0.0035  level 0.0106  EVENT
+rms 0.0695  floor 0.0037  level 0.0110  EVENT
+rms 0.0716  floor 0.0038  level 0.0114  EVENT
+rms 0.0719  floor 0.0039  level 0.0118  EVENT
+rms 0.0684  floor 0.0041  level 0.0122  EVENT
+rms 0.0664  floor 0.0042  level 0.0126  EVENT
+rms 0.0665  floor 0.0043  level 0.0129  EVENT
+rms 0.0672  floor 0.0044  level 0.0133  EVENT
+rms 0.0657  floor 0.0046  level 0.0137  EVENT
+rms 0.0605  floor 0.0047  level 0.0140  EVENT
+rms 0.0535  floor 0.0048  level 0.0143  EVENT
+rms 0.0463  floor 0.0048  level 0.0145  EVENT
+rms 0.0403  floor 0.0049  level 0.0148  EVENT
+rms 0.0321  floor 0.0050  level 0.0149  EVENT
+rms 0.0279  floor 0.0050  level 0.0151  EVENT
+rms 0.0246  floor 0.0051  level 0.0152  EVENT
+rms 0.0218  floor 0.0051  level 0.0153  EVENT
+rms 0.0194  floor 0.0051  level 0.0154  EVENT
+rms 0.0168  floor 0.0051  level 0.0154  EVENT
+rms 0.0138  floor 0.0052  level 0.0155  
+rms 0.0115  floor 0.0052  level 0.0155  
+rms 0.0109  floor 0.0052  level 0.0156  
+rms 0.0090  floor 0.0052  level 0.0156  
+rms 0.0069  floor 0.0052  level 0.0156  
+rms 0.0041  floor 0.0041  level 0.0124  
+rms 0.0037  floor 0.0037  level 0.0110  
+r
+
+===== COM31 =====
+ESP-ROM:esp32c3-api1-20210207
+Build:Feb  7 2021
+rst:0x15 (USB_UART_CHIP_RESET),boot:0xd (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4038aa8a
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fcd5820,len:0x110c
+load:0x403cbf10,len:0xb54
+load:0x403ce710,len:0x2f9c
+entry 0x403cbf10
+
+CryNet node firmware — Stage 2b
+node id 1 (derived from the MAC; change it with "id <n>")
+I2S ready: 16 kHz, mono, 32-bit slots -> int16
+ESP-NOW protocol version 2
+ESP-NOW ready on channel 6
+commands: status | stats | freeze | burst | id <n> | help
+rms 0.0052  floor 0.0052  level 0.0155  
+rms 0.0100  floor 0.0052  level 0.0155  
+rms 0.0171  floor 0.0052  level 0.0156  
+rms 0.0256  floor 0.0052  level 0.0157  EVENT
+rms 0.0325  floor 0.0053  level 0.0159  EVENT
+rms 0.0372  floor 0.0054  level 0.0161  EVENT
+rms 0.0398  floor 0.0054  level 0.0163  EVENT
+rms 0.0412  floor 0.0055  level 0.0165  EVENT
+rms 0.0414  floor 0.0056  level 0.0167  EVENT
+rms 0.0361  floor 0.0056  level 0.0169  EVENT
+rms 0.0356  floor 0.0057  level 0.0171  EVENT
+rms 0.0298  floor 0.0057  level 0.0172  EVENT
+rms 0.0294  floor 0.0058  level 0.0173  EVENT
+rms 0.0335  floor 0.0058  level 0.0175  EVENT
+rms 0.0388  floor 0.0059  level 0.0177  EVENT
+rms 0.0395  floor 0.0060  level 0.0179  EVENT
+rms 0.0368  floor 0.0060  level 0.0181  EVENT
+rms 0.0318  floor 0.0061  level 0.0182  EVENT
+rms 0.0291  floor 0.0061  level 0.0184  EVENT
+rms 0.0291  floor 0.0062  level 0.0185  EVENT
+rms 0.0259  floor 0.0062  level 0.0186  EVENT
+rms 0.0205  floor 0.0062  level 0.0187  EVENT
+rms 0.0153  floor 0.0063  level 0.0188  
+rms 0.0169  floor 0.0063  level 0.0188  
+rms 0.0207  floor 0.0063  level 0.0189  
+rms 0.0228  floor 0.0063  level 0.0190  EVENT
+rms 0.0172  floor 0.0064  level 0.0191  
+rms 0.0132  floor 0.0064  level 0.0191  
+rms 0.0105  floor 0.0064  level 0.0192  
+rms 0.0054  floor 0.0054  level 0.0163  
+rms 0.0038  floor 0.0038  level 0.0115  
+rms 0.0040  floor 0.0038  level 0.0115  
+rms 0.0154  floor 0.0039  level 0.0116  
+rms 0.0187  floor 0.0039  level 0.0117  EVENT
+rms 0.0128  floor 0.0039  level 0.0117  EVENT
+rms 0.0208  floor 0.0039  level 0.0118  EVENT
+r
+

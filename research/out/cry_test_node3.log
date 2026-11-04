@@ -1,0 +1,50 @@
+=== the cry was played at these wall-clock instants ===
+  1793745706.279
+  1793745717.467
+  1793745728.679
+
+=== node 3 ===
+  [   5.84s] froze window, burst seq 4  level 0.0180  win rms 0.0329
+  [   5.86s] request: seq 4 first 0 count 286
+  [   6.63s] served 286 fragments of 286 in 774 ms
+  [   6.86s] resend request: seq 4
+  [   6.88s] resent 10 fragments of seq 4
+  [   7.65s] resend request: seq 4
+  [   7.65s] resent 1 fragments of seq 4
+  [  26.98s] froze window, burst seq 5  level 0.0091  win rms 0.0183
+  [  27.16s] request: seq 5 first 0 count 286
+  [  28.07s] served 286 fragments of 286 in 911 ms
+  [  28.28s] resend request: seq 5
+  [  28.32s] resent 13 fragments of seq 5
+  [  29.07s] resend request: seq 5
+  [  29.08s] resent 1 fragments of seq 5
+  [  36.22s] froze window, burst seq 6  level 0.0129  win rms 0.0379
+  [  36.23s] request: seq 6 first 0 count 286
+  [  36.99s] served 286 fragments of 286 in 758 ms
+  [  37.19s] resend request: seq 6
+  [  37.21s] resent 11 fragments of seq 6
+
+=== the hub ===
+  [   5.80s] I (567199) link: node 3: asking for the window (seq 4, rms 0.0450, level 0.0180, win 0.0330)
+  [   6.84s] W (568240) link: node 3: the burst stalled with 276 of 286 fragments (276 frames arrived); asking for the 10 that are missing (signal -48 dBm, from -60 to -48; its telemetry reads -48 dBm)
+  [   7.63s] W (569033) link: node 3: the burst stalled with 285 of 286 fragments (285 frames arrived); asking for the 1 that are missing (signal -48 dBm, from -60 to -48; its telemetry reads -48 dBm)
+  [   7.69s] I (569098) link: node 3: 286/286 fragments in 1.88 s (signal -48 dBm, from -60 to -48; its telemetry reads -48 dBm)
+  [   7.86s] I (569264) link: node 3: front end 48.7 ms, inference 103.7 ms, P(no_cry)=0.8672 P(cry)=0.1328
+  [   7.86s] I (569265) link: node 3: no cry
+  [  27.09s] I (588501) link: node 3: asking for the window (seq 5, rms 0.0240, level 0.0090, win 0.0180)
+  [  28.26s] W (589666) link: node 3: the burst stalled with 273 of 286 fragments (273 frames arrived); asking for the 13 that are missing (signal -61 dBm, from -69 to -56; its telemetry reads -60 dBm)
+  [  29.05s] W (590453) link: node 3: the burst stalled with 285 of 286 fragments (285 frames arrived); asking for the 1 that are missing (signal -61 dBm, from -69 to -56; its telemetry reads -56 dBm)
+  [  29.11s] I (590517) link: node 3: 286/286 fragments in 2.00 s (signal -61 dBm, from -69 to -56; its telemetry reads -57 dBm)
+  [  29.28s] I (590689) link: node 3: front end 48.1 ms, inference 109.5 ms, P(no_cry)=0.5586 P(cry)=0.4414
+  [  29.28s] I (590689) link: node 3: no cry
+  [  31.18s] I (592578) link: node 1: asking for the window (seq 84, rms 0.0160, level 0.0120, win 0.0170)
+  [  32.18s] W (593589) link: node 1: the burst stalled with 273 of 286 fragments (273 frames arrived); asking for the 13 that are missing (signal -20 dBm, from -22 to -19; its telemetry reads -20 dBm)
+  [  32.98s] W (594385) link: node 1: the burst stalled with 285 of 286 fragments (285 frames arrived); asking for the 1 that are missing (signal -20 dBm, from -22 to -19; its telemetry reads -20 dBm)
+  [  33.04s] I (594449) link: node 1: 286/286 fragments in 1.85 s (signal -20 dBm, from -22 to -19; its telemetry reads -20 dBm)
+  [  33.21s] I (594615) link: node 1: front end 48.2 ms, inference 103.7 ms, P(no_cry)=0.5586 P(cry)=0.4414
+  [  33.21s] I (594616) link: node 1: no cry
+  [  36.17s] I (597574) link: node 3: asking for the window (seq 6, rms 0.0700, level 0.0130, win 0.0380)
+  [  37.17s] W (598575) link: node 3: the burst stalled with 275 of 286 fragments (275 frames arrived); asking for the 11 that are missing (signal -55 dBm, from -73 to -51; its telemetry reads -58 dBm)
+  [  37.25s] I (598659) link: node 3: 286/286 fragments in 1.07 s (signal -55 dBm, from -73 to -51; its telemetry reads -53 dBm)
+  [  37.41s] I (598824) link: node 3: front end 47.9 ms, inference 103.5 ms, P(no_cry)=0.9648 P(cry)=0.0352
+  [  37.41s] I (598824) link: node 3: no cry
