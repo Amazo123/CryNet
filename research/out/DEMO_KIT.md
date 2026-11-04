@@ -1,6 +1,15 @@
-# Demo kit — clips that announce from the first window
+# Demo kit — the clips for the demonstration
 
-Each clip below was trimmed to the cry itself and re-scored with the **deployed INT8 model**: the first 2 s window already reaches P(cry) >= 0.99, which is exactly the window the node freezes when the trigger fires at the head of the clip.
+Each clip below was trimmed to the cry itself and re-scored with the **deployed INT8 model**.
+
+> **Read the shortlist at the bottom first.** The table below is the
+> *file-level* score (the best 2 s window in the clip). It is **not** the
+> score the hub gives on the day, because the node freezes one window and
+> the hub judges that one. The window the node freezes is measured
+> separately — see `research/out/demo_rehearsal.md`, which was measured
+> against the freeze rule that is flashed on the bench. **10 of these 37
+> clips do not announce on the bench**, and 17 of them announce only if
+> the phone is turned *down*. The shortlist says which to use.
 
 | file | from | first-window P | best P | rms | crest | length |
 |---|---|---|---|---|---|---|
@@ -45,6 +54,59 @@ Each clip below was trimmed to the cry itself and re-scored with the **deployed 
 **How to play it:** copy the file to the phone, play it with the phone **10–15 cm from the INMP441** and with the volume set so the hub's panel reads **0.10–0.20** while it plays (D-74: that level gave five alerts in a row with no clipping).
 
 **Do not** play from the laptop/PC speakers: they reshape the cry enough that the model refuses it (P 0.03–0.15 on a window the model scores 0.9961 from the same recording).
+
+---
+
+## The shortlist — measured against the rule on the boards (2026-11-04)
+
+`research/simulate_demo.py` plays every kit clip into a real quiet room,
+runs the node's own trigger and the **hybrid stop-capped freeze that is
+flashed on all three nodes**, and puts the window the node would hand
+over through the deployed INT8 model and the hub's gates. No sound is
+involved; it is the node's own logic over recorded audio.
+
+**27 of the 37 clips announce at the level they were recorded at.** The
+freeze lands **2.0–5.4 s after the clip starts** (median 2.9 s), and the
+verdict follows about 2 s after that, once the window has crossed the
+air.
+
+### Use one of these three
+
+| clip | why | announce at volume 1.0 | 1.5 | 2.0 |
+|---|---|---|---|---|
+| **`session9_clip_0005.wav`** | the 2026-11-03 demo clip's family; the most room to turn the phone up | **announces** (P 0.9961) | **announces** | **announces** |
+| **`session4_clip_0012.wav`** | announces at every volume; wide crest (7.9) so it clears the quiet gate | **announces** (P 0.9961) | **announces** | **announces** |
+| **`session1_clip_0005.wav`** | the loudest reliable clip; two windows announce | **announces** (P 0.9961) | **announces** | first window clips, second announces |
+
+### The clips that announce at the recorded level but **clip if the phone is turned up**
+
+`session1_clip_0004`, `session9_clip_0006`, `session9_clip_0007`,
+`session9_clip_0010`, and thirteen `session4` clips. A clipped window is
+**refused** by the hub — the microphone's fixed gain saturates before the
+node's 16-bit window does, so the window is not evidence. These are fine
+at one volume and fail at the next one up, which is exactly the kind of
+thing that fails *on the day* and not in rehearsal.
+
+**So: set the phone's volume once, before the demonstration, and do not
+touch it during.** A level that announces at 1.0 and clips at 2.0 has
+no margin.
+
+### The clips that do not announce at all
+
+`session9_clip_0001`, `session10_clip_0001`, `session10_clip_0003`,
+`session1_clip_0006`, `session4_clip_0011`, `session4_clip_0028`,
+`session4_clip_0030`, `session4_clip_0039`. The `session10` ones were
+recorded a metre away and are too quiet to cross the trigger; the others
+land on a window the model scores below the saturation bar. Their
+file-level scores in the table above are the *best* window in the clip —
+the node freezes a different one.
+
+### If the phone is played too close
+
+At 10 cm the microphone saturates and the window is refused with a loud
+warning in the hub's log (`the window is CLIPPED`). Hold the phone at
+**15 cm or more**, and if the hub says `CLIPPED`, move it back rather
+than turning it down.
 
 ---
 
