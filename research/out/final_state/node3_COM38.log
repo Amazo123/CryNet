@@ -1,0 +1,774 @@
+[    0.04] rms 0.0021  floor 0.0012  level 0.0050
+[    0.14] rms 0.0016  floor 0.0012  level 0.0050
+[    0.24] rms 0.0079  floor 0.0012  level 0.0050
+[    0.34] rms 0.0165  floor 0.0012  level 0.0050  EVENT
+[    0.44] rms 0.0064  floor 0.0012  level 0.0050  EVENT
+[    0.54] rms 0.0175  floor 0.0013  level 0.0050  EVENT
+[    0.64] rms 0.0158  floor 0.0013  level 0.0050  EVENT
+[    0.74] rms 0.0078  floor 0.0013  level 0.0050  EVENT
+[    0.84] rms 0.0036  floor 0.0013  level 0.0050
+[    0.94] rms 0.0025  floor 0.0013  level 0.0050
+[    1.04] rms 0.0029  floor 0.0013  level 0.0050
+[    1.14] rms 0.0029  floor 0.0013  level 0.0050
+[    1.24] rms 0.0037  floor 0.0013  level 0.0050
+[    1.34] rms 0.0106  floor 0.0014  level 0.0050
+[    1.44] rms 0.0140  floor 0.0014  level 0.0050  EVENT
+[    1.54] rms 0.0062  floor 0.0014  level 0.0050  EVENT
+[    1.64] rms 0.0182  floor 0.0014  level 0.0050  EVENT
+[    1.74] rms 0.0125  floor 0.0014  level 0.0050  EVENT
+[    1.84] rms 0.0026  floor 0.0014  level 0.0050
+[    1.98] froze window, burst seq 934  level 0.0050  win rms 0.0099
+[    1.98] rms 0.0033  floor 0.0015  level 0.0050
+[    2.04] rms 0.0110  floor 0.0015  level 0.0050
+[    2.14] rms 0.0195  floor 0.0015  level 0.0050  EVENT
+[    2.24] rms 0.0108  floor 0.0015  level 0.0050  EVENT
+[    2.34] rms 0.0115  floor 0.0015  level 0.0050  EVENT
+[    2.44] rms 0.0147  floor 0.0016  level 0.0050  EVENT
+[    2.54] rms 0.0058  floor 0.0016  level 0.0050  EVENT
+[    2.68] froze window, burst seq 935  level 0.0050  win rms 0.0103
+[    2.68] rms 0.0021  floor 0.0016  level 0.0050
+[    2.74] rms 0.0032  floor 0.0016  level 0.0050
+[    2.84] rms 0.0025  floor 0.0016  level 0.0050
+[    2.94] rms 0.0022  floor 0.0016  level 0.0050
+[    3.04] rms 0.0016  floor 0.0016  level 0.0050
+[    3.14] rms 0.0015  floor 0.0015  level 0.0050
+[    3.24] rms 0.0017  floor 0.0015  level 0.0050
+[    3.34] rms 0.0014  floor 0.0014  level 0.0050
+[    3.44] rms 0.0017  floor 0.0014  level 0.0050
+[    3.54] rms 0.0022  floor 0.0014  level 0.0050
+[    3.64] rms 0.0015  floor 0.0014  level 0.0050
+[    3.74] rms 0.0013  floor 0.0013  level 0.0050
+[    3.84] rms 0.0014  floor 0.0013  level 0.0050
+[    3.94] rms 0.0015  floor 0.0013  level 0.0050
+[    4.04] rms 0.0016  floor 0.0013  level 0.0050
+[    4.14] rms 0.0015  floor 0.0013  level 0.0050
+[    4.24] rms 0.0016  floor 0.0013  level 0.0050
+[    4.34] rms 0.0018  floor 0.0013  level 0.0050
+[    4.44] rms 0.0019  floor 0.0013  level 0.0050
+[    4.54] rms 0.0015  floor 0.0013  level 0.0050
+[    4.64] rms 0.0018  floor 0.0013  level 0.0050
+[    4.74] rms 0.0018  floor 0.0013  level 0.0050
+[    4.84] rms 0.0013  floor 0.0013  level 0.0050
+[    4.94] rms 0.0014  floor 0.0013  level 0.0050
+[    5.04] rms 0.0012  floor 0.0012  level 0.0050
+[    5.14] rms 0.0014  floor 0.0012  level 0.0050
+[    5.24] rms 0.0012  floor 0.0012  level 0.0050
+[    5.34] rms 0.0017  floor 0.0012  level 0.0050
+[    5.44] rms 0.0011  floor 0.0011  level 0.0050
+[    5.54] rms 0.0012  floor 0.0011  level 0.0050
+[    5.64] rms 0.0014  floor 0.0011  level 0.0050
+[    5.75] rms 0.0012  floor 0.0011  level 0.0050
+[    5.84] rms 0.0015  floor 0.0011  level 0.0050
+[    5.94] rms 0.0114  floor 0.0012  level 0.0050
+[    6.04] rms 0.0114  floor 0.0012  level 0.0050  EVENT
+[    6.15] rms 0.0054  floor 0.0012  level 0.0050  EVENT
+[    6.24] rms 0.0192  floor 0.0012  level 0.0050  EVENT
+[    6.34] rms 0.0129  floor 0.0012  level 0.0050  EVENT
+[    6.45] rms 0.0042  floor 0.0013  level 0.0050
+[    6.58] froze window, burst seq 936  level 0.0050  win rms 0.0069
+[    6.58] rms 0.0024  floor 0.0013  level 0.0050
+[    6.64] rms 0.0042  floor 0.0013  level 0.0050
+[    6.74] rms 0.0035  floor 0.0013  level 0.0050
+[    6.84] rms 0.0030  floor 0.0013  level 0.0050
+[    6.94] rms 0.0020  floor 0.0013  level 0.0050
+[    7.04] rms 0.0011  floor 0.0011  level 0.0050
+[    7.14] rms 0.0021  floor 0.0011  level 0.0050
+[    7.24] rms 0.0013  floor 0.0011  level 0.0050
+[    7.34] rms 0.0014  floor 0.0011  level 0.0050
+[    7.44] rms 0.0012  floor 0.0011  level 0.0050
+[    7.55] rms 0.0009  floor 0.0009  level 0.0050
+[    7.64] rms 0.0012  floor 0.0009  level 0.0050
+[    7.74] rms 0.0122  floor 0.0010  level 0.0050
+[    7.84] rms 0.0111  floor 0.0010  level 0.0050  EVENT
+[    7.94] rms 0.0085  floor 0.0010  level 0.0050  EVENT
+[    8.04] rms 0.0176  floor 0.0010  level 0.0050  EVENT
+[    8.14] rms 0.0096  floor 0.0010  level 0.0050  EVENT
+[    8.24] rms 0.0020  floor 0.0010  level 0.0050
+[    8.38] froze window, burst seq 937  level 0.0050  win rms 0.0071
+[    8.38] rms 0.0022  floor 0.0010  level 0.0050
+[    8.44] rms 0.0026  floor 0.0010  level 0.0050
+[    8.55] rms 0.0118  floor 0.0011  level 0.0050
+[    8.64] rms 0.0164  floor 0.0011  level 0.0050  EVENT
+[    8.74] rms 0.0040  floor 0.0011  level 0.0050
+[    8.84] rms 0.0156  floor 0.0011  level 0.0050
+[    8.94] rms 0.0152  floor 0.0012  level 0.0050  EVENT
+[    9.04] rms 0.0055  floor 0.0012  level 0.0050  EVENT
+[    9.18] froze window, burst seq 938  level 0.0050  win rms 0.0097
+[    9.19] rms 0.0031  floor 0.0012  level 0.0050
+[    9.24] rms 0.0042  floor 0.0012  level 0.0050
+[    9.35] rms 0.0103  floor 0.0012  level 0.0050
+[    9.44] rms 0.0168  floor 0.0012  level 0.0050  EVENT
+[    9.54] rms 0.0073  floor 0.0012  level 0.0050  EVENT
+[    9.64] rms 0.0182  floor 0.0013  level 0.0050  EVENT
+[    9.74] rms 0.0098  floor 0.0013  level 0.0050  EVENT
+[    9.84] rms 0.0032  floor 0.0013  level 0.0050
+[    9.98] froze window, burst seq 939  level 0.0050  win rms 0.0110
+[    9.98] rms 0.0031  floor 0.0013  level 0.0050
+[   10.04] rms 0.0032  floor 0.0013  level 0.0050
+[   10.14] rms 0.0028  floor 0.0013  level 0.0050
+[   10.24] rms 0.0018  floor 0.0013  level 0.0050
+[   10.34] rms 0.0019  floor 0.0013  level 0.0050
+[   10.44] rms 0.0055  floor 0.0013  level 0.0050
+[   10.54] rms 0.0175  floor 0.0014  level 0.0050  EVENT
+[   10.64] rms 0.0087  floor 0.0014  level 0.0050  EVENT
+[   10.74] rms 0.0025  floor 0.0014  level 0.0050
+[   10.84] rms 0.0016  floor 0.0014  level 0.0050
+[   10.95] rms 0.0029  floor 0.0014  level 0.0050
+[   11.08] froze window, burst seq 940  level 0.0050  win rms 0.0086
+[   11.09] rms 0.0040  floor 0.0014  level 0.0050
+[   11.15] rms 0.0155  floor 0.0014  level 0.0050
+[   11.24] rms 0.0186  floor 0.0014  level 0.0050  EVENT
+[   11.35] rms 0.0095  floor 0.0015  level 0.0050  EVENT
+[   11.45] rms 0.0027  floor 0.0015  level 0.0050
+[   11.54] rms 0.0043  floor 0.0015  level 0.0050
+[   11.65] rms 0.0030  floor 0.0015  level 0.0050
+[   11.78] froze window, burst seq 941  level 0.0050  win rms 0.0081
+[   11.78] rms 0.0101  floor 0.0015  level 0.0050
+[   11.84] rms 0.0143  floor 0.0015  level 0.0050  EVENT
+[   11.94] rms 0.0043  floor 0.0015  level 0.0050
+[   12.04] rms 0.0167  floor 0.0015  level 0.0050
+[   12.14] rms 0.0137  floor 0.0016  level 0.0050  EVENT
+[   12.24] rms 0.0056  floor 0.0016  level 0.0050  EVENT
+[   12.38] froze window, burst seq 942  level 0.0050  win rms 0.0102
+[   12.38] rms 0.0028  floor 0.0016  level 0.0050
+[   12.44] rms 0.0159  floor 0.0016  level 0.0050
+[   12.55] rms 0.0155  floor 0.0016  level 0.0050  EVENT
+[   12.64] rms 0.0100  floor 0.0017  level 0.0050  EVENT
+[   12.74] rms 0.0189  floor 0.0017  level 0.0051  EVENT
+[   12.84] rms 0.0101  floor 0.0017  level 0.0051  EVENT
+[   12.94] rms 0.0027  floor 0.0017  level 0.0051
+[   13.08] froze window, burst seq 943  level 0.0051  win rms 0.0114
+[   13.09] rms 0.0042  floor 0.0017  level 0.0051
+[   13.15] rms 0.0053  floor 0.0017  level 0.0052
+[   13.25] rms 0.0058  floor 0.0017  level 0.0052  EVENT
+[   13.35] rms 0.0093  floor 0.0017  level 0.0052  EVENT
+[   13.44] rms 0.0175  floor 0.0018  level 0.0053  EVENT
+[   13.55] rms 0.0080  floor 0.0018  level 0.0054  EVENT
+[   13.65] rms 0.0028  floor 0.0018  level 0.0054
+[   13.78] froze window, burst seq 944  level 0.0054  win rms 0.0116
+[   13.79] rms 0.0132  floor 0.0018  level 0.0054
+[   13.85] rms 0.0138  floor 0.0018  level 0.0055  EVENT
+[   13.94] rms 0.0049  floor 0.0018  level 0.0055
+[   14.04] rms 0.0019  floor 0.0018  level 0.0055
+[   14.14] rms 0.0023  floor 0.0018  level 0.0055
+[   14.24] rms 0.0019  floor 0.0018  level 0.0055
+[   14.38] froze window, burst seq 945  level 0.0055  win rms 0.0105
+[   14.38] rms 0.0022  floor 0.0018  level 0.0055
+[   14.44] rms 0.0019  floor 0.0018  level 0.0055
+[   14.54] rms 0.0023  floor 0.0018  level 0.0055
+[   14.64] rms 0.0024  floor 0.0018  level 0.0055
+[   14.74] rms 0.0014  floor 0.0014  level 0.0050
+[   14.84] rms 0.0018  floor 0.0014  level 0.0050
+[   14.94] rms 0.0015  floor 0.0014  level 0.0050
+[   15.05] rms 0.0133  floor 0.0014  level 0.0050
+[   15.15] rms 0.0124  floor 0.0014  level 0.0050  EVENT
+[   15.25] rms 0.0116  floor 0.0015  level 0.0050  EVENT
+[   15.35] rms 0.0178  floor 0.0015  level 0.0050  EVENT
+[   15.45] rms 0.0075  floor 0.0015  level 0.0050  EVENT
+[   15.54] rms 0.0040  floor 0.0015  level 0.0050
+[   15.68] froze window, burst seq 946  level 0.0050  win rms 0.0083
+[   15.68] rms 0.0037  floor 0.0015  level 0.0050
+[   15.75] rms 0.0031  floor 0.0015  level 0.0050
+[   15.85] rms 0.0106  floor 0.0015  level 0.0050
+[   15.95] rms 0.0134  floor 0.0016  level 0.0050  EVENT
+[   16.05] rms 0.0039  floor 0.0016  level 0.0050
+[   16.14] rms 0.0136  floor 0.0016  level 0.0050
+[   16.25] rms 0.0150  floor 0.0016  level 0.0050  EVENT
+[   16.34] rms 0.0055  floor 0.0016  level 0.0050  EVENT
+[   16.48] froze window, burst seq 947  level 0.0050  win rms 0.0096
+[   16.49] rms 0.0024  floor 0.0016  level 0.0050
+[   16.55] rms 0.0097  floor 0.0016  level 0.0050
+[   16.65] rms 0.0177  floor 0.0017  level 0.0050  EVENT
+[   16.75] rms 0.0074  floor 0.0017  level 0.0050  EVENT
+[   16.85] rms 0.0126  floor 0.0017  level 0.0051  EVENT
+[   16.95] rms 0.0168  floor 0.0017  level 0.0052  EVENT
+[   17.05] rms 0.0079  floor 0.0017  level 0.0052  EVENT
+[   17.18] froze window, burst seq 948  level 0.0052  win rms 0.0110
+[   17.19] rms 0.0038  floor 0.0017  level 0.0052
+[   17.25] rms 0.0042  floor 0.0018  level 0.0053
+[   17.35] rms 0.0154  floor 0.0018  level 0.0053
+[   17.45] rms 0.0117  floor 0.0018  level 0.0054  EVENT
+[   17.55] rms 0.0089  floor 0.0018  level 0.0054  EVENT
+[   17.65] rms 0.0194  floor 0.0018  level 0.0055  EVENT
+[   17.75] rms 0.0122  floor 0.0019  level 0.0056  EVENT
+[   17.85] rms 0.0022  floor 0.0019  level 0.0056
+[   17.98] froze window, burst seq 949  level 0.0056  win rms 0.0114
+[   17.99] rms 0.0046  floor 0.0019  level 0.0056
+[   18.05] rms 0.0182  floor 0.0019  level 0.0057
+[   18.15] rms 0.0105  floor 0.0019  level 0.0058  EVENT
+[   18.25] rms 0.0095  floor 0.0019  level 0.0058  EVENT
+[   18.35] rms 0.0163  floor 0.0020  level 0.0059  EVENT
+[   18.45] rms 0.0080  floor 0.0020  level 0.0059  EVENT
+[   18.55] rms 0.0016  floor 0.0016  level 0.0050
+[   18.68] froze window, burst seq 950  level 0.0050  win rms 0.0113
+[   18.69] rms 0.0057  floor 0.0016  level 0.0050
+[   18.75] rms 0.0057  floor 0.0016  level 0.0050  EVENT
+[   18.85] rms 0.0177  floor 0.0017  level 0.0050  EVENT
+[   18.95] rms 0.0176  floor 0.0017  level 0.0051  EVENT
+[   19.05] rms 0.0182  floor 0.0017  level 0.0052  EVENT
+[   19.15] rms 0.0159  floor 0.0018  level 0.0053  EVENT
+[   19.25] rms 0.0081  floor 0.0018  level 0.0054  EVENT
+[   19.39] froze window, burst seq 951  level 0.0054  win rms 0.0122
+[   19.39] rms 0.0051  floor 0.0018  level 0.0054
+[   19.45] rms 0.0067  floor 0.0018  level 0.0054
+[   19.55] rms 0.0192  floor 0.0018  level 0.0055  EVENT
+[   19.65] rms 0.0104  floor 0.0019  level 0.0056  EVENT
+[   19.75] rms 0.0103  floor 0.0019  level 0.0056  EVENT
+[   19.85] rms 0.0179  floor 0.0019  level 0.0057  EVENT
+[   19.95] rms 0.0065  floor 0.0019  level 0.0057  EVENT
+[   20.05] rms 0.0177  floor 0.0019  level 0.0058  EVENT
+[   20.15] rms 0.0214  floor 0.0020  level 0.0059  EVENT
+[   20.25] rms 0.0086  floor 0.0020  level 0.0060  EVENT
+[   20.39] froze window, burst seq 952  level 0.0060  win rms 0.0124
+[   20.39] rms 0.0050  floor 0.0020  level 0.0060
+[   20.45] rms 0.0105  floor 0.0020  level 0.0061
+[   20.55] rms 0.0212  floor 0.0021  level 0.0062  EVENT
+[   20.65] rms 0.0122  floor 0.0021  level 0.0062  EVENT
+[   20.75] rms 0.0049  floor 0.0021  level 0.0062
+[   20.85] rms 0.0130  floor 0.0021  level 0.0063
+[   20.95] rms 0.0105  floor 0.0021  level 0.0064  EVENT
+[   21.05] rms 0.0152  floor 0.0021  level 0.0064  EVENT
+[   21.15] rms 0.0163  floor 0.0022  level 0.0065  EVENT
+[   21.29] froze window, burst seq 953  level 0.0066  win rms 0.0129
+[   21.30] rms 0.0062  floor 0.0022  level 0.0066
+[   21.35] rms 0.0032  floor 0.0022  level 0.0066
+[   21.45] rms 0.0045  floor 0.0022  level 0.0066
+[   21.55] rms 0.0053  floor 0.0022  level 0.0066
+[   21.65] rms 0.0052  floor 0.0022  level 0.0066
+[   21.75] rms 0.0037  floor 0.0022  level 0.0066
+[   21.85] rms 0.0030  floor 0.0022  level 0.0066
+[   21.95] rms 0.0026  floor 0.0022  level 0.0066
+[   22.05] rms 0.0034  floor 0.0022  level 0.0066
+[   22.15] rms 0.0026  floor 0.0022  level 0.0066
+[   22.25] rms 0.0031  floor 0.0022  level 0.0066
+[   22.35] rms 0.0021  floor 0.0021  level 0.0063
+[   22.45] rms 0.0021  floor 0.0021  level 0.0062
+[   22.55] rms 0.0015  floor 0.0015  level 0.0050
+[   22.65] rms 0.0066  floor 0.0015  level 0.0050
+[   22.75] rms 0.0165  floor 0.0015  level 0.0050  EVENT
+[   22.86] rms 0.0070  floor 0.0015  level 0.0050  EVENT
+[   22.95] rms 0.0154  floor 0.0016  level 0.0050  EVENT
+[   23.05] rms 0.0164  floor 0.0016  level 0.0050  EVENT
+[   23.15] rms 0.0077  floor 0.0016  level 0.0050  EVENT
+[   23.29] froze window, burst seq 954  level 0.0050  win rms 0.0073
+[   23.29] rms 0.0024  floor 0.0016  level 0.0050
+[   23.35] rms 0.0176  floor 0.0016  level 0.0050
+[   23.45] rms 0.0103  floor 0.0017  level 0.0050  EVENT
+[   23.55] rms 0.0031  floor 0.0017  level 0.0050
+[   23.65] rms 0.0109  floor 0.0017  level 0.0050
+[   23.75] rms 0.0182  floor 0.0017  level 0.0051  EVENT
+[   23.85] rms 0.0079  floor 0.0017  level 0.0052  EVENT
+[   23.99] froze window, burst seq 955  level 0.0052  win rms 0.0099
+[   23.99] rms 0.0019  floor 0.0017  level 0.0052
+[   24.05] rms 0.0033  floor 0.0017  level 0.0052
+[   24.16] rms 0.0029  floor 0.0017  level 0.0052
+[   24.25] rms 0.0025  floor 0.0017  level 0.0052
+[   24.35] rms 0.0022  floor 0.0017  level 0.0052
+[   24.45] rms 0.0020  floor 0.0017  level 0.0052
+[   24.56] rms 0.0016  floor 0.0016  level 0.0050
+[   24.66] rms 0.0018  floor 0.0016  level 0.0050
+[   24.77] rms 0.0025  floor 0.0016  level 0.0050
+[   24.85] rms 0.0024  floor 0.0016  level 0.0050
+[   24.95] rms 0.0022  floor 0.0016  level 0.0050
+[   25.05] rms 0.0068  floor 0.0016  level 0.0050
+[   25.15] rms 0.0127  floor 0.0016  level 0.0050  EVENT
+[   25.25] rms 0.0041  floor 0.0016  level 0.0050
+[   25.35] rms 0.0172  floor 0.0017  level 0.0050
+[   25.45] rms 0.0119  floor 0.0017  level 0.0051  EVENT
+[   25.55] rms 0.0034  floor 0.0017  level 0.0051
+[   25.69] froze window, burst seq 956  level 0.0051  win rms 0.0077
+[   25.69] rms 0.0041  floor 0.0017  level 0.0051
+[   25.75] rms 0.0035  floor 0.0017  level 0.0051
+[   25.85] rms 0.0024  floor 0.0017  level 0.0051
+[   25.95] rms 0.0019  floor 0.0017  level 0.0051
+[   26.05] rms 0.0017  floor 0.0017  level 0.0051
+[   26.15] rms 0.0018  floor 0.0017  level 0.0051
+[   26.25] rms 0.0019  floor 0.0017  level 0.0051
+[   26.35] rms 0.0021  floor 0.0017  level 0.0051
+[   26.45] rms 0.0104  floor 0.0017  level 0.0052
+[   26.55] rms 0.0125  floor 0.0017  level 0.0052  EVENT
+[   26.65] rms 0.0064  floor 0.0018  level 0.0053  EVENT
+[   26.75] rms 0.0189  floor 0.0018  level 0.0054  EVENT
+[   26.85] rms 0.0120  floor 0.0018  level 0.0054  EVENT
+[   26.95] rms 0.0028  floor 0.0018  level 0.0054
+[   27.09] froze window, burst seq 957  level 0.0055  win rms 0.0090
+[   27.09] rms 0.0038  floor 0.0018  level 0.0055
+[   27.15] rms 0.0083  floor 0.0018  level 0.0055
+[   27.25] rms 0.0206  floor 0.0019  level 0.0056  EVENT
+[   27.35] rms 0.0098  floor 0.0019  level 0.0057  EVENT
+[   27.45] rms 0.0062  floor 0.0019  level 0.0057  EVENT
+[   27.55] rms 0.0196  floor 0.0019  level 0.0058  EVENT
+[   27.65] rms 0.0106  floor 0.0019  level 0.0058  EVENT
+[   27.79] froze window, burst seq 958  level 0.0058  win rms 0.0099
+[   27.79] rms 0.0038  floor 0.0019  level 0.0058
+[   27.85] rms 0.0070  floor 0.0020  level 0.0059
+[   27.95] rms 0.0181  floor 0.0020  level 0.0060  EVENT
+[   28.05] rms 0.0078  floor 0.0020  level 0.0060  EVENT
+[   28.15] rms 0.0131  floor 0.0020  level 0.0061  EVENT
+[   28.25] rms 0.0171  floor 0.0021  level 0.0062  EVENT
+[   28.35] rms 0.0079  floor 0.0021  level 0.0062  EVENT
+[   28.49] froze window, burst seq 959  level 0.0062  win rms 0.0117
+[   28.49] rms 0.0025  floor 0.0021  level 0.0062
+[   28.56] rms 0.0051  floor 0.0021  level 0.0062
+[   28.65] rms 0.0178  floor 0.0021  level 0.0063
+[   28.75] rms 0.0114  floor 0.0021  level 0.0064  EVENT
+[   28.85] rms 0.0126  floor 0.0021  level 0.0064  EVENT
+[   28.96] rms 0.0177  floor 0.0022  level 0.0065  EVENT
+[   29.05] rms 0.0100  floor 0.0022  level 0.0066  EVENT
+[   29.15] rms 0.0025  floor 0.0022  level 0.0066
+[   29.29] froze window, burst seq 960  level 0.0066  win rms 0.0111
+[   29.29] rms 0.0035  floor 0.0022  level 0.0066
+[   29.35] rms 0.0051  floor 0.0022  level 0.0066
+[   29.45] rms 0.0034  floor 0.0022  level 0.0066
+[   29.55] rms 0.0030  floor 0.0022  level 0.0066
+[   29.65] rms 0.0146  floor 0.0022  level 0.0067
+[   29.75] rms 0.0091  floor 0.0022  level 0.0067  EVENT
+[   29.85] rms 0.0064  floor 0.0023  level 0.0068
+[   29.96] rms 0.0177  floor 0.0023  level 0.0068
+[   30.06] rms 0.0069  floor 0.0023  level 0.0069
+[   30.15] rms 0.0031  floor 0.0023  level 0.0069
+[   30.29] froze window, burst seq 961  level 0.0069  win rms 0.0098
+[   30.29] rms 0.0040  floor 0.0023  level 0.0069
+[   30.35] rms 0.0036  floor 0.0023  level 0.0069
+[   30.45] rms 0.0123  floor 0.0023  level 0.0070
+[   30.55] rms 0.0155  floor 0.0023  level 0.0070  EVENT
+[   30.66] rms 0.0066  floor 0.0024  level 0.0071
+[   30.76] rms 0.0178  floor 0.0024  level 0.0072
+[   30.85] rms 0.0107  floor 0.0024  level 0.0072  EVENT
+[   30.95] rms 0.0035  floor 0.0024  level 0.0072
+[   31.09] froze window, burst seq 962  level 0.0072  win rms 0.0101
+[   31.09] rms 0.0052  floor 0.0024  level 0.0072
+[   31.15] rms 0.0178  floor 0.0024  level 0.0073
+[   31.25] rms 0.0095  floor 0.0025  level 0.0074  EVENT
+[   31.35] rms 0.0088  floor 0.0025  level 0.0074  EVENT
+[   31.45] rms 0.0192  floor 0.0025  level 0.0075  EVENT
+[   31.55] rms 0.0100  floor 0.0025  level 0.0075  EVENT
+[   31.65] rms 0.0038  floor 0.0025  level 0.0076
+[   31.79] froze window, burst seq 963  level 0.0076  win rms 0.0115
+[   31.79] rms 0.0050  floor 0.0025  level 0.0076
+[   31.85] rms 0.0049  floor 0.0025  level 0.0076
+[   31.95] rms 0.0138  floor 0.0026  level 0.0077
+[   32.05] rms 0.0117  floor 0.0026  level 0.0077  EVENT
+[   32.16] rms 0.0037  floor 0.0026  level 0.0077
+[   32.26] rms 0.0167  floor 0.0026  level 0.0078
+[   32.36] rms 0.0146  floor 0.0026  level 0.0079  EVENT
+[   32.46] rms 0.0030  floor 0.0026  level 0.0079
+[   32.59] froze window, burst seq 964  level 0.0079  win rms 0.0116
+[   32.60] rms 0.0084  floor 0.0026  level 0.0079
+[   32.65] rms 0.0200  floor 0.0027  level 0.0080  EVENT
+[   32.75] rms 0.0072  floor 0.0027  level 0.0080
+[   32.85] rms 0.0117  floor 0.0027  level 0.0081
+[   32.96] rms 0.0173  floor 0.0027  level 0.0082  EVENT
+[   33.06] rms 0.0079  floor 0.0027  level 0.0082
+[   33.19] froze window, burst seq 965  level 0.0072  win rms 0.0114
+[   33.19] rms 0.0024  floor 0.0024  level 0.0072
+[   33.26] rms 0.0051  floor 0.0024  level 0.0072
+[   33.35] rms 0.0065  floor 0.0024  level 0.0073
+[   33.46] rms 0.0181  floor 0.0024  level 0.0073
+[   33.55] rms 0.0102  floor 0.0025  level 0.0074  EVENT
+[   33.66] rms 0.0119  floor 0.0025  level 0.0074  EVENT
+[   33.75] rms 0.0192  floor 0.0025  level 0.0076  EVENT
+[   33.86] rms 0.0112  floor 0.0025  level 0.0076  EVENT
+[   33.95] rms 0.0019  floor 0.0019  level 0.0058
+[   34.09] froze window, burst seq 966  level 0.0058  win rms 0.0115
+[   34.09] rms 0.0051  floor 0.0019  level 0.0058
+[   34.15] rms 0.0180  floor 0.0020  level 0.0059
+[   34.25] rms 0.0120  floor 0.0020  level 0.0060  EVENT
+[   34.35] rms 0.0057  floor 0.0020  level 0.0060
+[   34.46] rms 0.0188  floor 0.0020  level 0.0061
+[   34.55] rms 0.0100  floor 0.0020  level 0.0061  EVENT
+[   34.66] rms 0.0040  floor 0.0021  level 0.0062
+[   34.79] froze window, burst seq 967  level 0.0062  win rms 0.0113
+[   34.80] rms 0.0046  floor 0.0021  level 0.0062
+[   34.86] rms 0.0163  floor 0.0021  level 0.0063
+[   34.96] rms 0.0120  floor 0.0021  level 0.0063  EVENT
+[   35.06] rms 0.0082  floor 0.0021  level 0.0064  EVENT
+[   35.17] rms 0.0184  floor 0.0022  level 0.0065  EVENT
+[   35.26] rms 0.0108  floor 0.0022  level 0.0065  EVENT
+[   35.35] rms 0.0029  floor 0.0022  level 0.0065
+[   35.49] froze window, burst seq 968  level 0.0065  win rms 0.0114
+[   35.50] rms 0.0046  floor 0.0022  level 0.0065
+[   35.55] rms 0.0065  floor 0.0022  level 0.0065
+[   35.66] rms 0.0194  floor 0.0022  level 0.0067
+[   35.75] rms 0.0096  floor 0.0022  level 0.0067  EVENT
+[   35.85] rms 0.0063  floor 0.0022  level 0.0067
+[   35.96] rms 0.0171  floor 0.0023  level 0.0068
+[   36.05] rms 0.0063  floor 0.0023  level 0.0068
+[   36.16] rms 0.0119  floor 0.0023  level 0.0069
+[   36.25] rms 0.0166  floor 0.0023  level 0.0070  EVENT
+[   36.39] froze window, burst seq 969  level 0.0070  win rms 0.0116
+[   36.40] rms 0.0039  floor 0.0023  level 0.0070
+[   36.46] rms 0.0158  floor 0.0024  level 0.0071
+[   36.56] rms 0.0173  floor 0.0024  level 0.0072  EVENT
+[   36.66] rms 0.0091  floor 0.0024  level 0.0072  EVENT
+[   36.76] rms 0.0026  floor 0.0024  level 0.0072
+[   36.86] rms 0.0098  floor 0.0024  level 0.0072
+[   36.96] rms 0.0183  floor 0.0024  level 0.0073  EVENT
+[   37.06] rms 0.0087  floor 0.0025  level 0.0074  EVENT
+[   37.16] rms 0.0151  floor 0.0025  level 0.0075  EVENT
+[   37.26] rms 0.0142  floor 0.0025  level 0.0075  EVENT
+[   37.40] froze window, burst seq 970  level 0.0075  win rms 0.0121
+[   37.40] rms 0.0051  floor 0.0025  level 0.0075
+[   37.46] rms 0.0029  floor 0.0025  level 0.0075
+[   37.56] rms 0.0044  floor 0.0025  level 0.0076
+[   37.66] rms 0.0158  floor 0.0025  level 0.0076
+[   37.76] rms 0.0111  floor 0.0026  level 0.0077  EVENT
+[   37.86] rms 0.0083  floor 0.0026  level 0.0077  EVENT
+[   37.96] rms 0.0165  floor 0.0026  level 0.0078  EVENT
+[   38.06] rms 0.0075  floor 0.0026  level 0.0078
+[   38.16] rms 0.0021  floor 0.0021  level 0.0063
+[   38.29] froze window, burst seq 971  level 0.0064  win rms 0.0110
+[   38.30] rms 0.0045  floor 0.0021  level 0.0064
+[   38.36] rms 0.0060  floor 0.0021  level 0.0064
+[   38.46] rms 0.0070  floor 0.0021  level 0.0064
+[   38.56] rms 0.0164  floor 0.0022  level 0.0065  EVENT
+[   38.66] rms 0.0069  floor 0.0022  level 0.0065  EVENT
+[   38.76] rms 0.0164  floor 0.0022  level 0.0066  EVENT
+[   38.86] rms 0.0155  floor 0.0022  level 0.0067  EVENT
+[   38.96] rms 0.0052  floor 0.0022  level 0.0067
+[   39.10] froze window, burst seq 972  level 0.0063  win rms 0.0106
+[   39.10] rms 0.0021  floor 0.0021  level 0.0063
+[   39.16] rms 0.0044  floor 0.0021  level 0.0063
+[   39.26] rms 0.0134  floor 0.0021  level 0.0064
+[   39.36] rms 0.0162  floor 0.0021  level 0.0064  EVENT
+[   39.46] rms 0.0038  floor 0.0021  level 0.0064
+[   39.56] rms 0.0165  floor 0.0022  level 0.0065
+[   39.66] rms 0.0156  floor 0.0022  level 0.0066  EVENT
+[   39.76] rms 0.0040  floor 0.0022  level 0.0066
+[   39.90] froze window, burst seq 973  level 0.0058  win rms 0.0110
+[   39.90] rms 0.0019  floor 0.0019  level 0.0058
+[   39.96] rms 0.0030  floor 0.0019  level 0.0058
+[   40.06] rms 0.0029  floor 0.0019  level 0.0058
+[   40.16] rms 0.0024  floor 0.0019  level 0.0058
+[   40.26] rms 0.0025  floor 0.0019  level 0.0058
+[   40.36] rms 0.0090  floor 0.0020  level 0.0059
+[   40.46] rms 0.0182  floor 0.0020  level 0.0060  EVENT
+[   40.56] rms 0.0072  floor 0.0020  level 0.0060  EVENT
+[   40.66] rms 0.0124  floor 0.0020  level 0.0061  EVENT
+[   40.76] rms 0.0183  floor 0.0021  level 0.0062  EVENT
+[   40.86] rms 0.0081  floor 0.0021  level 0.0062  EVENT
+[   41.00] froze window, burst seq 974  level 0.0062  win rms 0.0105
+[   41.00] rms 0.0022  floor 0.0021  level 0.0062
+[   41.06] rms 0.0033  floor 0.0021  level 0.0062
+[   41.16] rms 0.0061  floor 0.0021  level 0.0062
+[   41.26] rms 0.0186  floor 0.0021  level 0.0063
+[   41.36] rms 0.0101  floor 0.0021  level 0.0064  EVENT
+[   41.46] rms 0.0090  floor 0.0021  level 0.0064  EVENT
+[   41.56] rms 0.0189  floor 0.0022  level 0.0065  EVENT
+[   41.66] rms 0.0107  floor 0.0022  level 0.0066  EVENT
+[   41.76] rms 0.0034  floor 0.0022  level 0.0066
+[   41.90] froze window, burst seq 975  level 0.0058  win rms 0.0105
+[   41.90] rms 0.0019  floor 0.0019  level 0.0058
+[   41.96] rms 0.0026  floor 0.0019  level 0.0058
+[   42.06] rms 0.0028  floor 0.0019  level 0.0058
+[   42.16] rms 0.0023  floor 0.0019  level 0.0058
+[   42.26] rms 0.0020  floor 0.0019  level 0.0058
+[   42.36] rms 0.0024  floor 0.0019  level 0.0058
+[   42.46] rms 0.0028  floor 0.0019  level 0.0058
+[   42.56] rms 0.0132  floor 0.0020  level 0.0059
+[   42.66] rms 0.0164  floor 0.0020  level 0.0060  EVENT
+[   42.76] rms 0.0047  floor 0.0020  level 0.0060
+[   42.86] rms 0.0194  floor 0.0020  level 0.0061
+[   42.96] rms 0.0154  floor 0.0021  level 0.0062  EVENT
+[   43.06] rms 0.0045  floor 0.0021  level 0.0062
+[   43.20] froze window, burst seq 976  level 0.0050  win rms 0.0104
+[   43.20] rms 0.0013  floor 0.0013  level 0.0050
+[   43.26] rms 0.0051  floor 0.0013  level 0.0050
+[   43.36] rms 0.0051  floor 0.0013  level 0.0050  EVENT
+[   43.46] rms 0.0038  floor 0.0013  level 0.0050
+[   43.56] rms 0.0102  floor 0.0013  level 0.0050
+[   43.66] rms 0.0157  floor 0.0013  level 0.0050  EVENT
+[   43.76] rms 0.0051  floor 0.0014  level 0.0050  EVENT
+[   43.86] rms 0.0163  floor 0.0014  level 0.0050  EVENT
+[   43.96] rms 0.0158  floor 0.0014  level 0.0050  EVENT
+[   44.06] rms 0.0068  floor 0.0014  level 0.0050  EVENT
+[   44.20] froze window, burst seq 977  level 0.0050  win rms 0.0103
+[   44.20] rms 0.0015  floor 0.0014  level 0.0050
+[   44.26] rms 0.0021  floor 0.0014  level 0.0050
+[   44.36] rms 0.0036  floor 0.0014  level 0.0050
+[   44.46] rms 0.0030  floor 0.0014  level 0.0050
+[   44.56] rms 0.0032  floor 0.0014  level 0.0050
+[   44.66] rms 0.0037  floor 0.0014  level 0.0050
+[   44.76] rms 0.0136  floor 0.0015  level 0.0050
+[   44.86] rms 0.0152  floor 0.0015  level 0.0050  EVENT
+[   44.96] rms 0.0034  floor 0.0015  level 0.0050
+[   45.06] rms 0.0083  floor 0.0015  level 0.0050
+[   45.16] rms 0.0182  floor 0.0015  level 0.0050  EVENT
+[   45.26] rms 0.0089  floor 0.0016  level 0.0050  EVENT
+[   45.40] froze window, burst seq 978  level 0.0050  win rms 0.0099
+[   45.41] rms 0.0019  floor 0.0016  level 0.0050
+[   45.47] rms 0.0030  floor 0.0016  level 0.0050
+[   45.56] rms 0.0048  floor 0.0016  level 0.0050
+[   45.66] rms 0.0193  floor 0.0016  level 0.0050
+[   45.76] rms 0.0064  floor 0.0016  level 0.0050  EVENT
+[   45.86] rms 0.0140  floor 0.0016  level 0.0050  EVENT
+[   45.96] rms 0.0163  floor 0.0017  level 0.0050  EVENT
+[   46.07] rms 0.0080  floor 0.0017  level 0.0050  EVENT
+[   46.16] rms 0.0018  floor 0.0017  level 0.0050
+[   46.30] froze window, burst seq 979  level 0.0051  win rms 0.0100
+[   46.30] rms 0.0041  floor 0.0017  level 0.0051
+[   46.36] rms 0.0042  floor 0.0017  level 0.0051
+[   46.47] rms 0.0172  floor 0.0017  level 0.0052
+[   46.57] rms 0.0113  floor 0.0017  level 0.0052  EVENT
+[   46.66] rms 0.0108  floor 0.0018  level 0.0053  EVENT
+[   46.76] rms 0.0195  floor 0.0018  level 0.0054  EVENT
+[   46.86] rms 0.0086  floor 0.0018  level 0.0054  EVENT
+[   46.96] rms 0.0017  floor 0.0017  level 0.0050
+[   47.10] froze window, burst seq 980  level 0.0051  win rms 0.0112
+[   47.10] rms 0.0041  floor 0.0017  level 0.0051
+[   47.17] rms 0.0201  floor 0.0017  level 0.0052
+[   47.27] rms 0.0112  floor 0.0017  level 0.0052  EVENT
+[   47.36] rms 0.0074  floor 0.0018  level 0.0053  EVENT
+[   47.46] rms 0.0191  floor 0.0018  level 0.0054  EVENT
+[   47.56] rms 0.0103  floor 0.0018  level 0.0054  EVENT
+[   47.66] rms 0.0019  floor 0.0018  level 0.0054
+[   47.80] froze window, burst seq 981  level 0.0054  win rms 0.0117
+[   47.81] rms 0.0032  floor 0.0018  level 0.0054
+[   47.87] rms 0.0036  floor 0.0018  level 0.0054
+[   47.96] rms 0.0027  floor 0.0018  level 0.0054
+[   48.06] rms 0.0025  floor 0.0018  level 0.0054
+[   48.16] rms 0.0018  floor 0.0018  level 0.0053
+[   48.26] rms 0.0074  floor 0.0018  level 0.0053
+[   48.36] rms 0.0165  floor 0.0018  level 0.0054  EVENT
+[   48.46] rms 0.0066  floor 0.0018  level 0.0055  EVENT
+[   48.57] rms 0.0139  floor 0.0018  level 0.0055  EVENT
+[   48.66] rms 0.0183  floor 0.0019  level 0.0056  EVENT
+[   48.76] rms 0.0086  floor 0.0019  level 0.0057  EVENT
+[   48.90] froze window, burst seq 982  level 0.0050  win rms 0.0106
+[   48.90] rms 0.0017  floor 0.0017  level 0.0050
+[   48.96] rms 0.0026  floor 0.0017  level 0.0050
+[   49.06] rms 0.0028  floor 0.0017  level 0.0050
+[   49.16] rms 0.0109  floor 0.0017  level 0.0051
+[   49.27] rms 0.0171  floor 0.0017  level 0.0052  EVENT
+[   49.37] rms 0.0069  floor 0.0017  level 0.0052  EVENT
+[   49.47] rms 0.0200  floor 0.0018  level 0.0053  EVENT
+[   49.56] rms 0.0144  floor 0.0018  level 0.0054  EVENT
+[   49.66] rms 0.0077  floor 0.0018  level 0.0054  EVENT
+[   49.80] froze window, burst seq 983  level 0.0054  win rms 0.0105
+[   49.80] rms 0.0023  floor 0.0018  level 0.0054
+[   49.86] rms 0.0023  floor 0.0018  level 0.0054
+[   49.96] rms 0.0041  floor 0.0018  level 0.0054
+[   50.06] rms 0.0038  floor 0.0018  level 0.0055
+[   50.16] rms 0.0039  floor 0.0018  level 0.0055
+[   50.26] rms 0.0043  floor 0.0018  level 0.0055
+[   50.36] rms 0.0099  floor 0.0018  level 0.0055
+[   50.47] rms 0.0203  floor 0.0019  level 0.0056  EVENT
+[   50.57] rms 0.0066  floor 0.0019  level 0.0057  EVENT
+[   50.67] rms 0.0180  floor 0.0019  level 0.0058  EVENT
+[   50.77] rms 0.0121  floor 0.0019  level 0.0058  EVENT
+[   50.86] rms 0.0039  floor 0.0019  level 0.0058
+[   51.00] froze window, burst seq 984  level 0.0058  win rms 0.0104
+[   51.01] rms 0.0033  floor 0.0019  level 0.0058
+[   51.06] rms 0.0029  floor 0.0020  level 0.0059
+[   51.16] rms 0.0027  floor 0.0020  level 0.0059
+[   51.27] rms 0.0109  floor 0.0020  level 0.0059
+[   51.36] rms 0.0173  floor 0.0020  level 0.0060  EVENT
+[   51.46] rms 0.0054  floor 0.0020  level 0.0060
+[   51.56] rms 0.0162  floor 0.0020  level 0.0061
+[   51.67] rms 0.0170  floor 0.0021  level 0.0062  EVENT
+[   51.76] rms 0.0057  floor 0.0021  level 0.0062
+[   51.90] froze window, burst seq 985  level 0.0062  win rms 0.0100
+[   51.90] rms 0.0028  floor 0.0021  level 0.0062
+[   51.96] rms 0.0029  floor 0.0021  level 0.0062
+[   52.06] rms 0.0031  floor 0.0021  level 0.0062
+[   52.17] rms 0.0168  floor 0.0021  level 0.0063
+[   52.26] rms 0.0125  floor 0.0021  level 0.0064  EVENT
+[   52.36] rms 0.0075  floor 0.0021  level 0.0064  EVENT
+[   52.46] rms 0.0175  floor 0.0022  level 0.0065  EVENT
+[   52.57] rms 0.0110  floor 0.0022  level 0.0066  EVENT
+[   52.66] rms 0.0025  floor 0.0022  level 0.0066
+[   52.80] froze window, burst seq 986  level 0.0066  win rms 0.0100
+[   52.80] rms 0.0027  floor 0.0022  level 0.0066
+[   52.87] rms 0.0138  floor 0.0022  level 0.0066
+[   52.97] rms 0.0142  floor 0.0022  level 0.0067  EVENT
+[   53.07] rms 0.0043  floor 0.0022  level 0.0067
+[   53.16] rms 0.0183  floor 0.0023  level 0.0068
+[   53.26] rms 0.0127  floor 0.0023  level 0.0069  EVENT
+[   53.36] rms 0.0030  floor 0.0023  level 0.0069
+[   53.50] froze window, burst seq 987  level 0.0069  win rms 0.0115
+[   53.51] rms 0.0067  floor 0.0023  level 0.0069
+[   53.57] rms 0.0187  floor 0.0023  level 0.0070
+[   53.66] rms 0.0062  floor 0.0023  level 0.0070
+[   53.76] rms 0.0030  floor 0.0023  level 0.0070
+[   53.86] rms 0.0181  floor 0.0024  level 0.0071
+[   53.96] rms 0.0109  floor 0.0024  level 0.0072  EVENT
+[   54.07] rms 0.0029  floor 0.0024  level 0.0072
+[   54.16] rms 0.0043  floor 0.0024  level 0.0072
+[   54.26] rms 0.0184  floor 0.0024  level 0.0073
+[   54.36] rms 0.0143  floor 0.0025  level 0.0074  EVENT
+[   54.50] froze window, burst seq 988  level 0.0074  win rms 0.0115
+[   54.51] rms 0.0049  floor 0.0025  level 0.0074
+[   54.57] rms 0.0194  floor 0.0025  level 0.0075
+[   54.67] rms 0.0139  floor 0.0025  level 0.0076  EVENT
+[   54.77] rms 0.0026  floor 0.0025  level 0.0076
+[   54.87] rms 0.0036  floor 0.0025  level 0.0076
+[   54.97] rms 0.0046  floor 0.0025  level 0.0076
+[   55.07] rms 0.0162  floor 0.0026  level 0.0077
+[   55.17] rms 0.0135  floor 0.0026  level 0.0077  EVENT
+[   55.30] froze window, burst seq 989  level 0.0077  win rms 0.0110
+[   55.31] rms 0.0030  floor 0.0026  level 0.0077
+[   55.37] rms 0.0200  floor 0.0026  level 0.0078
+[   55.47] rms 0.0132  floor 0.0026  level 0.0079  EVENT
+[   55.57] rms 0.0048  floor 0.0026  level 0.0079
+[   55.67] rms 0.0033  floor 0.0026  level 0.0079
+[   55.77] rms 0.0056  floor 0.0026  level 0.0079
+[   55.87] rms 0.0036  floor 0.0026  level 0.0079
+[   56.00] froze window, burst seq 990  level 0.0080  win rms 0.0108
+[   56.01] rms 0.0140  floor 0.0027  level 0.0080
+[   56.07] rms 0.0124  floor 0.0027  level 0.0081  EVENT
+[   56.17] rms 0.0064  floor 0.0027  level 0.0081
+[   56.27] rms 0.0177  floor 0.0027  level 0.0082
+[   56.37] rms 0.0109  floor 0.0027  level 0.0082  EVENT
+[   56.47] rms 0.0024  floor 0.0024  level 0.0073
+[   56.60] froze window, burst seq 991  level 0.0073  win rms 0.0105
+[   56.61] rms 0.0039  floor 0.0024  level 0.0073
+[   56.67] rms 0.0090  floor 0.0024  level 0.0073
+[   56.77] rms 0.0178  floor 0.0025  level 0.0074  EVENT
+[   56.87] rms 0.0066  floor 0.0025  level 0.0074
+[   56.97] rms 0.0178  floor 0.0025  level 0.0075
+[   57.07] rms 0.0159  floor 0.0025  level 0.0076  EVENT
+[   57.17] rms 0.0055  floor 0.0025  level 0.0076
+[   57.31] froze window, burst seq 992  level 0.0076  win rms 0.0114
+[   57.31] rms 0.0029  floor 0.0025  level 0.0076
+[   57.37] rms 0.0033  floor 0.0025  level 0.0076
+[   57.47] rms 0.0042  floor 0.0025  level 0.0076
+[   57.57] rms 0.0034  floor 0.0025  level 0.0076
+[   57.67] rms 0.0030  floor 0.0025  level 0.0076
+[   57.77] rms 0.0144  floor 0.0026  level 0.0077
+[   57.87] rms 0.0134  floor 0.0026  level 0.0078  EVENT
+[   57.97] rms 0.0043  floor 0.0026  level 0.0078
+[   58.07] rms 0.0170  floor 0.0026  level 0.0079
+[   58.17] rms 0.0108  floor 0.0026  level 0.0079  EVENT
+[   58.27] rms 0.0049  floor 0.0026  level 0.0079
+[   58.40] froze window, burst seq 993  level 0.0079  win rms 0.0103
+[   58.41] rms 0.0031  floor 0.0026  level 0.0079
+[   58.47] rms 0.0087  floor 0.0027  level 0.0080
+[   58.57] rms 0.0185  floor 0.0027  level 0.0081  EVENT
+[   58.67] rms 0.0074  floor 0.0027  level 0.0081
+[   58.77] rms 0.0147  floor 0.0027  level 0.0082
+[   58.87] rms 0.0125  floor 0.0027  level 0.0082  EVENT
+[   58.97] rms 0.0036  floor 0.0027  level 0.0082
+[   59.11] froze window, burst seq 994  level 0.0071  win rms 0.0102
+[   59.11] rms 0.0024  floor 0.0024  level 0.0071
+[   59.17] rms 0.0029  floor 0.0024  level 0.0071
+[   59.27] rms 0.0078  floor 0.0024  level 0.0071
+[   59.37] rms 0.0155  floor 0.0024  level 0.0072  EVENT
+[   59.47] rms 0.0061  floor 0.0024  level 0.0072
+[   59.57] rms 0.0141  floor 0.0024  level 0.0073
+[   59.67] rms 0.0160  floor 0.0025  level 0.0074  EVENT
+[   59.77] rms 0.0055  floor 0.0025  level 0.0074
+[   59.91] froze window, burst seq 995  level 0.0074  win rms 0.0111
+[   59.91] rms 0.0033  floor 0.0025  level 0.0074
+[   59.97] rms 0.0058  floor 0.0025  level 0.0074
+[   60.07] rms 0.0156  floor 0.0025  level 0.0075
+[   60.17] rms 0.0110  floor 0.0025  level 0.0076  EVENT
+[   60.27] rms 0.0072  floor 0.0025  level 0.0076
+[   60.37] rms 0.0180  floor 0.0026  level 0.0077
+[   60.47] rms 0.0106  floor 0.0026  level 0.0077  EVENT
+[   60.58] rms 0.0023  floor 0.0023  level 0.0069
+[   60.71] froze window, burst seq 996  level 0.0069  win rms 0.0107
+[   60.71] rms 0.0051  floor 0.0023  level 0.0069
+[   60.77] rms 0.0034  floor 0.0023  level 0.0069
+[   60.87] rms 0.0025  floor 0.0023  level 0.0069
+[   60.97] rms 0.0109  floor 0.0023  level 0.0070
+[   61.07] rms 0.0157  floor 0.0024  level 0.0071  EVENT
+[   61.17] rms 0.0053  floor 0.0024  level 0.0071
+[   61.27] rms 0.0164  floor 0.0024  level 0.0072
+[   61.37] rms 0.0146  floor 0.0024  level 0.0072  EVENT
+[   61.47] rms 0.0072  floor 0.0024  level 0.0073
+[   61.61] froze window, burst seq 997  level 0.0073  win rms 0.0109
+[   61.61] rms 0.0130  floor 0.0024  level 0.0073
+[   61.67] rms 0.0166  floor 0.0025  level 0.0074  EVENT
+[   61.78] rms 0.0059  floor 0.0025  level 0.0074
+[   61.87] rms 0.0156  floor 0.0025  level 0.0075
+[   61.97] rms 0.0139  floor 0.0025  level 0.0076  EVENT
+[   62.07] rms 0.0034  floor 0.0025  level 0.0076
+[   62.21] froze window, burst seq 998  level 0.0076  win rms 0.0109
+[   62.21] rms 0.0037  floor 0.0025  level 0.0076
+[   62.27] rms 0.0049  floor 0.0025  level 0.0076
+[   62.37] rms 0.0032  floor 0.0025  level 0.0076
+[   62.47] rms 0.0026  floor 0.0025  level 0.0076
+[   62.58] rms 0.0022  floor 0.0022  level 0.0065
+[   62.67] rms 0.0080  floor 0.0022  level 0.0065
+[   62.77] rms 0.0133  floor 0.0022  level 0.0066  EVENT
+[   62.87] rms 0.0055  floor 0.0022  level 0.0066
+[   62.97] rms 0.0171  floor 0.0022  level 0.0067
+[   63.07] rms 0.0123  floor 0.0023  level 0.0068  EVENT
+[   63.17] rms 0.0046  floor 0.0023  level 0.0068
+[   63.31] froze window, burst seq 999  level 0.0057  win rms 0.0101
+[   63.31] rms 0.0019  floor 0.0019  level 0.0057
+[   63.37] rms 0.0038  floor 0.0019  level 0.0057
+[   63.47] rms 0.0034  floor 0.0019  level 0.0057
+[   63.57] rms 0.0160  floor 0.0019  level 0.0058
+[   63.67] rms 0.0107  floor 0.0019  level 0.0058  EVENT
+[   63.77] rms 0.0108  floor 0.0020  level 0.0059  EVENT
+[   63.87] rms 0.0180  floor 0.0020  level 0.0060  EVENT
+[   63.97] rms 0.0081  floor 0.0020  level 0.0060  EVENT
+[   64.07] rms 0.0023  floor 0.0020  level 0.0060
+[   64.21] froze window, burst seq 1000  level 0.0060  win rms 0.0097
+[   64.21] rms 0.0039  floor 0.0020  level 0.0060
+[   64.27] rms 0.0049  floor 0.0020  level 0.0060
+[   64.37] rms 0.0176  floor 0.0020  level 0.0061
+[   64.47] rms 0.0084  floor 0.0021  level 0.0062  EVENT
+[   64.58] rms 0.0142  floor 0.0021  level 0.0062  EVENT
+[   64.67] rms 0.0169  floor 0.0021  level 0.0063  EVENT
+[   64.77] rms 0.0078  floor 0.0021  level 0.0064  EVENT
+[   64.87] rms 0.0033  floor 0.0021  level 0.0064
+[   65.01] froze window, burst seq 1001  level 0.0064  win rms 0.0106
+[   65.01] rms 0.0047  floor 0.0021  level 0.0064
+[   65.07] rms 0.0041  floor 0.0021  level 0.0064
+[   65.18] rms 0.0173  floor 0.0022  level 0.0065
+[   65.27] rms 0.0146  floor 0.0022  level 0.0066  EVENT
+[   65.37] rms 0.0044  floor 0.0022  level 0.0066
+[   65.47] rms 0.0192  floor 0.0022  level 0.0067
+[   65.57] rms 0.0136  floor 0.0022  level 0.0067  EVENT
+[   65.67] rms 0.0029  floor 0.0022  level 0.0067
+[   65.81] froze window, burst seq 1002  level 0.0068  win rms 0.0114
+[   65.81] rms 0.0030  floor 0.0023  level 0.0068
+[   65.87] rms 0.0081  floor 0.0023  level 0.0068
+[   65.97] rms 0.0164  floor 0.0023  level 0.0069  EVENT
+[   66.07] rms 0.0066  floor 0.0023  level 0.0069
+[   66.17] rms 0.0123  floor 0.0023  level 0.0070
+[   66.28] rms 0.0176  floor 0.0024  level 0.0071  EVENT
+[   66.37] rms 0.0062  floor 0.0024  level 0.0071
+[   66.51] froze window, burst seq 1003  level 0.0068  win rms 0.0114
+[   66.51] rms 0.0023  floor 0.0023  level 0.0068
+[   66.57] rms 0.0052  floor 0.0023  level 0.0068
+[   66.67] rms 0.0167  floor 0.0023  level 0.0069
+[   66.77] rms 0.0121  floor 0.0023  level 0.0070  EVENT
+[   66.87] rms 0.0104  floor 0.0023  level 0.0070  EVENT
+[   66.97] rms 0.0184  floor 0.0024  level 0.0071  EVENT
+[   67.07] rms 0.0103  floor 0.0024  level 0.0072  EVENT
+[   67.17] rms 0.0036  floor 0.0024  level 0.0072
+[   67.31] froze window, burst seq 1004  level 0.0073  win rms 0.0120
+[   67.31] rms 0.0187  floor 0.0024  level 0.0073
+[   67.37] rms 0.0135  floor 0.0025  level 0.0074  EVENT
+[   67.47] rms 0.0040  floor 0.0025  level 0.0074
+[   67.57] rms 0.0188  floor 0.0025  level 0.0075
+[   67.67] rms 0.0123  floor 0.0025  level 0.0075  EVENT
+[   67.77] rms 0.0030  floor 0.0025  level 0.0075
+[   67.91] froze window, burst seq 1005  level 0.0075  win rms 0.0120
+[   67.91] rms 0.0040  floor 0.0025  level 0.0075
+[   67.97] rms 0.0039  floor 0.0025  level 0.0075
+[   68.07] rms 0.0172  floor 0.0025  level 0.0076
+[   68.17] rms 0.0129  floor 0.0026  level 0.0077  EVENT
+[   68.27] rms 0.0039  floor 0.0026  level 0.0077
+[   68.37] rms 0.0183  floor 0.0026  level 0.0078
+[   68.47] rms 0.0138  floor 0.0026  level 0.0079  EVENT
+[   68.58] rms 0.0049  floor 0.0026  level 0.0079
+[   68.71] froze window, burst seq 1006  level 0.0079  win rms 0.0114
+[   68.71] rms 0.0033  floor 0.0026  level 0.0079
+[   68.77] rms 0.0042  floor 0.0026  level 0.0079
+[   68.87] rms 0.0046  floor 0.0026  level 0.0079
+[   68.97] rms 0.0035  floor 0.0026  level 0.0079
+[   69.07] rms 0.0148  floor 0.0027  level 0.0080
+[   69.17] rms 0.0076  floor 0.0027  level 0.0080
+[   69.27] rms 0.0161  floor 0.0027  level 0.0081
+[   69.37] rms 0.0151  floor 0.0027  level 0.0082  EVENT
+[   69.47] rms 0.0047  floor 0.0027  level 0.0082
+[   69.57] rms 0.0023  floor 0.0023  level 0.0068
+[   69.67] rms 0.0041  floor 0.0023  level 0.0069
+[   69.77] rms 0.0036  floor 0.0023  level 0.0069
+[   69.91] froze window, burst seq 1007  level 0.0069  win rms 0.0101
+[   69.91] rms 0.0026  floor 0.0023  level 0.0069
+[   69.97] rms 0.0123  floor 0.0023  level 0.0069
