@@ -5,7 +5,7 @@
 > **Repo:** `C:\Users\HP\.t3\projects\fp-2` (branch `main`)
 > **Deep briefing (static, rarely changes):** `PROJECT_HANDOFF.md`
 > **Decision and issue log (for the report):** `DECISIONS.md`
-> **Last updated:** 2026-11-04 (the whole bench freezes after the peak — nodes 1 and 2 flashed and verified alive)
+> **Last updated:** 2026-11-04 (the freeze rule, measured properly — and the third rule it points at)
 
 ---
 
