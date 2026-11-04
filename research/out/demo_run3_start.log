@@ -1,0 +1,49 @@
+logs in research\out\demo_run3
+  hub        COM32     10506 lines
+      W (1975894) link: node 2: its radio handed over 306 frames since the burst began, 306 of them left it, 0 were refused, 0 times it had no room
+      W (1975907) link: node 2: arrival pattern: ################################################################
+      I (1975953) link: node 2: 286/286 fragments in 1.34 s (signal -46 dBm, from -48 to -45; its telemetry reads -46 dBm)
+      I (1975953) link: node 2: window crc32 0x9EA0748E, the node advertised 0x9EA0748E -> MATCH
+      I (1975966) link: node 2: window rms 0.073607  mean 137  peak 6197  crest 2.6
+      I (1976124) link: node 2: front end 48.1 ms, inference 109.0 ms, P(no_cry)=0.8672 P(cry)=0.1328
+      I (1976125) link: node 2: no cry
+      I (1976165) link: node 2: rms 0.0110  seq 125  flags 0x05  crc 0x9EA0748E  level 0.0140  streak 0  win 0.0740  bat 0 mV
+      I (1976265) link: node 2: rms 0.0170  seq 125  flags 0x07  crc 0x9EA0748E  level 0.0140  streak 1  win 0.0740  bat 0 mV
+      I (1976325) link: node 1: rms 0.0050  seq 138  flags 0x05  crc 0x700BEC9A  level 0.0070  streak 0  win 0.0130  bat 0 mV
+      I (1976425) link: node 1: rms 0.0120  seq 138  flags 0x07  crc 0x700BEC9A  level 0.0070  streak 1  win 0.0130  bat 0 mV
+      I (1976565) link: node 2: rms 0.0110  seq 125  flags 0x05  crc 0x9EA0748E  level 0.0140  streak 0  win 0.0740  bat 0 mV
+  node1      COM31      9037 lines
+      froze window, burst seq 76  level 0.0146  win rms 0.0568  (cry mode)
+      froze window, burst seq 81  level 0.0110  win rms 0.0551  (cry mode)
+      froze window, burst seq 100  level 0.0113  win rms 0.0537  (cry mode)
+      froze window, burst seq 125  level 0.0156  win rms 0.0995  (cry mode)
+      froze window, burst seq 126  level 0.0212  win rms 0.0896  (cry mode)
+      froze window, burst seq 131  level 0.0241  win rms 0.1366  (cry mode)
+  node2      COM37      9038 lines
+      froze window, burst seq 31  level 0.0092  win rms 0.0575  (cry mode)
+      froze window, burst seq 37  level 0.0115  win rms 0.0699  (cry mode)
+      froze window, burst seq 62  level 0.0165  win rms 0.1120  (cry mode)
+      froze window, burst seq 63  level 0.0104  win rms 0.1130  (cry mode)
+      froze window, burst seq 106  level 0.0180  win rms 0.0562  (cry mode)
+      froze window, burst seq 107  level 0.0138  win rms 0.0607  (cry mode)
+      froze window, burst seq 116  level 0.0290  win rms 0.0628  (cry mode)
+      froze window, burst seq 117  level 0.0300  win rms 0.1617  (cry mode)
+      froze window, burst seq 125  level 0.0114  win rms 0.0736  (cry mode)
+  node3      COM38      9038 lines
+      froze window, burst seq 111  level 0.0095  win rms 0.0529  (cry mode)
+      froze window, burst seq 114  level 0.0155  win rms 0.0686  (cry mode)
+      froze window, burst seq 159  level 0.0160  win rms 0.0845  (cry mode)
+      froze window, burst seq 167  level 0.0186  win rms 0.1098  (cry mode)
+  wearable   COM30        32 lines
+      [ble] ALERT cot 3 type 1 conf 100% event #16
+      [ble] ALERT cot 1 type 1 conf 100% event #17
+      [ble] ALERT cot 3 type 1 conf 100% event #18
+      [ble] ALERT cot 1 type 1 conf 100% event #19
+      [ble] ALERT cot 3 type 1 conf 100% event #20
+      [ble] ALERT cot 3 type 2 conf 0% event #21
+      [ble] ALERT cot 2 type 1 conf 100% event #22
+      [haptic] alert 22 — motor not present, LED stands in
+      [ble] ALERT cot 2 type 2 conf 0% event #23
+      [ble] ALERT cot 3 type 1 conf 100% event #24
+      [haptic] alert 24 — motor not present, LED stands in
+      [ble] ALERT cot 3 type 2 conf 0% event #25

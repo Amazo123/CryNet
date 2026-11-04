@@ -1,0 +1,23 @@
+logs in research\out\demo_run2
+  hub        COM32      9337 lines
+      I (1042648) link: node 1: rms 0.0040  seq 71  flags 0x05  crc 0x1CB590BE  level 0.0060  streak 0  win 0.0090  bat 0 mV
+      I (1042728) link: node 3: rms 0.0070  seq 106  flags 0x07  crc 0x0F28DE62  level 0.0060  streak 4  win 0.0070  bat 0 mV
+      I (1042748) link: node 1: rms 0.0120  seq 71  flags 0x07  crc 0x1CB590BE  level 0.0070  streak 1  win 0.0090  bat 0 mV
+      I (1042848) link: node 1: rms 0.0060  seq 71  flags 0x05  crc 0x1CB590BE  level 0.0070  streak 0  win 0.0090  bat 0 mV
+      I (1043028) link: node 3: rms 0.0030  seq 106  flags 0x05  crc 0x0F28DE62  level 0.0060  streak 0  win 0.0070  bat 0 mV
+      I (1043048) link: node 1: rms 0.0110  seq 71  flags 0x07  crc 0x1CB590BE  level 0.0070  streak 1  win 0.0090  bat 0 mV
+      I (1043228) link: node 3: rms 0.0130  seq 106  flags 0x07  crc 0x0F28DE62  level 0.0060  streak 1  win 0.0070  bat 0 mV
+      I (1043248) link: node 1: rms 0.0040  seq 71  flags 0x05  crc 0x1CB590BE  level 0.0070  streak 0  win 0.0090  bat 0 mV
+      I (1043348) link: node 1: rms 0.0110  seq 71  flags 0x07  crc 0x1CB590BE  level 0.0070  streak 1  win 0.0090  bat 0 mV
+      I (1043417) link: node 2: rms 0.0020  seq 26  flags 0x04  crc 0x00000000  level 0.0050  streak 0  win 0.0030  bat 0 mV
+      I (1043537) link: node 1: rms 0.0020  seq 71  flags 0x05  crc 0x1CB590BE  level 0.0060  streak 0  win 0.0090  bat 0 mV
+      I (1043537) link: node 3: rms 0.0070  seq 106  flags 0x05  crc 0x0F28DE62  level 0.0070  streak 4  win 0.0070  bat 0 mV
+  node1      COM31      9034 lines
+      froze window, burst seq 26  level 0.0122  win rms 0.0624  (cry mode)
+      froze window, burst seq 29  level 0.0188  win rms 0.1449  (cry mode)
+  node2      COM37      9007 lines
+      froze window, burst seq 8  level 0.0083  win rms 0.0711  (cry mode)
+      froze window, burst seq 10  level 0.0263  win rms 0.0523  (cry mode)
+  node3      COM38      9026 lines
+      froze window, burst seq 58  level 0.0113  win rms 0.0603  (cry mode)
+  wearable   COM30         0 lines
