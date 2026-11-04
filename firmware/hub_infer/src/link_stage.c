@@ -234,6 +234,11 @@ typedef struct {
     int64_t  cry_started_us;   /* when the current cry began */
     uint8_t  last_confidence;  /* the last confirmed confidence, in percent */
     bool     published_cry;    /* what the caregiver's phone was last told */
+    /* When this cot first became clearly louder than the named one.
+     * The name only moves when that has been true for
+     * COT_SWITCH_DWELL_MS, so a pair of microphones that cross over
+     * cannot hand the caregiver's wrist back and forth. */
+    int64_t  louder_since_us;
 
     int64_t  last_log_us;      /* when the telemetry was last printed */
     int64_t  last_request_us;   /* when the last window was asked for   */
@@ -364,6 +369,20 @@ static uint8_t s_test_cot = 0;
 /* How much louder another cot has to be before the caregiver is told
  * about it instead of the cot that was already named. */
 #define COT_SWITCH_MARGIN 1.5f
+
+/* How long that has to be true before the name moves.
+ *
+ * Measured on the bench, 2026-11-04 21:16: three cots a hand's width
+ * apart on one desk, one cry from a phone, and the name changed hands
+ * twelve times in eleven seconds -- the wrist buzzed "cot 1, cot 3,
+ * cot 1, cot 3" for a single physical cry.  The test that let it through
+ * was on the *live* reading: a hundred milliseconds of a signal that
+ * is a cry, and two microphones that close cross over every few
+ * hundred milliseconds.  So a challenger has to be clearly louder on
+ * the *window* it froze -- a number that holds for the seconds a
+ * window lasts -- and has to stay so for this long before the
+ * caregiver's wrist is told about a different cot. */
+#define COT_SWITCH_DWELL_MS 1500
 
 /* When the hub came up, for the uptime on the display. */
 static int64_t s_boot_us = 0;
@@ -1249,14 +1268,41 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
         }
         if (s_ble_cry && loudest != NULL && loudest->node_id != s_ble_cot) {
             /* The named cot is still crying: it keeps the alert unless
-             * the other one is clearly louder. */
+             * the other one is clearly louder -- and "clearly louder"
+             * is now judged on the *window* the challenger froze, and
+             * has to hold for COT_SWITCH_DWELL_MS before the name
+             * moves.  See the note on COT_SWITCH_DWELL_MS: the live
+             * reading crosses over between two microphones a hand's
+             * width apart every few hundred milliseconds, and the
+             * caregiver's wrist was told twelve times about one cry.
+             *
+             * The named cot keeps the alert right up to that point, so
+             * one cry is one buzz. */
+            node_state_t *incumbent = NULL;
             for (int i = 0; i < NODE_LINK_MAX_NODES; i++) {
                 node_state_t *st = &state[i];
                 if (st->heard && st->node_id == s_ble_cot &&
-                    st->published_cry &&
-                    loudest->rms <= st->rms * COT_SWITCH_MARGIN) {
-                    loudest = st;
+                    st->published_cry) {
+                    incumbent = st;
                     break;
+                }
+            }
+            if (incumbent != NULL) {
+                const bool clearly_louder =
+                    loudest->frozen_rms >
+                        incumbent->frozen_rms * COT_SWITCH_MARGIN;
+                if (clearly_louder) {
+                    if (loudest->louder_since_us == 0) {
+                        loudest->louder_since_us = now;
+                    }
+                    if ((now - loudest->louder_since_us) <
+                            (COT_SWITCH_DWELL_MS * 1000)) {
+                        loudest = incumbent;
+                    }
+                    /* otherwise the challenger takes the alert over */
+                } else {
+                    loudest->louder_since_us = 0;
+                    loudest = incumbent;
                 }
             }
         }
@@ -1278,6 +1324,12 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
                 s_ble_cot = loudest->node_id;
                 s_ble_cry = true;
                 any_state_changed = true;
+                /* The name has moved: nobody is "clearly louder" now,
+                 * so the dwell starts again from scratch if it is ever
+                 * challenged. */
+                for (int i = 0; i < NODE_LINK_MAX_NODES; i++) {
+                    state[i].louder_since_us = 0;
+                }
             }
         } else if (s_ble_cry) {
             /* The cry is over: the cot that was named is told so. */
@@ -1285,6 +1337,9 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
             s_ble_cry = false;
             s_ble_cot = 0;
             any_state_changed = true;
+            for (int i = 0; i < NODE_LINK_MAX_NODES; i++) {
+                state[i].louder_since_us = 0;
+            }
         }
 
         /* The state characteristic carries the whole system. */
@@ -1356,26 +1411,32 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
          * cot, not the first one the hub happens to have heard from. */
         const int64_t snap_now = esp_timer_get_time();
         node_state_t *show = NULL;
-        for (int i = 0; i < NODE_LINK_MAX_NODES; i++) {
-            if (node_live(&state[i], snap_now) &&
-                link_stage_crying(state[i].node_id)) {
-                if (show == NULL || state[i].rms > show->rms) {
-                    show = &state[i];
-                }
-            }
-        }
         /* The cot the caregiver was told about keeps the display as
          * well: two cots in one room cross over from window to
          * window, and a card that changes every few hundred
-         * milliseconds is unreadable. */
-        if (show != NULL && s_ble_cry) {
+         * milliseconds is unreadable.  While an alert is up the
+         * display names *the same cot the wrist does* -- a panel that
+         * says "cot 3" while the bracelet says "cot 1" is worse than
+         * no panel at all. */
+        if (s_ble_cry) {
             for (int i = 0; i < NODE_LINK_MAX_NODES; i++) {
                 if (state[i].node_id == s_ble_cot &&
                     node_live(&state[i], snap_now) &&
-                    link_stage_crying(state[i].node_id) &&
-                    show->rms <= state[i].rms * COT_SWITCH_MARGIN) {
+                    link_stage_crying(state[i].node_id)) {
                     show = &state[i];
                     break;
+                }
+            }
+        }
+        if (show == NULL) {
+            /* No alert is up: the loudest crying cot, or the loudest
+             * cot the hub has heard from. */
+            for (int i = 0; i < NODE_LINK_MAX_NODES; i++) {
+                if (node_live(&state[i], snap_now) &&
+                    link_stage_crying(state[i].node_id)) {
+                    if (show == NULL || state[i].rms > show->rms) {
+                        show = &state[i];
+                    }
                 }
             }
         }
