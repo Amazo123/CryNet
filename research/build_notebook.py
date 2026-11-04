@@ -641,18 +641,20 @@ for member in READERS["gtzan"].names():
     gtzan_entries.append((str(Path(member).with_suffix("")).lower(), 0,
                            f"gtzan_{genre}", "x", "gtzan"))
 
-# --- loud speech (FSD50K, 16 kHz) --------------------------------------------
-# The zip's file names carry the class: speech/fsd12345_Speech.wav.  Every
-# clip is a negative — a person talking is not a baby crying — and the
-# class becomes the subclass, so the report can say which kind of speech
-# the model refuses.
+# --- loud speech (FSD50K and Common Voice, 16 kHz) ---------------------------
+# The zip's file names carry the class first: speech/Speech__fsd12345.wav.
+# Every clip is a negative — a person talking is not a baby crying — and
+# the class becomes the subclass, so the report can say which kind of
+# speech the model refuses.
 speech_entries = []
 if "speech" in READERS:
     for member in READERS["speech"].names():
         if not member.lower().endswith(".wav"):
             continue
         stem = Path(member).stem
-        cls = stem.split("_", 1)[1] if "_" in stem else "speech"
+        cls, _, cid = stem.partition("__")
+        if not cid:
+            cls, cid = "speech", stem
         speech_entries.append((stem.lower(), 0, f"speech_{cls.lower()}", "x", "speech"))
 
 print(f"ICD      : {len(icd_entries):>6}  (cry={sum(e[1] for e in icd_entries)})")

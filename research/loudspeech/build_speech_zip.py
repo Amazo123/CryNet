@@ -7,8 +7,8 @@ Reads the FSD50K 16 kHz shards in research/loudspeech/raw/fsd/ (the
 shards in research/loudspeech/raw/cv/, and writes the speech clips into
 one zip of 16 kHz mono WAV files under research/_cache/:
 
-    speech/fsd12345_Speech.wav        FSD50K, dev partition
-    speech/cv00042_CVSpeech.wav       Common Voice, the training half
+    speech/Speech__fsd12345.wav             FSD50K, dev partition
+    speech/CV_canadian_english__cv_00000_000123.wav   Common Voice
 
 The class is in the file name, so the notebook can read it off the name
 and report per-class numbers.  Common Voice is split in half by a hash of
@@ -146,7 +146,7 @@ def main() -> int:
                 rms = float(np.sqrt(np.mean(x.astype(np.float64) ** 2)))
                 if rms < args.min_rms:
                     continue
-                name = f"speech/{cid}_{cls}.wav"
+                name = f"speech/{cls}__{cid}.wav"
                 z.writestr(name, _wav_bytes(x))
                 manifest.append({"file": name, "class": cls, "source": source,
                                  "rms": rms, "duration": dur})
