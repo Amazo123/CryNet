@@ -22,11 +22,14 @@ from __future__ import annotations
 import argparse
 import io
 import json
+import os
 import sys
 import zipfile
 from pathlib import Path
 
 import numpy as np
+
+os.environ.setdefault("ARROW_NUM_THREADS", "1")
 
 ROOT = Path(__file__).resolve().parents[2]
 RAW = ROOT / "research" / "loudspeech" / "raw"
@@ -52,7 +55,8 @@ def fsd_clips():
 
     for shard in sorted((RAW / "fsd").rglob("*.parquet")):
         tbl = pq.read_table(shard, columns=["audio", "labels", "source_partition",
-                                            "freesound_id", "duration_seconds"])
+                                            "freesound_id", "duration_seconds"],
+                            use_threads=False)
         labels = tbl.column("labels").to_pylist()
         parts = tbl.column("source_partition").to_pylist()
         audio = tbl.column("audio").to_pylist()
@@ -75,7 +79,7 @@ def cv_clips():
     import pyarrow.parquet as pq
 
     for shard in sorted((RAW / "cv").rglob("*.parquet")):
-        tbl = pq.read_table(shard)
+        tbl = pq.read_table(shard, use_threads=False)
         cols = tbl.column_names
         audio_col = "audio" if "audio" in cols else cols[0]
         accent_col = "accent" if "accent" in cols else None
@@ -95,8 +99,12 @@ def cv_clips():
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--limit", type=int, default=0, help="0 = all of them")
+    ap.add_argument("--fsd-limit", type=int, default=0,
+                    help="cap on the FSD50K clips (the nursery-relevant classes)")
+    ap.add_argument("--cv-limit", type=int, default=0,
+                    help="cap on the Common Voice clips (breadth of real speech)")
     ap.add_argument("--min-rms", type=float, default=0.0)
-    ap.add_argument("--max-seconds", type=float, default=20.0,
+    ap.add_argument("--max-seconds", type=float, default=10.0,
                     help="clip a long recording; a nursery recording is not 3 minutes")
     ap.add_argument("--out", default=str(CACHE / "speech__fsd50k_speech.zip"))
     args = ap.parse_args()
@@ -106,11 +114,15 @@ def main() -> int:
     kept = 0
     manifest = []
     counts = {}
+    per_source = {"fsd50k": 0, "common_voice": 0}
+    caps = {"fsd50k": args.fsd_limit, "common_voice": args.cv_limit}
 
     with zipfile.ZipFile(out, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=6) as z:
         for source, gen in (("fsd50k", fsd_clips()), ("common_voice", cv_clips())):
             for cid, cls, blob, dur in gen:
                 if args.limit and kept >= args.limit:
+                    break
+                if caps[source] and per_source[source] >= caps[source]:
                     break
                 try:
                     x, sr = sf.read(io.BytesIO(blob), dtype="float32", always_2d=False)
@@ -119,7 +131,14 @@ def main() -> int:
                 if x.ndim > 1:
                     x = x.mean(axis=1)
                 if sr != 16000:
-                    continue
+                    # The Common Voice mirror ships 32 and 48 kHz audio
+                    # whatever its card says.  The front end wants 16 kHz,
+                    # and resampling is what the notebook's own decoder
+                    # does, so the two agree.
+                    import librosa
+                    x = librosa.resample(x, orig_sr=sr, target_sr=16000,
+                                         res_type="soxr_hq")
+                    sr = 16000
                 if x.size < 16000:          # a second at least
                     continue
                 if x.size > args.max_seconds * 16000:
@@ -132,6 +151,7 @@ def main() -> int:
                 manifest.append({"file": name, "class": cls, "source": source,
                                  "rms": rms, "duration": dur})
                 counts[cls] = counts.get(cls, 0) + 1
+                per_source[source] += 1
                 kept += 1
                 if kept % 500 == 0:
                     print(f"  {kept} clips", flush=True)
@@ -140,6 +160,7 @@ def main() -> int:
 
     meta = out.with_suffix(".json")
     meta.write_text(json.dumps({"clips": kept, "by_class": counts,
+                                 "by_source": per_source,
                                  "manifest": manifest}, indent=2))
     print(f"wrote {out} ({out.stat().st_size/1e6:.1f} MB, {kept} clips)")
     for c, n in sorted(counts.items(), key=lambda kv: -kv[1]):

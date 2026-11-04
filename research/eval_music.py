@@ -87,6 +87,9 @@ def main() -> int:
     ap.add_argument("--windows-per-clip", type=int, default=2)
     ap.add_argument("--threshold", type=float, default=0.95)
     ap.add_argument("--trigger-rms", type=float, default=0.030)
+    ap.add_argument("--model", default=str(OUT / "crynet_int8.tflite"),
+                    help="the INT8 model to score; point it at a candidate "
+                         "to judge a retrain before it is deployed")
     ap.add_argument("--report", default=str(OUT / "eval_music.json"))
     args = ap.parse_args()
 
@@ -130,7 +133,7 @@ def main() -> int:
 
     import tensorflow as tf  # noqa: E402
 
-    interp = tf.lite.Interpreter(model_path=str(OUT / "crynet_int8.tflite"))
+    interp = tf.lite.Interpreter(model_path=str(args.model))
     interp.allocate_tensors()
     i_d = interp.get_input_details()[0]
     o_d = interp.get_output_details()[0]

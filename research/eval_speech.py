@@ -152,6 +152,9 @@ def main() -> int:
     ap.add_argument("--threshold", type=float, default=0.95, help="the deployed threshold")
     ap.add_argument("--saturation", type=float, default=0.99, help="the hub's announcement rule")
     ap.add_argument("--trigger-rms", type=float, default=0.030)
+    ap.add_argument("--model", default=str(OUT / "crynet_int8.tflite"),
+                    help="the INT8 model to score; point it at a candidate "
+                         "to judge a retrain before it is deployed")
     ap.add_argument("--report", default=str(OUT / "eval_speech.json"))
     args = ap.parse_args()
 
@@ -171,7 +174,27 @@ def main() -> int:
     if args.max_clips:
         rows = rows[: args.max_clips]
 
-    feats, clips, skipped = [], [], 0
+    import tensorflow as tf  # noqa: E402
+
+    interp = tf.lite.Interpreter(model_path=str(args.model))
+    interp.allocate_tensors()
+    i_d = interp.get_input_details()[0]
+    o_d = interp.get_output_details()[0]
+    s, z = i_d["quantization"]
+    o_scale, o_zp = o_d["quantization"]
+
+    def score(w):
+        """One 2 s window -> P(cry)."""
+        q = np.clip(np.round(log_mel(w) / s) + z, -128, 127).astype(np.int8)
+        interp.set_tensor(i_d["index"], q[None, ..., None])
+        interp.invoke()
+        o = interp.get_tensor(o_d["index"]).astype(np.float32).reshape(-1)
+        return float(((o - o_zp) * o_scale).reshape(-1)[1])
+
+    # Each window is scored the moment it is computed: the feature matrix
+    # of a whole corpus does not fit in this machine's memory beside the
+    # downloads, and the features are only needed once.
+    clips, skipped, n_windows = [], 0, 0
     for r in rows:
         x = decode(r["raw"])
         if x is None:
@@ -182,9 +205,8 @@ def main() -> int:
         # "center" with n windows starts them at the beginning, the middle
         # and the end of the clip.
         wins = take_windows(x, args.windows_per_clip, None, mode="center")
-        first = len(feats)
-        for w in wins:
-            feats.append(log_mel(w))
+        ps = [score(w) for w in wins]
+        n_windows += len(ps)
         clips.append({
             "source": r["source"],
             "group": r["group"],
@@ -194,41 +216,21 @@ def main() -> int:
             "rms": float(np.sqrt(np.mean(x.astype(np.float64) ** 2))),
             "peak": float(np.max(np.abs(x))),
             "clipped": bool(np.max(np.abs(x)) > 0.999),
-            "windows": list(range(first, len(feats))),
+            "p_cry": max(ps),
+            "p_cry_mean": float(np.mean(ps)),
         })
         if len(clips) % 500 == 0:
             print(f"  {len(clips)} clips", flush=True)
     if skipped:
         print(f"warning: {skipped} clip(s) skipped")
 
-    X = np.stack(feats).astype(np.float32)
-    print(f"clips: {len(clips)}  windows: {X.shape[0]}", flush=True)
-
-    import tensorflow as tf  # noqa: E402
-
-    interp = tf.lite.Interpreter(model_path=str(OUT / "crynet_int8.tflite"))
-    interp.allocate_tensors()
-    i_d = interp.get_input_details()[0]
-    o_d = interp.get_output_details()[0]
-    s, z = i_d["quantization"]
-
-    p = np.zeros(len(X), np.float32)
-    for i in range(len(X)):
-        q = np.clip(np.round(X[i] / s) + z, -128, 127).astype(np.int8)
-        interp.set_tensor(i_d["index"], q[None, ..., None])
-        interp.invoke()
-        o = interp.get_tensor(o_d["index"]).astype(np.float32).reshape(-1)
-        oq = (o - o_d["quantization"][1]) * o_d["quantization"][0]
-        p[i] = float(np.asarray(oq).reshape(-1)[1])
+    print(f"clips: {len(clips)}  windows: {n_windows}", flush=True)
 
     per_clip = []
     for c in clips:
-        ps = [float(p[i]) for i in c["windows"]]
-        pmax = max(ps)
+        pmax = c["p_cry"]
         per_clip.append({
             **c,
-            "p_cry": pmax,
-            "p_cry_mean": float(np.mean(ps)),
             "alarm": bool(pmax >= args.threshold),
             "announces": bool(pmax >= args.saturation),
             "reaches_model": bool(c["rms"] >= args.trigger_rms),
@@ -275,7 +277,7 @@ def main() -> int:
         "trigger_rms": args.trigger_rms,
         "windows_per_clip": args.windows_per_clip,
         "clips": len(per_clip),
-        "windows": int(X.shape[0]),
+        "windows": int(n_windows),
         "overall": overall,
         "by_source": by_source,
         "loudest_decile": stats(loud),
