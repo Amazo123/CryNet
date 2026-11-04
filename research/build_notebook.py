@@ -61,11 +61,13 @@ md(r"""
 Three independent cry corpora (hundreds of different infants, three recording chains) against speech, household noise, cat meows and silence — the exact confusion set that produces false alarms in a nursery.
 
 **Supplementary corpora** (cry diversity + *held-out cross-corpus* test sets):
-`karimeletriby/infant-cry-classification-4-classes` (4,871 real cries, 16 kHz, cross-dataset deduplicated), ESC-50 (1,960 non-cry + 40 real `crying_baby`), Snoring (1,000 adult-vocal hard negatives), **GTZAN (1,000 real music clips, ten genres)**.
+`karimeletriby/infant-cry-classification-4-classes` (4,871 real cries, 16 kHz, cross-dataset deduplicated), ESC-50 (1,960 non-cry + 40 real `crying_baby`), Snoring (1,000 adult-vocal hard negatives), **GTZAN (1,000 real music clips, ten genres)**, and **loud speech** (the speech classes of FSD50K at 16 kHz — `Speech`, `Child_speech_and_kid_speaking`, `Conversation`, `Chatter`, `Crowd`, `Human_voice`, laughter, singing — built into one zip by `research/loudspeech/build_speech_zip.py`).
 
 > Every corpus is split **by source clip**, never by window, so no recording can appear in both train and test.
 
 **Why music is in there.** The first false-alarm map over ESC-50 (2026-10-31) showed the model rejecting speech, household noise and human non-speech well (1.6 %) but had **never seen music at all** — no corpus in the mix contained any, and ESC-50 does not either. A nursery has a radio, a television and a mobile playing something, so music is a first-class confusion class here, not an afterthought. GTZAN's ten genres give the model real music to reject and the cross-corpus split gives a clean "music the model was not trained on" measurement afterwards.
+
+**Why loud speech is in there.** The corpus has speech in it — 4,963 VoxCeleb clips that came in with the ICD negatives — but no *loud* speech and no children's voices, and the one measured conversation window in the room scored **0.9727**, which is below the saturation the hub announces on (0.9900) but not by much. A nursery is full of people talking, and a child's voice is the closest thing to a baby's cry that a real room contains. The speech is sourced online rather than recorded: the user has nobody around to read a sentence into a microphone.
 
 ---
 
@@ -261,14 +263,25 @@ DATASETS = {
     # been trained to reject a song, a radio or a television, and a nursery
     # has all three.  GTZAN is ten genres of real recorded music.
     "gtzan":   ("kaggle", "carlthome/gtzan-genre-collection", None, 1_226_000_000),
+    # Loud speech.  The corpus has speech in it — 4,963 VoxCeleb clips that
+    # came in with the ICD negatives — but no *loud* speech, and no
+    # children's voices.  A nursery is full of people talking, and a
+    # child's voice is the closest thing to a baby's cry that a real room
+    # contains.  The clips are the speech classes of FSD50K at 16 kHz,
+    # built into one zip by research/loudspeech/build_speech_zip.py; the
+    # corpus is optional so a run on Kaggle, where the zip is not
+    # attached, still trains (and says so).
+    "speech":  ("local",  None, None, 0),
 }
-OPTIONAL = {"icd_rir"}
+OPTIONAL = {"icd_rir", "speech"}
 
 
 def canonical_path(key):
     kind, ref, member, _sz = DATASETS[key]
     if kind == "hf":
         return CACHE / member
+    if kind == "local":
+        return CACHE / "speech__fsd50k_speech.zip"
     return CACHE / (key + "__" + ref.replace("/", "_") + ".zip")
 
 
@@ -308,6 +321,14 @@ def _hf_download(member, dest):
 def acquire(key):
     kind, ref, member, size = DATASETS[key]
     dest = canonical_path(key)
+    if kind == "local":
+        # Built on this machine by research/loudspeech/build_speech_zip.py.
+        # It is not downloaded, so there is nothing to fetch: it is either
+        # there or it is not, and the caller says which.
+        if dest.exists():
+            print(f"  local      {key:9s} {dest.stat().st_size/1e6:8.1f} MB")
+            return dest
+        raise FileNotFoundError(f"{key} not built at {dest}")
     if dest.exists() and (OFFLINE or dest.stat().st_size >= size * 0.98):
         print(f"  cached     {key:9s} {dest.stat().st_size/1e6:8.1f} MB")
         return dest
@@ -550,6 +571,8 @@ READERS = {
     "snore":   ZipReader(PATHS["snore"]),
     "gtzan":   ZipReader(PATHS["gtzan"]),
 }
+if "speech" in PATHS:
+    READERS["speech"] = ZipReader(PATHS["speech"])
 
 # --- ICD -----------------------------------------------------------------------
 ICD_POS_IDX = READERS["icd_pos"].index_by_stem()
@@ -618,11 +641,27 @@ for member in READERS["gtzan"].names():
     gtzan_entries.append((str(Path(member).with_suffix("")).lower(), 0,
                            f"gtzan_{genre}", "x", "gtzan"))
 
+# --- loud speech (FSD50K, 16 kHz) --------------------------------------------
+# The zip's file names carry the class: speech/fsd12345_Speech.wav.  Every
+# clip is a negative — a person talking is not a baby crying — and the
+# class becomes the subclass, so the report can say which kind of speech
+# the model refuses.
+speech_entries = []
+if "speech" in READERS:
+    for member in READERS["speech"].names():
+        if not member.lower().endswith(".wav"):
+            continue
+        stem = Path(member).stem
+        cls = stem.split("_", 1)[1] if "_" in stem else "speech"
+        speech_entries.append((stem.lower(), 0, f"speech_{cls.lower()}", "x", "speech"))
+
 print(f"ICD      : {len(icd_entries):>6}  (cry={sum(e[1] for e in icd_entries)})")
 print(f"cry4     : {len(cry4_entries):>6}  (cry={sum(e[1] for e in cry4_entries)})")
 print(f"ESC-50   : {len(esc50_entries):>6}  (cry={sum(e[1] for e in esc50_entries)})")
 print(f"snoring  : {len(snore_entries):>6}")
 print(f"GTZAN    : {len(gtzan_entries):>6}  (music, all negative)")
+print(f"speech   : {len(speech_entries):>6}  (loud speech, all negative)"
+      + ("" if speech_entries else "   [corpus not built - skipped]"))
 """)
 
 # ======================================================================================
@@ -817,12 +856,19 @@ X_snore, y_snore, m_snore, g_snore, src_snore = build_corpus(snore_entries, n_ba
 # the part that plays in the cot matters, not the average of the track.
 X_gtzan, y_gtzan, m_gtzan, g_gtzan, src_gtzan = build_corpus(gtzan_entries, n_base=2, n_aug=0,
                                                 mode="random", subsample=SUB, tag="gtzan")
+# Loud speech: two base windows and one augmented view per clip.  Speech is
+# short and variable, so the windows are spread over the clip rather than
+# taken from one moment of it.
+X_speech, y_speech, m_speech, g_speech, src_speech = build_corpus(
+    speech_entries, n_base=2, n_aug=1, mode="random",
+    subsample=(2500 if FAST else None), tag="speech")
 print(f"  cry4   {X_cry4.shape}")
 print(f"  esc50  {X_esc50.shape}")
 print(f"  snore  {X_snore.shape}")
 print(f"  gtzan  {X_gtzan.shape}")
+print(f"  speech {X_speech.shape}")
 print(f"  ({time.time()-t0:.0f}s)")
-for _tag in ("cry4", "esc50", "snore", "gtzan"):
+for _tag in ("cry4", "esc50", "snore", "gtzan", "speech"):
     print(f"  [{_tag}] {BUILD_STATS.get(_tag)}")
 
 if X_gtzan.shape[0] == 0:
@@ -971,6 +1017,9 @@ cry4_hold = split_by_clip(X_cry4, y_cry4, g_cry4, 0.30, SEED + 11)
 esc50_hold = split_by_clip(X_esc50, y_esc50, g_esc50, 0.25, SEED + 12)
 snore_hold = split_by_clip(X_snore, y_snore, g_snore, 0.25, SEED + 13)
 gtzan_hold = split_by_clip(X_gtzan, y_gtzan, g_gtzan, 0.25, SEED + 14)
+# Speech: three quarters into the training set, a quarter held out so the
+# cross-corpus score can say what the model does on speech it never saw.
+speech_hold = split_by_clip(X_speech, y_speech, g_speech, 0.25, SEED + 15)
 
 # every ESC-50 crying_baby clip is held out -> pure cross-domain cry test
 esc50_cry = np.array([m[0] == "esc50_crying_baby" for m in m_esc50])
@@ -990,18 +1039,23 @@ X_test = X_icd[icd_is_test]
 y_test = y_icd[icd_is_test]
 
 X_train = np.concatenate([X_train, X_cry4[~cry4_hold], X_esc50[esc50_keep],
-                          X_snore[~snore_hold], X_gtzan[~gtzan_hold]])
+                          X_snore[~snore_hold], X_gtzan[~gtzan_hold],
+                          X_speech[~speech_hold]])
 y_train = np.concatenate([y_train, y_cry4[~cry4_hold], y_esc50[esc50_keep],
-                          y_snore[~snore_hold], y_gtzan[~gtzan_hold]])
+                          y_snore[~snore_hold], y_gtzan[~gtzan_hold],
+                          y_speech[~speech_hold]])
 
 X_cross = np.concatenate([X_cry4[cry4_hold], X_esc50[esc50_hold | esc50_cry],
-                          X_snore[snore_hold], X_gtzan[gtzan_hold]])
+                          X_snore[snore_hold], X_gtzan[gtzan_hold],
+                          X_speech[speech_hold]])
 y_cross = np.concatenate([y_cry4[cry4_hold], y_esc50[esc50_hold | esc50_cry],
-                          y_snore[snore_hold], y_gtzan[gtzan_hold]])
+                          y_snore[snore_hold], y_gtzan[gtzan_hold],
+                          y_speech[speech_hold]])
 meta_cross = ([m_cry4[i] for i in np.where(cry4_hold)[0]] +
               [m_esc50[i] for i in np.where(esc50_hold | esc50_cry)[0]] +
               [m_snore[i] for i in np.where(snore_hold)[0]] +
-              [m_gtzan[i] for i in np.where(gtzan_hold)[0]])
+              [m_gtzan[i] for i in np.where(gtzan_hold)[0]] +
+              [m_speech[i] for i in np.where(speech_hold)[0]])
 
 # ---- dedupe exact duplicates inside the training set -------------------------
 keep = dedupe_groups(X_train, y_train, np.arange(len(X_train)))
@@ -1021,8 +1075,8 @@ print("class weights:", cw)
 # Release the intermediates: only the final split matrices are needed from here
 # on, and they are what the tf.data pipeline holds in memory.
 import gc
-for _v in ("X_icd", "X_aug", "X_cry4", "X_esc50", "X_snore", "X_gtzan",
-           "y_icd", "y_aug", "y_cry4", "y_esc50", "y_snore", "y_gtzan"):
+for _v in ("X_icd", "X_aug", "X_cry4", "X_esc50", "X_snore", "X_gtzan", "X_speech",
+           "y_icd", "y_aug", "y_cry4", "y_esc50", "y_snore", "y_gtzan", "y_speech"):
     if _v in globals():
         del globals()[_v]
 gc.collect()

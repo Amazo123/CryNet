@@ -43,3 +43,5 @@ research/in_domain/**/*.wav
 # server, never a repository file.
 research/web/.cert/
 research/kaggle_out/*.zip
+research/loudspeech/raw/
+research/loudspeech/*.log
