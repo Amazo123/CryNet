@@ -41,6 +41,13 @@ Usage:
 
 from __future__ import annotations
 
+import os
+
+# One thread for the parquet reads: this machine runs the bench, the
+# downloads and the model at the same time, and pyarrow's worker pool
+# fails with "resource unavailable" when the machine is busy.
+os.environ.setdefault("ARROW_NUM_THREADS", "1")
+
 import argparse
 import io
 import json
@@ -70,7 +77,8 @@ def fsd50k_rows(partitions):
     rows = []
     for shard in sorted((RAW / "fsd").rglob("*.parquet")):
         tbl = pq.read_table(shard, columns=["audio", "labels", "duration_seconds",
-                                            "source_partition", "freesound_id", "title"])
+                                            "source_partition", "freesound_id", "title"],
+                           use_threads=False)
         labels = tbl.column("labels").to_pylist()
         parts = tbl.column("source_partition").to_pylist()
         audio = tbl.column("audio").to_pylist()
@@ -110,7 +118,7 @@ def common_voice_rows():
 
     rows = []
     for shard in sorted((RAW / "cv").rglob("*.parquet")):
-        tbl = pq.read_table(shard)
+        tbl = pq.read_table(shard, use_threads=False)
         cols = tbl.column_names
         audio_col = "audio" if "audio" in cols else cols[0]
         accent_col = "accent" if "accent" in cols else None
