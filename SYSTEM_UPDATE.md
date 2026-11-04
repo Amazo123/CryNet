@@ -280,6 +280,8 @@ Local branch `main`, tracking `crynet/main`. **The node produces real audio on t
 
 ## 4. Next action (checkpoint 2 — ESP32-S3 firmware)
 
+> **Live pointer (2026-11-04):** the plan below is the original stage plan and is *behind* the work. The current state is the newest entries in §5 *Change log* — read those first. **Where the project stands now:** the branch `feature/cry-window-after-peak` is **merged into `main`** (main = `823e040`) and the whole chain is verified end to end on the bench — the cry played at a cot is announced with the **right cot named** in ~1.9 s from onset, the windows are clean (no clipping), and a 7-minute watch raised **no false alarm**. **The three open items, in order:** (1) **node 2 clips on ordinary room sound** (window peak 31801 of 32767) — its mic gain or its place on the desk wants looking at, because a clipped window is the one thing this model cannot survive; (2) **every burst stalls at 280–283 of 286 fragments** and needs a resend round — all seven completed, but the shortfall is systematic, not random; (3) the wearable was not attached during the node 1 test, so the BLE link's content was logged from the hub's side only.
+
 ### 4.0 Kaggle outputs — received and staged
 The user placed the full-run `out/` at `research/out/`. `firmware/tools/check_artifact_drift.py` verifies the SHA-256, model size, quantisation, thresholds and the staged copies. **Current result: PASS** (137,384 bytes, SHA-256 `4aef55d8…126bc11`, threshold 0.95, input scale 0.060125612 / zp −4).
 
