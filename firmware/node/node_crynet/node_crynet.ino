@@ -1407,12 +1407,34 @@ void loop() {
              * seconds it lasts were up long before the hub's resend
              * rounds had finished, so the node froze a new window in
              * the middle of a transfer and the pieces the hub was still
-             * missing went with the old one. */
+             * missing went with the old one.
+             *
+             * The test was also backwards: `g_frozen_hold_ms` is a
+             * deadline (millis() + FROZEN_HOLD_MS), so `now - deadline`
+             * is negative -- and as an unsigned integer that is a
+             * number well past 0x80000000 -- for every moment of the
+             * hold, and small only once the deadline has passed.  The
+             * test as written therefore released the window on the
+             * very next reading and never released it afterwards, the
+             * opposite of the intent.  Measured on the bench, the
+             * minute of 2026-11-04 19:26: node 3 was refused four
+             * resends with "no frozen window for it" because it had
+             * already frozen the next one, and none of its bursts ever
+             * finished.  A signed difference is the deadline test.
+             *
+             * When the hold does end, the window is dropped outright.
+             * It has served its purpose: the hub has had its three
+             * seconds of resend rounds and the fragments are no longer
+             * needed.  Leaving it valid would leave it advertised,
+             * and the freeze rule below refuses to take a new window
+             * while one is advertised -- so the node would never
+             * freeze again. */
             const bool hub_is_fetching =
                 (uint32_t)(now - g_transfer_ms) < TRANSFER_HOLD_MS;
             if (g_frozen_served && !hub_is_fetching &&
-                (uint32_t)(now - g_frozen_hold_ms) >= 0x80000000u) {
+                (int32_t)(now - g_frozen_hold_ms) >= 0) {
                 g_frozen_served = false;
+                g_frozen_valid = false;
                 g_peak_pending = false;
             }
             /* Cry mode: once a loud window is frozen, do not freeze
@@ -1452,15 +1474,36 @@ void loop() {
              * finish a burst at such a cot: it asked for the pieces that
              * were missing and the node had no copy of them left.  A
              * window the hub is still asking about is now left alone
-             * until TRANSFER_HOLD_MS has passed with no word from it. */
-            if (g_frozen_served && g_frozen_rms > 0.0f && !hub_is_fetching &&
+             * until TRANSFER_HOLD_MS has passed with no word from it.
+             *
+             * And it now covers a window the hub has not asked about
+             * yet as well.  A frozen window that is still advertised
+             * -- `g_frozen_valid`, whether or not it has been served --
+             * is the only copy of the cry that cot heard, and the room
+             * itself must not be allowed to take its place: measured
+             * on the bench, the minute of 2026-11-04 19:26, node 1
+             * froze a window of 0.1769 rms -- a genuine cry -- and then
+             * replaced it with a 0.0104 rms window of ordinary room
+             * sound three seconds later, because the hub had spent its
+             * airtime on another cot's window and had not come back
+             * for it.  Only a much louder event (the same three-times
+             * rule as before) or the hold above may take the place of
+             * an advertised window now. */
+            if (g_frozen_valid && g_frozen_rms > 0.0f && !hub_is_fetching &&
                 g_rms >= 3.0f * g_frozen_rms && g_loud_streak >= 2u) {
                 g_frozen_served = false;
+                g_frozen_valid = false;
             }
-            /* In cry mode, only a louder event (preempt) may freeze. */
+            /* In cry mode, only a louder event (preempt) may freeze.
+             * And only an unadvertised window may be frozen at all:
+             * while the node holds a window the hub has not taken, the
+             * room must wait.  Nothing here is lost by that -- the
+             * live ring keeps filling, and a cry that arrives while a
+             * quiet window is held takes its place through the rule
+             * above, three times as loud as it is. */
             bool allow_freeze = !g_cry_mode ||
                 (g_frozen_rms > 0.0f && g_rms >= 3.0f * g_frozen_rms);
-            if (allow_freeze && !g_frozen_served && g_filled == WINDOW_SAMPLES) {
+            if (allow_freeze && !g_frozen_valid && g_filled == WINDOW_SAMPLES) {
                 if (!g_peak_pending && g_loud_streak >= 2u) {
                     /* A loud moment: remember it, and freeze a second
                      * later, when the ring holds the second that follows

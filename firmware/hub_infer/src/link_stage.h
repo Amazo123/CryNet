@@ -86,6 +86,27 @@ extern "C" {
  * The measured false maybes all sat at 0.012 rms or under. */
 #define CRYNET_MAYBE_MIN_RMS 0.020f
 
+/* The frozen window's own rms at which the hub pulls it even though the
+ * room has gone quiet again.
+ *
+ * The live gates -- the node's streak and the reading above its own
+ * level -- judge the room as it is *now*.  A frozen window is evidence
+ * of the moment it was frozen, and the stop-capped freeze deliberately
+ * lands after the cry has stopped, so by the time the hub looks the
+ * live reading has usually fallen back to the room's own level and
+ * neither live gate says anything.  The node reports the level of the
+ * window it is offering beside the live one, and that number is what
+ * the model will be shown, so it is the number the pull should follow.
+ *
+ * 0.050 sits above every window the nodes freeze out of ordinary room
+ * sound (measured on the bench, 2026-11-04: the loudest such window
+ * was 0.036 rms, on node 2) and well under every window a phone cry at
+ * 15 cm froze (0.177 and 0.184 on the same bench).  Quieter frozen
+ * windows are still pulled the moment the live reading is loud, so a
+ * cry at one metre is not lost by this -- it is pulled while it is
+ * happening, as it always was. */
+#define CRYNET_PULL_CRY_RMS 0.050f
+
 /* The rms at which a window carries so much sound that the model's
  * score may be taken at face value.
  *

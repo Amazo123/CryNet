@@ -82,7 +82,10 @@ class Port:
         except Exception:  # noqa: BLE001 -- not every driver has them
             pass
         self.serial = s
-        self.fh = self.path.open("w", encoding="utf-8", errors="replace")
+        if self.fh is None:
+            # A fresh file for the first open; a reopen after a board
+            # reset appends, so the earlier part of the run survives.
+            self.fh = self.path.open("w", encoding="utf-8", errors="replace")
 
     def write(self, line: str, t0: float) -> None:
         stamp = f"{time.time() - t0:8.2f}"
@@ -116,8 +119,31 @@ def reader(p: Port, t0: float, stop: threading.Event) -> None:
             try:
                 chunk = p.serial.read(p.serial.in_waiting or 1)
             except Exception as exc:  # noqa: BLE001
-                p.error = str(exc)
-                break
+                # The C3's own USB re-enumerates when the board resets,
+                # and ClearCommError then fails on every read.  The
+                # wearable is the one that resets (its console is the
+                # same port the flasher uses), so the capture reopens
+                # the port and carries on rather than losing the rest
+                # of the run's worth of alerts.
+                try:
+                    p.serial.close()
+                except Exception:  # noqa: BLE001
+                    pass
+                for _ in range(20):
+                    if stop.is_set():
+                        break
+                    time.sleep(0.5)
+                    try:
+                        p.open()
+                    except Exception:  # noqa: BLE001
+                        continue
+                    p.write(f"<< port {p.label} reopened after: {exc} >>\n", t0)
+                    buf = bytearray()
+                    break
+                else:
+                    p.error = str(exc)
+                    break
+                continue
             if not chunk:
                 continue
             buf += chunk

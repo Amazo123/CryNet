@@ -1092,9 +1092,26 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
              * it.  And the node's: it froze a window, which is the two
              * seconds centred on the moment it crossed that level, and
              * the one whose CRC-32 can be checked against what the node
-             * advertises. */
+             * advertises.
+             *
+             * A third, added on 2026-11-04: a window the node has
+             * *frozen* is evidence of the moment it froze, not of the
+             * moment the hub is looking at.  The stop-capped freeze
+             * lands up to two seconds after the peak, and the hub only
+             * polls the pull rule every so often, so by the time it
+             * looks the live reading has often fallen back into the
+             * room's own noise — and the loud window sat there
+             * un-pulled.  Measured on the bench, the same minute:
+             * node 1 advertised a window of 0.177 rms (a genuine cry)
+             * for seven seconds, streak 0 and rms at the room's own
+             * level the whole time, and the hub never asked for it.
+             * The node also advertises the window's own level beside
+             * the live reading — that is the number the model will
+             * actually be shown — and a window that loud is worth
+             * pulling no matter what the room is doing now. */
             const bool loud = (st->loud_streak >= 2u) ||
-                              (st->rms >= 3.0f * st->event_rms);
+                              (st->rms >= 3.0f * st->event_rms) ||
+                              (st->frozen_rms >= CRYNET_PULL_CRY_RMS);
             /* Only ask for a window the node has actually frozen.  The
              * node's live window is emptied by an upload and needs two
              * seconds to refill, and a request that arrives in that gap

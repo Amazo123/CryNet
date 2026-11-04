@@ -1,0 +1,21 @@
+logs in research\out\demo_run
+  hub        COM32      5622 lines
+      I (1854857) link: node 2: rms 0.0050  seq 240  flags 0x05  crc 0xDEE63FA2  level 0.0050  streak 1  win 0.0120  bat 0 mV
+      I (1854877) link: node 1: rms 0.0080  seq 1564  flags 0x05  crc 0xD6F8FD00  level 0.0110  streak 0  win 0.0090  bat 0 mV
+      I (1855377) link: node 1: rms 0.0110  seq 1564  flags 0x07  crc 0xD6F8FD00  level 0.0110  streak 1  win 0.0090  bat 0 mV
+      I (1855477) link: node 1: rms 0.0060  seq 1564  flags 0x05  crc 0xD6F8FD00  level 0.0110  streak 0  win 0.0090  bat 0 mV
+      I (1855517) link: node 3: rms 0.0080  seq 1036  flags 0x05  crc 0x354BE334  level 0.0140  streak 0  win 0.0290  bat 0 mV
+      I (1855617) link: node 3: rms 0.0200  seq 1036  flags 0x07  crc 0x354BE334  level 0.0140  streak 1  win 0.0290  bat 0 mV
+      I (1855917) link: node 3: rms 0.0080  seq 1036  flags 0x05  crc 0x354BE334  level 0.0150  streak 0  win 0.0290  bat 0 mV
+      I (1855957) link: node 2: rms 0.0020  seq 240  flags 0x05  crc 0xDEE63FA2  level 0.0050  streak 0  win 0.0120  bat 0 mV
+      W (1855977) link: node 3: missing fragments:
+      W (1856031) link: node 3: the burst stalled with 24 of 286 fragments (24 frames arrived); asking for the 262 that are missing (signal -40 dBm, from -41 to -38; its telemetry reads -40 dBm)
+      W (1856036) link: node 3: its radio handed over 291 frames since the burst began, 291 of them left it, 0 were refused, 0 times it had no room
+      W (1856049) link: node 3: arrival pattern: .........#.......##.........#..#................#...............
+  node1      COM31      4481 lines
+      froze window, burst seq 1317  level 0.0213  win rms 0.1769  (cry mode)
+  node2      COM37      4240 lines
+      froze window, burst seq 225  level 0.0167  win rms 0.0519  (cry mode)
+      froze window, burst seq 227  level 0.0254  win rms 0.1836  (cry mode)
+  node3      COM38      4056 lines
+  wearable   COM30         0 lines  (ClearCommError failed (PermissionError(13, 'The device does not recognize the command.', None, 22)))
