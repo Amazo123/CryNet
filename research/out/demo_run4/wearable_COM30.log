@@ -1,0 +1,9 @@
+[   53.41] [ble] ALERT cot 1 type 1 conf 100% event #1
+[   53.41] [haptic] alert 1 — motor not present, LED stands in
+[   61.41] [ble] ALERT cot 1 type 2 conf 0% event #2
+[   84.76] [ble] ALERT cot 2 type 1 conf 100% event #3
+[   84.76] [haptic] alert 3 — motor not present, LED stands in
+[   92.76] [ble] ALERT cot 2 type 2 conf 0% event #4
+[  109.51] [ble] ALERT cot 3 type 1 conf 100% event #5
+[  109.51] [haptic] alert 5 — motor not present, LED stands in
+[  124.41] [ble] ALERT cot 3 type 2 conf 0% event #6
