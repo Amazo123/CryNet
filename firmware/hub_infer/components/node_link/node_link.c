@@ -56,6 +56,24 @@ typedef struct {
      * counted", which are two very different faults. */
     uint16_t frag_seen;
     uint32_t bad_payloads;
+    /* When the last fragment of this burst arrived, and how long the
+     * fragments have been taking to arrive.
+     *
+     * Both are measured here, in the receive callback, and not by the
+     * main loop: the loop only notices that the fragment count has
+     * changed when it next runs, so a gap it measures is the gap
+     * between two of its own iterations -- which on a busy hub is
+     * nearly two hundred milliseconds, and made the hub wait the
+     * whole of that before it noticed a burst had stopped.  The
+     * fragments of a burst cross a good link every six milliseconds,
+     * and the hub has to know that to tell a burst that is still in
+     * the air from one that has ended.
+     *
+     * The clock is this component's own millisecond clock, and what
+     * the hub is given is the *age* of the last fragment, so that the
+     * two clocks never have to be compared. */
+    uint32_t last_frag_ms;    /* when the last fragment arrived */
+    uint32_t gap_ewma_ms;     /* how this cot's fragments arrive */
     /* The signal strength of the burst's frames, and of the node's last
      * telemetry.  The two together say whether a burst that never
      * arrived was too weak to be heard or was never sent: a node whose
@@ -348,6 +366,28 @@ static void handle_fragment(node_link_t *nl, uint8_t node_id, uint16_t seq,
     /* It belongs to this burst and it arrived, whatever happens to it
      * next. */
     slot->frag_seen++;
+
+    /* When it arrived, and how long the fragments have been taking.
+     * Both are measured here, in the Wi-Fi task, where the arrival
+     * actually happened: the hub's main loop only sees the count
+     * change when it next runs, and a gap it measured that way was
+     * the gap between two of its own iterations -- nearly two hundred
+     * milliseconds on a busy hub, which is how a burst that had
+     * stopped looked like a burst that was still in the air. */
+    {
+        const uint32_t now = now_ms();
+        if (slot->last_frag_ms > 0) {
+            const uint32_t gap = now - slot->last_frag_ms;
+            /* A gap of more than half a second says nothing about the
+             * rate: it is the pause between two bursts. */
+            if (gap > 0 && gap < 500u) {
+                slot->gap_ewma_ms = slot->gap_ewma_ms
+                    ? (slot->gap_ewma_ms * 3 + gap) / 4
+                    : gap;
+            }
+        }
+        slot->last_frag_ms = now;
+    }
 
     /* How loudly it arrived.  The frames of a burst are the biggest the
      * link carries, so they are the first thing to go when the path is
@@ -777,6 +817,11 @@ bool node_link_request_window(node_link_t *nl, uint8_t node_id, uint16_t burst_s
             slot->frag_seq = burst_seq;
             slot->want_seq = burst_seq;
             slot->have_want = true;
+            /* The arrival clock starts again with the new burst.  The
+             * rate it keeps (gap_ewma_us) is a property of the path,
+             * not of the burst, and it is what the hub measures the
+             * next burst against. */
+            slot->last_frag_ms = 0;
             memset(slot->bitmap, 0, sizeof(slot->bitmap));
         }
     }
@@ -904,6 +949,9 @@ bool node_link_burst_state(const node_link_t *nl, uint8_t node_id,
         out->frag_want = slot->frag_want;
         out->frag_have = slot->frag_have;
         out->frag_seen = slot->frag_seen;
+        out->last_frag_age_ms = (slot->last_frag_ms > 0)
+                                   ? (now_ms() - slot->last_frag_ms) : 0u;
+        out->gap_ewma_ms = slot->gap_ewma_ms;
         out->complete = slot->in_burst &&
                         (slot->frag_want > 0) &&
                         (slot->frag_have >= slot->frag_want);

@@ -76,6 +76,15 @@ typedef struct {
     uint16_t frag_want;
     uint16_t frag_have;
     uint16_t frag_seen;   /* fragment frames that arrived, stored or not */
+    /* When the last fragment arrived, and how long this cot's
+     * fragments have been taking to arrive.  Both are measured in the
+     * receive callback, where the arrival happened: a gap measured by
+     * the main loop is the gap between two of its own iterations, and
+     * on a busy hub that is nearly two hundred milliseconds -- long
+     * enough to mistake a burst that has ended for one that is still
+     * in the air. */
+    uint32_t last_frag_age_ms;
+    uint32_t gap_ewma_ms;
     bool     complete;
     uint32_t bad_payloads;  /* fragments whose payload CRC failed */
     uint32_t missing;       /* fragments still outstanding */

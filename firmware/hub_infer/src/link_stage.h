@@ -44,9 +44,13 @@ extern "C" {
  * — the panel still shows the cry two and a half seconds after it
  * happened, provided the window carries real energy (see
  * CRYNET_ANNOUNCE_MIN_RMS below).  Anything between the model's own
- * threshold and this one is a maybe, and a maybe has to be confirmed by
- * the next window before it is announced (see CRYNET_CRY_RUN in
- * link_stage.c). */
+ * threshold and this one is a maybe, and a maybe is not announced: it
+ * is counted (see CRYNET_CRY_RUN in link_stage.c) and nothing more.
+ *
+ * The threshold is the saturation and not the model's own 0.95, because
+ * a conversation in the room reaches 0.9727 (measured 2026-11-04) and
+ * the hub's own boot probe scores 0.9805 on synthetic noise.  Nothing
+ * below the saturation is safe to announce on its own. */
 #define CRYNET_CLEAR_CRY 0.9900f
 
 /* The rms below which no window may announce a cry at all, however
@@ -83,35 +87,61 @@ extern "C" {
 #define CRYNET_MAYBE_MIN_RMS 0.020f
 
 /* The rms at which a window carries so much sound that the model's
- * score may be taken at face value: from this loudness a window may
- * announce a cry on the model's own threshold (0.95) instead of
- * waiting for the saturation (0.99) that the quiet path demands.
+ * score may be taken at face value.
  *
- * Why: a phone held right at the microphone distorts the cry it
- * plays -- the window clips, the impulsive shape is lost, and the
- * model's score falls off the saturation it reaches on an undamaged
- * recording.  Measured on the bench on 2026-11-04, at node 2, with
- * the phone 10 cm away: the window carried 0.1801 rms at crest 3.6 and
- * scored 0.9805 -- a clear cry, refused, because 0.9805 is not 0.99.
- * The same play's later windows clipped (peak 33389) and fell to
- * 0.0078 and 0.1602.  The cot 1.5 m away heard the same cry cleanly,
- * scored 0.9961 on a 0.0207 rms window, and was announced instead --
- * the alert named the wrong cot for 42 seconds.
- *
- * The bar is safe because the loud path is where the model is most
- * reliable and where the false alarms have never been: every one of
- * the 964 windows screened with the deployed model
- * (research/screen_clips.py) was looked at under this rule, and not
- * one of the 189 windows from the nine non-cry sessions reached 0.95
- * at 0.08 rms -- the loudest of them scored 0.0156.  All the measured
- * false alarms were quiet windows at 0.012 rms or under, which this
- * rule does not touch.  It does add 21 loud cry windows (130 instead
- * of 109) that would now announce without waiting for a second
- * window to confirm them.
- *
- * The quiet path keeps the saturation requirement: that is where the
- * model has been caught saturating on flat hiss. */
+ * It used to mean "a window this loud may announce on the model's own
+ * threshold (0.95), without waiting for the saturation (0.99)".  That
+ * rule was a band-aid for a clipped recording, and it opened the way
+ * for a conversation in the room to be announced as a cry. */
 #define CRYNET_LOUD_ANNOUNCE_RMS 0.080f
+
+/* The confidence a loud window needs to announce on its own.
+ *
+ * It is the saturation, 0.9900, which is the same number the quiet
+ * path uses -- so today a cry is announced when the model saturates
+ * and not before.
+ *
+ * The trade is measured, both ways:
+ *
+ *   - the cost of the saturation: on the corpus, 7 of the 53 cry
+ *     episodes that the old rule caught peaked between 0.9688 and
+ *     0.9883 and are now missed.  All seven are strong cries -- rms
+ *     0.09 to 0.22, crest 4.3 to 7.9 -- and on the bench three
+ *     genuine cries out of three scored 0.9961 and still announce.
+ *
+ *   - the cost of the old rule: in twenty minutes of a room with
+ *     people talking, the model scored four windows between 0.9688 and
+ *     0.9805 that were not cries, and the hub's own boot probe scores
+ *     0.9805 on synthetic noise.  None of the four was loud enough
+ *     (0.080 rms) for the old rule to let it through, but that is the
+ *     one thing about them that was not measured: how the model
+ *     scores a *loud* conversation is unknown, and the old rule would
+ *     have announced it.
+ *
+ * So this number is the saturation, and it is the only thing between
+ * a loud conversation and a false alarm at three in the morning.  Set
+ * it to 0.9500 to get the old rule back -- 7 more episodes on the
+ * corpus, and the way open again. */
+#define CRYNET_LOUD_ANNOUNCE_P 0.9900f
+
+/* The confidence the second window of a run has to reach before the
+ * run may announce a cry.
+ *
+ * It is the saturation as well, which means that in practice the run
+ * announces nothing: a window that saturates announces on its own.
+ * The run is kept because it says how close the model came, and
+ * because setting this to 0.9500 together with CRYNET_LOUD_ANNOUNCE_P
+ * brings back the whole old rule -- the loud window's own threshold
+ * and the two-window confirmation. */
+#define CRYNET_CONFIRM_P 0.9900f
+
+/* The peak a window reaches before it counts as clipped.
+ *
+ * The microphone's own output saturates first -- the INMP441 is a
+ * fixed-gain part -- so a sound close enough to it arrives flat-topped
+ * and the window cannot be trusted.  A clipped window is refused: it
+ * may not announce a cry, and the operator is told why. */
+#define CRYNET_CLIP_PEAK 31000
 
 /* The peak-to-rms ratio (crest factor) a quiet window needs before its
  * saturated verdict may announce a cry.  A loud window (>= 0.020 rms)
@@ -140,6 +170,26 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer);
  * held for a few seconds, so this stays true across the gaps in a
  * recording.  The display and the BLE server read this. */
 bool link_stage_crying(uint8_t node_id);
+
+/* One cot, as the console shows it. */
+typedef struct {
+    uint8_t  node_id;
+    float    rms;          /* its last reading */
+    float    level;         /* the level it triggers at */
+    float    frozen_rms;    /* the level of the window it has frozen */
+    uint8_t  confidence;    /* the last confirmed confidence, in percent */
+    bool     crying;        /* the hub is announcing a cry from it */
+    bool     window_full;   /* it has a whole two-second window to give */
+} link_stage_cot_t;
+
+/* The cots the hub knows about.  Returns how many were written. */
+int link_stage_cots(link_stage_cot_t *out, int max);
+
+/* The console's test alert: publish a cry for that cot as if it had
+ * heard one, and take it back.  This is how the caregiver's phone and
+ * the wearable are checked without making a sound. */
+void link_stage_test_alert(uint8_t cot_id);
+void link_stage_test_clear(void);
 
 #ifdef __cplusplus
 }

@@ -228,12 +228,22 @@ static void update_advertising(void)
         s_adv_interval = interval;
         s_advertising = advertise();
     } else {
-        int rc = ble_gap_adv_stop();
-        if (rc != 0 && rc != BLE_HS_EALREADY) {
-            ESP_LOGW(TAG, "advertising could not be stopped: %d", rc);
+        /* Only say something when the advertising was actually running.
+         * This function is called again every time the radio's policy
+         * changes -- and the radio's policy changes every time a burst
+         * starts or stops -- so an unconditional line here printed
+         * "advertising is off (a phone is connected)" seven times in
+         * five minutes of ordinary running, and read like the phone
+         * was dropping off.  It was not: the phone stayed connected
+         * the whole time. */
+        if (s_advertising) {
+            int rc = ble_gap_adv_stop();
+            if (rc != 0 && rc != BLE_HS_EALREADY) {
+                ESP_LOGW(TAG, "advertising could not be stopped: %d", rc);
+            }
+            s_advertising = false;
+            ESP_LOGI(TAG, "advertising is off (a phone is connected)");
         }
-        s_advertising = false;
-        ESP_LOGI(TAG, "advertising is off (a phone is connected)");
     }
 }
 

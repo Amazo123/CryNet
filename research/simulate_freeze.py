@@ -72,9 +72,12 @@ CRYNET_CLEAR_CRY = 0.99
 CRYNET_ANNOUNCE_MIN_RMS = 0.006
 CRYNET_MAYBE_MIN_RMS = 0.020
 CRYNET_LOUD_ANNOUNCE_RMS = 0.080
+CRYNET_LOUD_ANNOUNCE_P = 0.99   # the saturation, as the hub has it
+CRYNET_CONFIRM_P = 0.99
 CRYNET_QUIET_CREST = 3.5
 CRYNET_SILENCE_RMS_GATE = 0.0015
 CRYNET_CRY_RUN = 2
+CRYNET_CLIP_PEAK = 31000
 
 
 def read_pcm(path: Path) -> np.ndarray:
@@ -234,14 +237,19 @@ def window_stats(x: np.ndarray):
 
 
 def hub_decision(rms: float, crest: float, p_cry: float) -> tuple[bool, bool]:
-    """(announces on its own, is a maybe) -- the hub's rule."""
+    """(announces on its own, is a maybe) -- the hub's rule.
+
+    This mirrors firmware/hub_infer/src/link_stage.c.  The loud path is
+    gone: only a saturated window announces (2026-11-04, after a
+    conversation in the room scored 0.9727 and the loud path would have
+    announced it one step louder)."""
     if rms < CRYNET_SILENCE_RMS_GATE:
         return False, False
     audible = rms >= CRYNET_ANNOUNCE_MIN_RMS
     if not audible:
         return False, False
     unmistakable = (
-        (rms >= CRYNET_LOUD_ANNOUNCE_RMS and p_cry >= CRYNET_THRESHOLD)
+        (rms >= CRYNET_LOUD_ANNOUNCE_RMS and p_cry >= CRYNET_LOUD_ANNOUNCE_P)
         or (rms < CRYNET_LOUD_ANNOUNCE_RMS and p_cry >= CRYNET_CLEAR_CRY)
     ) and (rms >= CRYNET_MAYBE_MIN_RMS or crest >= CRYNET_QUIET_CREST)
     if unmistakable:

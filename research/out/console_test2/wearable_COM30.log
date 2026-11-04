@@ -1,0 +1,15 @@
+[    0.04] [scan] 56:e4:5b:a8:01:d9 name="SAWIZZ" svc_uuid=1
+[    0.04] [scan] 30:7d:25:94:d7:c1 name="" svc_uuid=0
+[    0.04] [scan] 31:2c:a9:fa:77:19 name="" svc_uuid=0
+[    0.08] [scan] 0f:14:62:c9:8a:5c name="" svc_uuid=0
+[    0.09] [scan] 00:03:6e:d0:17:f7 name="" svc_uuid=0
+[    0.13] [scan] 73:be:25:ba:26:a9 name="LONEWOLF" svc_uuid=1
+[    0.14] [scan] 5d:ef:03:6e:e9:42 name="SOOMA" svc_uuid=1
+[    0.17] [scan] 30:30:f9:17:2f:82 name="INFANT_MONITOR_HUB" svc_uuid=0
+[    0.17] [ble] hub found (30:30:f9:17:2f:82)
+[    0.18] [ble] connecting to 30:30:f9:17:2f:82
+[    0.63] [ble] hub connected
+[    0.83] [ble] state: 0 cot(s), mask 0x00
+[    0.83] [ble] subscribed to alerts
+[   30.08] [ble] ALERT cot 2 type 1 conf 100% event #1
+[   30.08] [haptic] alert 1 — motor not present, LED stands in

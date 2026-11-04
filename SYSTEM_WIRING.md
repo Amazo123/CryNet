@@ -24,7 +24,7 @@ No audio or signal wires connect the cot nodes to the hub: the link is wireless.
 
 ### 2.1 Cot node: ESP32-C3 + INMP441
 
-Repeat the same connections for each node. The current real-board test used one node; three-node simultaneous operation is not yet verified.
+Repeat the same connections for each node. **Three-node simultaneous operation is now verified:** on 2026-11-04 all three nodes, the hub and the wearable ran on one laptop for twenty-five minutes — the three nodes on a USB hub, the hub and the wearable directly — with **no brownout, no reset and no false alarm** (node 1's own counters: 6 385 frames sent, 0 lost, 0 times the radio had no room).
 
 | From | To | Note |
 |---|---|---|
@@ -48,6 +48,13 @@ Repeat the same connections for each node. The current real-board test used one 
 ```
 
 The old PDF's GPIO5/6/7 microphone assignment does **not** match the current firmware. C3 GPIO4 is already used by SCK and must not also be connected to the old red status LED.
+
+**Where the microphone goes — a placement rule, measured.** The INMP441 is a **fixed-gain** part: it has no gain register and its own output saturates before the node's 16-bit window ever does, so a sound close enough to it arrives flat-topped and the window cannot be trusted. Measured on the bench: node 2 clipped at peak 31 801 of 32 767 on ordinary room sound, and a phone held 10 cm from the microphone clipped the cry it was playing — that window scored 0.9805 instead of 0.9961, and the alert named the wrong cot for 42 seconds. There is no software cure, so the rules for the finished assembly are:
+
+- **Keep the microphone out of the cot's near field.** Mount it on the cot frame or a wall bracket, on a short stiff lead, at least **30 cm** from where the baby's head will be, and out of the mattress's own sound path.
+- **Do not point it at a speaker, a radiator or a window.** A reflective surface doubles the level at the mic.
+- **Never leave it loose on the mattress.** A soft surface damps the high frequencies the model reads, and the cot frame moves.
+- The hub now **refuses a clipped window and says so in its log** (`the window is CLIPPED`), so a bad mount is visible rather than silent. Watch for that line in the hub's log after the first night of use; it is the fastest way to find a microphone that is too close to the sound.
 
 ### 2.2 Hub: ESP32-S3 + 2.8-inch ILI9341
 

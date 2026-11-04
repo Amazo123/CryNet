@@ -1,0 +1,849 @@
+[    0.32] I (12334) link: node 3: rms 0.0130  seq 365  flags 0x05  crc 0xE5C2B7FC  level 0.0230  streak 0  win 0.0290  bat 0 mV
+[    0.52] I (12534) link: node 1: rms 0.0160  seq 415  flags 0x05  crc 0x22BA1FA0  level 0.0260  streak 0  win 0.0360  bat 0 mV
+[    0.58] I (12601) ble_alert: a caregiver's phone connected
+[    0.59] I (12601) NimBLE: GAP procedure initiated: stop advertising.
+[    0.59] 
+[    0.59] I (12602) ble_alert: advertising is off (a phone is connected)
+[    0.68] I (12701) ble_alert: the alert characteristic is subscribed
+[    0.74] I (12754) link: node 2: rms 0.0150  seq 330  flags 0x05  crc 0x77988B3B  level 0.0230  streak 0  win 0.0530  bat 0 mV
+[    1.32] I (13334) link: node 3: rms 0.0060  seq 365  flags 0x05  crc 0xE5C2B7FC  level 0.0190  streak 0  win 0.0290  bat 0 mV
+[    1.62] I (13634) link: node 1: rms 0.0120  seq 415  flags 0x05  crc 0x22BA1FA0  level 0.0230  streak 0  win 0.0360  bat 0 mV
+[    1.76] I (13774) link: node 2: rms 0.0150  seq 330  flags 0x05  crc 0x77988B3B  level 0.0230  streak 0  win 0.0530  bat 0 mV
+[    2.42] I (14434) link: node 3: rms 0.0130  seq 365  flags 0x05  crc 0xE5C2B7FC  level 0.0200  streak 0  win 0.0290  bat 0 mV
+[    2.72] I (14734) link: node 1: rms 0.0130  seq 415  flags 0x05  crc 0x22BA1FA0  level 0.0230  streak 0  win 0.0360  bat 0 mV
+[    2.76] I (14774) link: node 2: rms 0.0150  seq 330  flags 0x05  crc 0x77988B3B  level 0.0230  streak 0  win 0.0530  bat 0 mV
+[    3.52] I (15534) link: node 3: rms 0.0100  seq 365  flags 0x05  crc 0xE5C2B7FC  level 0.0200  streak 0  win 0.0290  bat 0 mV
+[    3.76] I (15774) link: node 2: rms 0.0150  seq 330  flags 0x05  crc 0x77988B3B  level 0.0230  streak 0  win 0.0530  bat 0 mV
+[    3.82] I (15834) link: node 1: rms 0.0130  seq 415  flags 0x05  crc 0x22BA1FA0  level 0.0230  streak 0  win 0.0360  bat 0 mV
+[    3.90] I (15914) link: link: 910 frames off the air, 910 parsed, 0 bad, 0 bad payload, 5 requests sent, 0 failed
+[    4.52] I (16534) link: node 3: rms 0.0150  seq 365  flags 0x05  crc 0xE5C2B7FC  level 0.0200  streak 0  win 0.0290  bat 0 mV
+[    4.82] I (16834) link: node 1: rms 0.0150  seq 415  flags 0x05  crc 0x22BA1FA0  level 0.0240  streak 0  win 0.0360  bat 0 mV
+[    4.86] I (16874) link: node 2: rms 0.0130  seq 330  flags 0x05  crc 0x77988B3B  level 0.0240  streak 0  win 0.0530  bat 0 mV
+[    5.62] I (17634) link: node 3: rms 0.0110  seq 365  flags 0x05  crc 0xE5C2B7FC  level 0.0210  streak 0  win 0.0290  bat 0 mV
+[    5.92] I (17934) link: node 1: rms 0.0110  seq 415  flags 0x05  crc 0x22BA1FA0  level 0.0240  streak 0  win 0.0360  bat 0 mV
+[    5.96] I (17974) link: node 2: rms 0.0130  seq 330  flags 0x05  crc 0x77988B3B  level 0.0240  streak 0  win 0.0530  bat 0 mV
+[    6.72] I (18734) link: node 3: rms 0.0150  seq 365  flags 0x05  crc 0xE5C2B7FC  level 0.0210  streak 0  win 0.0290  bat 0 mV
+[    6.96] I (18974) link: node 2: rms 0.0150  seq 330  flags 0x05  crc 0x77988B3B  level 0.0240  streak 0  win 0.0530  bat 0 mV
+[    7.02] I (19034) link: node 1: rms 0.0160  seq 415  flags 0x05  crc 0x22BA1FA0  level 0.0240  streak 0  win 0.0360  bat 0 mV
+[    7.72] I (19734) link: node 3: rms 0.0140  seq 365  flags 0x05  crc 0xE5C2B7FC  level 0.0220  streak 0  win 0.0290  bat 0 mV
+[    8.02] I (20034) link: node 1: rms 0.0130  seq 415  flags 0x05  crc 0x22BA1FA0  level 0.0250  streak 0  win 0.0360  bat 0 mV
+[    8.06] I (20074) link: node 2: rms 0.0150  seq 330  flags 0x05  crc 0x77988B3B  level 0.0250  streak 0  win 0.0530  bat 0 mV
+[    8.82] I (20834) link: node 3: rms 0.0090  seq 365  flags 0x05  crc 0xE5C2B7FC  level 0.0220  streak 0  win 0.0290  bat 0 mV
+[    8.92] I (20934) link: link: 1061 frames off the air, 1061 parsed, 0 bad, 0 bad payload, 5 requests sent, 0 failed
+[    9.06] I (21074) link: node 2: rms 0.0350  seq 330  flags 0x07  crc 0x77988B3B  level 0.0240  streak 1  win 0.0530  bat 0 mV
+[    9.12] I (21134) link: node 1: rms 0.0100  seq 415  flags 0x05  crc 0x22BA1FA0  level 0.0250  streak 0  win 0.0360  bat 0 mV
+[    9.26] I (21274) link: node 2: rms 0.0210  seq 330  flags 0x05  crc 0x77988B3B  level 0.0240  streak 0  win 0.0530  bat 0 mV
+[    9.36] I (21374) link: node 2: rms 0.0290  seq 330  flags 0x07  crc 0x77988B3B  level 0.0240  streak 1  win 0.0530  bat 0 mV
+[    9.46] I (21474) link: node 2: rms 0.0180  seq 330  flags 0x05  crc 0x77988B3B  level 0.0240  streak 0  win 0.0530  bat 0 mV
+[    9.52] I (21534) link: node 3: rms 0.0230  seq 365  flags 0x07  crc 0xE5C2B7FC  level 0.0230  streak 1  win 0.0290  bat 0 mV
+[    9.56] I (21574) link: node 2: rms 0.0640  seq 330  flags 0x07  crc 0x77988B3B  level 0.0240  streak 1  win 0.0530  bat 0 mV
+[    9.62] I (21634) link: node 3: rms 0.0130  seq 365  flags 0x05  crc 0xE5C2B7FC  level 0.0230  streak 0  win 0.0290  bat 0 mV
+[    9.76] I (21774) link: node 2: rms 0.0150  seq 330  flags 0x05  crc 0x77988B3B  level 0.0250  streak 0  win 0.0530  bat 0 mV
+[   10.06] I (22074) link: node 2: rms 0.0210  seq 330  flags 0x04  crc 0x00000000  level 0.0250  streak 0  win 0.0530  bat 0 mV
+[   10.14] I (22154) link: node 1: rms 0.0120  seq 415  flags 0x05  crc 0x22BA1FA0  level 0.0250  streak 0  win 0.0360  bat 0 mV
+[   10.22] I (22234) link: node 3: rms 0.0260  seq 365  flags 0x07  crc 0xE5C2B7FC  level 0.0230  streak 1  win 0.0290  bat 0 mV
+[   10.26] I (22274) link: node 2: rms 0.0410  seq 330  flags 0x06  crc 0x00000000  level 0.0250  streak 1  win 0.0530  bat 0 mV
+[   10.42] I (22434) link: node 3: rms 0.0230  seq 365  flags 0x05  crc 0xE5C2B7FC  level 0.0230  streak 3  win 0.0290  bat 0 mV
+[   10.52] I (22534) link: node 1: rms 0.0440  seq 415  flags 0x07  crc 0x22BA1FA0  level 0.0260  streak 1  win 0.0360  bat 0 mV
+[   10.62] I (22634) link: node 1: asking for the window (seq 415, rms 0.0430, level 0.0260, win 0.0360)
+[   10.92] I (22934) link: node 3: rms 0.0290  seq 365  flags 0x07  crc 0xE5C2B7FC  level 0.0230  streak 1  win 0.0290  bat 0 mV
+[   11.02] I (23034) link: node 3: rms 0.0110  seq 365  flags 0x05  crc 0xE5C2B7FC  level 0.0230  streak 0  win 0.0290  bat 0 mV
+[   11.16] I (23174) link: node 2: rms 0.0330  seq 331  flags 0x07  crc 0x35343778  level 0.0270  streak 8  win 0.0450  bat 0 mV
+[   11.24] I (23254) link: node 3: rms 0.0380  seq 365  flags 0x07  crc 0xE5C2B7FC  level 0.0240  streak 1  win 0.0290  bat 0 mV
+[   11.52] I (23534) link: node 3: rms 0.0150  seq 365  flags 0x05  crc 0xE5C2B7FC  level 0.0240  streak 0  win 0.0290  bat 0 mV
+[   11.64] I (23654) link: node 3: rms 0.0330  seq 365  flags 0x07  crc 0xE5C2B7FC  level 0.0240  streak 1  win 0.0290  bat 0 mV
+[   11.66] I (23675) link: node 1: rms 0.0330  seq 415  flags 0x07  crc 0x22BA1FA0  level 0.0260  streak 3  win 0.0360  bat 0 mV
+[   11.72] I (23735) link: node 3: rms 0.0150  seq 365  flags 0x05  crc 0xE5C2B7FC  level 0.0240  streak 0  win 0.0290  bat 0 mV
+[   11.76] W (23775) link: node 1: missing fragments:
+[   11.76] W (23775) link:   20 of 286
+[   11.76] W (23775) link:   38 of 286
+[   11.77] W (23775) link:   71 of 286
+[   11.77] W (23775) link:   105 of 286
+[   11.77] W (23778) link:   123 of 286
+[   11.77] W (23780) link:   172 of 286
+[   11.77] W (23783) link:   192 of 286
+[   11.78] W (23785) link:   200 of 286
+[   11.82] W (23828) link: node 1: the burst stalled with 273 of 286 fragments (273 frames arrived); asking for the 13 that are missing (signal -20 dBm, from -23 to -19; its telemetry reads -19 dBm)
+[   11.84] W (23833) link: node 1: its radio handed over 288 frames since the burst began, 288 of them left it, 0 were refused, 0 times it had no room
+[   11.84] W (23846) link: node 1: arrival pattern: ################################################################
+[   11.86] I (23875) link: node 3: rms 0.0340  seq 365  flags 0x06  crc 0x00000000  level 0.0240  streak 1  win 0.0290  bat 0 mV
+[   11.92] I (23935) link: node 3: rms 0.0240  seq 365  flags 0x04  crc 0x00000000  level 0.0250  streak 0  win 0.0290  bat 0 mV
+[   11.93] W (23935) link: node 1: missing fragments:
+[   11.93] W (23938) link:   123 of 286
+[   11.97] W (23981) link: node 1: the burst stalled with 285 of 286 fragments (285 frames arrived); asking for the 1 that are missing (signal -20 dBm, from -23 to -19; its telemetry reads -20 dBm)
+[   11.99] W (23986) link: node 1: its radio handed over 302 frames since the burst began, 302 of them left it, 0 were refused, 0 times it had no room
+[   12.00] W (23998) link: node 1: arrival pattern: ################################################################
+[   12.02] I (24028) link: node 1: rms 0.0250  seq 415  flags 0x05  crc 0x22BA1FA0  level 0.0260  streak 0  win 0.0360  bat 0 mV
+[   12.03] I (24045) link: node 1: 286/286 fragments in 1.39 s (signal -20 dBm, from -23 to -19; its telemetry reads -20 dBm)
+[   12.04] I (24045) link: node 1: window crc32 0x22BA1FA0, the node advertised 0x22BA1FA0 -> MATCH
+[   12.05] I (24058) link: node 1: window rms 0.036107  mean -47  peak 6560  crest 5.5
+[   12.20] I (24212) link: node 1: front end 47.9 ms, inference 105.9 ms, P(no_cry)=0.5312 P(cry)=0.4688
+[   12.20] I (24213) link: node 1: no cry
+[   12.21] I (24214) link: node 2: asking for the window (seq 331, rms 0.0420, level 0.0290, win 0.0450)
+[   12.23] I (24241) link: node 1: rms 0.0450  seq 415  flags 0x07  crc 0x22BA1FA0  level 0.0270  streak 1  win 0.0360  bat 0 mV
+[   12.24] I (24241) link: node 2: rms 0.0430  seq 331  flags 0x07  crc 0x35343778  level 0.0300  streak 15  win 0.0450  bat 0 mV
+[   12.25] I (24251) link: node 3: rms 0.0270  seq 365  flags 0x06  crc 0x00000000  level 0.0250  streak 1  win 0.0290  bat 0 mV
+[   12.26] I (24261) link: node 1: rms 0.0180  seq 415  flags 0x05  crc 0x22BA1FA0  level 0.0270  streak 0  win 0.0360  bat 0 mV
+[   12.34] I (24351) link: node 3: rms 0.0240  seq 365  flags 0x04  crc 0x00000000  level 0.0250  streak 0  win 0.0290  bat 0 mV
+[   12.36] I (24371) link: node 1: rms 0.0330  seq 415  flags 0x07  crc 0x22BA1FA0  level 0.0270  streak 1  win 0.0360  bat 0 mV
+[   12.56] I (24571) link: node 1: rms 0.0190  seq 415  flags 0x05  crc 0x22BA1FA0  level 0.0270  streak 0  win 0.0360  bat 0 mV
+[   12.78] I (24792) link: node 1: rms 0.0420  seq 415  flags 0x07  crc 0x22BA1FA0  level 0.0270  streak 1  win 0.0360  bat 0 mV
+[   12.86] I (24872) link: node 1: rms 0.0220  seq 415  flags 0x05  crc 0x22BA1FA0  level 0.0270  streak 0  win 0.0360  bat 0 mV
+[   13.06] I (25072) link: node 1: rms 0.0340  seq 415  flags 0x07  crc 0x22BA1FA0  level 0.0280  streak 1  win 0.0360  bat 0 mV
+[   13.14] I (25152) link: node 3: rms 0.0280  seq 365  flags 0x06  crc 0x00000000  level 0.0260  streak 1  win 0.0290  bat 0 mV
+[   13.16] I (25172) link: node 1: rms 0.0610  seq 415  flags 0x06  crc 0x00000000  level 0.0280  streak 2  win 0.0360  bat 0 mV
+[   13.24] I (25252) link: node 3: rms 0.0230  seq 365  flags 0x04  crc 0x00000000  level 0.0260  streak 0  win 0.0290  bat 0 mV
+[   13.32] I (25332) link: node 2: rms 0.0290  seq 331  flags 0x05  crc 0x35343778  level 0.0300  streak 0  win 0.0450  bat 0 mV
+[   13.34] I (25353) link: node 1: rms 0.0270  seq 415  flags 0x04  crc 0x00000000  level 0.0280  streak 0  win 0.0360  bat 0 mV
+[   13.42] I (25433) link: node 2: rms 0.0550  seq 331  flags 0x07  crc 0x35343778  level 0.0300  streak 1  win 0.0450  bat 0 mV
+[   13.43] I (25433) link: node 3: rms 0.0270  seq 365  flags 0x06  crc 0x00000000  level 0.0260  streak 1  win 0.0290  bat 0 mV
+[   13.44] W (25442) link: node 2: missing fragments:
+[   13.44] W (25446) link:   25 of 286
+[   13.44] W (25449) link:   41 of 286
+[   13.44] W (25451) link:   60 of 286
+[   13.45] W (25454) link:   88 of 286
+[   13.45] W (25456) link:   119 of 286
+[   13.45] W (25459) link:   147 of 286
+[   13.45] W (25462) link:   195 of 286
+[   13.45] W (25464) link:   210 of 286
+[   13.50] W (25507) link: node 2: the burst stalled with 275 of 286 fragments (275 frames arrived); asking for the 11 that are missing (signal -27 dBm, from -32 to -25; its telemetry reads -27 dBm)
+[   13.52] W (25512) link: node 2: its radio handed over 290 frames since the burst began, 290 of them left it, 0 were refused, 0 times it had no room
+[   13.52] W (25525) link: node 2: arrival pattern: ################################################################
+[   13.54] I (25554) link: node 1: rms 0.0370  seq 415  flags 0x06  crc 0x00000000  level 0.0290  streak 1  win 0.0360  bat 0 mV
+[   13.55] I (25554) link: node 3: rms 0.0100  seq 365  flags 0x04  crc 0x00000000  level 0.0260  streak 0  win 0.0290  bat 0 mV
+[   13.59] W (25604) link: node 2: missing fragments:
+[   13.59] W (25604) link:   210 of 286
+[   13.64] W (25644) link: node 2: the burst stalled with 285 of 286 fragments (285 frames arrived); asking for the 1 that are missing (signal -27 dBm, from -32 to -25; its telemetry reads -27 dBm)
+[   13.65] W (25650) link: node 2: its radio handed over 302 frames since the burst began, 302 of them left it, 0 were refused, 0 times it had no room
+[   13.66] W (25662) link: node 2: arrival pattern: ################################################################
+[   13.68] I (25691) link: node 1: rms 0.0230  seq 415  flags 0x04  crc 0x00000000  level 0.0290  streak 0  win 0.0360  bat 0 mV
+[   13.69] I (25691) link: node 3: rms 0.0560  seq 365  flags 0x06  crc 0x00000000  level 0.0260  streak 1  win 0.0290  bat 0 mV
+[   13.71] I (25717) link: node 2: 286/286 fragments in 1.67 s (signal -27 dBm, from -32 to -25; its telemetry reads -27 dBm)
+[   13.72] I (25718) link: node 2: window crc32 0x35343778, the node advertised 0x35343778 -> MATCH
+[   13.72] I (25730) link: node 2: window rms 0.045015  mean -25  peak 5898  crest 4.0
+[   13.87] I (25885) link: node 2: front end 48.1 ms, inference 106.4 ms, P(no_cry)=0.5312 P(cry)=0.4688
+[   13.87] I (25886) link: node 2: no cry
+[   13.89] I (25906) link: node 1: rms 0.0190  seq 416  flags 0x05  crc 0xDD0A340A  level 0.0290  streak 0  win 0.0340  bat 0 mV
+[   13.93] I (25946) link: link: 1748 frames off the air, 1748 parsed, 0 bad, 0 bad payload, 11 requests sent, 0 failed
+[   13.95] I (25966) link: node 1: rms 0.0540  seq 416  flags 0x07  crc 0xDD0A340A  level 0.0290  streak 1  win 0.0340  bat 0 mV
+[   14.05] I (26066) link: node 1: asking for the window (seq 416, rms 0.0340, level 0.0290, win 0.0340)
+[   14.57] I (26586) link: node 3: rms 0.0220  seq 366  flags 0x05  crc 0x305F5CC6  level 0.0270  streak 0  win 0.0320  bat 0 mV
+[   14.91] I (26926) link: node 2: rms 0.0520  seq 331  flags 0x07  crc 0x35343778  level 0.0300  streak 12  win 0.0450  bat 0 mV
+[   15.33] I (27346) link: node 3: rms 0.0290  seq 366  flags 0x07  crc 0x305F5CC6  level 0.0280  streak 1  win 0.0320  bat 0 mV
+[   15.47] I (27486) link: node 1: rms 0.0100  seq 416  flags 0x05  crc 0xDD0A340A  level 0.0290  streak 0  win 0.0340  bat 0 mV
+[   15.53] I (27546) link: node 3: rms 0.0170  seq 366  flags 0x05  crc 0x305F5CC6  level 0.0280  streak 0  win 0.0320  bat 0 mV
+[   15.57] W (27586) link: node 1: missing fragments:
+[   15.57] W (27586) link:   6 of 286
+[   15.57] W (27586) link:   40 of 286
+[   15.58] W (27586) link:   64 of 286
+[   15.58] W (27586) link:   87 of 286
+[   15.58] W (27588) link:   127 of 286
+[   15.58] W (27591) link:   149 of 286
+[   15.58] W (27594) link:   169 of 286
+[   15.59] W (27596) link:   177 of 286
+[   15.63] W (27639) link: node 1: the burst stalled with 271 of 286 fragments (271 frames arrived); asking for the 15 that are missing (signal -20 dBm, from -21 to -19; its telemetry reads -20 dBm)
+[   15.65] W (27644) link: node 1: its radio handed over 288 frames since the burst began, 288 of them left it, 0 were refused, 0 times it had no room
+[   15.65] W (27657) link: node 1: arrival pattern: ################################################################
+[   15.67] I (27686) link: node 1: rms 0.0380  seq 416  flags 0x07  crc 0xDD0A340A  level 0.0300  streak 1  win 0.0340  bat 0 mV
+[   15.68] I (27686) link: node 3: rms 0.0480  seq 366  flags 0x07  crc 0x305F5CC6  level 0.0290  streak 1  win 0.0320  bat 0 mV
+[   15.70] I (27712) link: node 1: 286/286 fragments in 1.63 s (signal -20 dBm, from -21 to -19; its telemetry reads -20 dBm)
+[   15.71] I (27712) link: node 1: window crc32 0xDD0A340A, the node advertised 0xDD0A340A -> MATCH
+[   15.71] I (27725) link: node 1: window rms 0.034002  mean -50  peak 4829  crest 4.3
+[   15.87] I (27880) link: node 1: front end 48.4 ms, inference 105.8 ms, P(no_cry)=0.9805 P(cry)=0.0195
+[   15.87] I (27880) link: node 1: no cry
+[   15.89] I (27901) link: node 3: asking for the window (seq 366, rms 0.0320, level 0.0290, win 0.0320)
+[   15.93] I (27941) link: node 2: rms 0.0540  seq 331  flags 0x07  crc 0x35343778  level 0.0300  streak 18  win 0.0450  bat 0 mV
+[   15.97] I (27981) link: node 1: rms 0.0190  seq 416  flags 0x05  crc 0xDD0A340A  level 0.0300  streak 0  win 0.0340  bat 0 mV
+[   16.37] I (28381) link: node 1: rms 0.0470  seq 416  flags 0x07  crc 0xDD0A340A  level 0.0300  streak 1  win 0.0340  bat 0 mV
+[   16.57] I (28581) link: node 1: rms 0.0230  seq 416  flags 0x05  crc 0xDD0A340A  level 0.0300  streak 0  win 0.0340  bat 0 mV
+[   16.87] I (28881) link: node 1: rms 0.0540  seq 416  flags 0x07  crc 0xDD0A340A  level 0.0300  streak 1  win 0.0340  bat 0 mV
+[   16.93] I (28941) link: node 2: rms 0.0200  seq 331  flags 0x05  crc 0x35343778  level 0.0300  streak 0  win 0.0450  bat 0 mV
+[   16.99] I (29001) link: node 1: rms 0.0120  seq 416  flags 0x05  crc 0xDD0A340A  level 0.0300  streak 0  win 0.0340  bat 0 mV
+[   17.01] I (29021) link: node 2: rms 0.0430  seq 331  flags 0x07  crc 0x35343778  level 0.0300  streak 1  win 0.0450  bat 0 mV
+[   17.07] I (29081) link: node 1: rms 0.0420  seq 416  flags 0x07  crc 0xDD0A340A  level 0.0300  streak 1  win 0.0340  bat 0 mV
+[   17.09] I (29101) link: node 3: rms 0.0130  seq 366  flags 0x05  crc 0x305F5CC6  level 0.0290  streak 0  win 0.0320  bat 0 mV
+[   17.17] I (29181) link: node 1: rms 0.0150  seq 416  flags 0x05  crc 0xDD0A340A  level 0.0300  streak 0  win 0.0340  bat 0 mV
+[   17.18] W (29201) link: node 3: missing fragments:
+[   17.19] W (29201) link:   2 of 286
+[   17.19] W (29201) link:   36 of 286
+[   17.19] W (29201) link:   62 of 286
+[   17.19] W (29201) link:   64 of 286
+[   17.19] W (29203) link:   75 of 286
+[   17.20] W (29206) link:   99 of 286
+[   17.20] W (29208) link:   104 of 286
+[   17.20] W (29211) link:   116 of 286
+[   17.25] W (29254) link: node 3: the burst stalled with 272 of 286 fragments (272 frames arrived); asking for the 14 that are missing (signal -41 dBm, from -43 to -37; its telemetry reads -41 dBm)
+[   17.26] W (29259) link: node 3: its radio handed over 288 frames since the burst began, 288 of them left it, 0 were refused, 0 times it had no room
+[   17.27] W (29271) link: node 3: arrival pattern: ################################################################
+[   17.29] I (29301) link: node 1: rms 0.0360  seq 416  flags 0x07  crc 0xDD0A340A  level 0.0300  streak 1  win 0.0340  bat 0 mV
+[   17.31] I (29319) link: node 3: 286/286 fragments in 1.40 s (signal -41 dBm, from -43 to -37; its telemetry reads -41 dBm)
+[   17.32] I (29319) link: node 3: window crc32 0x305F5CC6, the node advertised 0x305F5CC6 -> MATCH
+[   17.32] I (29332) link: node 3: window rms 0.031625  mean 37  peak 3002  crest 2.9
+[   17.47] I (29485) link: node 3: front end 48.4 ms, inference 103.8 ms, P(no_cry)=0.0508 P(cry)=0.9492
+[   17.47] I (29485) link: node 3: no cry
+[   17.57] I (29585) link: node 1: rms 0.0290  seq 416  flags 0x05  crc 0xDD0A340A  level 0.0300  streak 0  win 0.0340  bat 0 mV
+[   17.67] I (29685) link: node 1: rms 0.0360  seq 416  flags 0x07  crc 0xDD0A340A  level 0.0300  streak 1  win 0.0340  bat 0 mV
+[   18.01] I (30025) link: node 2: rms 0.0280  seq 331  flags 0x05  crc 0x35343778  level 0.0300  streak 0  win 0.0450  bat 0 mV
+[   18.11] I (30125) link: node 2: rms 0.0560  seq 331  flags 0x07  crc 0x35343778  level 0.0300  streak 1  win 0.0450  bat 0 mV
+[   18.21] I (30225) link: node 2: rms 0.0270  seq 331  flags 0x05  crc 0x35343778  level 0.0300  streak 0  win 0.0450  bat 0 mV
+[   18.31] I (30325) link: node 2: rms 0.0350  seq 331  flags 0x07  crc 0x35343778  level 0.0300  streak 1  win 0.0450  bat 0 mV
+[   18.49] I (30505) link: node 3: rms 0.0220  seq 366  flags 0x05  crc 0x305F5CC6  level 0.0300  streak 0  win 0.0320  bat 0 mV
+[   18.57] I (30585) link: node 1: rms 0.0260  seq 416  flags 0x05  crc 0xDD0A340A  level 0.0300  streak 0  win 0.0340  bat 0 mV
+[   18.59] I (30605) link: node 3: rms 0.0330  seq 366  flags 0x07  crc 0x305F5CC6  level 0.0300  streak 1  win 0.0320  bat 0 mV
+[   18.67] I (30685) link: node 1: rms 0.0460  seq 416  flags 0x07  crc 0xDD0A340A  level 0.0300  streak 1  win 0.0340  bat 0 mV
+[   18.69] I (30705) link: node 3: rms 0.0170  seq 366  flags 0x05  crc 0x305F5CC6  level 0.0300  streak 0  win 0.0320  bat 0 mV
+[   18.95] I (30965) link: link: 2435 frames off the air, 2435 parsed, 0 bad, 0 bad payload, 15 requests sent, 0 failed
+[   19.09] I (31105) link: node 1: rms 0.0230  seq 416  flags 0x05  crc 0xDD0A340A  level 0.0300  streak 0  win 0.0340  bat 0 mV
+[   19.21] I (31225) link: node 2: rms 0.0220  seq 331  flags 0x05  crc 0x35343778  level 0.0300  streak 0  win 0.0450  bat 0 mV
+[   19.31] I (31325) link: node 2: rms 0.0450  seq 331  flags 0x07  crc 0x35343778  level 0.0300  streak 1  win 0.0450  bat 0 mV
+[   19.37] I (31385) link: node 1: rms 0.0380  seq 416  flags 0x07  crc 0xDD0A340A  level 0.0300  streak 1  win 0.0340  bat 0 mV
+[   19.41] I (31425) link: node 2: rms 0.0280  seq 331  flags 0x05  crc 0x35343778  level 0.0300  streak 0  win 0.0450  bat 0 mV
+[   19.57] I (31585) link: node 1: rms 0.0290  seq 416  flags 0x05  crc 0xDD0A340A  level 0.0300  streak 0  win 0.0340  bat 0 mV
+[   19.61] I (31625) link: node 2: rms 0.0330  seq 331  flags 0x07  crc 0x35343778  level 0.0300  streak 1  win 0.0450  bat 0 mV
+[   19.81] I (31825) link: node 2: rms 0.0190  seq 331  flags 0x05  crc 0x35343778  level 0.0300  streak 0  win 0.0450  bat 0 mV
+[   19.89] I (31905) link: node 3: rms 0.0120  seq 366  flags 0x05  crc 0x305F5CC6  level 0.0300  streak 0  win 0.0320  bat 0 mV
+[   20.57] I (32585) link: node 1: rms 0.0150  seq 416  flags 0x05  crc 0xDD0A340A  level 0.0300  streak 0  win 0.0340  bat 0 mV
+[   20.89] I (32905) link: node 3: rms 0.0140  seq 366  flags 0x05  crc 0x305F5CC6  level 0.0300  streak 0  win 0.0320  bat 0 mV
+[   20.91] I (32925) link: node 2: rms 0.0130  seq 331  flags 0x05  crc 0x35343778  level 0.0270  streak 0  win 0.0450  bat 0 mV
+[   21.41] I (33425) link: node 2: rms 0.0320  seq 331  flags 0x07  crc 0x35343778  level 0.0270  streak 1  win 0.0450  bat 0 mV
+[   21.51] I (33525) link: node 2: rms 0.0230  seq 331  flags 0x05  crc 0x35343778  level 0.0280  streak 0  win 0.0450  bat 0 mV
+[   21.67] I (33685) link: node 1: rms 0.0100  seq 416  flags 0x05  crc 0xDD0A340A  level 0.0290  streak 0  win 0.0340  bat 0 mV
+[   21.99] I (34005) link: node 3: rms 0.0120  seq 366  flags 0x05  crc 0x305F5CC6  level 0.0280  streak 0  win 0.0320  bat 0 mV
+[   22.21] I (34225) link: node 3: rms 0.0290  seq 366  flags 0x07  crc 0x305F5CC6  level 0.0280  streak 1  win 0.0320  bat 0 mV
+[   22.39] I (34405) link: node 3: rms 0.0220  seq 366  flags 0x05  crc 0x305F5CC6  level 0.0280  streak 0  win 0.0320  bat 0 mV
+[   22.61] I (34625) link: node 2: rms 0.0190  seq 331  flags 0x05  crc 0x35343778  level 0.0280  streak 0  win 0.0450  bat 0 mV
+[   22.77] I (34785) link: node 1: rms 0.0160  seq 416  flags 0x05  crc 0xDD0A340A  level 0.0300  streak 0  win 0.0340  bat 0 mV
+[   23.49] I (35505) link: node 3: rms 0.0180  seq 366  flags 0x05  crc 0x305F5CC6  level 0.0280  streak 0  win 0.0320  bat 0 mV
+[   23.61] I (35625) link: node 2: rms 0.0180  seq 331  flags 0x05  crc 0x35343778  level 0.0280  streak 0  win 0.0450  bat 0 mV
+[   23.77] I (35785) link: node 1: rms 0.0190  seq 416  flags 0x05  crc 0xDD0A340A  level 0.0300  streak 0  win 0.0340  bat 0 mV
+[   23.89] I (35905) link: node 3: rms 0.0290  seq 366  flags 0x07  crc 0x305F5CC6  level 0.0290  streak 1  win 0.0320  bat 0 mV
+[   23.95] I (35965) link: link: 2583 frames off the air, 2583 parsed, 0 bad, 0 bad payload, 15 requests sent, 0 failed
+[   23.99] I (36005) link: node 3: rms 0.0130  seq 366  flags 0x05  crc 0x305F5CC6  level 0.0290  streak 0  win 0.0320  bat 0 mV
+[   24.71] I (36725) link: node 2: rms 0.0130  seq 331  flags 0x05  crc 0x35343778  level 0.0250  streak 0  win 0.0450  bat 0 mV
+[   24.87] I (36885) link: node 1: rms 0.0150  seq 416  flags 0x05  crc 0xDD0A340A  level 0.0300  streak 0  win 0.0340  bat 0 mV
+[   24.99] I (37005) link: node 3: rms 0.0120  seq 366  flags 0x05  crc 0x305F5CC6  level 0.0290  streak 0  win 0.0320  bat 0 mV
+[   25.71] I (37725) link: node 2: rms 0.0180  seq 331  flags 0x05  crc 0x35343778  level 0.0250  streak 0  win 0.0450  bat 0 mV
+[   25.97] I (37985) link: node 1: rms 0.0170  seq 416  flags 0x05  crc 0xDD0A340A  level 0.0300  streak 0  win 0.0340  bat 0 mV
+[   26.09] I (38105) link: node 3: rms 0.0210  seq 366  flags 0x05  crc 0x305F5CC6  level 0.0300  streak 0  win 0.0320  bat 0 mV
+[   26.71] I (38725) link: node 2: rms 0.0160  seq 331  flags 0x05  crc 0x35343778  level 0.0260  streak 0  win 0.0450  bat 0 mV
+[   26.97] I (38985) link: node 1: rms 0.0120  seq 416  flags 0x05  crc 0xDD0A340A  level 0.0300  streak 0  win 0.0340  bat 0 mV
+[   27.21] I (39225) link: node 3: rms 0.0140  seq 366  flags 0x05  crc 0x305F5CC6  level 0.0280  streak 0  win 0.0320  bat 0 mV
+[   27.71] I (39725) link: node 2: rms 0.0130  seq 331  flags 0x05  crc 0x35343778  level 0.0260  streak 0  win 0.0450  bat 0 mV
+[   28.07] I (40085) link: node 1: rms 0.0150  seq 416  flags 0x05  crc 0xDD0A340A  level 0.0300  streak 0  win 0.0340  bat 0 mV
+[   28.29] I (40305) link: node 3: rms 0.0140  seq 366  flags 0x05  crc 0x305F5CC6  level 0.0270  streak 0  win 0.0320  bat 0 mV
+[   28.81] I (40825) link: node 2: rms 0.0070  seq 331  flags 0x05  crc 0x35343778  level 0.0220  streak 0  win 0.0450  bat 0 mV
+[   28.95] I (40965) link: link: 2732 frames off the air, 2732 parsed, 0 bad, 0 bad payload, 15 requests sent, 0 failed
+[   29.17] I (41185) link: node 1: rms 0.0100  seq 416  flags 0x05  crc 0xDD0A340A  level 0.0180  streak 0  win 0.0340  bat 0 mV
+[   29.29] I (41305) link: node 3: rms 0.0120  seq 366  flags 0x05  crc 0x305F5CC6  level 0.0240  streak 0  win 0.0320  bat 0 mV
+[   29.91] I (41925) link: node 2: rms 0.0070  seq 331  flags 0x05  crc 0x35343778  level 0.0170  streak 0  win 0.0450  bat 0 mV
+[   30.00] << sent: help >>
+[   30.00] << sent: status >>
+[   30.00] << sent: alert 2 >>
+[   30.01] I (42029) console: << help
+[   30.01] I (42030) console: commands:
+[   30.02] I (42030) console:   help          this list
+[   30.02] I (42030) console:   status        the cots and what they are hearing
+[   30.03] I (42034) console:   alert <cot>   publish a test alert for that cot
+[   30.03] I (42040) console:   clear         take the test alert back
+[   30.04] I (42045) console: << status
+[   30.04] I (42048) console:   cot 1: rms 0.0100  level 0.0180  window 0.0340 (whole)  confidence 0%
+[   30.06] I (42056) console:   cot 2: rms 0.0090  level 0.0170  window 0.0450 (whole)  confidence 0%
+[   30.06] I (42064) console:   cot 3: rms 0.0110  level 0.0160  window 0.0320 (whole)  confidence 0%
+[   30.07] I (42072) console: << alert 2
+[   30.07] W (42074) link: the console is holding a TEST ALERT for cot 2
+[   30.07] I (42080) ble_alert: a cry on cot 2 at 100%
+[   30.08] I (42084) NimBLE: GATT procedure initiated: notify;
+[   30.08] I (42088) NimBLE: att_handle=16
+[   30.08] 
+[   30.18] I (42192) link: node 1: rms 0.0080  seq 416  flags 0x05  crc 0xDD0A340A  level 0.0180  streak 0  win 0.0340  bat 0 mV
+[   30.30] I (42312) link: node 3: rms 0.0130  seq 366  flags 0x05  crc 0x305F5CC6  level 0.0160  streak 0  win 0.0320  bat 0 mV
+[   30.90] I (42912) link: node 3: rms 0.0170  seq 366  flags 0x07  crc 0x305F5CC6  level 0.0160  streak 1  win 0.0320  bat 0 mV
+[   30.92] I (42932) link: node 2: rms 0.0080  seq 331  flags 0x05  crc 0x35343778  level 0.0170  streak 0  win 0.0450  bat 0 mV
+[   31.00] I (43012) link: node 3: rms 0.0140  seq 366  flags 0x05  crc 0x305F5CC6  level 0.0160  streak 0  win 0.0320  bat 0 mV
+[   31.12] I (43132) link: node 2: rms 0.0100  seq 331  flags 0x04  crc 0x00000000  level 0.0170  streak 0  win 0.0450  bat 0 mV
+[   31.28] I (43292) link: node 1: rms 0.0120  seq 416  flags 0x05  crc 0xDD0A340A  level 0.0180  streak 0  win 0.0340  bat 0 mV
+[   32.00] I (44012) link: node 3: rms 0.0160  seq 366  flags 0x05  crc 0x305F5CC6  level 0.0170  streak 0  win 0.0320  bat 0 mV
+[   32.20] I (44212) link: node 3: rms 0.0180  seq 366  flags 0x07  crc 0x305F5CC6  level 0.0170  streak 1  win 0.0320  bat 0 mV
+[   32.22] I (44232) link: node 2: rms 0.0160  seq 331  flags 0x04  crc 0x00000000  level 0.0180  streak 0  win 0.0450  bat 0 mV
+[   32.28] I (44292) link: node 1: rms 0.0160  seq 416  flags 0x05  crc 0xDD0A340A  level 0.0180  streak 0  win 0.0340  bat 0 mV
+[   32.30] I (44312) link: node 3: rms 0.0140  seq 366  flags 0x05  crc 0x305F5CC6  level 0.0170  streak 0  win 0.0320  bat 0 mV
+[   32.70] I (44712) link: node 3: rms 0.0180  seq 366  flags 0x07  crc 0x305F5CC6  level 0.0170  streak 1  win 0.0320  bat 0 mV
+[   32.80] I (44812) link: node 3: rms 0.0150  seq 366  flags 0x05  crc 0x305F5CC6  level 0.0170  streak 0  win 0.0320  bat 0 mV
+[   33.02] I (45032) link: node 2: rms 0.0190  seq 331  flags 0x06  crc 0x00000000  level 0.0180  streak 1  win 0.0450  bat 0 mV
+[   33.10] I (45112) link: node 3: rms 0.0180  seq 366  flags 0x07  crc 0x305F5CC6  level 0.0170  streak 1  win 0.0320  bat 0 mV
+[   33.18] I (45192) link: node 1: rms 0.0200  seq 416  flags 0x07  crc 0xDD0A340A  level 0.0190  streak 1  win 0.0340  bat 0 mV
+[   33.28] I (45292) link: node 1: rms 0.0170  seq 416  flags 0x05  crc 0xDD0A340A  level 0.0190  streak 0  win 0.0340  bat 0 mV
+[   33.30] I (45312) link: node 3: rms 0.0150  seq 366  flags 0x05  crc 0x305F5CC6  level 0.0170  streak 0  win 0.0320  bat 0 mV
+[   33.32] I (45332) link: node 2: rms 0.0170  seq 331  flags 0x04  crc 0x00000000  level 0.0180  streak 0  win 0.0450  bat 0 mV
+[   33.52] I (45532) link: node 2: rms 0.0250  seq 331  flags 0x06  crc 0x00000000  level 0.0190  streak 1  win 0.0450  bat 0 mV
+[   33.66] I (45672) link: node 2: rms 0.0150  seq 332  flags 0x05  crc 0xEC8C7930  level 0.0190  streak 0  win 0.0160  bat 0 mV
+[   33.72] I (45732) link: node 2: rms 0.0190  seq 332  flags 0x07  crc 0xEC8C7930  level 0.0190  streak 1  win 0.0160  bat 0 mV
+[   33.78] I (45792) link: node 1: rms 0.0130  seq 416  flags 0x04  crc 0x00000000  level 0.0190  streak 0  win 0.0340  bat 0 mV
+[   33.82] I (45832) link: node 2: asking for the window (seq 332, rms 0.1110, level 0.0190, win 0.0160)
+[   33.88] I (45892) link: node 1: rms 0.0200  seq 416  flags 0x06  crc 0x00000000  level 0.0190  streak 1  win 0.0340  bat 0 mV
+[   33.96] I (45972) link: link: 2914 frames off the air, 2914 parsed, 0 bad, 0 bad payload, 16 requests sent, 0 failed
+[   34.00] I (46012) link: node 3: rms 0.0180  seq 366  flags 0x07  crc 0x305F5CC6  level 0.0180  streak 2  win 0.0320  bat 0 mV
+[   34.60] I (46612) link: node 3: rms 0.0250  seq 366  flags 0x06  crc 0x00000000  level 0.0190  streak 5  win 0.0320  bat 0 mV
+[   34.82] I (46832) link: node 2: rms 0.0330  seq 332  flags 0x07  crc 0xEC8C7930  level 0.0200  streak 3  win 0.0160  bat 0 mV
+[   34.88] I (46892) link: node 1: rms 0.0260  seq 416  flags 0x06  crc 0x00000000  level 0.0210  streak 11  win 0.0340  bat 0 mV
+[   34.91] W (46932) link: node 2: missing fragments:
+[   34.92] W (46932) link:   20 of 286
+[   34.92] W (46932) link:   51 of 286
+[   34.92] W (46932) link:   81 of 286
+[   34.92] W (46932) link:   82 of 286
+[   34.92] W (46934) link:   104 of 286
+[   34.93] W (46937) link:   113 of 286
+[   34.93] W (46940) link:   146 of 286
+[   34.93] W (46942) link:   181 of 286
+[   34.98] W (46985) link: node 2: the burst stalled with 276 of 286 fragments (276 frames arrived); asking for the 10 that are missing (signal -27 dBm, from -29 to -27; its telemetry reads -27 dBm)
+[   34.99] W (46990) link: node 2: its radio handed over 288 frames since the burst began, 288 of them left it, 0 were refused, 0 times it had no room
+[   35.00] W (47002) link: node 2: arrival pattern: ################################################################
+[   35.04] I (47049) link: node 2: 286/286 fragments in 1.20 s (signal -27 dBm, from -29 to -27; its telemetry reads -28 dBm)
+[   35.05] I (47049) link: node 2: window crc32 0xEC8C7930, the node advertised 0xEC8C7930 -> MATCH
+[   35.05] I (47061) link: node 2: window rms 0.015773  mean 46  peak 1681  crest 3.3
+[   35.20] I (47215) link: node 2: front end 48.8 ms, inference 103.6 ms, P(no_cry)=0.3828 P(cry)=0.6172
+[   35.20] I (47215) link: node 2: no cry
+[   35.24] I (47255) link: node 3: rms 0.0160  seq 367  flags 0x05  crc 0x596362D4  level 0.0190  streak 0  win 0.0250  bat 0 mV
+[   35.30] I (47315) link: node 1: rms 0.0180  seq 417  flags 0x05  crc 0xDBED850A  level 0.0210  streak 0  win 0.0300  bat 0 mV
+[   35.40] I (47415) link: node 3: rms 0.0650  seq 367  flags 0x07  crc 0x596362D4  level 0.0200  streak 1  win 0.0250  bat 0 mV
+[   35.41] I (47415) link: node 3: asking for the window (seq 367, rms 0.0650, level 0.0200, win 0.0250)
+[   35.49] I (47502) link: node 1: rms 0.0220  seq 417  flags 0x07  crc 0xDBED850A  level 0.0210  streak 1  win 0.0300  bat 0 mV
+[   36.21] I (48222) link: node 1: rms 0.0210  seq 418  flags 0x05  crc 0x5C811943  level 0.0230  streak 0  win 0.0380  bat 0 mV
+[   36.29] I (48302) link: node 2: rms 0.0370  seq 332  flags 0x07  crc 0xEC8C7930  level 0.0240  streak 17  win 0.0160  bat 0 mV
+[   36.37] I (48382) link: node 1: rms 0.0300  seq 418  flags 0x07  crc 0x5C811943  level 0.0230  streak 1  win 0.0380  bat 0 mV
+[   36.38] W (48402) link: node 3: missing fragments:
+[   36.39] W (48402) link:   22 of 286
+[   36.39] W (48402) link:   47 of 286
+[   36.39] W (48402) link:   81 of 286
+[   36.39] W (48402) link:   117 of 286
+[   36.39] W (48405) link:   135 of 286
+[   36.40] W (48407) link:   151 of 286
+[   36.40] W (48410) link:   170 of 286
+[   36.40] W (48412) link:   187 of 286
+[   36.45] W (48455) link: node 3: the burst stalled with 275 of 286 fragments (275 frames arrived); asking for the 11 that are missing (signal -41 dBm, from -43 to -41; its telemetry reads -42 dBm)
+[   36.46] W (48460) link: node 3: its radio handed over 288 frames since the burst began, 288 of them left it, 0 were refused, 0 times it had no room
+[   36.47] W (48472) link: node 3: arrival pattern: ######################.#########################################
+[   36.49] I (48502) link: node 1: rms 0.0110  seq 418  flags 0x05  crc 0x5C811943  level 0.0230  streak 0  win 0.0380  bat 0 mV
+[   36.50] I (48502) link: node 3: rms 0.0530  seq 367  flags 0x07  crc 0x596362D4  level 0.0210  streak 4  win 0.0250  bat 0 mV
+[   36.61] W (48632) link: node 3: missing fragments:
+[   36.62] W (48632) link:   22 of 286
+[   36.62] W (48632) link:   151 of 286
+[   36.66] W (48672) link: node 3: the burst stalled with 284 of 286 fragments (284 frames arrived); asking for the 2 that are missing (signal -41 dBm, from -43 to -40; its telemetry reads -41 dBm)
+[   36.68] W (48677) link: node 3: its radio handed over 301 frames since the burst began, 301 of them left it, 0 were refused, 0 times it had no room
+[   36.69] W (48689) link: node 3: arrival pattern: ################################################################
+[   36.71] I (48719) link: node 3: rms 0.0190  seq 367  flags 0x05  crc 0x596362D4  level 0.0210  streak 0  win 0.0250  bat 0 mV
+[   36.72] I (48736) link: node 3: 286/286 fragments in 1.30 s (signal -41 dBm, from -43 to -40; its telemetry reads -42 dBm)
+[   36.74] I (48736) link: node 3: window crc32 0x596362D4, the node advertised 0x596362D4 -> MATCH
+[   36.74] I (48749) link: node 3: window rms 0.025293  mean -39  peak 2364  crest 2.9
+[   36.89] I (48904) link: node 3: front end 48.3 ms, inference 106.3 ms, P(no_cry)=0.4688 P(cry)=0.5312
+[   36.89] I (48905) link: node 3: no cry
+[   36.91] I (48925) link: node 1: rms 0.0330  seq 418  flags 0x07  crc 0x5C811943  level 0.0230  streak 1  win 0.0380  bat 0 mV
+[   36.92] I (48925) link: node 3: rms 0.0280  seq 367  flags 0x07  crc 0x596362D4  level 0.0210  streak 1  win 0.0250  bat 0 mV
+[   36.96] I (48974) link: node 1: asking for the window (seq 418, rms 0.0370, level 0.0240, win 0.0380)
+[   37.30] I (49314) link: node 2: rms 0.1260  seq 332  flags 0x07  crc 0xEC8C7930  level 0.0270  streak 25  win 0.0160  bat 0 mV
+[   37.58] I (49594) link: node 3: rms 0.0150  seq 367  flags 0x05  crc 0x596362D4  level 0.0220  streak 0  win 0.0250  bat 0 mV
+[   37.68] I (49694) link: node 3: rms 0.0400  seq 367  flags 0x07  crc 0x596362D4  level 0.0220  streak 1  win 0.0250  bat 0 mV
+[   37.94] I (49954) link: node 1: rms 0.0250  seq 418  flags 0x07  crc 0x5C811943  level 0.0240  streak 3  win 0.0380  bat 0 mV
+[   38.00] I (50014) link: node 2: rms 0.0200  seq 332  flags 0x05  crc 0xEC8C7930  level 0.0300  streak 0  win 0.0160  bat 0 mV
+[   38.04] I (50054) link: node 1: rms 0.0190  seq 418  flags 0x05  crc 0x5C811943  level 0.0240  streak 0  win 0.0380  bat 0 mV
+[   38.05] W (50054) link: node 1: missing fragments:
+[   38.05] W (50057) link:   5 of 286
+[   38.05] W (50059) link:   40 of 286
+[   38.05] W (50062) link:   106 of 286
+[   38.06] W (50064) link:   139 of 286
+[   38.06] W (50067) link:   261 of 286
+[   38.10] W (50110) link: node 1: the burst stalled with 281 of 286 fragments (281 frames arrived); asking for the 5 that are missing (signal -20 dBm, from -22 to -19; its telemetry reads -19 dBm)
+[   38.12] W (50115) link: node 1: its radio handed over 288 frames since the burst began, 288 of them left it, 0 were refused, 0 times it had no room
+[   38.12] W (50127) link: node 1: arrival pattern: ################################################################
+[   38.14] I (50157) link: node 1: rms 0.0330  seq 418  flags 0x07  crc 0x5C811943  level 0.0240  streak 1  win 0.0380  bat 0 mV
+[   38.15] I (50157) link: node 2: rms 0.0500  seq 332  flags 0x07  crc 0xEC8C7930  level 0.0300  streak 1  win 0.0160  bat 0 mV
+[   38.17] I (50187) link: node 1: 286/286 fragments in 1.19 s (signal -20 dBm, from -22 to -19; its telemetry reads -20 dBm)
+[   38.19] I (50188) link: node 1: window crc32 0x5C811943, the node advertised 0x5C811943 -> MATCH
+[   38.19] I (50200) link: node 1: window rms 0.038108  mean -19  peak 7529  crest 6.0
+[   38.34] I (50354) link: node 1: front end 48.5 ms, inference 103.9 ms, P(no_cry)=0.9453 P(cry)=0.0547
+[   38.34] I (50354) link: node 1: no cry
+[   38.36] I (50374) link: node 2: rms 0.0210  seq 332  flags 0x05  crc 0xEC8C7930  level 0.0300  streak 0  win 0.0160  bat 0 mV
+[   38.37] I (50374) link: node 3: rms 0.0140  seq 367  flags 0x05  crc 0x596362D4  level 0.0230  streak 0  win 0.0250  bat 0 mV
+[   38.39] I (50403) link: node 3: rms 0.0270  seq 367  flags 0x07  crc 0x596362D4  level 0.0230  streak 1  win 0.0250  bat 0 mV
+[   38.43] I (50443) link: node 1: rms 0.0180  seq 418  flags 0x05  crc 0x5C811943  level 0.0240  streak 0  win 0.0380  bat 0 mV
+[   38.49] I (50503) link: node 3: rms 0.0160  seq 367  flags 0x05  crc 0x596362D4  level 0.0230  streak 0  win 0.0250  bat 0 mV
+[   38.59] I (50603) link: node 2: rms 0.0440  seq 332  flags 0x07  crc 0xEC8C7930  level 0.0300  streak 1  win 0.0160  bat 0 mV
+[   38.60] I (50603) link: node 3: rms 0.0240  seq 367  flags 0x07  crc 0x596362D4  level 0.0230  streak 1  win 0.0250  bat 0 mV
+[   38.68] I (50692) link: node 3: rms 0.0220  seq 367  flags 0x05  crc 0x596362D4  level 0.0230  streak 0  win 0.0250  bat 0 mV
+[   38.78] I (50792) link: node 3: rms 0.0440  seq 367  flags 0x07  crc 0x596362D4  level 0.0230  streak 1  win 0.0250  bat 0 mV
+[   38.84] I (50852) link: node 1: rms 0.0360  seq 418  flags 0x07  crc 0x5C811943  level 0.0250  streak 1  win 0.0380  bat 0 mV
+[   38.98] I (50992) link: link: 3851 frames off the air, 3851 parsed, 0 bad, 0 bad payload, 22 requests sent, 0 failed
+[   39.54] I (51552) link: node 2: rms 0.0180  seq 333  flags 0x05  crc 0x9E0ECBEE  level 0.0300  streak 0  win 0.0550  bat 0 mV
+[   39.58] I (51592) link: node 3: rms 0.0240  seq 367  flags 0x05  crc 0x596362D4  level 0.0240  streak 9  win 0.0250  bat 0 mV
+[   39.60] I (51612) link: node 2: rms 0.0820  seq 333  flags 0x07  crc 0x9E0ECBEE  level 0.0300  streak 1  win 0.0550  bat 0 mV
+[   39.70] I (51712) link: node 2: asking for the window (seq 333, rms 0.0400, level 0.0300, win 0.0550)
+[   39.86] I (51872) link: node 1: rms 0.0200  seq 418  flags 0x05  crc 0x5C811943  level 0.0270  streak 0  win 0.0380  bat 0 mV
+[   39.90] I (51912) link: node 3: rms 0.0260  seq 367  flags 0x07  crc 0x596362D4  level 0.0250  streak 1  win 0.0250  bat 0 mV
+[   39.94] I (51952) link: node 1: rms 0.0400  seq 418  flags 0x07  crc 0x5C811943  level 0.0270  streak 1  win 0.0380  bat 0 mV
+[   39.98] I (51992) link: node 3: rms 0.0190  seq 367  flags 0x05  crc 0x596362D4  level 0.0250  streak 0  win 0.0250  bat 0 mV
+[   40.10] I (52112) link: node 3: rms 0.0290  seq 367  flags 0x07  crc 0x596362D4  level 0.0250  streak 1  win 0.0250  bat 0 mV
+[   40.28] I (52292) link: node 3: rms 0.0240  seq 367  flags 0x05  crc 0x596362D4  level 0.0250  streak 0  win 0.0250  bat 0 mV
+[   40.40] I (52412) link: node 3: rms 0.0330  seq 367  flags 0x07  crc 0x596362D4  level 0.0250  streak 1  win 0.0250  bat 0 mV
+[   40.64] I (52652) link: node 1: rms 0.0220  seq 418  flags 0x05  crc 0x5C811943  level 0.0280  streak 0  win 0.0380  bat 0 mV
+[   40.70] I (52712) link: node 3: rms 0.0240  seq 367  flags 0x05  crc 0x596362D4  level 0.0260  streak 0  win 0.0250  bat 0 mV
+[   40.80] I (52812) link: node 3: rms 0.0470  seq 367  flags 0x07  crc 0x596362D4  level 0.0260  streak 1  win 0.0250  bat 0 mV
+[   40.88] I (52892) link: node 2: rms 0.0650  seq 333  flags 0x07  crc 0x9E0ECBEE  level 0.0300  streak 3  win 0.0550  bat 0 mV
+[   40.97] W (52992) link: node 2: missing fragments:
+[   40.98] W (52992) link:   27 of 286
+[   40.98] W (52992) link:   62 of 286
+[   40.98] W (52992) link:   89 of 286
+[   40.98] W (52992) link:   146 of 286
+[   40.99] W (52995) link:   158 of 286
+[   40.99] W (52997) link:   159 of 286
+[   40.99] W (53000) link:   181 of 286
+[   40.99] W (53002) link:   207 of 286
+[   41.04] W (53046) link: node 2: the burst stalled with 275 of 286 fragments (275 frames arrived); asking for the 11 that are missing (signal -27 dBm, from -29 to -27; its telemetry reads -27 dBm)
+[   41.06] W (53051) link: node 2: its radio handed over 288 frames since the burst began, 288 of them left it, 0 were refused, 0 times it had no room
+[   41.06] W (53064) link: node 2: arrival pattern: ################################################################
+[   41.10] I (53109) link: node 2: 286/286 fragments in 1.38 s (signal -27 dBm, from -29 to -27; its telemetry reads -27 dBm)
+[   41.11] I (53110) link: node 2: window crc32 0x9E0ECBEE, the node advertised 0x9E0ECBEE -> MATCH
+[   41.11] I (53122) link: node 2: window rms 0.054816  mean -48  peak 6034  crest 3.4
+[   41.27] I (53279) link: node 2: front end 51.5 ms, inference 104.3 ms, P(no_cry)=0.5859 P(cry)=0.4141
+[   41.27] I (53279) link: node 2: no cry
+[   41.29] I (53299) link: node 1: rms 0.0330  seq 418  flags 0x07  crc 0x5C811943  level 0.0280  streak 1  win 0.0380  bat 0 mV
+[   41.30] I (53299) link: node 2: rms 0.0300  seq 333  flags 0x05  crc 0x9E0ECBEE  level 0.0300  streak 6  win 0.0550  bat 0 mV
+[   41.31] I (53308) link: node 3: rms 0.0200  seq 367  flags 0x05  crc 0x596362D4  level 0.0270  streak 0  win 0.0250  bat 0 mV
+[   41.36] I (53379) link: node 2: rms 0.1060  seq 333  flags 0x07  crc 0x9E0ECBEE  level 0.0300  streak 7  win 0.0550  bat 0 mV
+[   41.39] I (53399) link: node 3: rms 0.0360  seq 367  flags 0x07  crc 0x596362D4  level 0.0280  streak 1  win 0.0250  bat 0 mV
+[   41.55] I (53559) link: node 3: rms 0.0140  seq 368  flags 0x05  crc 0xD2EDBCE6  level 0.0280  streak 0  win 0.0440  bat 0 mV
+[   41.58] I (53599) link: node 3: rms 0.0380  seq 368  flags 0x07  crc 0xD2EDBCE6  level 0.0280  streak 1  win 0.0440  bat 0 mV
+[   41.64] I (53659) link: node 1: rms 0.0220  seq 418  flags 0x05  crc 0x5C811943  level 0.0290  streak 0  win 0.0380  bat 0 mV
+[   41.67] I (53679) link: node 2: rms 0.0230  seq 333  flags 0x05  crc 0x9E0ECBEE  level 0.0300  streak 0  win 0.0550  bat 0 mV
+[   41.68] I (53699) link: node 3: rms 0.0210  seq 368  flags 0x05  crc 0xD2EDBCE6  level 0.0280  streak 0  win 0.0440  bat 0 mV
+[   41.73] I (53739) link: node 1: rms 0.0400  seq 418  flags 0x07  crc 0x5C811943  level 0.0290  streak 1  win 0.0380  bat 0 mV
+[   41.78] I (53799) link: node 3: rms 0.0300  seq 368  flags 0x07  crc 0xD2EDBCE6  level 0.0280  streak 1  win 0.0440  bat 0 mV
+[   41.83] I (53839) link: node 1: rms 0.0210  seq 418  flags 0x05  crc 0x5C811943  level 0.0290  streak 0  win 0.0380  bat 0 mV
+[   41.86] I (53879) link: node 2: rms 0.0530  seq 333  flags 0x07  crc 0x9E0ECBEE  level 0.0300  streak 1  win 0.0550  bat 0 mV
+[   41.89] I (53899) link: node 3: rms 0.0240  seq 368  flags 0x05  crc 0xD2EDBCE6  level 0.0280  streak 0  win 0.0440  bat 0 mV
+[   41.94] I (53959) link: node 1: rms 0.0400  seq 418  flags 0x07  crc 0x5C811943  level 0.0290  streak 1  win 0.0380  bat 0 mV
+[   41.99] I (53999) link: node 3: rms 0.0510  seq 368  flags 0x07  crc 0xD2EDBCE6  level 0.0280  streak 1  win 0.0440  bat 0 mV
+[   42.03] I (54039) link: node 1: rms 0.0270  seq 418  flags 0x05  crc 0x5C811943  level 0.0290  streak 0  win 0.0380  bat 0 mV
+[   42.08] I (54099) link: node 3: asking for the window (seq 368, rms 0.0540, level 0.0290, win 0.0440)
+[   42.27] I (54279) link: node 2: rms 0.0300  seq 333  flags 0x05  crc 0x9E0ECBEE  level 0.0300  streak 5  win 0.0550  bat 0 mV
+[   42.46] I (54479) link: node 2: rms 0.0470  seq 333  flags 0x07  crc 0x9E0ECBEE  level 0.0300  streak 1  win 0.0550  bat 0 mV
+[   42.57] I (54579) link: node 2: rms 0.0180  seq 333  flags 0x05  crc 0x9E0ECBEE  level 0.0300  streak 0  win 0.0550  bat 0 mV
+[   42.77] I (54779) link: node 2: rms 0.0360  seq 333  flags 0x07  crc 0x9E0ECBEE  level 0.0300  streak 2  win 0.0550  bat 0 mV
+[   42.86] I (54879) link: node 2: rms 0.0280  seq 333  flags 0x05  crc 0x9E0ECBEE  level 0.0300  streak 0  win 0.0550  bat 0 mV
+[   42.95] I (54959) link: node 1: rms 0.0370  seq 418  flags 0x07  crc 0x5C811943  level 0.0300  streak 1  win 0.0380  bat 0 mV
+[   42.97] I (54979) link: node 2: rms 0.0600  seq 333  flags 0x07  crc 0x9E0ECBEE  level 0.0300  streak 1  win 0.0550  bat 0 mV
+[   43.02] I (55039) link: node 1: rms 0.0230  seq 418  flags 0x05  crc 0x5C811943  level 0.0300  streak 0  win 0.0380  bat 0 mV
+[   43.07] I (55079) link: node 2: rms 0.0230  seq 333  flags 0x05  crc 0x9E0ECBEE  level 0.0300  streak 0  win 0.0550  bat 0 mV
+[   43.08] I (55099) link: node 3: rms 0.0330  seq 368  flags 0x07  crc 0xD2EDBCE6  level 0.0290  streak 3  win 0.0440  bat 0 mV
+[   43.18] W (55199) link: node 3: missing fragments:
+[   43.19] W (55199) link:   0 of 286
+[   43.19] W (55199) link:   20 of 286
+[   43.19] W (55199) link:   52 of 286
+[   43.19] W (55199) link:   86 of 286
+[   43.19] W (55201) link:   88 of 286
+[   43.20] W (55204) link:   113 of 286
+[   43.20] W (55206) link:   125 of 286
+[   43.20] W (55209) link:   136 of 286
+[   43.24] W (55252) link: node 3: the burst stalled with 268 of 286 fragments (268 frames arrived); asking for the 18 that are missing (signal -42 dBm, from -44 to -38; its telemetry reads -42 dBm)
+[   43.26] W (55257) link: node 3: its radio handed over 288 frames since the burst began, 288 of them left it, 0 were refused, 0 times it had no room
+[   43.27] W (55270) link: node 3: arrival pattern: ################################################################
+[   43.40] W (55419) link: node 3: missing fragments:
+[   43.40] W (55419) link:   259 of 286
+[   43.45] W (55459) link: node 3: the burst stalled with 285 of 286 fragments (285 frames arrived); asking for the 1 that are missing (signal -42 dBm, from -44 to -38; its telemetry reads -42 dBm)
+[   43.47] W (55464) link: node 3: its radio handed over 308 frames since the burst began, 308 of them left it, 0 were refused, 0 times it had no room
+[   43.47] W (55476) link: node 3: arrival pattern: ################################################################
+[   43.51] I (55522) link: node 3: 286/286 fragments in 1.41 s (signal -42 dBm, from -44 to -38; its telemetry reads -42 dBm)
+[   43.52] I (55523) link: node 3: window crc32 0xD2EDBCE6, the node advertised 0xD2EDBCE6 -> MATCH
+[   43.52] I (55535) link: node 3: window rms 0.044043  mean 21  peak 5808  crest 4.0
+[   43.68] I (55691) link: node 3: front end 48.7 ms, inference 106.5 ms, P(no_cry)=0.5312 P(cry)=0.4688
+[   43.68] I (55692) link: node 3: no cry
+[   43.70] I (55712) link: node 3: rms 0.0290  seq 368  flags 0x05  crc 0xD2EDBCE6  level 0.0300  streak 0  win 0.0440  bat 0 mV
+[   43.76] I (55772) link: node 2: rms 0.0310  seq 333  flags 0x07  crc 0x9E0ECBEE  level 0.0300  streak 1  win 0.0550  bat 0 mV
+[   43.96] I (55972) link: node 2: rms 0.0210  seq 333  flags 0x05  crc 0x9E0ECBEE  level 0.0300  streak 0  win 0.0550  bat 0 mV
+[   44.00] I (56012) link: link: 4553 frames off the air, 4553 parsed, 0 bad, 0 bad payload, 27 requests sent, 0 failed
+[   44.04] I (56052) link: node 1: rms 0.0190  seq 418  flags 0x05  crc 0x5C811943  level 0.0300  streak 0  win 0.0380  bat 0 mV
+[   44.08] I (56092) link: node 3: rms 0.0300  seq 368  flags 0x07  crc 0xD2EDBCE6  level 0.0300  streak 1  win 0.0440  bat 0 mV
+[   44.18] I (56192) link: node 3: rms 0.0200  seq 368  flags 0x05  crc 0xD2EDBCE6  level 0.0300  streak 0  win 0.0440  bat 0 mV
+[   44.38] I (56392) link: node 3: rms 0.0320  seq 368  flags 0x07  crc 0xD2EDBCE6  level 0.0300  streak 1  win 0.0440  bat 0 mV
+[   44.50] I (56512) link: node 3: rms 0.0240  seq 368  flags 0x05  crc 0xD2EDBCE6  level 0.0300  streak 0  win 0.0440  bat 0 mV
+[   44.96] I (56972) link: node 2: rms 0.0210  seq 333  flags 0x05  crc 0x9E0ECBEE  level 0.0300  streak 0  win 0.0550  bat 0 mV
+[   45.14] I (57152) link: node 1: rms 0.0190  seq 418  flags 0x05  crc 0x5C811943  level 0.0300  streak 0  win 0.0380  bat 0 mV
+[   45.60] I (57612) link: node 3: rms 0.0250  seq 368  flags 0x05  crc 0xD2EDBCE6  level 0.0300  streak 0  win 0.0440  bat 0 mV
+[   46.06] I (58072) link: node 2: rms 0.0160  seq 333  flags 0x05  crc 0x9E0ECBEE  level 0.0270  streak 0  win 0.0550  bat 0 mV
+[   46.24] I (58252) link: node 1: rms 0.0130  seq 418  flags 0x05  crc 0x5C811943  level 0.0300  streak 0  win 0.0380  bat 0 mV
+[   46.70] I (58712) link: node 3: rms 0.0190  seq 368  flags 0x05  crc 0xD2EDBCE6  level 0.0280  streak 0  win 0.0440  bat 0 mV
+[   47.16] I (59172) link: node 2: rms 0.0120  seq 333  flags 0x05  crc 0x9E0ECBEE  level 0.0200  streak 0  win 0.0550  bat 0 mV
+[   47.24] I (59252) link: node 1: rms 0.0180  seq 418  flags 0x05  crc 0x5C811943  level 0.0280  streak 0  win 0.0380  bat 0 mV
+[   47.78] I (59792) link: node 3: rms 0.0130  seq 368  flags 0x05  crc 0xD2EDBCE6  level 0.0220  streak 0  win 0.0440  bat 0 mV
+[   48.16] I (60172) link: node 2: rms 0.0160  seq 333  flags 0x05  crc 0x9E0ECBEE  level 0.0210  streak 0  win 0.0550  bat 0 mV
+[   48.34] I (60352) link: node 1: rms 0.0140  seq 418  flags 0x05  crc 0x5C811943  level 0.0250  streak 0  win 0.0380  bat 0 mV
+[   48.78] I (60792) link: node 3: rms 0.0120  seq 368  flags 0x05  crc 0xD2EDBCE6  level 0.0220  streak 0  win 0.0440  bat 0 mV
+[   49.02] I (61032) link: link: 4703 frames off the air, 4703 parsed, 0 bad, 0 bad payload, 27 requests sent, 0 failed
+[   49.26] I (61272) link: node 2: rms 0.0120  seq 333  flags 0x05  crc 0x9E0ECBEE  level 0.0210  streak 0  win 0.0550  bat 0 mV
+[   49.44] I (61452) link: node 1: rms 0.0130  seq 418  flags 0x05  crc 0x5C811943  level 0.0250  streak 0  win 0.0380  bat 0 mV
+[   49.80] I (61812) link: node 3: rms 0.0100  seq 368  flags 0x05  crc 0xD2EDBCE6  level 0.0230  streak 0  win 0.0440  bat 0 mV
+[   50.36] I (62372) link: node 2: rms 0.0130  seq 333  flags 0x05  crc 0x9E0ECBEE  level 0.0220  streak 0  win 0.0550  bat 0 mV
+[   50.44] I (62452) link: node 1: rms 0.0160  seq 418  flags 0x05  crc 0x5C811943  level 0.0260  streak 0  win 0.0380  bat 0 mV
+[   50.80] I (62812) link: node 3: rms 0.0210  seq 368  flags 0x05  crc 0xD2EDBCE6  level 0.0230  streak 0  win 0.0440  bat 0 mV
+[   51.36] I (63372) link: node 2: rms 0.0190  seq 333  flags 0x05  crc 0x9E0ECBEE  level 0.0220  streak 0  win 0.0550  bat 0 mV
+[   51.54] I (63552) link: node 1: rms 0.0190  seq 418  flags 0x05  crc 0x5C811943  level 0.0260  streak 0  win 0.0380  bat 0 mV
+[   51.80] I (63812) link: node 3: rms 0.0100  seq 368  flags 0x05  crc 0xD2EDBCE6  level 0.0240  streak 0  win 0.0440  bat 0 mV
+[   52.46] I (64472) link: node 2: rms 0.0110  seq 333  flags 0x05  crc 0x9E0ECBEE  level 0.0220  streak 0  win 0.0550  bat 0 mV
+[   52.64] I (64652) link: node 1: rms 0.0100  seq 418  flags 0x05  crc 0x5C811943  level 0.0270  streak 0  win 0.0380  bat 0 mV
+[   52.90] I (64912) link: node 3: rms 0.0190  seq 368  flags 0x05  crc 0xD2EDBCE6  level 0.0230  streak 0  win 0.0440  bat 0 mV
+[   52.98] I (64992) link: node 3: rms 0.0250  seq 368  flags 0x07  crc 0xD2EDBCE6  level 0.0240  streak 1  win 0.0440  bat 0 mV
+[   53.10] I (65112) link: node 3: rms 0.0120  seq 368  flags 0x05  crc 0xD2EDBCE6  level 0.0240  streak 0  win 0.0440  bat 0 mV
+[   53.56] I (65572) link: node 2: rms 0.0120  seq 333  flags 0x05  crc 0x9E0ECBEE  level 0.0220  streak 0  win 0.0550  bat 0 mV
+[   53.64] I (65652) link: node 1: rms 0.0100  seq 418  flags 0x05  crc 0x5C811943  level 0.0270  streak 0  win 0.0380  bat 0 mV
+[   54.02] I (66032) link: link: 4853 frames off the air, 4853 parsed, 0 bad, 0 bad payload, 27 requests sent, 0 failed
+[   54.10] I (66112) link: node 3: rms 0.0190  seq 368  flags 0x05  crc 0xD2EDBCE6  level 0.0240  streak 0  win 0.0440  bat 0 mV
+[   54.56] I (66572) link: node 2: rms 0.0160  seq 333  flags 0x05  crc 0x9E0ECBEE  level 0.0230  streak 0  win 0.0550  bat 0 mV
+[   54.74] I (66752) link: node 1: rms 0.0130  seq 418  flags 0x05  crc 0x5C811943  level 0.0270  streak 0  win 0.0380  bat 0 mV
+[   55.18] I (67192) link: node 3: rms 0.0150  seq 368  flags 0x05  crc 0xD2EDBCE6  level 0.0250  streak 0  win 0.0440  bat 0 mV
+[   55.66] I (67672) link: node 2: rms 0.0090  seq 333  flags 0x05  crc 0x9E0ECBEE  level 0.0230  streak 0  win 0.0550  bat 0 mV
+[   55.84] I (67852) link: node 1: rms 0.0120  seq 418  flags 0x05  crc 0x5C811943  level 0.0270  streak 0  win 0.0380  bat 0 mV
+[   56.24] I (68252) link: node 1: rms 0.0100  seq 418  flags 0x04  crc 0x00000000  level 0.0260  streak 0  win 0.0380  bat 0 mV
+[   56.28] I (68292) link: node 3: rms 0.0200  seq 368  flags 0x05  crc 0xD2EDBCE6  level 0.0250  streak 0  win 0.0440  bat 0 mV
+[   56.76] I (68772) link: node 2: rms 0.0080  seq 333  flags 0x05  crc 0x9E0ECBEE  level 0.0200  streak 0  win 0.0550  bat 0 mV
+[   56.86] I (68872) link: node 2: rms 0.0390  seq 333  flags 0x07  crc 0x9E0ECBEE  level 0.0200  streak 1  win 0.0550  bat 0 mV
+[   56.90] I (68912) link: node 3: rms 0.0280  seq 368  flags 0x07  crc 0xD2EDBCE6  level 0.0200  streak 1  win 0.0440  bat 0 mV
+[   57.10] I (69112) link: node 3: rms 0.0120  seq 368  flags 0x05  crc 0xD2EDBCE6  level 0.0200  streak 0  win 0.0440  bat 0 mV
+[   57.20] I (69212) link: node 3: rms 0.0200  seq 368  flags 0x07  crc 0xD2EDBCE6  level 0.0200  streak 1  win 0.0440  bat 0 mV
+[   57.34] I (69352) link: node 1: rms 0.0140  seq 418  flags 0x04  crc 0x00000000  level 0.0260  streak 0  win 0.0380  bat 0 mV
+[   57.38] I (69392) link: node 3: rms 0.0120  seq 368  flags 0x05  crc 0xD2EDBCE6  level 0.0200  streak 0  win 0.0440  bat 0 mV
+[   57.50] I (69512) link: node 3: rms 0.0370  seq 368  flags 0x07  crc 0xD2EDBCE6  level 0.0200  streak 1  win 0.0440  bat 0 mV
+[   57.56] I (69572) link: node 2: rms 0.0170  seq 333  flags 0x05  crc 0x9E0ECBEE  level 0.0210  streak 0  win 0.0550  bat 0 mV
+[   57.66] I (69672) link: node 2: rms 0.0520  seq 333  flags 0x07  crc 0x9E0ECBEE  level 0.0210  streak 1  win 0.0550  bat 0 mV
+[   57.70] I (69712) link: node 3: rms 0.0190  seq 368  flags 0x05  crc 0xD2EDBCE6  level 0.0200  streak 0  win 0.0440  bat 0 mV
+[   57.86] I (69872) link: node 2: rms 0.0180  seq 333  flags 0x05  crc 0x9E0ECBEE  level 0.0210  streak 0  win 0.0550  bat 0 mV
+[   57.98] I (69992) link: node 3: rms 0.0210  seq 368  flags 0x07  crc 0xD2EDBCE6  level 0.0210  streak 1  win 0.0440  bat 0 mV
+[   58.06] I (70072) link: node 2: rms 0.0380  seq 333  flags 0x07  crc 0x9E0ECBEE  level 0.0220  streak 1  win 0.0550  bat 0 mV
+[   58.08] I (70092) link: node 3: rms 0.0200  seq 368  flags 0x05  crc 0xD2EDBCE6  level 0.0210  streak 0  win 0.0440  bat 0 mV
+[   58.20] I (70212) link: node 3: rms 0.0320  seq 368  flags 0x07  crc 0xD2EDBCE6  level 0.0210  streak 1  win 0.0440  bat 0 mV
+[   58.34] I (70352) link: node 1: rms 0.0120  seq 418  flags 0x04  crc 0x00000000  level 0.0240  streak 0  win 0.0380  bat 0 mV
+[   58.46] I (70472) link: node 2: rms 0.0110  seq 333  flags 0x05  crc 0x9E0ECBEE  level 0.0220  streak 0  win 0.0550  bat 0 mV
+[   58.66] I (70672) link: node 2: rms 0.0230  seq 333  flags 0x07  crc 0x9E0ECBEE  level 0.0220  streak 1  win 0.0550  bat 0 mV
+[   58.70] I (70712) link: node 3: rms 0.0170  seq 368  flags 0x05  crc 0xD2EDBCE6  level 0.0220  streak 0  win 0.0440  bat 0 mV
+[   58.88] I (70892) link: node 3: rms 0.0290  seq 368  flags 0x07  crc 0xD2EDBCE6  level 0.0220  streak 1  win 0.0440  bat 0 mV
+[   59.04] I (71052) link: link: 5004 frames off the air, 5004 parsed, 0 bad, 0 bad payload, 27 requests sent, 0 failed
+[   59.08] I (71092) link: node 3: rms 0.0170  seq 368  flags 0x05  crc 0xD2EDBCE6  level 0.0220  streak 0  win 0.0440  bat 0 mV
+[   59.18] I (71192) link: node 3: rms 0.0300  seq 368  flags 0x07  crc 0xD2EDBCE6  level 0.0220  streak 1  win 0.0440  bat 0 mV
+[   59.44] I (71452) link: node 1: rms 0.0220  seq 418  flags 0x04  crc 0x00000000  level 0.0240  streak 0  win 0.0380  bat 0 mV
+[   59.46] I (71472) link: node 2: rms 0.0210  seq 333  flags 0x05  crc 0x9E0ECBEE  level 0.0230  streak 0  win 0.0550  bat 0 mV
+[   59.56] I (71572) link: node 2: rms 0.0390  seq 333  flags 0x06  crc 0x00000000  level 0.0230  streak 1  win 0.0550  bat 0 mV
+[   59.98] I (71992) link: node 3: rms 0.0210  seq 368  flags 0x05  crc 0xD2EDBCE6  level 0.0230  streak 0  win 0.0440  bat 0 mV
+[   60.06] I (72072) link: node 1: rms 0.0270  seq 418  flags 0x06  crc 0x00000000  level 0.0250  streak 1  win 0.0380  bat 0 mV
+[   60.08] I (72092) link: node 3: rms 0.0380  seq 368  flags 0x07  crc 0xD2EDBCE6  level 0.0230  streak 1  win 0.0440  bat 0 mV
+[   60.24] I (72252) link: node 1: rms 0.0240  seq 418  flags 0x04  crc 0x00000000  level 0.0250  streak 0  win 0.0380  bat 0 mV
+[   60.30] I (72312) link: node 3: rms 0.0190  seq 368  flags 0x05  crc 0xD2EDBCE6  level 0.0240  streak 0  win 0.0440  bat 0 mV
+[   60.44] I (72452) link: node 1: rms 0.0320  seq 418  flags 0x06  crc 0x00000000  level 0.0250  streak 1  win 0.0380  bat 0 mV
+[   60.50] I (72512) link: node 3: rms 0.0370  seq 368  flags 0x07  crc 0xD2EDBCE6  level 0.0240  streak 1  win 0.0440  bat 0 mV
+[   60.54] I (72552) link: node 1: rms 0.0190  seq 418  flags 0x04  crc 0x00000000  level 0.0250  streak 0  win 0.0380  bat 0 mV
+[   60.60] I (72612) link: node 2: rms 0.0140  seq 334  flags 0x05  crc 0x9F70C0A0  level 0.0250  streak 0  win 0.0400  bat 0 mV
+[   60.68] I (72692) link: node 1: rms 0.0210  seq 419  flags 0x05  crc 0xD994C295  level 0.0250  streak 0  win 0.0200  bat 0 mV
+[   60.86] I (72872) link: node 2: rms 0.0270  seq 334  flags 0x07  crc 0x9F70C0A0  level 0.0260  streak 1  win 0.0400  bat 0 mV
+[   60.96] I (72972) link: node 1: rms 0.0330  seq 419  flags 0x07  crc 0xD994C295  level 0.0250  streak 1  win 0.0200  bat 0 mV
+[   60.97] I (72972) link: node 2: asking for the window (seq 334, rms 0.0310, level 0.0260, win 0.0400)
+[   61.04] I (73059) link: node 1: rms 0.0130  seq 419  flags 0x05  crc 0xD994C295  level 0.0250  streak 0  win 0.0200  bat 0 mV
+[   61.14] I (73159) link: node 1: rms 0.0360  seq 419  flags 0x07  crc 0xD994C295  level 0.0260  streak 1  win 0.0200  bat 0 mV
+[   61.18] I (73199) link: node 3: rms 0.0180  seq 368  flags 0x05  crc 0xD2EDBCE6  level 0.0250  streak 0  win 0.0440  bat 0 mV
+[   61.28] I (73299) link: node 3: rms 0.0370  seq 368  flags 0x07  crc 0xD2EDBCE6  level 0.0250  streak 1  win 0.0440  bat 0 mV
+[   61.44] I (73459) link: node 1: rms 0.0220  seq 419  flags 0x05  crc 0xD994C295  level 0.0260  streak 0  win 0.0200  bat 0 mV
+[   61.48] I (73499) link: node 3: rms 0.0150  seq 368  flags 0x05  crc 0xD2EDBCE6  level 0.0260  streak 0  win 0.0440  bat 0 mV
+[   61.58] I (73599) link: node 3: rms 0.0150  seq 368  flags 0x04  crc 0x00000000  level 0.0260  streak 0  win 0.0440  bat 0 mV
+[   61.64] I (73659) link: node 1: rms 0.0270  seq 419  flags 0x07  crc 0xD994C295  level 0.0260  streak 1  win 0.0200  bat 0 mV
+[   61.68] I (73699) link: node 3: rms 0.0360  seq 368  flags 0x06  crc 0x00000000  level 0.0260  streak 1  win 0.0440  bat 0 mV
+[   61.89] I (73899) link: node 2: rms 0.0240  seq 334  flags 0x05  crc 0x9F70C0A0  level 0.0260  streak 0  win 0.0400  bat 0 mV
+[   61.89] I (73899) link: node 3: rms 0.0150  seq 368  flags 0x04  crc 0x00000000  level 0.0260  streak 0  win 0.0440  bat 0 mV
+[   61.97] I (73989) link: node 1: rms 0.0190  seq 420  flags 0x05  crc 0xAAE0EB4D  level 0.0270  streak 0  win 0.0280  bat 0 mV
+[   61.99] I (73989) link: node 2: rms 0.0540  seq 334  flags 0x07  crc 0x9F70C0A0  level 0.0260  streak 1  win 0.0400  bat 0 mV
+[   62.00] I (73999) link: node 3: rms 0.0520  seq 368  flags 0x06  crc 0x00000000  level 0.0260  streak 1  win 0.0440  bat 0 mV
+[   62.00] W (74009) link: node 2: missing fragments:
+[   62.00] W (74013) link:   9 of 286
+[   62.01] W (74015) link:   42 of 286
+[   62.01] W (74018) link:   58 of 286
+[   62.01] W (74020) link:   76 of 286
+[   62.01] W (74023) link:   110 of 286
+[   62.01] W (74025) link:   141 of 286
+[   62.02] W (74028) link:   173 of 286
+[   62.02] W (74031) link:   192 of 286
+[   62.07] W (74074) link: node 2: the burst stalled with 276 of 286 fragments (276 frames arrived); asking for the 10 that are missing (signal -27 dBm, from -32 to -27; its telemetry reads -27 dBm)
+[   62.08] W (74079) link: node 2: its radio handed over 288 frames since the burst began, 288 of them left it, 0 were refused, 0 times it had no room
+[   62.09] W (74091) link: node 2: arrival pattern: ################################################################
+[   62.11] I (74121) link: node 2: rms 0.0170  seq 334  flags 0x05  crc 0x9F70C0A0  level 0.0260  streak 0  win 0.0400  bat 0 mV
+[   62.24] W (74261) link: node 2: missing fragments:
+[   62.24] W (74261) link:   235 of 286
+[   62.29] W (74301) link: node 2: the burst stalled with 285 of 286 fragments (285 frames arrived); asking for the 1 that are missing (signal -27 dBm, from -32 to -27; its telemetry reads -27 dBm)
+[   62.31] W (74306) link: node 2: its radio handed over 300 frames since the burst began, 300 of them left it, 0 were refused, 0 times it had no room
+[   62.31] W (74319) link: node 2: arrival pattern: ################################################################
+[   62.35] I (74365) link: node 2: 286/286 fragments in 1.38 s (signal -27 dBm, from -32 to -27; its telemetry reads -27 dBm)
+[   62.36] I (74365) link: node 2: window crc32 0x9F70C0A0, the node advertised 0x9F70C0A0 -> MATCH
+[   62.37] I (74378) link: node 2: window rms 0.040135  mean 75  peak 4458  crest 3.4
+[   62.52] I (74534) link: node 2: front end 48.3 ms, inference 106.8 ms, P(no_cry)=0.8203 P(cry)=0.1797
+[   62.52] I (74534) link: node 2: no cry
+[   62.54] I (74554) link: node 1: rms 0.0280  seq 420  flags 0x07  crc 0xAAE0EB4D  level 0.0270  streak 1  win 0.0280  bat 0 mV
+[   62.55] I (74554) link: node 2: rms 0.0470  seq 334  flags 0x07  crc 0x9F70C0A0  level 0.0270  streak 1  win 0.0400  bat 0 mV
+[   62.65] I (74663) link: node 1: rms 0.0260  seq 420  flags 0x05  crc 0xAAE0EB4D  level 0.0270  streak 0  win 0.0280  bat 0 mV
+[   62.73] I (74743) link: node 3: rms 0.0280  seq 369  flags 0x05  crc 0x213DDF57  level 0.0280  streak 7  win 0.0430  bat 0 mV
+[   62.74] I (74743) link: node 3: asking for the window (seq 369, rms 0.0280, level 0.0280, win 0.0430)
+[   62.78] I (74790) link: node 2: rms 0.0220  seq 334  flags 0x05  crc 0x9F70C0A0  level 0.0280  streak 0  win 0.0400  bat 0 mV
+[   62.87] I (74890) link: node 2: rms 0.0520  seq 334  flags 0x07  crc 0x9F70C0A0  level 0.0280  streak 1  win 0.0400  bat 0 mV
+[   63.00] I (75010) link: node 1: rms 0.0240  seq 421  flags 0x05  crc 0xA0E7A60B  level 0.0280  streak 0  win 0.0290  bat 0 mV
+[   63.08] I (75090) link: node 2: rms 0.0200  seq 334  flags 0x05  crc 0x9F70C0A0  level 0.0280  streak 0  win 0.0400  bat 0 mV
+[   63.18] I (75190) link: node 2: rms 0.0450  seq 334  flags 0x07  crc 0x9F70C0A0  level 0.0280  streak 1  win 0.0400  bat 0 mV
+[   63.46] I (75470) link: node 1: rms 0.0280  seq 421  flags 0x07  crc 0xA0E7A60B  level 0.0280  streak 1  win 0.0290  bat 0 mV
+[   63.56] I (75570) link: node 1: rms 0.0240  seq 421  flags 0x05  crc 0xA0E7A60B  level 0.0280  streak 0  win 0.0290  bat 0 mV
+[   63.68] I (75690) link: node 2: rms 0.0210  seq 334  flags 0x05  crc 0x9F70C0A0  level 0.0290  streak 0  win 0.0400  bat 0 mV
+[   63.78] I (75790) link: node 2: rms 0.0420  seq 334  flags 0x07  crc 0x9F70C0A0  level 0.0290  streak 1  win 0.0400  bat 0 mV
+[   63.82] I (75830) link: node 3: rms 0.0170  seq 369  flags 0x05  crc 0x213DDF57  level 0.0280  streak 0  win 0.0430  bat 0 mV
+[   63.91] W (75930) link: node 3: missing fragments:
+[   63.91] W (75930) link:   12 of 286
+[   63.92] W (75930) link:   25 of 286
+[   63.92] W (75930) link:   29 of 286
+[   63.92] W (75930) link:   37 of 286
+[   63.92] W (75932) link:   46 of 286
+[   63.93] W (75935) link:   54 of 286
+[   63.93] W (75938) link:   85 of 286
+[   63.93] W (75940) link:   154 of 286
+[   63.97] W (75983) link: node 3: the burst stalled with 273 of 286 fragments (273 frames arrived); asking for the 13 that are missing (signal -41 dBm, from -43 to -37; its telemetry reads -42 dBm)
+[   63.99] W (75988) link: node 3: its radio handed over 288 frames since the burst began, 288 of them left it, 0 were refused, 0 times it had no room
+[   64.00] W (76001) link: node 3: arrival pattern: ################################################################
+[   64.02] I (76030) link: node 3: rms 0.0340  seq 369  flags 0x07  crc 0x213DDF57  level 0.0280  streak 1  win 0.0430  bat 0 mV
+[   64.04] I (76050) link: node 1: rms 0.0350  seq 421  flags 0x07  crc 0xA0E7A60B  level 0.0280  streak 1  win 0.0290  bat 0 mV
+[   64.05] I (76070) link: link: 5707 frames off the air, 5707 parsed, 0 bad, 0 bad payload, 32 requests sent, 0 failed
+[   64.07] W (76090) link: node 3: missing fragments:
+[   64.07] W (76090) link:   281 of 286
+[   64.12] W (76130) link: node 3: the burst stalled with 285 of 286 fragments (285 frames arrived); asking for the 1 that are missing (signal -41 dBm, from -43 to -37; its telemetry reads -41 dBm)
+[   64.14] W (76135) link: node 3: its radio handed over 302 frames since the burst began, 302 of them left it, 0 were refused, 0 times it had no room
+[   64.14] W (76148) link: node 3: arrival pattern: ################################################################
+[   64.18] I (76194) link: node 3: 286/286 fragments in 1.43 s (signal -41 dBm, from -43 to -37; its telemetry reads -41 dBm)
+[   64.19] I (76194) link: node 3: window crc32 0x213DDF57, the node advertised 0x213DDF57 -> MATCH
+[   64.19] I (76207) link: node 3: window rms 0.043405  mean 8  peak 6748  crest 4.7
+[   64.35] I (76362) link: node 3: front end 48.4 ms, inference 106.5 ms, P(no_cry)=0.6953 P(cry)=0.3047
+[   64.35] I (76363) link: node 3: no cry
+[   64.37] I (76383) link: node 3: rms 0.0250  seq 369  flags 0x05  crc 0x213DDF57  level 0.0290  streak 0  win 0.0430  bat 0 mV
+[   64.38] I (76383) link: node 1: asking for the window (seq 421, rms 0.0430, level 0.0290, win 0.0290)
+[   64.52] I (76530) link: node 3: rms 0.0630  seq 369  flags 0x07  crc 0x213DDF57  level 0.0300  streak 1  win 0.0430  bat 0 mV
+[   64.78] I (76790) link: node 2: rms 0.0270  seq 334  flags 0x05  crc 0x9F70C0A0  level 0.0300  streak 0  win 0.0400  bat 0 mV
+[   64.91] I (76930) link: node 3: rms 0.0250  seq 369  flags 0x05  crc 0x213DDF57  level 0.0300  streak 0  win 0.0430  bat 0 mV
+[   64.99] I (77010) link: node 2: rms 0.0410  seq 334  flags 0x07  crc 0x9F70C0A0  level 0.0300  streak 1  win 0.0400  bat 0 mV
+[   65.01] I (77030) link: node 3: rms 0.0800  seq 369  flags 0x07  crc 0x213DDF57  level 0.0300  streak 1  win 0.0430  bat 0 mV
+[   65.08] I (77090) link: node 2: rms 0.0290  seq 334  flags 0x05  crc 0x9F70C0A0  level 0.0300  streak 0  win 0.0400  bat 0 mV
+[   65.11] I (77130) link: node 3: rms 0.0210  seq 369  flags 0x05  crc 0x213DDF57  level 0.0300  streak 0  win 0.0430  bat 0 mV
+[   65.22] I (77230) link: node 3: rms 0.0500  seq 369  flags 0x07  crc 0x213DDF57  level 0.0300  streak 1  win 0.0430  bat 0 mV
+[   65.61] I (77630) link: node 3: rms 0.0290  seq 369  flags 0x05  crc 0x213DDF57  level 0.0300  streak 0  win 0.0430  bat 0 mV
+[   65.68] I (77690) link: node 2: rms 0.0310  seq 334  flags 0x07  crc 0x9F70C0A0  level 0.0300  streak 1  win 0.0400  bat 0 mV
+[   65.72] I (77730) link: node 3: rms 0.0400  seq 369  flags 0x07  crc 0x213DDF57  level 0.0300  streak 1  win 0.0430  bat 0 mV
+[   65.80] I (77810) link: node 1: rms 0.0130  seq 421  flags 0x05  crc 0xA0E7A60B  level 0.0290  streak 0  win 0.0290  bat 0 mV
+[   65.80] W (77810) link: node 1: missing fragments:
+[   65.80] W (77813) link:   6 of 286
+[   65.81] W (77815) link:   7 of 286
+[   65.81] W (77818) link:   44 of 286
+[   65.81] W (77820) link:   72 of 286
+[   65.81] W (77823) link:   85 of 286
+[   65.82] W (77825) link:   96 of 286
+[   65.82] W (77828) link:   104 of 286
+[   65.82] W (77830) link:   117 of 286
+[   65.87] W (77873) link: node 1: the burst stalled with 270 of 286 fragments (270 frames arrived); asking for the 16 that are missing (signal -20 dBm, from -21 to -19; its telemetry reads -20 dBm)
+[   65.88] W (77878) link: node 1: its radio handed over 288 frames since the burst began, 288 of them left it, 0 were refused, 0 times it had no room
+[   65.89] W (77890) link: node 1: arrival pattern: ################################################################
+[   65.91] I (77920) link: node 2: rms 0.0210  seq 334  flags 0x05  crc 0x9F70C0A0  level 0.0300  streak 0  win 0.0400  bat 0 mV
+[   65.92] I (77920) link: node 3: rms 0.0090  seq 369  flags 0x05  crc 0x213DDF57  level 0.0280  streak 0  win 0.0430  bat 0 mV
+[   65.97] I (77987) link: node 1: 286/286 fragments in 1.59 s (signal -20 dBm, from -21 to -19; its telemetry reads -20 dBm)
+[   65.98] I (77987) link: node 1: window crc32 0xA0E7A60B, the node advertised 0xA0E7A60B -> MATCH
+[   65.99] I (77999) link: node 1: window rms 0.028974  mean 39  peak 3610  crest 3.8
+[   66.15] I (78163) link: node 1: front end 48.1 ms, inference 114.4 ms, P(no_cry)=0.5312 P(cry)=0.4688
+[   66.15] I (78163) link: node 1: no cry
+[   66.17] I (78183) link: node 3: rms 0.0350  seq 369  flags 0x07  crc 0x213DDF57  level 0.0280  streak 1  win 0.0430  bat 0 mV
+[   66.31] I (78323) link: node 3: rms 0.0270  seq 369  flags 0x05  crc 0x213DDF57  level 0.0280  streak 0  win 0.0430  bat 0 mV
+[   66.41] I (78423) link: node 3: rms 0.0310  seq 369  flags 0x07  crc 0x213DDF57  level 0.0290  streak 1  win 0.0430  bat 0 mV
+[   66.49] I (78503) link: node 2: rms 0.0400  seq 334  flags 0x07  crc 0x9F70C0A0  level 0.0300  streak 1  win 0.0400  bat 0 mV
+[   66.57] I (78583) link: node 2: rms 0.0230  seq 334  flags 0x05  crc 0x9F70C0A0  level 0.0300  streak 0  win 0.0400  bat 0 mV
+[   66.61] I (78623) link: node 3: rms 0.0210  seq 369  flags 0x05  crc 0x213DDF57  level 0.0290  streak 0  win 0.0430  bat 0 mV
+[   66.87] I (78883) link: node 2: rms 0.0340  seq 334  flags 0x07  crc 0x9F70C0A0  level 0.0300  streak 1  win 0.0400  bat 0 mV
+[   66.97] I (78983) link: node 2: rms 0.0200  seq 334  flags 0x05  crc 0x9F70C0A0  level 0.0300  streak 0  win 0.0400  bat 0 mV
+[   67.11] I (79123) link: node 3: rms 0.0350  seq 369  flags 0x07  crc 0x213DDF57  level 0.0290  streak 1  win 0.0430  bat 0 mV
+[   67.21] I (79223) link: node 3: rms 0.0270  seq 369  flags 0x05  crc 0x213DDF57  level 0.0290  streak 0  win 0.0430  bat 0 mV
+[   67.25] I (79263) link: node 1: rms 0.0170  seq 421  flags 0x05  crc 0xA0E7A60B  level 0.0230  streak 0  win 0.0290  bat 0 mV
+[   67.87] I (79883) link: node 2: rms 0.0230  seq 334  flags 0x07  crc 0x9F70C0A0  level 0.0220  streak 1  win 0.0400  bat 0 mV
+[   67.97] I (79983) link: node 2: rms 0.0080  seq 334  flags 0x05  crc 0x9F70C0A0  level 0.0220  streak 0  win 0.0400  bat 0 mV
+[   68.25] I (80263) link: node 1: rms 0.0170  seq 421  flags 0x05  crc 0xA0E7A60B  level 0.0230  streak 0  win 0.0290  bat 0 mV
+[   68.31] I (80323) link: node 3: rms 0.0230  seq 369  flags 0x05  crc 0x213DDF57  level 0.0290  streak 0  win 0.0430  bat 0 mV
+[   69.07] I (81083) link: node 2: rms 0.0150  seq 334  flags 0x05  crc 0x9F70C0A0  level 0.0220  streak 0  win 0.0400  bat 0 mV
+[   69.08] I (81083) link: link: 6124 frames off the air, 6124 parsed, 0 bad, 0 bad payload, 35 requests sent, 0 failed
+[   69.32] I (81332) link: node 3: rms 0.0100  seq 369  flags 0x05  crc 0x213DDF57  level 0.0290  streak 0  win 0.0430  bat 0 mV
+[   69.34] I (81352) link: node 1: rms 0.0120  seq 421  flags 0x05  crc 0xA0E7A60B  level 0.0240  streak 0  win 0.0290  bat 0 mV
+[   70.08] I (82092) link: node 2: rms 0.0210  seq 334  flags 0x05  crc 0x9F70C0A0  level 0.0230  streak 0  win 0.0400  bat 0 mV
+[   70.42] I (82432) link: node 3: rms 0.0160  seq 369  flags 0x05  crc 0x213DDF57  level 0.0290  streak 0  win 0.0430  bat 0 mV
+[   70.44] I (82452) link: node 1: rms 0.0120  seq 421  flags 0x05  crc 0xA0E7A60B  level 0.0240  streak 0  win 0.0290  bat 0 mV
+[   71.18] I (83192) link: node 2: rms 0.0150  seq 334  flags 0x05  crc 0x9F70C0A0  level 0.0230  streak 0  win 0.0400  bat 0 mV
+[   71.42] I (83432) link: node 3: rms 0.0200  seq 369  flags 0x05  crc 0x213DDF57  level 0.0300  streak 0  win 0.0430  bat 0 mV
+[   71.44] I (83452) link: node 1: rms 0.0200  seq 421  flags 0x05  crc 0xA0E7A60B  level 0.0250  streak 0  win 0.0290  bat 0 mV
+[   72.18] I (84192) link: node 2: rms 0.0100  seq 334  flags 0x05  crc 0x9F70C0A0  level 0.0240  streak 0  win 0.0400  bat 0 mV
+[   72.52] I (84532) link: node 3: rms 0.0140  seq 369  flags 0x05  crc 0x213DDF57  level 0.0220  streak 0  win 0.0430  bat 0 mV
+[   72.54] I (84552) link: node 1: rms 0.0110  seq 421  flags 0x05  crc 0xA0E7A60B  level 0.0250  streak 0  win 0.0290  bat 0 mV
+[   73.28] I (85292) link: node 2: rms 0.0180  seq 334  flags 0x05  crc 0x9F70C0A0  level 0.0240  streak 0  win 0.0400  bat 0 mV
+[   73.62] I (85632) link: node 3: rms 0.0210  seq 369  flags 0x05  crc 0x213DDF57  level 0.0230  streak 0  win 0.0430  bat 0 mV
+[   73.64] I (85652) link: node 1: rms 0.0200  seq 421  flags 0x05  crc 0xA0E7A60B  level 0.0260  streak 0  win 0.0290  bat 0 mV
+[   74.08] I (86092) link: link: 6274 frames off the air, 6274 parsed, 0 bad, 0 bad payload, 35 requests sent, 0 failed
+[   74.38] I (86392) link: node 2: rms 0.0130  seq 334  flags 0x05  crc 0x9F70C0A0  level 0.0240  streak 0  win 0.0400  bat 0 mV
+[   74.62] I (86632) link: node 3: rms 0.0150  seq 369  flags 0x05  crc 0x213DDF57  level 0.0240  streak 0  win 0.0430  bat 0 mV
+[   74.74] I (86752) link: node 1: rms 0.0150  seq 421  flags 0x05  crc 0xA0E7A60B  level 0.0260  streak 0  win 0.0290  bat 0 mV
+[   75.38] I (87392) link: node 2: rms 0.0140  seq 334  flags 0x05  crc 0x9F70C0A0  level 0.0250  streak 0  win 0.0400  bat 0 mV
+[   75.72] I (87732) link: node 3: rms 0.0190  seq 369  flags 0x05  crc 0x213DDF57  level 0.0240  streak 0  win 0.0430  bat 0 mV
+[   75.74] I (87752) link: node 1: rms 0.0120  seq 421  flags 0x05  crc 0xA0E7A60B  level 0.0270  streak 0  win 0.0290  bat 0 mV
+[   76.50] I (88512) link: node 2: rms 0.0180  seq 334  flags 0x05  crc 0x9F70C0A0  level 0.0250  streak 0  win 0.0400  bat 0 mV
+[   76.74] I (88752) link: node 1: rms 0.0170  seq 421  flags 0x05  crc 0xA0E7A60B  level 0.0270  streak 0  win 0.0290  bat 0 mV
+[   76.82] I (88832) link: node 3: rms 0.0190  seq 369  flags 0x05  crc 0x213DDF57  level 0.0250  streak 0  win 0.0430  bat 0 mV
+[   77.50] I (89512) link: node 2: rms 0.0180  seq 334  flags 0x05  crc 0x9F70C0A0  level 0.0260  streak 0  win 0.0400  bat 0 mV
+[   77.62] I (89632) link: node 3: rms 0.0260  seq 369  flags 0x07  crc 0x213DDF57  level 0.0250  streak 1  win 0.0430  bat 0 mV
+[   77.72] I (89732) link: node 3: rms 0.0210  seq 369  flags 0x05  crc 0x213DDF57  level 0.0250  streak 0  win 0.0430  bat 0 mV
+[   77.84] I (89852) link: node 1: rms 0.0140  seq 421  flags 0x05  crc 0xA0E7A60B  level 0.0280  streak 0  win 0.0290  bat 0 mV
+[   78.42] I (90432) link: node 3: rms 0.0290  seq 369  flags 0x07  crc 0x213DDF57  level 0.0260  streak 1  win 0.0430  bat 0 mV
+[   78.52] I (90532) link: node 3: rms 0.0120  seq 369  flags 0x05  crc 0x213DDF57  level 0.0260  streak 0  win 0.0430  bat 0 mV
+[   78.58] I (90592) link: node 2: rms 0.0170  seq 334  flags 0x05  crc 0x9F70C0A0  level 0.0260  streak 0  win 0.0400  bat 0 mV
+[   78.94] I (90952) link: node 1: rms 0.0150  seq 421  flags 0x05  crc 0xA0E7A60B  level 0.0250  streak 0  win 0.0290  bat 0 mV
+[   79.08] I (91092) link: link: 6424 frames off the air, 6424 parsed, 0 bad, 0 bad payload, 35 requests sent, 0 failed
+[   79.52] I (91532) link: node 3: rms 0.0110  seq 369  flags 0x05  crc 0x213DDF57  level 0.0260  streak 0  win 0.0430  bat 0 mV
+[   79.68] I (91692) link: node 2: rms 0.0130  seq 334  flags 0x05  crc 0x9F70C0A0  level 0.0230  streak 0  win 0.0400  bat 0 mV
+[   79.82] I (91832) link: node 3: rms 0.0260  seq 369  flags 0x07  crc 0x213DDF57  level 0.0260  streak 1  win 0.0430  bat 0 mV
+[   79.92] I (91932) link: node 3: rms 0.0170  seq 369  flags 0x05  crc 0x213DDF57  level 0.0260  streak 0  win 0.0430  bat 0 mV
+[   79.96] I (91972) link: node 1: rms 0.0090  seq 421  flags 0x05  crc 0xA0E7A60B  level 0.0220  streak 0  win 0.0290  bat 0 mV
+[   80.12] I (92132) link: node 3: rms 0.0320  seq 369  flags 0x07  crc 0x213DDF57  level 0.0270  streak 1  win 0.0430  bat 0 mV
+[   80.22] I (92232) link: node 3: rms 0.0240  seq 369  flags 0x05  crc 0x213DDF57  level 0.0270  streak 0  win 0.0430  bat 0 mV
+[   80.58] I (92592) link: node 2: rms 0.0190  seq 334  flags 0x06  crc 0x00000000  level 0.0190  streak 1  win 0.0400  bat 0 mV
+[   80.68] I (92692) link: node 2: rms 0.0120  seq 334  flags 0x04  crc 0x00000000  level 0.0190  streak 0  win 0.0400  bat 0 mV
+[   80.78] I (92792) link: node 2: rms 0.0280  seq 334  flags 0x06  crc 0x00000000  level 0.0190  streak 1  win 0.0400  bat 0 mV
+[   81.10] I (93112) link: node 2: rms 0.0140  seq 334  flags 0x04  crc 0x00000000  level 0.0190  streak 0  win 0.0400  bat 0 mV
+[   81.14] I (93152) link: node 1: rms 0.0130  seq 421  flags 0x05  crc 0xA0E7A60B  level 0.0230  streak 0  win 0.0290  bat 0 mV
+[   81.24] I (93252) link: node 3: rms 0.0130  seq 369  flags 0x05  crc 0x213DDF57  level 0.0270  streak 0  win 0.0430  bat 0 mV
+[   81.28] I (93292) link: node 2: rms 0.0280  seq 334  flags 0x06  crc 0x00000000  level 0.0190  streak 2  win 0.0400  bat 0 mV
+[   81.32] I (93332) link: node 3: rms 0.0320  seq 369  flags 0x07  crc 0x213DDF57  level 0.0270  streak 1  win 0.0430  bat 0 mV
+[   81.42] I (93432) link: node 3: rms 0.0180  seq 369  flags 0x05  crc 0x213DDF57  level 0.0270  streak 0  win 0.0430  bat 0 mV
+[   81.54] I (93552) link: node 1: rms 0.0320  seq 421  flags 0x07  crc 0xA0E7A60B  level 0.0230  streak 1  win 0.0290  bat 0 mV
+[   81.64] I (93652) link: node 1: rms 0.0140  seq 421  flags 0x05  crc 0xA0E7A60B  level 0.0230  streak 0  win 0.0290  bat 0 mV
+[   81.72] I (93732) link: node 3: rms 0.0290  seq 369  flags 0x07  crc 0x213DDF57  level 0.0280  streak 1  win 0.0430  bat 0 mV
+[   81.74] I (93752) link: node 1: rms 0.0270  seq 421  flags 0x07  crc 0xA0E7A60B  level 0.0230  streak 1  win 0.0290  bat 0 mV
+[   81.82] I (93832) link: node 2: rms 0.0130  seq 335  flags 0x05  crc 0x51D7ECA8  level 0.0200  streak 0  win 0.0290  bat 0 mV
+[   81.90] I (93912) link: node 2: rms 0.0350  seq 335  flags 0x07  crc 0x51D7ECA8  level 0.0200  streak 1  win 0.0290  bat 0 mV
+[   81.94] I (93952) link: node 1: rms 0.0190  seq 421  flags 0x05  crc 0xA0E7A60B  level 0.0230  streak 0  win 0.0290  bat 0 mV
+[   81.97] I (93992) link: node 2: asking for the window (seq 335, rms 0.0920, level 0.0210, win 0.0290)
+[   82.24] I (94252) link: node 1: rms 0.0320  seq 421  flags 0x07  crc 0xA0E7A60B  level 0.0240  streak 1  win 0.0290  bat 0 mV
+[   82.34] I (94352) link: node 1: rms 0.0230  seq 421  flags 0x05  crc 0xA0E7A60B  level 0.0240  streak 0  win 0.0290  bat 0 mV
+[   82.42] I (94432) link: node 3: rms 0.0180  seq 369  flags 0x05  crc 0x213DDF57  level 0.0290  streak 0  win 0.0430  bat 0 mV
+[   82.62] I (94632) link: node 3: rms 0.0400  seq 369  flags 0x07  crc 0x213DDF57  level 0.0290  streak 1  win 0.0430  bat 0 mV
+[   82.72] I (94732) link: node 3: rms 0.0280  seq 369  flags 0x04  crc 0x00000000  level 0.0290  streak 0  win 0.0430  bat 0 mV
+[   82.86] I (94872) link: node 1: rms 0.0300  seq 421  flags 0x07  crc 0xA0E7A60B  level 0.0240  streak 1  win 0.0290  bat 0 mV
+[   82.98] I (94992) link: node 2: rms 0.0310  seq 335  flags 0x07  crc 0x51D7ECA8  level 0.0210  streak 4  win 0.0290  bat 0 mV
+[   82.98] W (94992) link: node 2: missing fragments:
+[   82.98] W (94995) link:   18 of 286
+[   82.99] W (94997) link:   20 of 286
+[   82.99] W (95000) link:   38 of 286
+[   82.99] W (95002) link:   39 of 286
+[   82.99] W (95005) link:   87 of 286
+[   83.00] W (95007) link:   88 of 286
+[   83.00] W (95010) link:   111 of 286
+[   83.00] W (95013) link:   112 of 286
+[   83.05] W (95056) link: node 2: the burst stalled with 272 of 286 fragments (272 frames arrived); asking for the 14 that are missing (signal -28 dBm, from -33 to -27; its telemetry reads -28 dBm)
+[   83.06] W (95061) link: node 2: its radio handed over 288 frames since the burst began, 288 of them left it, 0 were refused, 0 times it had no room
+[   83.07] W (95073) link: node 2: arrival pattern: ################################################################
+[   83.09] I (95103) link: node 1: rms 0.0290  seq 421  flags 0x06  crc 0x00000000  level 0.0240  streak 3  win 0.0290  bat 0 mV
+[   83.16] W (95183) link: node 2: missing fragments:
+[   83.17] W (95183) link:   176 of 286
+[   83.17] W (95183) link:   225 of 286
+[   83.21] W (95223) link: node 2: the burst stalled with 284 of 286 fragments (284 frames arrived); asking for the 2 that are missing (signal -28 dBm, from -33 to -27; its telemetry reads -27 dBm)
+[   83.23] W (95228) link: node 2: its radio handed over 304 frames since the burst began, 304 of them left it, 0 were refused, 0 times it had no room
+[   83.24] W (95240) link: node 2: arrival pattern: ################################################################
+[   83.27] I (95287) link: node 2: 286/286 fragments in 1.28 s (signal -28 dBm, from -33 to -27; its telemetry reads -27 dBm)
+[   83.28] I (95287) link: node 2: window crc32 0x51D7ECA8, the node advertised 0x51D7ECA8 -> MATCH
+[   83.29] I (95300) link: node 2: window rms 0.028947  mean -13  peak 4657  crest 4.9
+[   83.44] I (95454) link: node 2: front end 49.0 ms, inference 104.1 ms, P(no_cry)=0.5312 P(cry)=0.4688
+[   83.44] I (95454) link: node 2: no cry
+[   83.46] I (95474) link: node 1: rms 0.0180  seq 421  flags 0x04  crc 0x00000000  level 0.0250  streak 0  win 0.0290  bat 0 mV
+[   83.47] I (95474) link: node 3: rms 0.0310  seq 369  flags 0x06  crc 0x00000000  level 0.0300  streak 1  win 0.0430  bat 0 mV
+[   83.53] I (95543) link: node 3: rms 0.0140  seq 369  flags 0x04  crc 0x00000000  level 0.0300  streak 0  win 0.0430  bat 0 mV
+[   83.55] I (95563) link: node 1: rms 0.0290  seq 421  flags 0x06  crc 0x00000000  level 0.0250  streak 1  win 0.0290  bat 0 mV
+[   83.77] I (95783) link: node 2: rms 0.0170  seq 335  flags 0x05  crc 0x51D7ECA8  level 0.0240  streak 0  win 0.0290  bat 0 mV
+[   83.79] I (95803) link: node 1: rms 0.0220  seq 422  flags 0x05  crc 0xF6316C9C  level 0.0250  streak 0  win 0.0260  bat 0 mV
+[   83.97] I (95983) link: node 2: rms 0.0600  seq 335  flags 0x07  crc 0x51D7ECA8  level 0.0240  streak 1  win 0.0290  bat 0 mV
+[   84.09] I (96103) link: link: 6848 frames off the air, 6848 parsed, 0 bad, 0 bad payload, 38 requests sent, 0 failed
+[   84.13] I (96143) link: node 3: rms 0.0420  seq 369  flags 0x06  crc 0x00000000  level 0.0300  streak 1  win 0.0430  bat 0 mV
+[   84.14] I (96143) link: node 1: rms 0.0570  seq 422  flags 0x07  crc 0xF6316C9C  level 0.0260  streak 1  win 0.0260  bat 0 mV
+[   84.22] I (96233) link: node 3: rms 0.0190  seq 369  flags 0x04  crc 0x00000000  level 0.0300  streak 0  win 0.0430  bat 0 mV
+[   84.24] I (96253) link: node 1: asking for the window (seq 422, rms 0.0440, level 0.0260, win 0.0260)
+[   84.58] I (96593) link: node 2: rms 0.0250  seq 335  flags 0x05  crc 0x51D7ECA8  level 0.0260  streak 0  win 0.0290  bat 0 mV
+[   84.62] I (96633) link: node 3: rms 0.0460  seq 369  flags 0x06  crc 0x00000000  level 0.0300  streak 1  win 0.0430  bat 0 mV
+[   84.74] I (96753) link: node 3: rms 0.0240  seq 369  flags 0x04  crc 0x00000000  level 0.0300  streak 0  win 0.0430  bat 0 mV
+[   84.78] I (96793) link: node 2: rms 0.0460  seq 335  flags 0x07  crc 0x51D7ECA8  level 0.0270  streak 1  win 0.0290  bat 0 mV
+[   85.24] I (97253) link: node 3: rms 0.0340  seq 369  flags 0x06  crc 0x00000000  level 0.0230  streak 1  win 0.0430  bat 0 mV
+[   85.46] I (97473) link: node 1: rms 0.0090  seq 422  flags 0x05  crc 0xF6316C9C  level 0.0260  streak 0  win 0.0260  bat 0 mV
+[   85.48] I (97493) link: node 2: rms 0.0210  seq 335  flags 0x05  crc 0x51D7ECA8  level 0.0290  streak 0  win 0.0290  bat 0 mV
+[   85.55] W (97573) link: node 1: missing fragments:
+[   85.56] W (97573) link:   34 of 286
+[   85.56] W (97573) link:   88 of 286
+[   85.56] W (97573) link:   114 of 286
+[   85.56] W (97573) link:   132 of 286
+[   85.56] W (97576) link:   143 of 286
+[   85.57] W (97578) link:   162 of 286
+[   85.57] W (97581) link:   180 of 286
+[   85.57] W (97583) link:   208 of 286
+[   85.62] W (97626) link: node 1: the burst stalled with 275 of 286 fragments (275 frames arrived); asking for the 11 that are missing (signal -20 dBm, from -21 to -19; its telemetry reads -20 dBm)
+[   85.63] W (97631) link: node 1: its radio handed over 288 frames since the burst began, 288 of them left it, 0 were refused, 0 times it had no room
+[   85.64] W (97643) link: node 1: arrival pattern: ################################################################
+[   85.68] I (97690) link: node 1: 286/286 fragments in 1.42 s (signal -20 dBm, from -21 to -19; its telemetry reads -20 dBm)
+[   85.69] I (97691) link: node 1: window crc32 0xF6316C9C, the node advertised 0xF6316C9C -> MATCH
+[   85.69] I (97703) link: node 1: window rms 0.025841  mean 66  peak 3449  crest 4.1
+[   85.84] I (97856) link: node 1: front end 48.2 ms, inference 103.9 ms, P(no_cry)=0.9531 P(cry)=0.0469
+[   85.84] I (97856) link: node 1: no cry
+[   85.96] I (97977) link: node 3: rms 0.0200  seq 370  flags 0x05  crc 0x17A5A937  level 0.0240  streak 0  win 0.0330  bat 0 mV
+[   86.06] I (98077) link: node 2: rms 0.1180  seq 335  flags 0x07  crc 0x51D7ECA8  level 0.0300  streak 1  win 0.0290  bat 0 mV
+[   86.12] I (98137) link: node 3: rms 0.0250  seq 370  flags 0x07  crc 0x17A5A937  level 0.0240  streak 1  win 0.0330  bat 0 mV
+[   86.22] I (98237) link: node 3: rms 0.0220  seq 370  flags 0x05  crc 0x17A5A937  level 0.0250  streak 0  win 0.0330  bat 0 mV
+[   86.36] I (98377) link: node 1: rms 0.0250  seq 422  flags 0x07  crc 0xF6316C9C  level 0.0240  streak 1  win 0.0260  bat 0 mV
+[   86.42] I (98437) link: node 3: rms 0.1010  seq 370  flags 0x07  crc 0x17A5A937  level 0.0250  streak 1  win 0.0330  bat 0 mV
+[   86.43] I (98437) link: node 3: asking for the window (seq 370, rms 0.1010, level 0.0250, win 0.0330)
+[   86.67] I (98684) link: node 1: rms 0.0220  seq 422  flags 0x05  crc 0xF6316C9C  level 0.0250  streak 0  win 0.0260  bat 0 mV
+[   86.68] I (98684) link: node 2: rms 0.0290  seq 335  flags 0x05  crc 0x51D7ECA8  level 0.0300  streak 0  win 0.0290  bat 0 mV
+[   86.78] I (98794) link: node 1: rms 0.0510  seq 422  flags 0x07  crc 0xF6316C9C  level 0.0250  streak 1  win 0.0260  bat 0 mV
+[   86.79] I (98794) link: node 2: rms 0.0640  seq 335  flags 0x07  crc 0x51D7ECA8  level 0.0300  streak 1  win 0.0290  bat 0 mV
+[   86.97] I (98984) link: node 1: rms 0.0190  seq 422  flags 0x05  crc 0xF6316C9C  level 0.0250  streak 0  win 0.0260  bat 0 mV
+[   87.07] I (99084) link: node 1: rms 0.0470  seq 422  flags 0x07  crc 0xF6316C9C  level 0.0250  streak 1  win 0.0260  bat 0 mV
+[   87.19] I (99204) link: node 1: rms 0.0210  seq 422  flags 0x05  crc 0xF6316C9C  level 0.0250  streak 0  win 0.0260  bat 0 mV
+[   87.47] I (99484) link: node 2: rms 0.0230  seq 335  flags 0x05  crc 0x51D7ECA8  level 0.0300  streak 0  win 0.0290  bat 0 mV
+[   87.57] I (99584) link: node 2: rms 0.0440  seq 335  flags 0x07  crc 0x51D7ECA8  level 0.0300  streak 1  win 0.0290  bat 0 mV
+[   87.59] I (99604) link: node 3: rms 0.0430  seq 370  flags 0x07  crc 0x17A5A937  level 0.0250  streak 2  win 0.0330  bat 0 mV
+[   87.68] W (99704) link: node 3: missing fragments:
+[   87.69] W (99704) link:   10 of 286
+[   87.69] W (99704) link:   64 of 286
+[   87.70] W (99704) link:   102 of 286
+[   87.70] W (99704) link:   118 of 286
+[   87.70] W (99707) link:   125 of 286
+[   87.70] W (99709) link:   153 of 286
+[   87.70] W (99712) link:   194 of 286
+[   87.70] W (99714) link:   272 of 286
+[   87.75] W (99757) link: node 3: the burst stalled with 278 of 286 fragments (278 frames arrived); asking for the 8 that are missing (signal -41 dBm, from -44 to -38; its telemetry reads -42 dBm)
+[   87.77] W (99762) link: node 3: its radio handed over 288 frames since the burst began, 288 of them left it, 0 were refused, 0 times it had no room
+[   87.77] W (99774) link: node 3: arrival pattern: ################################################################
+[   87.92] W (99944) link: node 3: missing fragments:
+[   87.92] W (99944) link:   194 of 286
+[   87.97] W (99984) link: node 3: the burst stalled with 285 of 286 fragments (285 frames arrived); asking for the 1 that are missing (signal -41 dBm, from -44 to -38; its telemetry reads -42 dBm)
+[   87.99] W (99989) link: node 3: its radio handed over 298 frames since the burst began, 298 of them left it, 0 were refused, 0 times it had no room
+[   88.00] W (100001) link: node 3: arrival pattern: ################################################################
+[   88.03] I (100047) link: node 3: 286/286 fragments in 1.59 s (signal -41 dBm, from -44 to -38; its telemetry reads -41 dBm)
+[   88.04] I (100048) link: node 3: window crc32 0x17A5A937, the node advertised 0x17A5A937 -> MATCH
+[   88.05] I (100061) link: node 3: window rms 0.033316  mean -89  peak 4667  crest 4.3
+[   88.20] I (100215) link: node 3: front end 49.2 ms, inference 103.9 ms, P(no_cry)=0.3555 P(cry)=0.6445
+[   88.20] I (100215) link: node 3: no cry
+[   88.22] I (100235) link: node 1: rms 0.0160  seq 422  flags 0x05  crc 0xF6316C9C  level 0.0260  streak 0  win 0.0260  bat 0 mV
+[   88.23] I (100235) link: node 3: rms 0.0140  seq 370  flags 0x05  crc 0x17A5A937  level 0.0270  streak 0  win 0.0330  bat 0 mV
+[   88.37] I (100384) link: node 1: rms 0.0270  seq 422  flags 0x07  crc 0xF6316C9C  level 0.0260  streak 1  win 0.0260  bat 0 mV
+[   88.49] I (100504) link: node 3: rms 0.0310  seq 370  flags 0x07  crc 0x17A5A937  level 0.0270  streak 1  win 0.0330  bat 0 mV
+[   88.67] I (100684) link: node 2: rms 0.0360  seq 335  flags 0x07  crc 0x51D7ECA8  level 0.0300  streak 11  win 0.0290  bat 0 mV
+[   88.99] I (101004) link: node 3: rms 0.0140  seq 370  flags 0x05  crc 0x17A5A937  level 0.0280  streak 0  win 0.0330  bat 0 mV
+[   89.09] I (101104) link: link: 7540 frames off the air, 7540 parsed, 0 bad, 0 bad payload, 43 requests sent, 0 failed
+[   89.25] I (101264) link: node 1: rms 0.0250  seq 422  flags 0x05  crc 0xF6316C9C  level 0.0270  streak 0  win 0.0260  bat 0 mV
+[   89.45] I (101464) link: node 1: rms 0.0340  seq 422  flags 0x07  crc 0xF6316C9C  level 0.0280  streak 1  win 0.0260  bat 0 mV
+[   89.57] I (101584) link: node 2: rms 0.0210  seq 335  flags 0x05  crc 0x51D7ECA8  level 0.0300  streak 0  win 0.0290  bat 0 mV
+[   89.67] I (101684) link: node 2: rms 0.0590  seq 335  flags 0x07  crc 0x51D7ECA8  level 0.0300  streak 1  win 0.0290  bat 0 mV
+[   89.75] I (101764) link: node 1: rms 0.0180  seq 422  flags 0x05  crc 0xF6316C9C  level 0.0280  streak 0  win 0.0260  bat 0 mV
+[   89.85] I (101864) link: node 1: rms 0.0290  seq 422  flags 0x07  crc 0xF6316C9C  level 0.0280  streak 1  win 0.0260  bat 0 mV
+[   89.99] I (102004) link: node 3: rms 0.0460  seq 370  flags 0x07  crc 0x17A5A937  level 0.0280  streak 1  win 0.0330  bat 0 mV

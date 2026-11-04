@@ -1,0 +1,15 @@
+[    0.09] [scan] 2f:ad:f5:b5:24:ba name="" svc_uuid=0
+[    0.09] [scan] 20:49:b9:15:c9:a6 name="" svc_uuid=0
+[    0.09] [scan] 33:70:94:b5:ea:40 name="" svc_uuid=0
+[    0.12] [scan] 2f:6d:de:5b:57:bc name="" svc_uuid=0
+[    0.13] [scan] 3c:23:e1:0c:82:c1 name="" svc_uuid=0
+[    0.17] [scan] 56:e4:5b:a8:01:d9 name="SAWIZZ" svc_uuid=1
+[    0.25] [scan] 7a:87:89:65:18:90 name="LONEWOLF" svc_uuid=1
+[    0.27] [scan] 5d:ef:03:6e:e9:42 name="SOOMA" svc_uuid=1
+[    0.47] [scan] 5a:0c:d8:fd:9d:a4 name="" svc_uuid=0
+[    0.47] [scan] 30:30:f9:17:2f:82 name="INFANT_MONITOR_HUB" svc_uuid=0
+[    0.47] [ble] hub found (30:30:f9:17:2f:82)
+[    0.48] [ble] connecting to 30:30:f9:17:2f:82
+[    0.91] [ble] hub connected
+[    1.11] [ble] state: 0 cot(s), mask 0x00
+[    1.11] [ble] subscribed to alerts

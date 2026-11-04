@@ -35,6 +35,7 @@
 #include "crynet_infer.h"
 #include "probes.h"
 #include "link_stage.h"
+#include "console.h"
 #include "ble_alert.h"
 #include "hub_display.h"
 
@@ -94,8 +95,10 @@ static void report_platform(void)
     ESP_LOGI(TAG, "free int   : %d bytes", (int)heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
     ESP_LOGI(TAG, "flash      : %u bytes", (unsigned)flash_bytes);
     ESP_LOGI(TAG, "model      : %u bytes (int8)", (unsigned)crynet_model_size());
-    ESP_LOGI(TAG, "threshold  : %.4f    silence gate %.6f",
-             (double)CRYNET_THRESHOLD, (double)CRYNET_SILENCE_RMS_GATE);
+    ESP_LOGI(TAG, "threshold  : %.4f (the model's own)   announce at %.4f"
+                  "   silence gate %.6f",
+             (double)CRYNET_THRESHOLD, (double)CRYNET_CLEAR_CRY,
+             (double)CRYNET_SILENCE_RMS_GATE);
     ESP_LOGI(TAG, "input quant: scale %.9f  zero point %d",
              (double)CRYNET_INPUT_SCALE, CRYNET_INPUT_ZERO_POINT);
 }
@@ -216,7 +219,12 @@ void app_main(void)
 
         const float rms = crynet_dsp_rms(s_pcm);
         const bool silent = rms < CRYNET_SILENCE_RMS_GATE;
-        const bool alert = (!silent) && (p_cry >= CRYNET_THRESHOLD);
+        /* The same rule the live path uses, so the banner and the
+         * system agree.  It used to be the model's own threshold alone,
+         * and the banner said ALERT for the noise probe -- a window
+         * the hub would have refused, so the boot report and the
+         * running system contradicted each other. */
+        const bool alert = (!silent) && (p_cry >= CRYNET_CLEAR_CRY);
 
         ESP_LOGI(TAG, "  inference : %.2f ms   P(no_cry)=%.4f  P(cry)=%.4f",
                  (double)(t4 - t3) / 1000.0, (double)p_no_cry, (double)p_cry);
@@ -265,6 +273,11 @@ void app_main(void)
             ESP_LOGW(TAG, "the display could not be started; "
                           "the hub carries on without it");
         }
+        /* The console answers on the same UART the log is written to.
+         * It is started last, so that every command it accepts can be
+         * carried out: the radio is up, the Bluetooth server is up,
+         * and a test alert has somewhere to go. */
+        console_start();
         link_stage_run(&dsp, infer);
     } else {
         ESP_LOGE(TAG, "RESULT: FAIL — %d check(s) failed", failures);

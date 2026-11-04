@@ -1,0 +1,91 @@
+[    0.01] rms 0.0227  floor 0.0074  level 0.0222
+[    0.11] rms 0.0153  floor 0.0074  level 0.0222
+[    0.21] rms 0.0142  floor 0.0074  level 0.0223
+[    0.31] rms 0.0181  floor 0.0074  level 0.0223
+[    0.41] rms 0.0226  floor 0.0075  level 0.0224
+[    0.51] rms 0.0232  floor 0.0075  level 0.0225  EVENT
+[    0.51] request: seq 68 first 0 count 286
+[    1.82] served 286 fragments of 286 in 1311 ms
+[    1.83] rms 0.0131  floor 0.0075  level 0.0225
+[    1.94] rms 0.0076  floor 0.0075  level 0.0225
+[    2.03] rms 0.0081  floor 0.0075  level 0.0225
+[    2.06] resend request: seq 68
+[    2.13] resent 12 fragments of seq 68
+[    2.13] rms 0.0095  floor 0.0075  level 0.0226
+[    2.26] rms 0.0111  floor 0.0075  level 0.0226
+[    2.34] rms 0.0113  floor 0.0075  level 0.0226
+[    2.43] rms 0.0161  floor 0.0076  level 0.0227
+[    2.54] rms 0.0083  floor 0.0076  level 0.0227
+[    2.64] resend request: seq 68
+[    2.64] rms 0.0073  floor 0.0073  level 0.0218
+[    2.64] resent 1 fragments of seq 68
+[    2.75] rms 0.0203  floor 0.0073  level 0.0218
+[    2.84] rms 0.0080  floor 0.0073  level 0.0219
+[    2.93] rms 0.0145  floor 0.0073  level 0.0219
+[    3.03] rms 0.0157  floor 0.0073  level 0.0219
+[    3.14] rms 0.0212  floor 0.0073  level 0.0220
+[    3.24] rms 0.0117  floor 0.0074  level 0.0221
+[    3.34] rms 0.0153  floor 0.0074  level 0.0221
+[    3.44] rms 0.0159  floor 0.0074  level 0.0222
+[    3.54] rms 0.0070  floor 0.0070  level 0.0210
+[    3.64] rms 0.0093  floor 0.0070  level 0.0210
+[    3.73] rms 0.0113  floor 0.0070  level 0.0210
+[    3.83] rms 0.0154  floor 0.0070  level 0.0211
+[    3.93] rms 0.0112  floor 0.0070  level 0.0211
+[    4.04] rms 0.0112  floor 0.0070  level 0.0211
+[    4.13] rms 0.0055  floor 0.0055  level 0.0165
+[    4.25] rms 0.0109  floor 0.0055  level 0.0165
+[    4.35] rms 0.0190  floor 0.0055  level 0.0166
+[    4.44] rms 0.0136  floor 0.0055  level 0.0166
+[    4.54] rms 0.0166  floor 0.0056  level 0.0167
+[    4.63] rms 0.0105  floor 0.0056  level 0.0167
+[    4.73] rms 0.0147  floor 0.0056  level 0.0168
+[    4.84] rms 0.0089  floor 0.0056  level 0.0168
+[    4.94] rms 0.0143  floor 0.0056  level 0.0169
+[    5.04] rms 0.0121  floor 0.0056  level 0.0169
+[    5.14] rms 0.0189  floor 0.0057  level 0.0170
+[    5.23] rms 0.0120  floor 0.0057  level 0.0170
+[    5.33] rms 0.0179  floor 0.0057  level 0.0171
+[    5.43] rms 0.0190  floor 0.0057  level 0.0172  EVENT
+[    5.53] rms 0.0222  floor 0.0058  level 0.0173  EVENT
+[    5.64] rms 0.0128  floor 0.0058  level 0.0173
+[    5.74] rms 0.0105  floor 0.0058  level 0.0173
+[    5.83] rms 0.0114  floor 0.0058  level 0.0174
+[    5.93] rms 0.0130  floor 0.0058  level 0.0174
+[    6.03] rms 0.0088  floor 0.0058  level 0.0174
+[    6.14] rms 0.0130  floor 0.0058  level 0.0175
+[    6.24] rms 0.0097  floor 0.0058  level 0.0175
+[    6.34] rms 0.0173  floor 0.0059  level 0.0176
+[    6.44] rms 0.0110  floor 0.0059  level 0.0176
+[    6.55] rms 0.0147  floor 0.0059  level 0.0177
+[    6.65] rms 0.0100  floor 0.0059  level 0.0177
+[    6.74] rms 0.0087  floor 0.0059  level 0.0177
+[    6.84] rms 0.0058  floor 0.0058  level 0.0173
+[    6.94] rms 0.0080  floor 0.0058  level 0.0173
+[    7.04] rms 0.0083  floor 0.0058  level 0.0174
+[    7.13] rms 0.0123  floor 0.0058  level 0.0174
+[    7.23] rms 0.0084  floor 0.0058  level 0.0174
+[    7.35] rms 0.0094  floor 0.0058  level 0.0174
+[    7.44] rms 0.0120  floor 0.0058  level 0.0175
+[    7.54] rms 0.0137  floor 0.0058  level 0.0175
+...  [14446 lines trimmed: the node prints its rms every 100 ms] ...
+[ 1498.06] rms 0.0154  floor 0.0064  level 0.0193
+[ 1498.16] rms 0.0120  floor 0.0065  level 0.0194
+[ 1498.26] rms 0.0068  floor 0.0065  level 0.0194
+[ 1498.36] rms 0.0165  floor 0.0065  level 0.0194
+[ 1498.46] rms 0.0136  floor 0.0065  level 0.0195
+[ 1498.56] rms 0.0123  floor 0.0065  level 0.0195
+[ 1498.66] rms 0.0085  floor 0.0065  level 0.0195
+[ 1498.76] rms 0.0102  floor 0.0065  level 0.0195
+[ 1498.86] rms 0.0067  floor 0.0065  level 0.0196
+[ 1498.96] rms 0.0093  floor 0.0065  level 0.0196
+[ 1499.06] rms 0.0122  floor 0.0065  level 0.0196
+[ 1499.16] rms 0.0093  floor 0.0065  level 0.0196
+[ 1499.26] rms 0.0132  floor 0.0066  level 0.0197
+[ 1499.36] rms 0.0119  floor 0.0066  level 0.0197
+[ 1499.46] rms 0.0062  floor 0.0062  level 0.0185
+[ 1499.56] rms 0.0097  floor 0.0062  level 0.0185
+[ 1499.66] rms 0.0128  floor 0.0062  level 0.0185
+[ 1499.76] rms 0.0101  floor 0.0062  level 0.0186
+[ 1499.86] rms 0.0102  floor 0.0062  level 0.0186
+[ 1499.96] rms 0.0159  floor 0.0062  level 0.0186

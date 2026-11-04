@@ -8,7 +8,7 @@
 # they send through the verified front end.
 #
 idf_component_register(
-    SRCS "main.c" "probes.c" "link_stage.c"
+    SRCS "main.c" "probes.c" "link_stage.c" "console.c"
     INCLUDE_DIRS "."
-    REQUIRES crynet_model crynet_dsp crynet_infer crynet_proto node_link ble_alert hub_display esp_timer nvs_flash spi_flash
+    REQUIRES crynet_model crynet_dsp crynet_infer crynet_proto node_link ble_alert hub_display esp_timer nvs_flash spi_flash driver
 )

@@ -58,7 +58,7 @@ static const char *TAG = "link";
  * burst dead while it was still crossing the air -- which is what
  * happened at the cot whose link is poor, where the hub spent its
  * resend rounds before the node had finished its first pass. */
-#define FRAG_STALL_MS 60
+#define FRAG_STALL_MS 100
 
 /* How long the burst must have been in flight before a stall may be
  * believed.  The node is asked for the window and then starts sending
@@ -218,14 +218,14 @@ typedef struct {
     uint32_t request_lost;
     uint32_t request_acked;
     uint16_t last_have;      /* the fragment count at the last poll */
-    int64_t  last_frag_us;   /* when a fragment last arrived */
+    uint32_t gap_ewma_ms;    /* how this cot's fragments arrive */
     /* How far apart this cot's fragments arrive, as a running mean.
      * The hub's patience has to follow the cot's own rate: a burst that
      * crosses a good link in three milliseconds a fragment is not a
      * burst that has stopped when it goes quiet for a tenth of a
      * second, and a burst that is crossing a poor link at one fragment
      * a second is not dead when it goes quiet for a moment. */
-    int64_t  gap_ewma_us;
+
     int64_t  last_resend_us; /* when the last resend went out */
     uint8_t  resend_rounds;  /* how many resends this burst has had */
 
@@ -355,6 +355,12 @@ static int64_t s_prepare_until_us = 0;
 static uint8_t s_ble_cot = 0;
 static bool    s_ble_cry = false;
 
+/* The cot a console test alert is standing in for, 0 when there is
+ * none.  The console (see console.c) sets it, and it is published as
+ * if that cot had heard a cry -- which is how the caregiver's phone
+ * and the wearable are checked without making a sound. */
+static uint8_t s_test_cot = 0;
+
 /* How much louder another cot has to be before the caregiver is told
  * about it instead of the cot that was already named. */
 #define COT_SWITCH_MARGIN 1.5f
@@ -422,6 +428,30 @@ static void analyse(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer,
     ESP_LOGI(TAG, "node %u: window rms %.6f  mean %d  peak %d  crest %.1f",
              node_id, (double)rms, (int)mean, (int)peak, (double)crest);
 
+    /* A clipped window is not evidence.
+     *
+     * The INMP441 is a fixed-gain microphone: its own output saturates
+     * before the node's 16-bit window does, so a sound close enough to
+     * the microphone -- a hand on the desk, a toy, a baby crying right
+     * at the mic -- arrives flat-topped and the harmonics the model
+     * reads are gone.  Measured on the bench: node 2 clipped at peak
+     * 31801 of 32767 on ordinary room sound, and a phone held 10 cm
+     * from the microphone clipped the cry it was playing, which cost
+     * that window its saturation (0.9805 instead of 0.9961) and made
+     * the alert name the wrong cot for 42 seconds.
+     *
+     * There is no software cure: the microphone's output is already
+     * flat when the node sees it.  So the window is refused outright,
+     * the operator is told, and the clean cot's window announces the
+     * cry instead. */
+    const bool clipped = (peak >= CRYNET_CLIP_PEAK);
+    if (clipped) {
+        ESP_LOGW(TAG, "node %u: the window is CLIPPED (peak %d of 32767) — "
+                      "the microphone is too close to the sound; this window "
+                      "is not evidence and will not announce a cry",
+                 node_id, (int)peak);
+    }
+
     const int64_t t0 = esp_timer_get_time();
     crynet_dsp_features(dsp, pcm, s_mel);
     crynet_dsp_quantise(s_mel, s_q);
@@ -439,12 +469,45 @@ static void analyse(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer,
     /* No window this quiet may announce a cry at all: the model's
      * verdict on near-silence is noise (see CRYNET_ANNOUNCE_MIN_RMS). */
     const bool audible = rms >= CRYNET_ANNOUNCE_MIN_RMS;
-    /* A loud window announces on its saturation alone; a quiet one must
-     * also have the cry's impulsive shape, not flat hiss. */
-    const bool unmistakable = audible &&
+    /* Only a saturated window may announce.
+     *
+     * The loud window's own rule -- "a window this loud may announce
+     * on the model's threshold (0.95) instead of waiting for the
+     * saturation" -- was a band-aid for a clipped recording, and it
+     * opened the door this rule now closes.
+     *
+     * The band-aid was for a measured case: a phone held 10 cm from
+     * the microphone distorted the cry it played, the window clipped,
+     * and the model scored the damaged window 0.9805 instead of
+     * 0.9961, so the quiet path refused a real cry and the alert named
+     * the wrong cot.  But the model does not only lose certainty on
+     * clipped cries: on 2026-11-04, in a room with people talking, it
+     * scored an ordinary conversation window 0.9727 (node 3, rms 0.058,
+     * crest 3.5).  One step louder, that window was on the loud path's
+     * threshold, and the loud path announces on one window alone -- a
+     * false alarm, at 0.080 rms, from somebody talking in the next
+     * room.  The hub's own boot probe scores 0.9805 on a window of
+     * synthetic noise, so no level below the saturation is safe.
+     *
+     * So a cry is announced when the model saturates and not before.
+     * A clipped window does not saturate, and is refused -- which is
+     * what the loud path was invented to avoid, but it is refused on
+     * the *clean* cot's window instead, where the same cry saturates.
+     * The cost is measured: on the corpus, 8 of the 57 episodes that
+     * the old rule detected peaked between 0.96 and 0.99 and are now
+     * missed; on the bench, three genuine cries out of three scored
+     * 0.9961 and all three still announce.  One number moves it back
+     * when the model is retrained against loud speech. */
+    const bool saturated = (p_cry >= CRYNET_CLEAR_CRY);
+    /* A loud window carries enough energy to announce on its own
+     * confidence; a quiet one must also have the cry's impulsive
+     * shape, not flat hiss.  Both thresholds are the saturation today;
+     * the loud one is a separate number so that the old, more sensitive
+     * rule is one edit away (see CRYNET_LOUD_ANNOUNCE_P). */
+    const bool unmistakable = audible && !clipped &&
         ((rms >= CRYNET_LOUD_ANNOUNCE_RMS)
-             ? (p_cry >= CRYNET_THRESHOLD)     /* loud: the model's word is enough */
-             : (p_cry >= CRYNET_CLEAR_CRY)) && /* quiet: it must saturate */
+             ? (p_cry >= CRYNET_LOUD_ANNOUNCE_P)  /* loud: the model's word */
+             : (p_cry >= CRYNET_CLEAR_CRY)) &&    /* quiet: it must saturate */
         ((rms >= CRYNET_MAYBE_MIN_RMS) || (crest >= CRYNET_QUIET_CREST));
 
     /* The announcement rule.
@@ -456,16 +519,20 @@ static void analyse(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer,
      * alarm.  So one window announces a cry on its own only when it is
      * unmistakable — the model's output saturates at 0.9961 for a clear
      * cry, and that window is announced at once if it carries real
-     * energy and, when quiet, has the impulsive shape of a cry.  A
-     * window between the model's threshold and that is a maybe, and a
-     * maybe has to be confirmed by the next window before it is
-     * announced: a cry lasts for seconds and its windows agree.  But
-     * the trigger pins at its minimum in a quiet room, so the room
-     * keeps handing the model near-silent windows whose maybes repeat —
-     * fourteen false alarms in one evening — and a maybe now only
-     * counts toward the run when its window carries real energy
-     * (CRYNET_MAYBE_MIN_RMS).  A near-silent window can neither announce
-     * nor confirm; a real cry saturates, and announces alone. */
+     * energy and, when quiet, has the impulsive shape of a cry.
+     *
+     * A window between the model's threshold (0.95) and the saturation
+     * (0.99) is a maybe, and a maybe is never announced on its own:
+     * the loud path that used to let one out is gone (see the note
+     * above), because a conversation in the next room reaches 0.9727
+     * and one step louder would have been announced.  The run of
+     * maybes is kept as a counter — it says how close the model came
+     * — but it no longer announces anything, because a room that
+     * produces a maybe produces the next one too.
+     *
+     * What is left of the confirmation rule is the level: a near-silent
+     * window can neither announce nor be counted, and a real cry
+     * saturates and announces alone. */
     bool confirmed = false;
     if (says_cry) {
         if (rms >= CRYNET_MAYBE_MIN_RMS && st->cry_seq != st->request_seq) {
@@ -474,15 +541,14 @@ static void analyse(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer,
                 st->cry_run++;
             }
         }
-        /* And the run can confirm only a window that itself carries
-         * energy: a quiet hiss window may keep the run alive (a real
-         * cry has quiet gaps, and the next loud window should not have
-         * to start over), but it may not announce on the run's
-         * momentum — after this session's cry, the quiet flukes that
-         * score 0.95+ would otherwise have refreshed the ALERT
-         * indefinitely. */
+        /* The run is a counter now, not a licence: it records how many
+         * windows in a row have said cry, and the announcement itself
+         * is the unmistakable window's own verdict.  The second number
+         * is here so that the whole old rule can be brought back with
+         * one edit (see CRYNET_CONFIRM_P). */
         confirmed = unmistakable ||
-            (st->cry_run >= CRYNET_CRY_RUN && rms >= CRYNET_MAYBE_MIN_RMS);
+            (st->cry_run >= CRYNET_CRY_RUN && rms >= CRYNET_MAYBE_MIN_RMS &&
+             p_cry >= CRYNET_CONFIRM_P);
     } else {
         st->cry_run = 0;
     }
@@ -518,6 +584,10 @@ static void analyse(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer,
  * BLE server read this, so they show one state and not two. */
 bool link_stage_crying(uint8_t node_id)
 {
+    /* A console test alert shows on the panel as well as on the wrist. */
+    if (s_test_cot != 0 && node_id == s_test_cot) {
+        return true;
+    }
     const int64_t now = esp_timer_get_time();
     for (int i = 0; i < NODE_LINK_MAX_NODES; i++) {
         if (state[i].heard && state[i].node_id == node_id) {
@@ -528,6 +598,39 @@ bool link_stage_crying(uint8_t node_id)
         }
     }
     return false;
+}
+
+/* The console's window into the cots. */
+void link_stage_test_alert(uint8_t cot_id)
+{
+    s_test_cot = cot_id;
+    ESP_LOGW(TAG, "the console is holding a TEST ALERT for cot %u",
+             (unsigned)cot_id);
+}
+
+void link_stage_test_clear(void)
+{
+    s_test_cot = 0;
+    ESP_LOGW(TAG, "the console has taken the test alert back");
+}
+
+int link_stage_cots(link_stage_cot_t *out, int max)
+{
+    int n = 0;
+    for (int i = 0; i < NODE_LINK_MAX_NODES && n < max; i++) {
+        if (!state[i].heard) {
+            continue;
+        }
+        out[n].node_id = state[i].node_id;
+        out[n].rms = state[i].rms;
+        out[n].level = state[i].event_rms;
+        out[n].frozen_rms = state[i].frozen_rms;
+        out[n].crying = link_stage_crying(state[i].node_id);
+        out[n].confidence = state[i].last_confidence;
+        out[n].window_full = state[i].window_full;
+        n++;
+    }
+    return n;
 }
 
 bool link_stage_radio_start(void)
@@ -732,16 +835,16 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
                      * timeout. */
                     if (burst.frag_have != st->last_have) {
                         st->last_have = burst.frag_have;
-                        const int64_t gap = now - st->last_frag_us;
-                        /* A gap of more than half a second says nothing
-                         * about the rate: it is the pause the burst was
-                         * already judged on. */
-                        if (gap > 0 && gap < 500000) {
-                            st->gap_ewma_us = st->gap_ewma_us
-                                ? (st->gap_ewma_us * 3 + gap) / 4
-                                : gap;
+                        /* The rate comes from the receive callback now,
+                         * where the arrivals are actually seen; the
+                         * loop's own view of the gap was the gap
+                         * between two iterations of this loop, and on a
+                         * busy hub that is nearly two hundred
+                         * milliseconds -- so the hub waited all of that
+                         * before it noticed the burst had ended. */
+                        if (burst.gap_ewma_ms > 0) {
+                            st->gap_ewma_ms = burst.gap_ewma_ms;
                         }
-                        st->last_frag_us = now;
                     }
                     if (burst.complete) {
                         const int64_t t0 = esp_timer_get_time();
@@ -814,19 +917,25 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
                          * the estimate for a good link is used until it
                          * has one. */
                         int64_t per_fragment_ms = FRAG_PER_FRAGMENT_MS;
-                        if (st->gap_ewma_us > 0) {
-                            per_fragment_ms = st->gap_ewma_us / 1000;
+                        if (st->gap_ewma_ms > 0) {
+                            per_fragment_ms = st->gap_ewma_ms;
                             if (per_fragment_ms < 1) {
                                 per_fragment_ms = 1;
                             }
                         }
                         /* A burst has stopped when it has been quiet
-                         * for eight times its own fragment spacing --
-                         * twenty-four times for a burst that crosses a
-                         * good link in three milliseconds, and four
-                         * hundred milliseconds for one that manages a
-                         * fragment every fifty. */
-                        int64_t stall_ms = per_fragment_ms * 8;
+                         * for sixteen times its own fragment spacing --
+                         * a hundred milliseconds for a burst that
+                         * crosses a good link in six milliseconds, and
+                         * eight hundred for one that manages a fragment
+                         * every fifty.  Sixteen, not eight: the node
+                         * hands the radio a group of four frames at a
+                         * time, so the gap between two arrivals is
+                         * small inside a group and a pause between
+                         * groups, and eight of the average was close
+                         * enough to the pause to call a burst dead
+                         * while it was still crossing the air. */
+                        int64_t stall_ms = per_fragment_ms * 16;
                         if (stall_ms < FRAG_STALL_MS) {
                             stall_ms = FRAG_STALL_MS;
                         }
@@ -835,7 +944,7 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
                         }
                         const int64_t stall_us = stall_ms * 1000;
                         const bool stalled =
-                            (now - st->last_frag_us) > stall_us;
+                            burst.last_frag_age_ms > (uint32_t)stall_ms;
                         const bool long_enough =
                             (now - st->requested_at_us) > (RESEND_MIN_FLIGHT_MS * 1000);
                         /* A second round waits out the fragments the
@@ -1061,7 +1170,7 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
                 }
                 st->last_request_us = now;
                 st->last_have = 0;
-                st->last_frag_us = now;
+
                 st->last_resend_us = 0;
                 st->resend_rounds = 0;
                 /* The node drops its live window when it serves a
@@ -1134,7 +1243,18 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
                 }
             }
         }
-        if (loudest != NULL) {
+        /* A test alert from the console stands in for the cots: it is
+         * what the bench uses to check the caregiver's phone and the
+         * wearable without making a sound, and it is held until the
+         * console says otherwise. */
+        if (s_test_cot != 0) {
+            if (!s_ble_cry || s_ble_cot != s_test_cot) {
+                ble_alert_publish(s_test_cot, true, 100);
+                s_ble_cot = s_test_cot;
+                s_ble_cry = true;
+                any_state_changed = true;
+            }
+        } else if (loudest != NULL) {
             if (!s_ble_cry || loudest->node_id != s_ble_cot) {
                 ble_alert_publish(loudest->node_id, true,
                                   loudest->last_confidence);
