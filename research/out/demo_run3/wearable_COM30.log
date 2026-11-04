@@ -1,0 +1,3 @@
+[  364.37] [ble] ALERT cot 3 type 1 conf 100% event #1
+[  364.37] [haptic] alert 1 — motor not present, LED stands in
+[  372.27] [ble] ALERT cot 3 type 2 conf 0% event #2
