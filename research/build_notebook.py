@@ -93,14 +93,15 @@ int16_t pcm[32000]                2.000 s @ 16 kHz, mono
 
 ---
 
-## How to run
+## How to run (Kaggle)
 
-1. Kaggle → *Add Input* → attach nothing (everything is downloaded at runtime) **or** pre-attach for speed.
-2. Accelerator: **GPU T4** (CPU works but takes ~5× longer).
-3. Internet: **On** — the notebook pulls **~5.8 GB** of audio (ICD + ESC-50 + Baby-Cry + Snoring + GTZAN) and caches it under `./_cache`. The Hugging Face files are fetched with `huggingface_hub`, so an interrupted transfer resumes instead of starting over.
-4. `Run All`. Artifacts land in `/kaggle/working/out/`.
+1. **Attach the loud-speech corpus.** Upload `research/_cache/speech__fsd50k_speech.zip` (757 MB, 6,000 clips of real speech: FSD50K's nursery classes — children's voices, laughter, chatter, singing — and Common Voice) as a Kaggle dataset, then *Add Input* → select it. The notebook finds that file by name under `/kaggle/input`, so it does not matter what you name the dataset. **Without it the run still trains, but on the old corpus, and the whole point of this run is the speech.**
+2. Accelerator: **GPU T4**.
+3. Internet: **On** — the notebook pulls **~5.8 GB** of audio (ICD + cry4 + ESC-50 + Snoring + GTZAN) and caches it under `./_cache`. The Hugging Face files are fetched with `huggingface_hub`, so an interrupted transfer resumes instead of starting over.
+4. `Run All` (or *Save Version* → *Save & Run All*).
+5. **Download `crynet_artifacts.zip` from the Output tab** of the saved version. The last cell packages everything the deployment needs: the INT8 model, the calibrated tables, the model as a C array, the metrics and the front-end sources.
 
-Expected wall-clock on Kaggle (T4): ~10 min download + ~10 min feature extraction + ~40-60 min training for the four variants.
+Expected wall-clock on Kaggle (T4): ~10 min download + ~10 min feature extraction + **~30-45 min training** for the one variant the hub runs (`conv_cnn`).
 
 Useful switches:
 
@@ -108,7 +109,7 @@ Useful switches:
 |---|---|
 | `CRYNET_FAST=1` | subsample the corpora and train for 3 epochs — local smoke test |
 | `CRYNET_OFFLINE=1` | never download; use whatever is already in `CRYNET_CACHE` |
-| `CRYNET_KINDS` | which variants to train, e.g. `temporal_cnn` (default `conv_cnn,sep_cnn,temporal_cnn`) |
+| `CRYNET_KINDS` | which variants to train, e.g. `temporal_cnn` (default: `conv_cnn` — the one the hub runs) |
 | `CRYNET_EPOCHS` | training epochs (default 25) |
 | `CRYNET_CACHE` | where the archives live (default `./_cache`) |
 | `CRYNET_OUT` | where the artifacts are written (default `./out`) |
@@ -144,6 +145,12 @@ os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "2")
 import numpy as np
 
 FAST = os.environ.get("CRYNET_FAST", "0") == "1"          # local smoke-test mode
+
+# On Kaggle the notebook is run from the UI, where there is nowhere to set
+# an environment variable.  This run trains the one variant the hub runs
+# (conv_cnn); the other two were explored earlier and are not deployed.
+if "CRYNET_KINDS" not in os.environ:
+    os.environ["CRYNET_KINDS"] = "conv_cnn"
 CACHE = Path(os.environ.get("CRYNET_CACHE", "./_cache")).resolve()
 WORK = Path(os.environ.get("CRYNET_WORK", "./_work")).resolve()
 OUT = Path(os.environ.get("CRYNET_OUT", "./out")).resolve()
@@ -328,7 +335,16 @@ def acquire(key):
         if dest.exists():
             print(f"  local      {key:9s} {dest.stat().st_size/1e6:8.1f} MB")
             return dest
-        raise FileNotFoundError(f"{key} not built at {dest}")
+        # On Kaggle the zip is attached as an input dataset instead of
+        # being built here, and it is found by name under /kaggle/input.
+        att = _attached(dest.name)
+        if att is not None:
+            print(f"  attached   {key:9s} {att}  ({att.stat().st_size/1e6:.1f} MB)")
+            return att
+        raise FileNotFoundError(
+            f"{key} not built at {dest}"
+            + (f" and no {dest.name} is attached to this notebook"
+               if KAGGLE_INPUT is not None else ""))
     if dest.exists() and (OFFLINE or dest.stat().st_size >= size * 0.98):
         print(f"  cached     {key:9s} {dest.stat().st_size/1e6:8.1f} MB")
         return dest
@@ -2166,6 +2182,38 @@ md(r"""
 3. **Lower the trigger threshold.** The old hub fired an audio pull at RMS ≥ 0.18, so a *soft* cry never reached any classifier. Feed the model anything above ~0.03 RMS and let it reject the false triggers — rejecting false triggers is exactly what it was trained for (speech, cat meows, household noise).
 4. **Record ~50 real clips from your own INMP441** (cries + room noise + speech + TV), then re-run this notebook with them as a small custom corpus. Matching your actual microphone, gain and room is the single biggest accuracy win left.
 5. **Alert policy.** The existing BLE packet carries `cot_id`, `alert_type`, `confidence_pct`; the model output maps straight onto it (`alert_type = 0x01` when `P(cry) >= threshold`).
+""")
+
+
+# ======================================================================================
+code(r"""
+# ============================================================================
+# CELL 20 — Package the artifacts for download
+#
+# Everything the deployment needs is in `out/`.  On Kaggle the notebook's
+# working directory is the output of the saved version, so the artifacts can
+# be taken from there — but a single zip is easier to hand over than a dozen
+# files, and it carries the exact bytes that were validated.
+# ============================================================================
+ZIP_NAME = "crynet_artifacts.zip"
+ZIP_PATH = Path.cwd() / ZIP_NAME
+
+_files = sorted(p for p in OUT.rglob("*") if p.is_file())
+if not _files:
+    raise SystemExit(f"nothing to package in {OUT}")
+
+with zipfile.ZipFile(ZIP_PATH, "w", zipfile.ZIP_DEFLATED, compresslevel=1) as _z:
+    for _p in _files:
+        _z.write(_p, arcname=str(Path("out") / _p.relative_to(OUT)))
+
+print("=" * 78)
+print(f"packaged {len(_files)} files -> {ZIP_PATH}  ({ZIP_PATH.stat().st_size/1e6:.1f} MB)")
+for _p in _files:
+    print(f"    {str(_p.relative_to(OUT)):26s} {_p.stat().st_size/1024:9.1f} KB")
+print()
+print("Download it from the Output tab of the saved notebook version:")
+print("  Kaggle: Save Version -> Save & Run All -> Output -> crynet_artifacts.zip")
+print("=" * 78)
 """)
 
 
