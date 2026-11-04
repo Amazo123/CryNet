@@ -1,0 +1,276 @@
+[  0.00s] ESP-ROM:esp32c3-api1-20210207
+[  0.00s] Build:Feb  7 2021
+[  0.00s] rst:0x15 (USB_UART_CHIP_RESET),boot:0xd (SPI_FAST_FLASH_BOOT)
+[  0.00s] Saved PC:0x4038cd80
+[  0.00s] SPIWP:0xee
+[  0.00s] mode:DIO, clock div:1
+[  0.01s] load:0x3fcd5820,len:0x110c
+[  0.01s] load:0x403cbf10,len:0xb54
+[  0.01s] load:0x403ce710,len:0x2f9c
+[  0.02s] entry 0x403cbf10
+[  0.39s] CryNet node firmware — Stage 2b
+[  0.39s] node id 1 (derived from the MAC; change it with "id <n>")
+[  0.91s] I2S ready: 16 kHz, mono, 32-bit slots -> int16
+[  1.15s] ESP-NOW protocol version 2
+[  1.16s] ESP-NOW ready on channel 6
+[  1.16s] commands: status | stats | freeze | burst | id <n> | help
+[  1.16s] rms 0.0075  floor 0.0075  level 0.0225
+[  1.26s] rms 0.0046  floor 0.0046  level 0.0139
+[  1.37s] rms 0.0086  floor 0.0046  level 0.0139
+[  1.46s] rms 0.0187  floor 0.0047  level 0.0140
+[  1.56s] rms 0.0252  floor 0.0047  level 0.0141  EVENT
+[  1.67s] rms 0.0335  floor 0.0048  level 0.0143  EVENT
+[  1.76s] rms 0.0372  floor 0.0048  level 0.0145  EVENT
+[  1.86s] rms 0.0388  floor 0.0049  level 0.0147  EVENT
+[  1.96s] rms 0.0426  floor 0.0050  level 0.0149  EVENT
+[  2.06s] rms 0.0446  floor 0.0050  level 0.0151  EVENT
+[  2.16s] rms 0.0432  floor 0.0051  level 0.0153  EVENT
+[  2.29s] rms 0.0445  floor 0.0052  level 0.0156  EVENT
+[  2.36s] rms 0.0460  floor 0.0053  level 0.0158  EVENT
+[  2.46s] rms 0.0449  floor 0.0054  level 0.0161  EVENT
+[  2.56s] rms 0.0444  floor 0.0054  level 0.0163  EVENT
+[  2.66s] rms 0.0425  floor 0.0055  level 0.0165  EVENT
+[  2.76s] rms 0.0420  floor 0.0056  level 0.0167  EVENT
+[  2.90s] rms 0.0407  floor 0.0057  level 0.0170  EVENT
+[  2.96s] rms 0.0378  floor 0.0057  level 0.0171  EVENT
+[  3.06s] rms 0.0352  floor 0.0058  level 0.0173  EVENT
+[  3.17s] rms 0.0292  floor 0.0058  level 0.0175  EVENT
+[  3.26s] rms 0.0242  floor 0.0059  level 0.0176  EVENT
+[  3.36s] rms 0.0210  floor 0.0059  level 0.0177  EVENT
+[  3.50s] froze window, burst seq 1  level 0.0177  win rms 0.0191
+[  3.50s] rms 0.0141  floor 0.0059  level 0.0177
+[  3.56s] rms 0.0125  floor 0.0059  level 0.0178
+[  3.66s] rms 0.0096  floor 0.0059  level 0.0178
+[  3.76s] rms 0.0089  floor 0.0059  level 0.0178
+[  3.86s] rms 0.0075  floor 0.0059  level 0.0178
+[  3.96s] rms 0.0061  floor 0.0059  level 0.0178
+[  4.06s] rms 0.0058  floor 0.0058  level 0.0174
+[  4.16s] rms 0.0054  floor 0.0054  level 0.0161
+[  4.26s] rms 0.0047  floor 0.0047  level 0.0141
+[  4.36s] rms 0.0044  floor 0.0044  level 0.0132
+[  4.46s] rms 0.0048  floor 0.0044  level 0.0132
+[  4.57s] rms 0.0051  floor 0.0044  level 0.0132
+[  4.66s] rms 0.0046  floor 0.0044  level 0.0133
+[  4.76s] rms 0.0043  floor 0.0043  level 0.0130
+[  4.87s] rms 0.0045  floor 0.0043  level 0.0130
+[  4.96s] rms 0.0035  floor 0.0035  level 0.0104
+[  5.06s] rms 0.0034  floor 0.0034  level 0.0102
+[  5.17s] rms 0.0038  floor 0.0034  level 0.0102
+[  5.26s] rms 0.0031  floor 0.0031  level 0.0094
+[  5.36s] rms 0.0031  floor 0.0031  level 0.0093
+[  5.46s] rms 0.0040  floor 0.0031  level 0.0093
+[  5.56s] rms 0.0037  floor 0.0031  level 0.0093
+[  5.66s] rms 0.0048  floor 0.0031  level 0.0093
+[  5.79s] rms 0.0040  floor 0.0031  level 0.0093
+[  5.86s] rms 0.0043  floor 0.0031  level 0.0093
+[  5.96s] rms 0.0037  floor 0.0031  level 0.0093
+[  6.06s] rms 0.0039  floor 0.0031  level 0.0093
+[  6.16s] rms 0.0024  floor 0.0024  level 0.0073
+[  6.26s] rms 0.0033  floor 0.0024  level 0.0073
+[  6.38s] rms 0.0036  floor 0.0024  level 0.0073
+[  6.46s] rms 0.0029  floor 0.0024  level 0.0073
+[  6.56s] rms 0.0036  floor 0.0024  level 0.0073
+[  6.66s] rms 0.0031  floor 0.0024  level 0.0073
+[  6.76s] rms 0.0042  floor 0.0024  level 0.0073
+[  6.86s] rms 0.0036  floor 0.0024  level 0.0073
+[  6.97s] rms 0.0038  floor 0.0024  level 0.0073
+[  7.06s] rms 0.0028  floor 0.0024  level 0.0073
+[  7.16s] rms 0.0039  floor 0.0025  level 0.0074
+[  7.26s] rms 0.0049  floor 0.0025  level 0.0074
+[  7.36s] rms 0.0036  floor 0.0025  level 0.0074
+[  7.46s] rms 0.0035  floor 0.0025  level 0.0074
+[  7.56s] rms 0.0030  floor 0.0025  level 0.0074
+[  7.66s] rms 0.0034  floor 0.0025  level 0.0074
+[  7.76s] rms 0.0030  floor 0.0025  level 0.0074
+[  7.86s] rms 0.0038  floor 0.0025  level 0.0074
+[  7.96s] rms 0.0030  floor 0.0025  level 0.0074
+[  8.07s] rms 0.0095  floor 0.0025  level 0.0074
+[  8.16s] rms 0.0090  floor 0.0025  level 0.0075  EVENT
+[  8.26s] rms 0.0107  floor 0.0025  level 0.0075  EVENT
+[  8.36s] rms 0.0085  floor 0.0025  level 0.0076  EVENT
+[  8.47s] rms 0.0040  floor 0.0025  level 0.0076
+[  8.56s] rms 0.0034  floor 0.0025  level 0.0076
+[  8.70s] froze window, burst seq 2  level 0.0076  win rms 0.0054
+[  8.70s] rms 0.0029  floor 0.0025  level 0.0076
+[  8.76s] rms 0.0034  floor 0.0025  level 0.0076
+[  8.86s] rms 0.0025  floor 0.0025  level 0.0074
+[  8.98s] rms 0.0097  floor 0.0025  level 0.0075
+[  9.06s] rms 0.0110  floor 0.0025  level 0.0075  EVENT
+[  9.17s] rms 0.0106  floor 0.0025  level 0.0076  EVENT
+[  9.27s] rms 0.0100  floor 0.0025  level 0.0076  EVENT
+[  9.36s] rms 0.0069  floor 0.0026  level 0.0077
+[  9.46s] rms 0.0033  floor 0.0026  level 0.0077
+[  9.60s] froze window, burst seq 3  level 0.0077  win rms 0.0069
+[  9.60s] rms 0.0031  floor 0.0026  level 0.0077
+[  9.66s] rms 0.0032  floor 0.0026  level 0.0077
+[  9.76s] rms 0.0080  floor 0.0026  level 0.0077
+[  9.89s] rms 0.0117  floor 0.0026  level 0.0078  EVENT
+[  9.96s] rms 0.0060  floor 0.0026  level 0.0078
+[ 10.06s] rms 0.0137  floor 0.0026  level 0.0078
+[ 10.17s] rms 0.0065  floor 0.0026  level 0.0079
+[ 10.26s] rms 0.0028  floor 0.0026  level 0.0079
+[ 10.40s] froze window, burst seq 4  level 0.0079  win rms 0.0079
+[ 10.40s] rms 0.0138  floor 0.0026  level 0.0079
+[ 10.47s] rms 0.0078  floor 0.0027  level 0.0080
+[ 10.56s] rms 0.0118  floor 0.0027  level 0.0080
+[ 10.66s] rms 0.0093  floor 0.0027  level 0.0081  EVENT
+[ 10.76s] rms 0.0046  floor 0.0027  level 0.0081
+[ 10.86s] rms 0.0026  floor 0.0026  level 0.0079
+[ 10.96s] rms 0.0077  floor 0.0026  level 0.0079
+[ 11.06s] rms 0.0153  floor 0.0027  level 0.0080
+[ 11.20s] froze window, burst seq 5  level 0.0080  win rms 0.0088
+[ 11.20s] rms 0.0073  floor 0.0027  level 0.0080
+[ 11.26s] rms 0.0081  floor 0.0027  level 0.0080
+[ 11.36s] rms 0.0140  floor 0.0027  level 0.0081  EVENT
+[ 11.46s] rms 0.0078  floor 0.0027  level 0.0081
+[ 11.56s] rms 0.0060  floor 0.0027  level 0.0082
+[ 11.66s] rms 0.0126  floor 0.0027  level 0.0082
+[ 11.76s] rms 0.0056  floor 0.0027  level 0.0082
+[ 11.90s] froze window, burst seq 6  level 0.0083  win rms 0.0097
+[ 11.90s] rms 0.0121  floor 0.0028  level 0.0083
+[ 11.96s] rms 0.0085  floor 0.0028  level 0.0083  EVENT
+[ 12.06s] rms 0.0043  floor 0.0028  level 0.0083
+[ 12.16s] rms 0.0027  floor 0.0027  level 0.0080
+[ 12.26s] rms 0.0137  floor 0.0027  level 0.0081
+[ 12.36s] rms 0.0080  floor 0.0027  level 0.0081
+[ 12.50s] froze window, burst seq 7  level 0.0082  win rms 0.0097
+[ 12.50s] rms 0.0126  floor 0.0027  level 0.0082
+[ 12.56s] rms 0.0098  floor 0.0027  level 0.0082  EVENT
+[ 12.66s] rms 0.0045  floor 0.0027  level 0.0082
+[ 12.78s] rms 0.0025  floor 0.0025  level 0.0075
+[ 12.86s] rms 0.0032  floor 0.0025  level 0.0075
+[ 12.96s] rms 0.0128  floor 0.0025  level 0.0076
+[ 13.08s] rms 0.0103  floor 0.0026  level 0.0077  EVENT
+[ 13.20s] froze window, burst seq 8  level 0.0077  win rms 0.0094
+[ 13.23s] rms 0.0038  floor 0.0026  level 0.0077
+[ 13.26s] rms 0.0142  floor 0.0026  level 0.0077
+[ 13.37s] rms 0.0066  floor 0.0026  level 0.0078
+[ 13.46s] rms 0.0108  floor 0.0026  level 0.0078
+[ 13.56s] rms 0.0099  floor 0.0026  level 0.0078  EVENT
+[ 13.67s] rms 0.0052  floor 0.0026  level 0.0079
+[ 13.76s] rms 0.0136  floor 0.0026  level 0.0079
+[ 13.86s] rms 0.0060  floor 0.0026  level 0.0079
+[ 13.97s] rms 0.0059  floor 0.0027  level 0.0080
+[ 14.10s] froze window, burst seq 9  level 0.0080  win rms 0.0098
+[ 14.11s] rms 0.0122  floor 0.0027  level 0.0080
+[ 14.16s] rms 0.0065  floor 0.0027  level 0.0080
+[ 14.27s] rms 0.0112  floor 0.0027  level 0.0081
+[ 14.36s] rms 0.0082  floor 0.0027  level 0.0081  EVENT
+[ 14.46s] rms 0.0065  floor 0.0027  level 0.0082
+[ 14.59s] rms 0.0098  floor 0.0027  level 0.0082
+[ 14.66s] rms 0.0095  floor 0.0027  level 0.0082  EVENT
+[ 14.76s] rms 0.0123  floor 0.0028  level 0.0083  EVENT
+[ 14.90s] froze window, burst seq 10  level 0.0083  win rms 0.0100
+[ 14.90s] rms 0.0056  floor 0.0028  level 0.0083
+[ 14.96s] rms 0.0027  floor 0.0027  level 0.0080
+[ 15.06s] rms 0.0032  floor 0.0027  level 0.0080
+[ 15.16s] rms 0.0134  floor 0.0027  level 0.0080
+[ 15.26s] rms 0.0084  floor 0.0027  level 0.0081  EVENT
+[ 15.36s] rms 0.0076  floor 0.0027  level 0.0081
+[ 15.46s] rms 0.0121  floor 0.0027  level 0.0082
+[ 15.56s] rms 0.0062  floor 0.0027  level 0.0082
+[ 15.66s] rms 0.0036  floor 0.0027  level 0.0082
+[ 15.80s] froze window, burst seq 11  level 0.0083  win rms 0.0093
+[ 15.80s] rms 0.0144  floor 0.0028  level 0.0083
+[ 15.86s] rms 0.0101  floor 0.0028  level 0.0083  EVENT
+[ 15.97s] rms 0.0112  floor 0.0028  level 0.0084  EVENT
+[ 16.06s] rms 0.0080  floor 0.0028  level 0.0084
+[ 16.16s] rms 0.0038  floor 0.0028  level 0.0084
+[ 16.26s] rms 0.0025  floor 0.0025  level 0.0076
+[ 16.40s] froze window, burst seq 12  level 0.0076  win rms 0.0093
+[ 16.40s] rms 0.0131  floor 0.0025  level 0.0076
+[ 16.46s] rms 0.0069  floor 0.0025  level 0.0076
+[ 16.56s] rms 0.0027  floor 0.0025  level 0.0076
+[ 16.66s] rms 0.0126  floor 0.0026  level 0.0077
+[ 16.76s] rms 0.0076  floor 0.0026  level 0.0077
+[ 16.86s] rms 0.0046  floor 0.0026  level 0.0077
+[ 16.96s] rms 0.0084  floor 0.0026  level 0.0078
+[ 17.06s] rms 0.0137  floor 0.0026  level 0.0078  EVENT
+[ 17.18s] rms 0.0040  floor 0.0026  level 0.0079
+[ 17.26s] rms 0.0127  floor 0.0026  level 0.0079
+[ 17.36s] rms 0.0072  floor 0.0026  level 0.0079
+[ 17.47s] rms 0.0030  floor 0.0026  level 0.0079
+[ 17.60s] froze window, burst seq 13  level 0.0080  win rms 0.0092
+[ 17.60s] rms 0.0084  floor 0.0027  level 0.0080
+[ 17.66s] rms 0.0126  floor 0.0027  level 0.0080  EVENT
+[ 17.77s] rms 0.0048  floor 0.0027  level 0.0081
+[ 17.86s] rms 0.0133  floor 0.0027  level 0.0081
+[ 17.96s] rms 0.0097  floor 0.0027  level 0.0082  EVENT
+[ 18.09s] rms 0.0048  floor 0.0027  level 0.0082
+[ 18.20s] froze window, burst seq 14  level 0.0082  win rms 0.0093
+[ 18.20s] rms 0.0055  floor 0.0027  level 0.0082
+[ 18.26s] rms 0.0143  floor 0.0028  level 0.0083
+[ 18.38s] rms 0.0058  floor 0.0028  level 0.0083
+[ 18.46s] rms 0.0102  floor 0.0028  level 0.0083
+[ 18.56s] rms 0.0088  floor 0.0028  level 0.0084  EVENT
+[ 18.67s] rms 0.0027  floor 0.0027  level 0.0082
+[ 18.76s] rms 0.0129  floor 0.0027  level 0.0082
+[ 18.86s] rms 0.0085  floor 0.0028  level 0.0083  EVENT
+[ 18.96s] rms 0.0076  floor 0.0028  level 0.0083
+[ 19.10s] froze window, burst seq 15  level 0.0083  win rms 0.0099
+[ 19.10s] rms 0.0126  floor 0.0028  level 0.0083
+[ 19.16s] rms 0.0063  floor 0.0028  level 0.0084
+[ 19.26s] rms 0.0089  floor 0.0028  level 0.0084
+[ 19.36s] rms 0.0121  floor 0.0028  level 0.0085  EVENT
+[ 19.46s] rms 0.0088  floor 0.0028  level 0.0085  EVENT
+[ 19.56s] rms 0.0120  floor 0.0029  level 0.0086  EVENT
+[ 19.66s] rms 0.0045  floor 0.0029  level 0.0086
+[ 19.76s] rms 0.0024  floor 0.0024  level 0.0073
+[ 19.90s] froze window, burst seq 16  level 0.0074  win rms 0.0099
+[ 19.90s] rms 0.0130  floor 0.0025  level 0.0074
+[ 19.96s] rms 0.0085  floor 0.0025  level 0.0074  EVENT
+[ 20.07s] rms 0.0112  floor 0.0025  level 0.0075  EVENT
+[ 20.16s] rms 0.0137  floor 0.0025  level 0.0075  EVENT
+[ 20.26s] rms 0.0059  floor 0.0025  level 0.0075
+[ 20.37s] rms 0.0044  floor 0.0025  level 0.0076
+[ 20.50s] froze window, burst seq 17  level 0.0076  win rms 0.0102
+[ 20.50s] rms 0.0163  floor 0.0025  level 0.0076
+[ 20.56s] rms 0.0074  floor 0.0026  level 0.0077
+[ 20.67s] rms 0.0053  floor 0.0026  level 0.0077
+[ 20.76s] rms 0.0130  floor 0.0026  level 0.0077
+[ 20.86s] rms 0.0078  floor 0.0026  level 0.0078  EVENT
+[ 20.96s] rms 0.0046  floor 0.0026  level 0.0078
+[ 21.06s] rms 0.0140  floor 0.0026  level 0.0079
+[ 21.16s] rms 0.0097  floor 0.0026  level 0.0079  EVENT
+[ 21.26s] rms 0.0122  floor 0.0027  level 0.0080  EVENT
+[ 21.36s] rms 0.0138  floor 0.0027  level 0.0080  EVENT
+[ 21.50s] froze window, burst seq 18  level 0.0080  win rms 0.0100
+[ 21.50s] rms 0.0058  floor 0.0027  level 0.0080
+[ 21.56s] rms 0.0080  floor 0.0027  level 0.0081
+[ 21.66s] rms 0.0123  floor 0.0027  level 0.0081
+[ 21.76s] rms 0.0082  floor 0.0027  level 0.0082  EVENT
+[ 21.86s] rms 0.0097  floor 0.0027  level 0.0082  EVENT
+[ 21.96s] rms 0.0045  floor 0.0027  level 0.0082
+[ 22.06s] rms 0.0093  floor 0.0028  level 0.0083
+[ 22.17s] rms 0.0090  floor 0.0028  level 0.0083  EVENT
+[ 22.26s] rms 0.0103  floor 0.0028  level 0.0083  EVENT
+[ 22.36s] rms 0.0110  floor 0.0028  level 0.0084  EVENT
+[ 22.50s] froze window, burst seq 19  level 0.0084  win rms 0.0098
+[ 22.50s] rms 0.0081  floor 0.0028  level 0.0084
+[ 22.56s] rms 0.0063  floor 0.0028  level 0.0084
+[ 22.66s] rms 0.0061  floor 0.0028  level 0.0085
+[ 22.76s] rms 0.0121  floor 0.0028  level 0.0085
+[ 22.86s] rms 0.0086  floor 0.0029  level 0.0086  EVENT
+[ 22.96s] rms 0.0122  floor 0.0029  level 0.0086  EVENT
+[ 23.06s] rms 0.0058  floor 0.0029  level 0.0086
+[ 23.16s] rms 0.0084  floor 0.0029  level 0.0087
+[ 23.26s] rms 0.0134  floor 0.0029  level 0.0087
+[ 23.40s] froze window, burst seq 20  level 0.0087  win rms 0.0094
+[ 23.40s] rms 0.0063  floor 0.0029  level 0.0087
+[ 23.46s] rms 0.0133  floor 0.0029  level 0.0088
+[ 23.57s] rms 0.0075  floor 0.0029  level 0.0088
+[ 23.66s] rms 0.0106  floor 0.0030  level 0.0089
+[ 23.76s] rms 0.0116  floor 0.0030  level 0.0089  EVENT
+[ 23.87s] rms 0.0054  floor 0.0030  level 0.0089
+[ 23.96s] rms 0.0118  floor 0.0030  level 0.0090
+[ 24.06s] rms 0.0052  floor 0.0030  level 0.0090
+[ 24.18s] rms 0.0025  floor 0.0025  level 0.0075
+[ 24.30s] froze window, burst seq 21  level 0.0075  win rms 0.0096
+[ 24.30s] rms 0.0143  floor 0.0025  level 0.0075
+[ 24.36s] rms 0.0108  floor 0.0025  level 0.0076  EVENT
+[ 24.47s] rms 0.0054  floor 0.0025  level 0.0076
+[ 24.56s] rms 0.0139  floor 0.0026  level 0.0077
+[ 24.66s] rms 0.0070  floor 0.0026  level 0.0077
+[ 24.77s] rms 0.0078  floor 0.0026  level 0.0077
+[ 24.86s] rms 0.0138  floor 0.0026  level 0.0078  EVENT
+[ 25.00s] froze window, burst seq 22  level 0.0078  win rms 0.0097

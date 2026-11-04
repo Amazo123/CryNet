@@ -175,10 +175,31 @@ static const uint8_t LINK_CHANNEL = 6;
  * freeze now happens two seconds after the peak instead of half a
  * second after it, so the detection is about 1.5 s later.
  *
+ * That price was measured against the whole corpus on 2026-11-04
+ * (research/simulate_freeze.py simulates the node's own records, the
+ * freeze and the hub's gates over every in-domain session):
+ *
+ *     rule                room windows   false alarms   cry episodes caught
+ *     peak in the middle        104            0                  52
+ *     two seconds after         69            0                  41
+ *     stop-capped (below)      100            0                  52
+ *
+ * The two seconds after the peak lose the short cries: a yelp that ends
+ * before the delay has passed would be frozen over the room, not over
+ * the cry.  So the window is now frozen when the cry STOPS -- the
+ * streak breaks -- and the two seconds after the peak are only the cap
+ * for a cry that goes on.  A short yelp is caught whole; a sustained
+ * cry still gets the two seconds that follow its peak.
+ *
+ * PEAK_STOP_DELAY_MS is the shortest wait before a stopped cry is
+ * frozen: the window has to hold the cry itself, so the freeze cannot
+ * happen on the first dip below the level.
+ *
  * PEAK_EXPIRE_MS has to outlast the delay: the peak must still be
  * alive when the window is frozen, or the freeze never happens at all.
  */
 static const uint32_t PEAK_DELAY_MS = 2000;
+static const uint32_t PEAK_STOP_DELAY_MS = 500;
 static const uint32_t PEAK_EXPIRE_MS = 4000;
 
 /* How long the node holds a frozen window after it has been uploaded.
@@ -1449,7 +1470,19 @@ void loop() {
                     g_peak_ms = now;
                 } else if (g_peak_pending) {
                     const uint32_t age = now - g_peak_ms;
-                    if (age >= PEAK_DELAY_MS) {
+                    /* The cry stopped: the streak broke.  The window is
+                     * frozen then, so that it holds the cry that just
+                     * ended instead of the room behind it.  The two
+                     * seconds after the peak are the cap for a cry
+                     * that goes on, not a delay every cry has to sit
+                     * through.  (research/simulate_freeze.py: the
+                     * stop-capped rule catches as many of the corpus's
+                     * cry episodes as the old peak-centred rule, and
+                     * the hub announced no room window under any of
+                     * the three.) */
+                    const bool cry_stopped = (g_loud_streak < 2u);
+                    if (age >= PEAK_DELAY_MS ||
+                        (cry_stopped && age >= PEAK_STOP_DELAY_MS)) {
                         if (age < PEAK_EXPIRE_MS) {
                             freeze_window();
                             /* A loud window puts the node into cry mode:
