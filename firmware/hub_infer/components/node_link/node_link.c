@@ -211,8 +211,18 @@ static void promisc_rx(void *buf, wifi_promiscuous_pkt_type_t type)
 {
     (void)type;
     s_promisc_total++;
-    const uint8_t *p = (const uint8_t *)buf;
-    for (int i = 0; i + 1 < 400; i++) {
+    /* The buffer is a wifi_promiscuous_pkt_t: the frame length is in
+     * its rx_ctrl, and the bytes themselves are in its payload.  The
+     * node's magic is looked for anywhere in the frame, because the
+     * CryNet frame does not start at a fixed place inside the
+     * 802.11 frame. */
+    const wifi_promiscuous_pkt_t *pkt = (const wifi_promiscuous_pkt_t *)buf;
+    const uint8_t *p = pkt->payload;
+    int len = pkt->rx_ctrl.sig_len;
+    if (len > (int)sizeof(pkt->payload)) {
+        len = (int)sizeof(pkt->payload);
+    }
+    for (int i = 0; i + 1 < len; i++) {
         if (p[i] == 0xC3 && p[i + 1] == 0x7E) {
             s_promisc_magic++;
             return;
@@ -678,9 +688,14 @@ bool node_link_start(node_link_t *nl)
      * counters below are the diagnostic it was used for; build with
      * -DCRYNET_LINK_PROMISCUOUS=1 to bring it back. */
 #ifdef CRYNET_LINK_PROMISCUOUS
+    /* The callback has to be given to the driver *before* promiscuous
+     * mode is switched on: with the callback missing, promiscuous mode
+     * reports success and the radio hands over nothing at all. */
+    esp_wifi_set_promiscuous_rx_cb(promisc_rx);
     if (esp_wifi_set_promiscuous(true) == ESP_OK) {
-        esp_wifi_set_promiscuous_rx_cb(promisc_rx);
         ESP_LOGW(TAG, "promiscuous mode is on (diagnostic)");
+    } else {
+        ESP_LOGW(TAG, "promiscuous mode could not be switched on");
     }
 #else
     ESP_LOGI(TAG, "promiscuous mode is off (the air counters are idle)");
@@ -927,6 +942,17 @@ int node_link_request_missing(node_link_t *nl, uint8_t node_id, uint16_t seq)
     }
     nl->stats.requests_sent++;
     nl->stats.resends_sent++;
+    /* The bitmap as it goes on the air, printed.  The node prints the
+     * same bytes from its side, so the two logs can be compared
+     * directly: if the hub says it asked for 274 fragments and the node
+     * reads twelve bits out of the very same request, the disagreement
+     * is between the two ends of the wire and this is where it is
+     * visible. */
+    ESP_LOGW(TAG, "resend request for node %u: %d fragments asked for, "
+                  "bitmap %02X %02X %02X %02X %02X %02X",
+             (unsigned)node_id, missing,
+             bitmap[0], bitmap[1], bitmap[2], bitmap[3], bitmap[4],
+             bitmap[5]);
     return missing;
 }
 

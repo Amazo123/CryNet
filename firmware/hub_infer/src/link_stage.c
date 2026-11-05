@@ -28,6 +28,20 @@ static const char *TAG = "link";
  * seconds is normal; fifteen is generous. */
 #define BURST_TIMEOUT_MS 15000
 
+/* A cot whose windows keep failing is left alone for a while.  A burst
+ * that cannot cross the air will not cross it by being asked harder, and
+ * the retries are the loudest thing on the frequency: they starve the
+ * cots that *can* be heard.  Measured on the bench, one cot at -70 dBm
+ * pushed 34,853 frames trying to deliver windows it never delivered,
+ * and the cots beside it lost fragments to the flood.
+ *
+ * A cot that has failed this many windows in a row is *deaf*: the hub
+ * cannot get a window from it, so the model never sees its audio and it
+ * can never announce a cry.  The caregiver has to be told, because a
+ * cot that cannot be heard is not a cot that is being watched. */
+#define BURST_FAIL_LIMIT 3
+#define BURST_BACKOFF_MS 60000
+
 /* The pause after a window has been analysed.  The node used to need two
  * seconds to refill its window after an upload -- it threw the live
  * window away because the microphone was not read while the burst was on
@@ -212,6 +226,13 @@ typedef struct {
     uint32_t request_crc;
     uint32_t request_raw;    /* the hub's frame counter when it asked */
     uint32_t request_frags;  /* the hub's fragment counter when it asked */
+    /* How many windows this cot has failed to deliver, one after the
+     * other.  A window that never completes can never be judged, so a
+     * cot that keeps failing can never announce a cry -- it is deaf,
+     * and the caregiver has to be told. */
+    uint8_t  burst_failures;
+    bool     deaf;           /* the hub cannot get a window from it */
+    int64_t  backoff_until_us; /* and it is not asked again before this */
     /* The node's radio counters when it was asked, so that a stalled
      * burst can say what the node did with the fragments it was sent. */
     uint32_t request_sent;
@@ -358,6 +379,11 @@ static int64_t s_prepare_until_us = 0;
  * wearable showed "cot 2", then "cot 1", then "cot 2" again for a
  * single physical cry — three buzzes for one baby. */
 static uint8_t s_ble_cot = 0;
+
+/* The cots the hub could not get a window from, as a mask.  Bit 0 is
+ * cot 1.  The caregiver's phone and the wearable are told when this
+ * changes, because a cot that cannot be heard is not being watched. */
+static uint8_t s_deaf_mask = 0;
 static bool    s_ble_cry = false;
 
 /* The cot a console test alert is standing in for, 0 when there is
@@ -647,9 +673,26 @@ int link_stage_cots(link_stage_cot_t *out, int max)
         out[n].crying = link_stage_crying(state[i].node_id);
         out[n].confidence = state[i].last_confidence;
         out[n].window_full = state[i].window_full;
+        out[n].deaf = state[i].deaf;
         n++;
     }
     return n;
+}
+
+/* The cots the hub cannot get a window from.  See link_stage.h. */
+uint8_t link_stage_deaf_mask(void)
+{
+    uint8_t mask = 0;
+    for (int i = 0; i < NODE_LINK_MAX_NODES; i++) {
+        const node_state_t *st = &state[i];
+        if (!st->heard || !st->deaf) {
+            continue;
+        }
+        if (st->node_id >= 1u && st->node_id <= 8u) {
+            mask |= (uint8_t)(1u << (st->node_id - 1u));
+        }
+    }
+    return mask;
 }
 
 bool link_stage_radio_start(void)
@@ -909,6 +952,17 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
                             }
                             analyse(dsp, infer, st, s_window);
                         st->last_completed_seq = st->request_seq;
+                        /* The window arrived whole.  Whatever was wrong
+                         * with the link is over, so the cot is heard
+                         * again and the caregiver is told so. */
+                        if (st->burst_failures != 0 || st->deaf) {
+                            ESP_LOGI(TAG, "node %u: the link is working again "
+                                          "after %u failed windows",
+                                     st->node_id, (unsigned)st->burst_failures);
+                        }
+                        st->burst_failures = 0;
+                        st->deaf = false;
+                        st->backoff_until_us = 0;
                         }
                         st->requested = false;
                         st->last_log_us = esp_timer_get_time();
@@ -1093,6 +1147,28 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
                         node_link_reset_burst(nl, st->node_id);
                         st->requested = false;
                         burst_finished();
+                        /* The window did not arrive.  Count it, and
+                         * after a few in a row stop asking: a burst
+                         * that cannot cross the air does not cross it
+                         * by being asked harder, and the retries take
+                         * the airtime the other cots need. */
+                        if (st->burst_failures < 255u) {
+                            st->burst_failures++;
+                        }
+                        if (st->burst_failures >= BURST_FAIL_LIMIT) {
+                            if (!st->deaf) {
+                                st->deaf = true;
+                                ESP_LOGW(TAG, "node %u: DEAF — %u windows in a "
+                                              "row did not arrive; it cannot "
+                                              "announce a cry until the link "
+                                              "improves. Asking it again in %d s.",
+                                         st->node_id,
+                                         (unsigned)st->burst_failures,
+                                         BURST_BACKOFF_MS / 1000);
+                            }
+                            st->backoff_until_us =
+                                now + (BURST_BACKOFF_MS * 1000);
+                        }
                         }
                     }
                 }
@@ -1168,6 +1244,7 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
             if (loud && frozen && worth_pulling && st->window_full &&
                 (st->seq != st->last_completed_seq) &&
                 (now - st->last_request_us) > (RECOOLDOWN_MS * 1000) &&
+                (now >= st->backoff_until_us) &&
                 s_bursts_in_flight == 0 &&
                 (pull == NULL || st->frozen_rms > pull->frozen_rms)) {
                 pull = st;
@@ -1342,10 +1419,39 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
             }
         }
 
+        /* A cot that has gone deaf is announced, and the announcement is
+         * withdrawn when the link comes back.  A cot the hub cannot hear
+         * is not a cot that is being watched, and silence from it would
+         * read as "all quiet" on the wrist. */
+        {
+            const uint8_t deaf_now = link_stage_deaf_mask();
+            if (deaf_now != s_deaf_mask) {
+                const uint8_t deaf_new = (uint8_t)(deaf_now & ~s_deaf_mask);
+                const uint8_t deaf_gone = (uint8_t)(s_deaf_mask & ~deaf_now);
+                s_deaf_mask = deaf_now;
+                any_state_changed = true;
+                for (int j = 0; j < NODE_LINK_MAX_NODES; j++) {
+                    if (!state[j].heard || state[j].node_id < 1u ||
+                        state[j].node_id > 8u) {
+                        continue;
+                    }
+                    const uint8_t bit =
+                        (uint8_t)(1u << (state[j].node_id - 1u));
+                    if (deaf_new & bit) {
+                        ble_alert_publish_deaf(state[j].node_id);
+                    } else if (deaf_gone & bit) {
+                        /* The link is back: the cot is watched again. */
+                        ble_alert_publish(state[j].node_id, false, 0);
+                    }
+                }
+            }
+        }
+
         /* The state characteristic carries the whole system. */
         if (any_state_changed) {
             ble_state_packet_t sp;
             memset(&sp, 0, sizeof sp);
+            sp.deaf_mask = s_deaf_mask;
             for (int j = 0; j < NODE_LINK_MAX_NODES; j++) {
                 if (!state[j].heard) {
                     continue;
@@ -1488,6 +1594,10 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
             ds.nodes[slot].battery_mv = live ? state[i].battery_mv : 0u;
             ds.nodes[slot].battery_band = live ? state[i].battery_band
                                                : HUB_BAT_NONE;
+            /* A cot whose windows never arrive is online but deaf: it
+             * is transmitting, and the hub still cannot get its audio,
+             * so it cannot announce a cry. */
+            ds.nodes[slot].deaf = state[i].deaf;
             /* Say it when a cot appears or disappears, so the panel's
              * offline cards can be counted rather than squinted at. */
             if (live != s_was_live[i]) {

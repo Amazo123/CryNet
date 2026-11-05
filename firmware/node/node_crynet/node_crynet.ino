@@ -710,6 +710,10 @@ static const uint32_t RESEND_DEDUPE_MS = 250;
  * which is what the queue is for. */
 static volatile uint32_t g_tx_acks = 0;
 static uint32_t g_tx_queued = 0;   /* handed over, not yet acknowledged */
+/* How many frames the radio itself could not carry.  The callback's
+ * status used to be thrown away, so this was always zero and the node
+ * reported a clean sheet even when the radio was dropping its burst. */
+static volatile uint32_t g_tx_failed = 0;
 
 /* How many frames the radio may be holding at once.  The queue is ten
  * deep; four leaves room for the telemetry and the heartbeats that share
@@ -739,8 +743,15 @@ static uint32_t g_tx_full = 0;
 
 static void on_send(const esp_now_send_info_t *info, esp_now_send_status_t status) {
     (void)info;
-    (void)status;
+    /* The frame is finished either way, so it leaves the in-flight
+     * count.  But the status says whether the radio could carry it, and
+     * it used to be thrown away: the node's own counters said "nothing
+     * lost" no matter what the radio did, which is how a cot whose
+     * fragments never arrive can still report a clean sheet. */
     g_tx_acks++;
+    if (status != ESP_NOW_SEND_SUCCESS) {
+        g_tx_failed++;
+    }
 }
 
 static void on_recv(const esp_now_recv_info_t *info, const uint8_t *data, int len) {
@@ -815,7 +826,26 @@ static void on_recv(const esp_now_recv_info_t *info, const uint8_t *data, int le
         g_resend_seq = seq;
         memcpy(g_resend_bitmap, &data[14], RESEND_BITMAP_BYTES);
         if (Serial) {
-            Serial.printf("resend request: seq %u\n", (unsigned)g_resend_seq);
+            /* How many fragments does the hub say it is missing?  The
+             * bitmap is counted here rather than assumed, because a
+             * hub that asks for 274 fragments and a node that reads
+             * twelve bits out of the same request is a disagreement
+             * that has to be visible in the log to be findable. */
+            uint32_t asked = 0;
+            for (uint16_t b = 0; b < RESEND_BITMAP_BYTES; b++) {
+                uint8_t v = g_resend_bitmap[b];
+                for (int bit = 0; bit < 8; bit++) {
+                    if (v & (1u << bit)) {
+                        asked++;
+                    }
+                }
+            }
+            Serial.printf("resend request: seq %u, %lu of %u fragments asked "
+                          "for, bitmap %02X %02X %02X %02X\n",
+                          (unsigned)g_resend_seq, (unsigned long)asked,
+                          (unsigned)FRAG_COUNT,
+                          g_resend_bitmap[0], g_resend_bitmap[1],
+                          g_resend_bitmap[2], g_resend_bitmap[3]);
         }
         return;
     }
@@ -1215,6 +1245,8 @@ static void print_stats(void) {
     Serial.printf("radio: queued %u  acked %u  in flight %u  queue full %u times\n",
                   (unsigned)g_tx_queued, (unsigned)g_tx_acks,
                   (unsigned)tx_inflight(), (unsigned)g_tx_full);
+    Serial.printf("radio: the driver could not carry %u frames\n",
+                  (unsigned)g_tx_failed);
 }
 
 static void handle_command(char *line) {

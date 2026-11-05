@@ -190,6 +190,13 @@ static void alert_notify_cb(BLERemoteCharacteristic * /*chr*/,
          * cot joins the cry -- the display follows the baby from cot
          * to cot, but the wrist buzzes once. */
         haptic_trigger();
+    } else if (g_type == 3 && prev_type != 3) {
+        /* That cot has gone deaf: the hub cannot get its audio, so it
+         * cannot announce a cry.  It is not being watched, and the
+         * caregiver has to hear that from the wrist, not only see it
+         * on the hub's panel. */
+        Serial.printf("[ble] cot %u is DEAF\n", (unsigned)g_cot);
+        haptic_trigger();
     }
 }
 

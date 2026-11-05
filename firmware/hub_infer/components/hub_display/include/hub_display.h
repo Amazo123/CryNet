@@ -64,6 +64,9 @@ typedef struct {
     uint8_t confidence;    /* the last confirmed confidence, in percent */
     uint16_t battery_mv;   /* its battery cell voltage; 0 = no reading */
     uint8_t battery_band;  /* HUB_BAT_* */
+    bool    deaf;          /* the hub cannot get a window from it, so it
+                            * cannot announce a cry: it is not being
+                            * watched, and the card has to say so */
 } hub_display_node_t;
 
 /* The display's own state. */

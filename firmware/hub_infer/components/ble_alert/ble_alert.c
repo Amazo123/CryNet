@@ -346,6 +346,20 @@ void ble_alert_publish(uint8_t cot_id, bool crying, uint16_t confidence_pct)
                  (uint16_t)sizeof s_alert_value);
 }
 
+void ble_alert_publish_deaf(uint8_t cot_id)
+{
+    s_alert_value.cot_id = cot_id;
+    s_alert_value.alert_type = 3u;
+    s_alert_value.confidence_pct = 0;
+    s_event_id++;
+    s_alert_value.event_id = s_event_id;
+
+    ESP_LOGW(TAG, "cot %u is deaf: the hub cannot hear it", cot_id);
+
+    notify_value(s_alert_handle, s_alert_notify, &s_alert_value,
+                 (uint16_t)sizeof s_alert_value);
+}
+
 void ble_alert_publish_state(const ble_state_packet_t *state)
 {
     s_state_value = *state;

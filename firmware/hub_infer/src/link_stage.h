@@ -201,7 +201,14 @@ typedef struct {
     uint8_t  confidence;    /* the last confirmed confidence, in percent */
     bool     crying;        /* the hub is announcing a cry from it */
     bool     window_full;   /* it has a whole two-second window to give */
+    bool     deaf;          /* its windows never arrive: it cannot announce */
 } link_stage_cot_t;
+
+/* The cots the hub cannot get a window from.  A deaf cot's audio never
+ * reaches the model, so it can never announce a cry -- the caregiver
+ * has to be told rather than left to take silence for a quiet cot.
+ * Bit 0 is cot 1, bit 1 is cot 2, and so on. */
+uint8_t link_stage_deaf_mask(void);
 
 /* The cots the hub knows about.  Returns how many were written. */
 int link_stage_cots(link_stage_cot_t *out, int max);

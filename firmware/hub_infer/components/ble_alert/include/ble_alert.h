@@ -34,7 +34,9 @@ extern "C" {
 /* The alert packet, the same six bytes the legacy firmware sent. */
 typedef struct __attribute__((packed)) {
     uint8_t  cot_id;
-    uint8_t  alert_type;      /* 1 = a cry, 2 = the cry has stopped */
+    uint8_t  alert_type;      /* 1 = a cry, 2 = the cry has stopped,
+                               *   3 = that cot is deaf (its audio never
+                               *   arrives, so it cannot announce a cry) */
     uint16_t confidence_pct;
     uint16_t event_id;
 } ble_alert_packet_t;
@@ -43,7 +45,9 @@ typedef struct __attribute__((packed)) {
 typedef struct __attribute__((packed)) {
     uint8_t  cots;             /* how many cots the hub knows about */
     uint8_t  crying_mask;      /* bit 0 is cot 1, bit 1 is cot 2, ... */
-    uint8_t  reserved;
+    uint8_t  deaf_mask;        /* the cots the hub cannot hear; bit 0 is
+                                * cot 1.  A deaf cot is not being watched,
+                                * so the caregiver is told. */
     uint8_t  confidence_pct;   /* the loudest cry's confidence */
     uint32_t started_at_s;     /* when the current cry began */
 } ble_state_packet_t;
@@ -55,6 +59,12 @@ bool ble_alert_start(void);
 /* Publish a cot's state.  `crying` true raises the alert, false cancels
  * it.  Called when the state changes, not on every window. */
 void ble_alert_publish(uint8_t cot_id, bool crying, uint16_t confidence_pct);
+
+/* Tell the caregiver that a cot has gone deaf: its windows never arrive
+ * at the hub, so the model never sees its audio and it cannot announce a
+ * cry.  Silence from a cot that is not being watched is the one thing a
+ * monitor must not do. */
+void ble_alert_publish_deaf(uint8_t cot_id);
 
 /* Publish the whole system's state, for the state characteristic. */
 void ble_alert_publish_state(const ble_state_packet_t *state);

@@ -655,6 +655,12 @@ static void draw_dashboard(const hub_display_state_t *st)
             snprintf(right, sizeof right, "CRY %u%%", (unsigned)n->confidence);
             state = right;
             state_col = C_ALERT;
+        } else if (n->deaf) {
+            /* It is transmitting and the hub still cannot get its
+             * audio, so it cannot announce a cry.  It is not being
+             * watched, and the card has to say so. */
+            state = "DEAF";
+            state_col = C_ALERT;
         } else if (known) {
             state = "ONLINE";
             state_col = C_GREEN;
