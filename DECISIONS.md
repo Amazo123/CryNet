@@ -4,11 +4,18 @@
 > decision that was made, why it was made, every issue that was hit, how it
 > was diagnosed, what was done about it, and what the result was.
 >
-> **Repo:** `C:\Users\HP\.t3\projects\fp-2` (branch `main`)
+> **Repo:** `C:\Users\HP\.t3\projects\fp-2` (branch `main`, remote `crynet` →
+> `https://github.com/Amazo123/CryNet.git`) — the **three-cot** system.
+> **Sibling repository:** `C:\Users\HP\.t3\projects\fp-two-node` (branch `main`,
+> remote `origin` → `https://github.com/Amazo123/CryNet-TwoNode.git`) — the
+> **two-cot** system, which is the one on the bench. The two repositories share
+> their history up to commit `99bb257` and then diverge; the model, the signal
+> contract and the trigger rules are shared, and the decisions that differ are
+> written down in the two-node repository's `DECISIONS.md` §1.9 (D-75…D-80).
 > **Companion files:** `SYSTEM_UPDATE.md` (the living status log and recovery
 > layer — rewritten after every change) and `PROJECT_HANDOFF.md` (the deep
 > briefing: the frozen contracts and the file map).
-> **Last updated:** 2026-10-31
+> **Last updated:** 2026-11-06
 >
 > **Conventions.** Each decision is written as **D-n** and each issue as
 > **I-n**. A decision that was later changed carries a "revised by" note

@@ -2,10 +2,15 @@
 
 > **This file is the recovery layer.** It is rewritten/appended by the agent **after every project update or edit** (code, notebook, config, decision, or a completed run). If the chat dies, is compacted into garbage, or hits "400 Context Limit Exceeded", a fresh chat reads this file first and is immediately back up to speed.
 >
-> **Repo:** `C:\Users\HP\.t3\projects\fp-2` (branch `main`)
+> **Repo:** `C:\Users\HP\.t3\projects\fp-2` (branch `main`, remote `crynet` →
+> `https://github.com/Amazo123/CryNet.git`) — the **three-cot** system.
+> **Sibling repository:** `C:\Users\HP\.t3\projects\fp-two-node` (branch `main`,
+> remote `origin` → `https://github.com/Amazo123/CryNet-TwoNode.git`) — the
+> **two-cot** system, which is the one on the bench. Shared history up to
+> `99bb257`, then separate.
 > **Deep briefing (static, rarely changes):** `PROJECT_HANDOFF.md`
 > **Decision and issue log (for the report):** `DECISIONS.md`
-> **Last updated:** 2026-11-05 (the notebook is self-contained: import it, press Run All — the loud-speech corpus comes from a published URL, checked by SHA-256)
+> **Last updated:** 2026-11-06 (the two-cot sibling repository was given its own GitHub repo and remote — `Amazo123/CryNet-TwoNode` — and the decisions where it deliberately differs from this one are written down there as D-75…D-80)
 
 ---
 
@@ -401,6 +406,8 @@ The fix that worked: delete `packages/framework-espidf`, move the fully extracte
 ---
 
 ## 5. Change log (newest first)
+
+- 2026-11-06 (**the two-cot sibling repository was given its own GitHub repo and remote, so the two systems can no longer be confused for each other**) | The **two-cot** system — the one actually on the bench, with two cot nodes, the BC547 haptic motor, the OLED carrying the wearable's state, and the hub backlight on 3V3 — lives in its own working copy at `C:\Users\HP\.t3\projects\fp-two-node`, and until today it had **no git remote at all**. It now has one: **`Amazo123/CryNet-TwoNode`**, created public, with `main` and the four working branches pushed. The two repositories **share their history up to `99bb257`** and then diverge, so the model, the signal contract and the whole decision record stay traceable in one place while the firmware trees stay separate. **This repository is untouched by that** — it keeps its own remote (`crynet` → `Amazo123/CryNet`), its three-cot firmware and its three-cot wiring documents. **What changed here is only that the relationship between the two repositories is now written down instead of being folklore:** this repo's `DECISIONS.md` and `SYSTEM_UPDATE.md` header blocks now name the sibling repo, its branch and its remote, and the decisions where the two-cot build deliberately differs — its own repository, no wearable status LEDs, the BC547 haptic instead of the DRV2605L, the always-on 3V3 backlight with no sleep mode, the node's I2S watchdog held until the soldering is done, and the untested dual-cry behaviour on its own branch — are written down as **D-75…D-80** in the two-node repo's `DECISIONS.md` §1.9, with the two-node repo's `SYSTEM_UPDATE.md` and `PROJECT_HANDOFF.md` headers corrected (they had been a stale copy of this repo's, and still described three cot nodes and a DRV2605L). | `DECISIONS.md`, `SYSTEM_UPDATE.md` (this repo); `DECISIONS.md`, `SYSTEM_UPDATE.md`, `PROJECT_HANDOFF.md` (the two-node repo) | **Why it matters:** the two repositories had already drifted once — the `fp-2` copy of the wearable sketch was still blinking an LED while the bench was driving a real motor — and nothing in the documents would have caught it. **Nothing was flashed and no hardware was touched.** The owner has started soldering the final wiring, so the node's I2S watchdog stays committed-but-unflashed until that is done (D-79). **Merging to `main` on either repository is still the owner's call.**
 
 | Date | Change | Files touched | Notes |
 |---|---|---|---|

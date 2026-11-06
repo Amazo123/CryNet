@@ -2,9 +2,17 @@
 
 > **Purpose of this document.** It is a complete, self-contained briefing for a fresh chat that has no memory of this project. Everything needed to continue — hardware, decisions, dataset research, the exact signal contract, validation evidence, file map, how to run, known risks, and the next checkpoint — is below.
 >
-> **Repo:** `C:\Users\HP\.t3\projects\fp-2` (git, branch `master`, only commit is `997cc9b Initial commit`; **checkpoint-1 work is uncommitted**).
+> **Repo:** `C:\Users\HP\.t3\projects\fp-2` (git, branch `main`, remote `crynet` →
+> `https://github.com/Amazo123/CryNet.git`) — the **three-cot** system.
+> **Sibling repository:** `C:\Users\HP\.t3\projects\fp-two-node` (branch `main`,
+> remote `origin` → `https://github.com/Amazo123/CryNet-TwoNode.git`) — the
+> **two-cot** system, which is the one on the bench. The two share history up to
+> commit `99bb257` and then diverge.
 >
-> **Status at handoff:** checkpoint 1 complete and validated. Checkpoint 2 (ESP32-S3 firmware) not started.
+> **Status at handoff:** the three-cot system is complete and validated. **The
+> system on the bench is the two-cot one in the sibling repository** — read
+> `fp-two-node`'s `SYSTEM_UPDATE.md` first if the question is about the boards
+> that are actually running.
 
 ---
 
