@@ -24,7 +24,7 @@ Three ESP32-C3 cot nodes (INMP441 microphone, I2S at 16 kHz) → ESP-NOW
 radio → an **ESP32-S3-DevKitC-1 hub** that reassembles each node's two-second
 window, runs a TFLite Micro INT8 binary cry/no-cry classifier on it, and
 shows the result on an ILI9341 TFT and publishes it to the caregiver's phone
-over BLE GATT → a wearable (ESP32-C3 + OLED + DRV2605L haptic) that is still
+over BLE GATT → a wearable (ESP32-C3 + OLED + BC547 haptic drive) that is still
 to be built. The previous firmware attempt failed after flashing, so the
 project was rebuilt from model training upwards.
 
@@ -316,7 +316,7 @@ ALERT {'cot': 1, 'alert': 'cleared', 'confidence_pct': 100, 'event_id': 2}
 
 | # | Item | Why it is still open |
 |---|---|---|
-| **O-1** | **The wearable (Stage 2d)** does not exist yet. | It is a BLE notification client with an SSD1306 OLED and a DRV2605L haptic driver. The hub's side of the contract (the legacy UUIDs and the six-byte alert packet) is done and verified against a real client, so the wearable can be written directly against it. |
+| **O-1** | **The wearable (Stage 2d)** does not exist yet. | It is a BLE notification client with an SSD1306 OLED and a BC547 low-side haptic drive (the DRV2605L breakout is not used). The hub's side of the contract (the legacy UUIDs and the six-byte alert packet) is done and verified against a real client, so the wearable can be written directly against it. |
 | **O-2** | **The model has never heard a real cry.** | The only cry source available in this room is a *recording played through a phone speaker* — compressed, band-limited and EQ'd by the speaker. It is labelled as such. On that audio the model's AUC is 0.9283 with recall 0.724 and FPR 0.000; the misses are two-second windows landing in the gaps between cries. The negatives (this room, this microphone) are authentic. ~50 self-recorded real clips remain the single biggest accuracy win. |
 | **O-3** | **The screen has been seen three times; one photograph is still worth taking, and it has to be taken with the room lit.** | The first photograph confirmed the layout, the text and the orientation (I-31, I-35); the second confirmed the R/B fix; the third was of the colour-check page, and it confirmed every hue (D-56); the fourth was of the ramp, taken in the dark again, and it could not measure the steps - the red channel even jumps the wrong way between adjacent steps - which confirms I-38. But it did its job as a *chooser*: the user picked the third ramp step off it as the teal the screen should be (D-57). What is still wanted is one photograph **with the room lit**, so the ramp yields the panel's own tone curve instead of a colour choice. |
 | **O-4** | **The tensor arena is still in PSRAM.** | Moving it into internal SRAM is the obvious next optimisation. At 101.8 ms of inference per two-second window it is not urgent for a triggered monitor. |

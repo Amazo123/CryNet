@@ -88,8 +88,12 @@ The hub's BLE service has been exercised with a phone, but **the wearable itself
 |---|---:|---|
 | ESP32-C3 development board | **1** | Planned BLE client — **the existing SuperMini is reassigned here** (the node role moves to the Pro Minis). Check physical size, supply requirements and power consumption before final wearable assembly. |
 | SSD1306 OLED module | **1** | Planned **0.96-inch, 128 × 64, I²C** display. Choose a module compatible with 3.3 V power and 3.3 V I²C logic; verify the actual pin labels and pull-ups. |
-| DRV2605L haptic-driver breakout | **1** | Recommended instead of a discrete MOSFET motor switch. Choose a breakout compatible with the chosen supply and **3.3 V I²C logic**. Verify breakout wiring and its I²C pull-up voltage. |
-| Compatible vibration actuator | **1** | A small ERM coin vibration motor is a practical candidate; select its rated voltage, startup/operating current and mechanical mounting to suit the driver, supply and intended vibration. Exact part is not yet selected. The DRV2605L also supports LRAs, but those require matching configuration. |
+| BC547 transistor | **1** | **Chosen haptic drive** (the user's own part): low-side switch for the coin motor. GPIO7 → 2.2 kΩ → base, collector → motor's − terminal, emitter → GND. Page 4 of `SYSTEM_WIRING_DIAGRAMS.pdf`. |
+| 1N5819 flyback diode | **1** | Across the motor, **cathode up** to the + terminal. |
+| 10 Ω resistor | **1** | In the motor's + lead: caps the stall current at 3.3 V ÷ (R_motor + 10 Ω), about 69 mA for a 37 Ω coin ERM, inside the BC547's 100 mA rating. Use 22 Ω instead if the motor is much lower impedance (or fit a 2N2222A). |
+| 2.2 kΩ resistor | **1** | BC547 base resistor: 1.2 mA of base current at 3.3 V, so a BC547A saturates. |
+| 100 kΩ resistor | **1** | Base-emitter pulldown, so the motor stays off while the C3 boots with GPIO7 floating. |
+| Compatible vibration actuator | **1** | A small ERM coin vibration motor is a practical candidate; select its rated voltage, startup/operating current and mechanical mounting to suit the driver, supply and intended vibration. Exact part is not yet selected. **Measure its stall current with a bench supply and a meter in series before soldering — do not guess.** |
 | Protected rechargeable 1-cell Li-ion/Li-Po battery | **1** | Original proposal about 500 mAh; choose actual capacity, dimensions, protection, discharge rating and connector after the wearable current and runtime are measured. |
 | 1-cell charger with protection and load-sharing/power-path | **1** | Select charge current for the chosen cell; a typical 1 A TP4056 module is not automatically suitable for a 500 mAh cell. |
 | Regulated 5 V boost converter | **1 candidate** | Only if the selected C3 board is powered via its 5 V input; alternatively a properly specified 3.3 V regulator may be designed. Do not fit both by default; final architecture is undecided. |
@@ -97,11 +101,11 @@ The hub's BLE service has been exercised with a phone, but **the wearable itself
 | 100 µF electrolytic capacitor | **1 candidate** | Bulk supply allowance, ≥10 V; final value and necessity depend on the converter. |
 | 100 nF ceramic capacitor | **1 candidate** | Local supply decoupling allowance; check what is already on the modules. |
 | Battery connector pair | **1 pair** | Match the cell and charger and verify polarity. |
-| 4.7 kΩ resistors | **2 candidates** | One SDA and one SCL pull-up to 3.3 V **only if** adequate I²C pull-ups are not already fitted to the OLED and DRV2605L modules. Check combined resistance and voltage before adding. |
+| 4.7 kΩ resistors | **2 candidates** | One SDA and one SCL pull-up to 3.3 V **only if** adequate I²C pull-ups are not already fitted to the OLED module. Check combined resistance and voltage before adding. |
 | Vero board, wires, headers and connectors | As needed | Small enough for the chosen enclosure; use insulation and secure all connections. |
 | Wearable enclosure and strap | **1 set** | Secure, insulated, comfortable and appropriate for the chosen battery and motor. |
 
-**Motor-drive choice:** the earlier PDF specified an IRLML2502/AO3400 MOSFET, a 1N5819 flyback diode and 100 Ω / 10 kΩ gate resistors. These belong to the **alternative direct MOSFET-driven brushed-motor circuit**; they are **not baseline components** for the recommended DRV2605L circuit. Do not wire the motor as though it were connected to a MOSFET: connect it to the driver's output terminals according to the exact module documentation. The user already owns an IRLML2502TR; retain it as a spare. If a direct-drive alternative is chosen later, a SOT-23-to-through-hole adapter can make it usable on vero board, with its diode and gate resistors correctly designed for the motor.
+**Motor-drive choice:** the haptic drive is now the user's own **BC547** low-side switch — the DRV2605L breakout is **not** part of the bill of materials, and neither is the IRLML2502/AO3400 MOSFET with its 100 Ω / 10 kΩ gate resistors. Those belonged to an earlier direct-drive alternative. What is needed instead: one BC547, one 1N5819 (cathode up, across the motor), one 10 Ω (motor's + lead), one 2.2 kΩ (base) and one 100 kΩ (base-emitter pulldown). The user already owns an IRLML2502TR; retain it as a spare, or adapt it to a through-hole board if a MOSFET drive is chosen later.
 
 **Power development:** a suitable regulated USB supply may be used during bench development if compatible with the selected ESP32 board. It is not a substitute for the eventual portable battery circuit. A nominal 3.7 V lithium cell is about 4.2 V when fully charged; never assume it is safe to connect directly to a 3.3 V input or GPIO. Match charger current to the actual cell and use an appropriate protection solution; charging/power-path behaviour must be verified rather than assumed from a generic module name.
 
@@ -128,7 +132,7 @@ The hub's BLE service has been exercised with a phone, but **the wearable itself
 | ESP32-S3-DevKitC-1 with PSRAM | **1** | Existing hub. |
 | 2.8-inch ILI9341 SPI TFT | **1** | Existing hub display. |
 | 0.96-inch SSD1306 I²C OLED | **1** | Planned wearable. |
-| DRV2605L haptic breakout | **1** | Recommended wearable driver; not yet tested in this project. |
+| BC547 haptic switch | **1** | The user's own part; the wearable's haptic drive. Replaces the DRV2605L breakout. |
 | Compatible vibration motor | **1** | Exact model pending selection. |
 | LX-LCBST-TC-001 charger + boost modules | **4 + 1 candidate** | Battery pads B+/B−, output VO+/VO−, charging via USB-C — pad map confirmed from the user's photograph. Bench-validate ONE board (charge current, trimpot-set 5.1 V output, off-state drain) before buying the rest; wearable use pending the same check. |
 | Protected 1-cell rechargeable Li-Po cells | **5** | 3 nodes, 1 hub, 1 wearable; suggested starting sizes 2,000 / 3,000 / 1,000 mAh; each cell's datasheet must permit the module's measured charge current. |
@@ -147,7 +151,7 @@ The hub's BLE service has been exercised with a phone, but **the wearable itself
 
 1. Hub TFT corrected from **2.4 inches to the user's 2.8 inches**; the ILI9341 and 240 × 320 resolution remain relevant to the existing implementation.
 2. Rechargeable power, node battery ADC parts and node indicator LEDs are included as a complete-system **proposal**, with individual quantities; unlike the USB prototype they are not yet implemented or validated. A fixed TFT backlight resistor is not assumed.
-3. The planned **DRV2605L** is added; the discrete MOSFET, flyback diode and gate resistors are removed from the recommended wearable bill of materials, not declared universally unnecessary for every motor circuit.
+3. The wearable's haptic drive is the **BC547 low-side switch** the user owns (with a 1N5819 flyback, a 10 Ω stall cap, a 2.2 kΩ base resistor and a 100 kΩ pulldown); the DRV2605L breakout is dropped from the bill of materials, and the discrete MOSFET with its gate resistors is not used either.
 4. Wearable charging, protection and regulation are acknowledged as necessary **if battery powered**, but remain to be selected together rather than copied as an unverified circuit.
 5. Vero board, power supplies, enclosures, mounting and safety considerations are included. Bench breadboards are optional rather than required for the finished build.
 6. The current model already runs using the hub's existing PSRAM; an extra memory component is not required.
@@ -156,5 +160,4 @@ The hub's BLE service has been exercised with a phone, but **the wearable itself
 
 - User-supplied original: `HARDWARE_COMPONENTS_DETAILED_SPECIFICATION.pdf`, five pages, October 2026; reviewed as the superseded specification.
 - Project status: `SYSTEM_UPDATE.md`; implementation and project decisions: `DECISIONS.md` and `firmware/`.
-- [Texas Instruments DRV2605L datasheet](https://www.ti.com/lit/ds/symlink/drv2605l.pdf): supply and I²C limits, supported ERM/LRA actuators and output wiring.
 - [Infineon IRLML2502 datasheet](https://www.infineon.com/assets/row/public/documents/24/49/infineon-irlml2502-datasheet-en.pdf): existing MOSFET package and electrical ratings.

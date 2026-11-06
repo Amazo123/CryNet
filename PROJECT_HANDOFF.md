@@ -18,7 +18,7 @@ A **multi-node infant cry monitor** for multi-crib environments (NICU, maternity
 |---|---|---|
 | **Cot nodes ×3** | ESP32-C3 SuperMini + INMP441 MEMS mic | I2S capture at 16 kHz, DC-coupled RMS telemetry over ESP-NOW, on-demand 64 KB audio burst back to the hub |
 | **Central hub** | **ESP32-S3-DevKitC-1** (dual-core Xtensa LX7 @ 240 MHz, 512 KB SRAM, **8 MB octal PSRAM**) | ESP-NOW receiver, DSP front end, **TFLite Micro inference**, TFT display (ILI9341 320×240), BLE GATT server |
-| **Wearable** | ESP32-C3 SuperMini + SSD1306 OLED + DRV2605L haptic | Caregiver alert via BLE notification |
+| **Wearable** | ESP32-C3 SuperMini + SSD1306 OLED + BC547-driven coin-motor haptic | Caregiver alert via BLE notification |
 
 **The hub is the target device for everything below.** It has 512 KB internal SRAM and 8 MB PSRAM; the model must fit in flash and the tensor arena in RAM/PSRAM.
 

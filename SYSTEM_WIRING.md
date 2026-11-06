@@ -13,7 +13,7 @@
                                              └── BLE → phone (tested)
                                                   or → C3 wearable (planned)
                                                            ├→ SSD1306 OLED
-                                                           └→ DRV2605L → motor
+                                                           └→ BC547 → motor
 ```
 
 No audio or signal wires connect the cot nodes to the hub: the link is wireless. Each assembly has its own local power and ground. The node, hub and wearable do not need grounds connected to each other.
@@ -81,15 +81,16 @@ The firmware and exact GPIO assignments do not yet exist. The following is a **c
 
 | From | To | Condition |
 |---|---|---|
-| C3 **GND** | OLED **GND** and DRV2605L **GND** | Common local ground. |
-| C3 **3V3** | OLED **VCC** | Only if the specific OLED breakout accepts 3.3 V. |
-| Appropriate regulated supply | DRV2605L breakout **VIN/VDD** | Follow the actual breakout's voltage requirements; do not assume its VIN and logic pins are identical to the IC pins. |
-| Selected C3 I²C SDA | OLED **SDA** and driver **SDA** | Bus pull-ups must go to a safe 3.3 V logic rail. Check existing pull-ups before adding any. |
-| Selected C3 I²C SCL | OLED **SCL** and driver **SCL** | Same. Verify address compatibility. |
-| Driver **OUT+ / OUT−** | Compatible motor's two terminals | Use the specific breakout's labels and motor requirements. Do not connect either motor lead to 3V3 or ground as in the old MOSFET circuit. |
+| C3 **GND** | OLED **GND**, BC547 **emitter** | Common local ground. |
+| C3 **3V3** | OLED **VCC** and the motor's **+ terminal** (through the 10 Ω) | The OLED must accept 3.3 V. The motor is on the 3V3 rail, not the 5 V rail. |
+| Selected C3 I²C SDA | OLED **SDA** | Bus pull-ups must go to a safe 3.3 V logic rail. Check existing pull-ups before adding any. |
+| Selected C3 I²C SCL | OLED **SCL** | Same. Verify address compatibility. |
+| C3 **GPIO7** | 2.2 kΩ → BC547 **base** | The haptic drive is a discrete low-side switch, not an I²C driver. |
+| BC547 **collector** | Motor's **− terminal** | The motor's negative terminal goes to the collector; that node also carries the 1N5819 anode. |
+| BC547 **emitter** | GND | The transistor's emitter is the motor's ground. |
 | USB source | C3 USB socket | Supply capability and driver power arrangement must be checked. |
 
-Use the selected breakout's documentation for EN, I/O supply, power, pull-ups and any other control pins; these vary by board. DRV2605L uses an H-bridge, unlike the old low-side MOSFET design. No separate MOSFET or old motor flyback-diode wiring is used for this driver. See [TI DRV2605L datasheet](https://www.ti.com/lit/ds/symlink/drv2605l.pdf). Test firmware is needed before this wearable can receive BLE alerts.
+The haptic drive is the user's own **BC547** low-side switch (the DRV2605L breakout is not used): GPIO7 → 2.2 kΩ → base, 100 kΩ base-emitter pulldown so the motor stays off while the C3 boots with GPIO7 floating, 10 Ω in the motor's + lead to cap the stall current, and a 1N5819 across the motor with the **cathode up**. The full circuit is page 4 of `SYSTEM_WIRING_DIAGRAMS.pdf`. The 2.2 kΩ gives 1.2 mA of base current, so a BC547A (hFE ≥ 110) saturates and can sink the motor's running current; **measure the motor's stall current before soldering** — the 10 Ω caps it at 3.3 V ÷ (R_motor + 10 Ω), about 69 mA for a 37 Ω coin ERM and so inside the BC547's 100 mA rating, but a much lower-impedance motor needs 22 Ω or a 2N2222A. Test firmware is needed before this wearable can receive BLE alerts.
 
 ## 3. Wiring B — proposed battery-powered complete system
 
@@ -122,7 +123,7 @@ Superseded by the concrete plan in §5.1: B+ → 220 kΩ → sense node; sense n
 
 ### 3.4 Wearable battery and haptics
 
-The wearable's power follows the same LX-LCBST pattern as the nodes (§5.3): VO+ → switch → SuperMini 5V pin; OLED and DRV2605L VIN from the SuperMini's 3V3 output so the I²C bus stays at 3.3 V; the motor on the DRV2605L's OUT+/OUT−. The proposed 1,000 mAh cell only buys runtime if the module's measured charge current suits it — confirm during bench validation. The IRLML2502 and its gate resistors/diode belong to the alternative MOSFET drive and are **not wired into the DRV2605L path**.
+The wearable's power follows the same LX-LCBST pattern as the nodes (§5.3): VO+ → switch → SuperMini 5V pin; the OLED from the SuperMini's 3V3 output so the I²C bus stays at 3.3 V; the motor also from 3V3, switched by the **BC547** low-side drive described in §2.3 (GPIO7 → 2.2 kΩ → base, 10 Ω in the motor's + lead, 100 kΩ base-emitter pulldown, 1N5819 flyback with the cathode up). The proposed 1,000 mAh cell only buys runtime if the module's measured charge current suits it — confirm during bench validation. The IRLML2502 and its gate resistors belong to the alternative MOSFET drive and are **not wired into the BC547 path**; the DRV2605L breakout is not part of this design.
 
 ## 4. Checks before power-up
 
@@ -189,14 +190,14 @@ The wearable uses the same C3 board class, but the final board must be checked a
 | Function | GPIO / connection | Components |
 |---|---|---|
 | Battery ADC | **GPIO3 / ADC1_CH3** | Battery-side divider 220 kΩ / 100 kΩ and 100 nF as above |
-| OLED + DRV2605L SDA | **GPIO5** | Shared I²C SDA; add no external pull-up until both breakout boards are checked |
-| OLED + DRV2605L SCL | **GPIO6** | Shared I²C SCL; pull-ups, if needed, to 3.3 V only |
+| OLED SDA | **GPIO5** | I²C SDA; add no external pull-up until the OLED breakout is checked |
+| OLED SCL | **GPIO6** | I²C SCL; pull-ups, if needed, to 3.3 V only |
 | Connection/BLE LED | **GPIO1**, active high | GPIO1 → 1 kΩ → blue LED anode; cathode → GND. It means the wearable has a valid subscribed/connected BLE link, not merely that scanning started. |
 | SOC LED | **GPIO4**, active high | GPIO4 → 1 kΩ → amber/red LED anode; cathode → GND. GPIO4 is a free non-strapping pin on the wearable (no microphone there). |
-| Haptic output | DRV2605L OUT+ / OUT− | Motor connects across the driver's two output terminals; no IRLML2502 or 1N5819 in this path |
+| Haptic drive | **GPIO7** → 2.2 kΩ → BC547 base; collector → motor −; emitter → GND | 10 Ω in the motor's + lead, 100 kΩ base-emitter pulldown, 1N5819 across the motor with the cathode up. Page 4 of `SYSTEM_WIRING_DIAGRAMS.pdf`. |
 | Power switch | **VO+ → switch → C3 5V pin** | Same pattern as the node: disconnects the device, battery stays on B+/B− for charging. |
 
-**Wearable power:** the wearable uses the same LX-LCBST pattern as the node: VO+ → switch → the SuperMini's 5V pin, VO− → GND. The OLED and the DRV2605L breakout are powered from the SuperMini's **3V3 output pin** — not from 5 V: the DRV2605L breakout's I²C pull-ups ride on its VIN rail, so 5 V there would push 5 V levels into non-5-V-tolerant C3 GPIOs. Check the board's 3.3 V regulator current budget before final assembly: C3 radio peaks (hundreds of mA) + OLED (~25 mA) + motor bursts (100–200 mA through the DRV2605L) all share it; if it sags or resets during vibration, the motor supply design gets revisited on a branch. ESP32-C3 strapping pins are GPIO0/2/8/9 — the plan above avoids all of them.
+**Wearable power:** the wearable uses the same LX-LCBST pattern as the node: VO+ → switch → the SuperMini's 5V pin, VO− → GND. The OLED and the motor are powered from the SuperMini's **3V3 output pin** — not from 5 V: the OLED's I²C pull-ups ride on its VCC rail, so 5 V there would push 5 V levels into non-5-V-tolerant C3 GPIOs. Check the board's 3.3 V regulator current budget before final assembly: C3 radio peaks (hundreds of mA) + OLED (~25 mA) + motor bursts (~70 mA through the 10 Ω and the BC547) all share it; if it sags or resets during vibration, the motor supply design gets revisited on a branch. ESP32-C3 strapping pins are GPIO0/2/8/9 — the plan above avoids all of them.
 
 ## 6. LX-LCBST-TC-001: decision and exact conditional wiring
 
