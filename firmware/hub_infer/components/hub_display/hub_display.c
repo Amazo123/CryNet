@@ -391,8 +391,8 @@ static void fb_text_centre(int y, const char *text, uint16_t c, uint8_t scale)
 #define WAVE_BARS 36
 #define WAVE_STEP 7
 #define WAVE_X0   ((FB_W - (WAVE_BARS * WAVE_STEP - 3)) / 2)
-#define WAVE_Y    84
-#define WAVE_MAX  26
+#define WAVE_Y    46
+#define WAVE_MAX  12
 
 /* A scrolling waveform: the shape of sound arriving at the mic. */
 static void draw_waveform(int frame)
@@ -424,10 +424,15 @@ static void draw_splash(int64_t elapsed_ms, int frame)
 
     draw_waveform(frame);
 
-    /* The name, breathing a little. */
+    /* The device's full name -- stacked, the way the wearable sets it,
+     * because sixteen characters at the headline size four are wider
+     * than the panel.  The wordmark breathes a little. */
     const float pulse = 0.5f + 0.5f * sinf((float)frame * 0.12f);
-    fb_text_centre(126, "CRYNET", blend(C_TEXT, C_ACCENT, 0.25f + 0.35f * pulse), 4);
-    fb_text_centre(164, "INFANT CRY MONITOR", C_DIM, 1);
+    fb_text_centre(68, "AMAZING'S",
+                   blend(C_TEXT, C_ACCENT, 0.25f + 0.35f * pulse), 2);
+    fb_text_centre(88, "CRYNET",
+                   blend(C_TEXT, C_ACCENT, 0.25f + 0.35f * pulse), 4);
+    fb_text_centre(134, "INFANT CRY MONITOR", C_DIM, 1);
 
     /* The boot steps and a progress bar that fills as they go. */
     int step = (int)(elapsed_ms / (SPLASH_MS / 5));
@@ -555,8 +560,12 @@ static void draw_dashboard(const hub_display_state_t *st)
 
     /* ---- the header ---- */
     fb_fill(0, 0, FB_W, HEADER_H, C_HEADER);
-    fb_text(12, 8, "CRYNET", C_ACCENT, 2);
-    fb_text(90, 12, "S3 HUB", C_DIM, 1);
+    /* The wordmark: the device's name, split the way the wearable
+     * splits it.  Sixteen characters at the header's headline size
+     * would run into the pills on the right, so the two halves sit
+     * side by side instead -- and the panel has room for that. */
+    fb_text(12, 8, "AMAZING'S", C_ACCENT, 2);
+    fb_text(126, 12, "CRYNET", C_DIM, 1);
     /* The cot link: green while at least one cot is answering, amber
      * once every card has gone quiet.  Amber, not the dim grey the
      * first version used, so both pills read the same way — green is

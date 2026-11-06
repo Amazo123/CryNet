@@ -386,6 +386,14 @@ static uint8_t s_ble_cot = 0;
 static uint8_t s_deaf_mask = 0;
 static bool    s_ble_cry = false;
 
+/* What the state characteristic last carried, and when it went out.
+ * The state is published when anything in it has moved -- and on a slow
+ * beat besides, so a wearable that subscribes to it is never reading a
+ * value more than a second old. */
+static uint8_t  s_state_cots_published = 0;
+static uint8_t  s_state_deaf_published = 0;
+static int64_t  s_state_published_ms = 0;
+
 /* The cot a console test alert is standing in for, 0 when there is
  * none.  The console (see console.c) sets it, and it is published as
  * if that cot had heard a cry -- which is how the caregiver's phone
@@ -1447,8 +1455,21 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
             }
         }
 
-        /* The state characteristic carries the whole system. */
-        if (any_state_changed) {
+        /* The state characteristic carries the whole system: which cots
+         * are crying, how many the hub can hear at all, and which have
+         * gone deaf.  The packet is eight bytes of arithmetic, so it is
+         * rebuilt every cycle and published when anything in it has
+         * moved -- and on a slow beat besides, so the value a wearable
+         * reads is never more than a second old.
+         *
+         * It used to be published only when a cry started or stopped.
+         * That meant a cot *joining* the system never reached the
+         * caregiver at all: the wrist read "0 cots" and went on reading
+         * it, while the hub could hear both cots perfectly well.  The
+         * count of cots the hub can hear is part of the state for the
+         * same reason the cry mask is: without it, a caregiver cannot
+         * tell "nothing is wrong" from "nothing is being watched". */
+        {
             ble_state_packet_t sp;
             memset(&sp, 0, sizeof sp);
             sp.deaf_mask = s_deaf_mask;
@@ -1473,7 +1494,16 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
                     }
                 }
             }
-            ble_alert_publish_state(&sp);
+            const int64_t beat_ms = esp_timer_get_time() / 1000;
+            const bool changed = any_state_changed ||
+                                sp.cots != s_state_cots_published ||
+                                sp.deaf_mask != s_state_deaf_published;
+            if (changed || (beat_ms - s_state_published_ms) >= 1000) {
+                s_state_cots_published = sp.cots;
+                s_state_deaf_published = sp.deaf_mask;
+                s_state_published_ms  = beat_ms;
+                ble_alert_publish_state(&sp);
+            }
         }
 
         /* While no node is live, probe.  The probe asks for a single
