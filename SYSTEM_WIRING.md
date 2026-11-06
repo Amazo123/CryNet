@@ -192,8 +192,7 @@ The wearable uses the same C3 board class, but the final board must be checked a
 | Battery ADC | **GPIO3 / ADC1_CH3** | Battery-side divider 220 kΩ / 100 kΩ and 100 nF as above |
 | OLED SDA | **GPIO5** | I²C SDA; add no external pull-up until the OLED breakout is checked |
 | OLED SCL | **GPIO6** | I²C SCL; pull-ups, if needed, to 3.3 V only |
-| Connection/BLE LED | **GPIO1**, active high | GPIO1 → 1 kΩ → blue LED anode; cathode → GND. It means the wearable has a valid subscribed/connected BLE link, not merely that scanning started. |
-| SOC LED | **GPIO4**, active high | GPIO4 → 1 kΩ → amber/red LED anode; cathode → GND. GPIO4 is a free non-strapping pin on the wearable (no microphone there). |
+| Link and battery status | **OLED**, no indicator LEDs | The current firmware shows LINK or SCAN on its normal dashboard. Battery sensing and an estimated SOC display are not yet implemented. GPIO1 and GPIO4 are not used for indicators. |
 | Haptic drive | **GPIO7** → 2.2 kΩ → BC547 base; collector → motor −; emitter → GND | 10 Ω in the motor's + lead, 100 kΩ base-emitter pulldown, 1N5819 across the motor with the cathode up. Page 4 of `SYSTEM_WIRING_DIAGRAMS.pdf`. |
 | Power switch | **VO+ → switch → C3 5V pin** | Same pattern as the node: disconnects the device, battery stays on B+/B− for charging. |
 
@@ -236,7 +235,7 @@ Two characteristics remain unknown and must come from the bench validation: the 
 
 ## 7. SOC display and charge prompt
 
-The hub's display should show an **estimated battery band** rather than falsely precise percentage. The proposed UI is `BAT ~80%`, `BAT LOW — CHARGE SOON`, and `BAT CRITICAL — SWITCH OFF AND CHARGE`. The wearable OLED may show the same. The node has only LEDs: normal SOC LED off, low slow blink, critical fast blink. Use voltage hysteresis and require repeated samples to prevent radio-current dips from causing a false prompt. SOC percentages need a calibration table for the selected Li-Po chemistry and actual cell; they must not be copied blindly from nominal voltage.
+The hub's display should show an **estimated battery band** rather than falsely precise percentage. The proposed UI is `BAT ~80%`, `BAT LOW — CHARGE SOON`, and `BAT CRITICAL — SWITCH OFF AND CHARGE`. The wearable OLED is intended to show its own estimated battery status; this is not implemented yet, and needs calibration for the selected cell and divider. The wearable has no status LEDs, and its normal OLED dashboard already shows LINK or SCAN as the connection state. The node has only LEDs: normal SOC LED off, low slow blink, critical fast blink. Use voltage hysteresis and require repeated samples to prevent radio-current dips from causing a false prompt. SOC percentages need a calibration table for the selected Li-Po chemistry and actual cell; they must not be copied blindly from nominal voltage.
 
 ## 8. What is still required before this counts as verified
 

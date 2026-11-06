@@ -1,6 +1,6 @@
 """Page 4 - caregiver wearable: the complete unit on one page.
 
-Power chain, OLED, LEDs, battery sense and the BC547 haptic drive all
+Power chain, OLED, battery sense and the BC547 haptic drive all
 live here.  The haptic drive used to be a separate page; the user wants
 one wearable diagram they can follow with the parts in their hand.
 """
@@ -13,7 +13,7 @@ W, H = 1000, 540
 def build():
     p = Page(W, H, "4 / Caregiver wearable - complete wiring (x1)",
              "ESP32-C3 SuperMini + SSD1306 OLED + LX-LCBST + switch + battery-sense "
-             "divider + 2 LEDs + BC547 haptic drive")
+             "divider + BC547 haptic drive (status on OLED)")
 
     # ---------------------------------------------------------- LX-LCBST --
     mod = p.box(25, 55, 175, 245, "LX-LCBST-TC-001", cls="proposed",
@@ -33,8 +33,7 @@ def build():
                   sub=["GPIO0/2/8/9 strapping: unused"])
     p.label(398, 124, "5V", size=12.5, cls="pin", mono=True, owner=board)
     p.label(398, 320, "GND", size=12.5, cls="pin", mono=True, owner=board)
-    for name, y in (("3V3", 110), ("GPIO5", 145), ("GPIO6", 175),
-                    ("GPIO1", 220), ("GPIO4", 250)):
+    for name, y in (("3V3", 110), ("GPIO5", 145), ("GPIO6", 175)):
         p.label(577, y, name, size=12.5, cls="pin", anchor="end", mono=True,
                 owner=board)
     for name, x in (("GPIO3", 420), ("GPIO7", 470), ("3V3", 520)):
@@ -74,23 +73,9 @@ def build():
     p.wire([(780, 195), (780, 212)], color="black")
     p.ground(780, 212)
 
-    # ------------------------------------------------------------ LEDs ---
-    # BLUE LED on GPIO1 (BLE link), RED LED on GPIO4 (SOC)
-    p.wire([(585, 220), (610, 220), (610, 240), (650, 240)], color="blue")
-    p.part(650, 227, 72, 26, "1 kΩ")
-    p.wire([(722, 240), (740, 240)], color="blue")
-    p.part(740, 227, 70, 26, "BLUE LED")
-    p.wire([(810, 240), (830, 240)], color="blue")
-    p.ground(830, 240, dir="right")
-    p.label(856, 244, "link", size=11, cls="small")
-
-    p.wire([(585, 250), (600, 250), (600, 300), (650, 300)], color="orange")
-    p.part(650, 287, 72, 26, "1 kΩ")
-    p.wire([(722, 300), (740, 300)], color="orange")
-    p.part(740, 287, 70, 26, "RED LED")
-    p.wire([(810, 300), (830, 300)], color="orange")
-    p.ground(830, 300, dir="right")
-    p.label(856, 304, "SOC", size=11, cls="small")
+    # Link and battery status belong on the OLED, not separate LEDs.
+    p.label(690, 250, "No wearable status LEDs", size=13, cls="note")
+    p.label(690, 270, "Link + battery: OLED", size=12, cls="note")
 
     # =================================================== haptic drive ====
     # BC547 low-side switch: GPIO7 -> 2.2 k -> base, motor in the collector
@@ -158,9 +143,8 @@ def build():
         '(reading &#215; 3.2). Motor: the 10 &#937; caps the stall current at '
         '3.3 V &#247; (R + 10 &#937;) - about 69 mA for a 37 &#937; coin ERM, inside '
         'the BC547\'s 100 mA; a lower-impedance motor needs 22 &#937; or a 2N2222A. '
-        'The firmware matches this page: GPIO7 drives the switch in 250 ms pulses, one '
-        'buzz per cry. The two LEDs and the divider are on the board, but the wearable '
-        'firmware does not read the ADC or light the LEDs yet.</div>'
+        'GPIO7 drives the switch in 250 ms pulses. No LEDs are fitted: link status is '
+        'shown on the OLED; battery display needs the divider and firmware support.</div>'
     )
     foot = ("Every &#9169; symbol is the same net; wires join only where a dot is "
             "drawn. The BC547 emitter is the motor's ground, and the flyback sits "

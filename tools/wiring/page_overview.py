@@ -35,7 +35,7 @@ def build():
     p.box(375, 205, 250, 95, "Main hub  x1", cls="mod",
           sub=["ESP32-S3 + 2.8\" ILI9341", "battery sense + 2 LEDs"])
     p.box(720, 205, 250, 95, "Caregiver wearable  x1", cls="mod",
-          sub=["ESP32-C3 + SSD1306 OLED", "haptic motor + battery sense + 2 LEDs"])
+          sub=["ESP32-C3 + SSD1306 OLED", "haptic motor + battery sense; no LEDs"])
 
     p.wire([(280, 252), (375, 252)], color="teal", width=2, dash="7 5")
     p.label(292, 242, "ESP-NOW", size=11, cls="small", color="#15979c")

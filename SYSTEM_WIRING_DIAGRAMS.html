@@ -66,7 +66,7 @@ svg text.note{font-size:12px}
 <rect x="720.0" y="205.0" width="250.0" height="95.0" rx="10" class="mod"/>
 <text x="732.0" y="229.0" class="title" text-anchor="start">Caregiver wearable  x1</text>
 <text x="732.0" y="249.0" class="small" text-anchor="start">ESP32-C3 + SSD1306 OLED</text>
-<text x="732.0" y="266.0" class="small" text-anchor="start">haptic motor + battery sense + 2 LEDs</text>
+<text x="732.0" y="266.0" class="small" text-anchor="start">haptic motor + battery sense; no LEDs</text>
 <polyline points="280.0,252.0 375.0,252.0" class="wire teal" stroke-width="2.0" stroke-dasharray="7 5"/>
 <text x="292.0" y="242.0" class="small" text-anchor="start" style="fill:#15979c">ESP-NOW</text>
 <polyline points="625.0,252.0 720.0,252.0" class="wire teal" stroke-width="2.0" stroke-dasharray="7 5"/>
@@ -279,7 +279,7 @@ svg text.note{font-size:12px}
 <path d="M838.0 431.0 v18 M843.0 434.0 v12 M848.0 437.0 v6" class="wire black" stroke-width="2.5"/>
 <text x="856.0" y="444.0" class="small" text-anchor="start">SOC</text>
 </svg><div class="ok">Verified on the live system: TFT signals (CS 10, MOSI 11, SCK 12, DC 13, RST 14, BL 4, VCC 3V3, GND) and the hub firmware.</div><div class="warning">Proposed, needs bench validation: the battery chain, the divider on GPIO1 (ADC1_CH0), BLUE LED on GPIO2 (BLE client connected) and RED LED on GPIO17 (SOC). The hub's peak current with TFT + radios is unmeasured - confirm the LX-LCBST holds 5.1 V during bursts before trusting it here.</div><div class="foot">GPIO35-37 are the Octal PSRAM bus - never wire them. The TFT wiring is the recorded working one for the existing module. Every &#9169; symbol is the same net: the module's VO-.</div></section>
-<section class="page"><h1>4 / Caregiver wearable - complete wiring (x1)</h1><h2>ESP32-C3 SuperMini + SSD1306 OLED + LX-LCBST + switch + battery-sense divider + 2 LEDs + BC547 haptic drive</h2><svg viewBox="0 0 1000 540" class="diagram">
+<section class="page"><h1>4 / Caregiver wearable - complete wiring (x1)</h1><h2>ESP32-C3 SuperMini + SSD1306 OLED + LX-LCBST + switch + battery-sense divider + BC547 haptic drive (status on OLED)</h2><svg viewBox="0 0 1000 540" class="diagram">
 <rect x="25.0" y="55.0" width="175.0" height="245.0" rx="10" class="proposed"/>
 <text x="37.0" y="79.0" class="title" text-anchor="start">LX-LCBST-TC-001</text>
 <text x="37.0" y="99.0" class="small" text-anchor="start">charger + protection + boost</text>
@@ -300,8 +300,6 @@ svg text.note{font-size:12px}
 <text x="577.0" y="110.0" class="pin mono" text-anchor="end">3V3</text>
 <text x="577.0" y="145.0" class="pin mono" text-anchor="end">GPIO5</text>
 <text x="577.0" y="175.0" class="pin mono" text-anchor="end">GPIO6</text>
-<text x="577.0" y="220.0" class="pin mono" text-anchor="end">GPIO1</text>
-<text x="577.0" y="250.0" class="pin mono" text-anchor="end">GPIO4</text>
 <text x="420.0" y="347.0" class="pin mono" text-anchor="middle">GPIO3</text>
 <text x="470.0" y="347.0" class="pin mono" text-anchor="middle">GPIO7</text>
 <text x="520.0" y="347.0" class="pin mono" text-anchor="middle">3V3</text>
@@ -352,26 +350,8 @@ svg text.note{font-size:12px}
 <polyline points="780.0,195.0 780.0,212.0" class="wire black" stroke-width="2.5"/>
 <path d="M780.0 212.0 v8" class="wire black" stroke-width="2.5"/>
 <path d="M771.0 220.0 h18 M774.0 225.0 h12 M777.0 230.0 h6" class="wire black" stroke-width="2.5"/>
-<polyline points="585.0,220.0 610.0,220.0 610.0,240.0 650.0,240.0" class="wire blue" stroke-width="2.5"/>
-<rect x="650.0" y="227.0" width="72.0" height="26.0" rx="4" class="part"/>
-<text x="686.0" y="244.1" class="small" text-anchor="middle">1 kΩ</text>
-<polyline points="722.0,240.0 740.0,240.0" class="wire blue" stroke-width="2.5"/>
-<rect x="740.0" y="227.0" width="70.0" height="26.0" rx="4" class="part"/>
-<text x="775.0" y="244.1" class="small" text-anchor="middle">BLUE LED</text>
-<polyline points="810.0,240.0 830.0,240.0" class="wire blue" stroke-width="2.5"/>
-<path d="M830.0 240.0 h8" class="wire black" stroke-width="2.5"/>
-<path d="M838.0 231.0 v18 M843.0 234.0 v12 M848.0 237.0 v6" class="wire black" stroke-width="2.5"/>
-<text x="856.0" y="244.0" class="small" text-anchor="start">link</text>
-<polyline points="585.0,250.0 600.0,250.0 600.0,300.0 650.0,300.0" class="wire orange" stroke-width="2.5"/>
-<rect x="650.0" y="287.0" width="72.0" height="26.0" rx="4" class="part"/>
-<text x="686.0" y="304.1" class="small" text-anchor="middle">1 kΩ</text>
-<polyline points="722.0,300.0 740.0,300.0" class="wire orange" stroke-width="2.5"/>
-<rect x="740.0" y="287.0" width="70.0" height="26.0" rx="4" class="part"/>
-<text x="775.0" y="304.1" class="small" text-anchor="middle">RED LED</text>
-<polyline points="810.0,300.0 830.0,300.0" class="wire orange" stroke-width="2.5"/>
-<path d="M830.0 300.0 h8" class="wire black" stroke-width="2.5"/>
-<path d="M838.0 291.0 v18 M843.0 294.0 v12 M848.0 297.0 v6" class="wire black" stroke-width="2.5"/>
-<text x="856.0" y="304.0" class="small" text-anchor="start">SOC</text>
+<text x="690.0" y="250.0" class="note" text-anchor="start">No wearable status LEDs</text>
+<text x="690.0" y="270.0" class="note" text-anchor="start">Link + battery: OLED</text>
 <polyline points="520.0,352.0 520.0,356.0 660.0,356.0" class="wire red" stroke-width="2.5"/>
 <rect x="660.0" y="343.0" width="60.0" height="26.0" rx="4" class="part"/>
 <text x="690.0" y="360.1" class="small" text-anchor="middle">10 Ω</text>
@@ -413,7 +393,7 @@ svg text.note{font-size:12px}
 <polyline points="920.0,475.0 950.0,475.0" class="wire black" stroke-width="2.5"/>
 <path d="M950.0 475.0 h8" class="wire black" stroke-width="2.5"/>
 <path d="M958.0 466.0 v18 M963.0 469.0 v12 M968.0 472.0 v6" class="wire black" stroke-width="2.5"/>
-</svg><div class="warning">Divider confirmed: 220 k&#937; from B+ and 100 k&#937; to ground give 4.2 V &#215; 100/320 = 1.31 V at the ADC (the 100 nF filters it), 13 uA of divider current; the node firmware already uses this ratio (reading &#215; 3.2). Motor: the 10 &#937; caps the stall current at 3.3 V &#247; (R + 10 &#937;) - about 69 mA for a 37 &#937; coin ERM, inside the BC547's 100 mA; a lower-impedance motor needs 22 &#937; or a 2N2222A. The firmware matches this page: GPIO7 drives the switch in 250 ms pulses, one buzz per cry. The two LEDs and the divider are on the board, but the wearable firmware does not read the ADC or light the LEDs yet.</div><div class="foot">Every &#9169; symbol is the same net; wires join only where a dot is drawn. The BC547 emitter is the motor's ground, and the flyback sits across the motor with the cathode up.</div></section>
+</svg><div class="warning">Divider confirmed: 220 k&#937; from B+ and 100 k&#937; to ground give 4.2 V &#215; 100/320 = 1.31 V at the ADC (the 100 nF filters it), 13 uA of divider current; the node firmware already uses this ratio (reading &#215; 3.2). Motor: the 10 &#937; caps the stall current at 3.3 V &#247; (R + 10 &#937;) - about 69 mA for a 37 &#937; coin ERM, inside the BC547's 100 mA; a lower-impedance motor needs 22 &#937; or a 2N2222A. GPIO7 drives the switch in 250 ms pulses. No LEDs are fitted: link status is shown on the OLED; battery display needs the divider and firmware support.</div><div class="foot">Every &#9169; symbol is the same net; wires join only where a dot is drawn. The BC547 emitter is the motor's ground, and the flyback sits across the motor with the cathode up.</div></section>
 <section class="page"><h1>5 / LX-LCBST-TC-001 - pad map and bench procedure</h1><h2>From the user's front-and-back photograph - Chinese silk text translated</h2><svg viewBox="0 0 1000 470" class="diagram">
 <rect x="60.0" y="60.0" width="330.0" height="228.0" rx="10" class="proposed"/>
 <text x="72.0" y="84.0" class="title" text-anchor="start">FRONT</text>
