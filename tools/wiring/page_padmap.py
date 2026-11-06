@@ -1,4 +1,4 @@
-"""Page 6 - LX-LCBST-TC-001 pad map and bench procedure."""
+"""Page 5 - LX-LCBST-TC-001 pad map and bench procedure."""
 
 from diagram_lib import Page
 
@@ -6,7 +6,7 @@ W, H = 1000, 470
 
 
 def build():
-    p = Page(W, H, "6 / LX-LCBST-TC-001 - pad map and bench procedure",
+    p = Page(W, H, "5 / LX-LCBST-TC-001 - pad map and bench procedure",
              "From the user's front-and-back photograph - Chinese silk text translated")
 
     # ------------------------------------------------------------ FRONT ---

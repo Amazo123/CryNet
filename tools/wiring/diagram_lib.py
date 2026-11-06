@@ -200,13 +200,17 @@ class Page:
         (bx, by) is the module's B+ pad; (sx, sy) is the board's ADC pin.
         The 220 k top resistor and the 100 k / 100 nF shunt pair make the
         usual 100 k/300 k divider: about 1.31 V at a 4.2 V cell.
+
+        The routing channel sits at x=248, clear of the module's ground
+        symbol at x=225 - a wire through a ground symbol reads as a
+        connection, and the layout checker cannot see that.
         """
-        self.wire([(bx, by), (232, by), (232, 375), (250, 375)], color="red")
+        self.wire([(bx, by), (248, by), (248, 375), (250, 375)], color="red")
         self.part(250, 362, 76, 26, "220 kΩ")
         self.wire([(326, 375), (345, 375)], color="red")
         self.dot(345, 375)
         self.label(352, 366, label, size=11, cls="small", mono=True)
-        self.label(250, 352, "sense divider", size=11, cls="small")
+        self.label(256, 352, "sense divider", size=11, cls="small")
         # shunt pair
         self.wire([(345, 375), (345, 398)], color="black")
         self.wire([(345, 398), (320, 398)], color="black")

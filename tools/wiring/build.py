@@ -89,12 +89,11 @@ def main():
     import page_node
     import page_hub
     import page_wearable
-    import page_haptic
     import page_padmap
 
     pages = []
     for mod in (page_overview, page_node, page_hub, page_wearable,
-                page_haptic, page_padmap):
+                page_padmap):
         pages.append(mod.build())
 
     for page, _notes, _foot in pages:

@@ -49,8 +49,8 @@ def build():
     p.label(330, 111, "5 V", size=11, cls="small", color="#c43e39")
     p.wire([(200, 165), (225, 165)], color="black")
     p.ground(225, 165, dir="right")
-    p.wire([(200, 270), (225, 270)], color="black")
-    p.ground(225, 270, dir="right")
+    p.wire([(200, 274), (225, 274)], color="black")
+    p.ground(225, 274, dir="right")
     p.wire([(390, 320), (355, 320)], color="black")
     p.ground(355, 320, dir="left")
 

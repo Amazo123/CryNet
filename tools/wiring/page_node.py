@@ -49,8 +49,8 @@ def build():
     # module VO- and B- are the same net, joined inside the module
     p.wire([(200, 165), (225, 165)], color="black")
     p.ground(225, 165, dir="right")
-    p.wire([(200, 270), (225, 270)], color="black")
-    p.ground(225, 270, dir="right")
+    p.wire([(200, 274), (225, 274)], color="black")
+    p.ground(225, 274, dir="right")
     # board ground
     p.wire([(390, 320), (355, 320)], color="black")
     p.ground(355, 320, dir="left")
