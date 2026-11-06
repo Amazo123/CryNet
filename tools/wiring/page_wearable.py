@@ -158,8 +158,9 @@ def build():
         '(reading &#215; 3.2). Motor: the 10 &#937; caps the stall current at '
         '3.3 V &#247; (R + 10 &#937;) - about 69 mA for a 37 &#937; coin ERM, inside '
         'the BC547\'s 100 mA; a lower-impedance motor needs 22 &#937; or a 2N2222A. '
-        'Firmware gap: haptic_trigger() still blinks the LED - it must hold GPIO7 high '
-        '~250 ms per cry alert.</div>'
+        'The firmware matches this page: GPIO7 drives the switch in 250 ms pulses, one '
+        'buzz per cry. The two LEDs and the divider are on the board, but the wearable '
+        'firmware does not read the ADC or light the LEDs yet.</div>'
     )
     foot = ("Every &#9169; symbol is the same net; wires join only where a dot is "
             "drawn. The BC547 emitter is the motor's ground, and the flyback sits "
