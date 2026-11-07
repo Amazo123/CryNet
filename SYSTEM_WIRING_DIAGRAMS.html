@@ -60,15 +60,15 @@ svg text.note{font-size:12px}
 <rect x="30.0" y="205.0" width="250.0" height="95.0" rx="10" class="mod"/>
 <text x="42.0" y="229.0" class="title" text-anchor="start">Cot node  x3</text>
 <text x="42.0" y="249.0" class="small" text-anchor="start">ESP32-C3 + INMP441 mic</text>
-<text x="42.0" y="266.0" class="small" text-anchor="start">battery sense + 2 LEDs</text>
+<text x="42.0" y="266.0" class="small" text-anchor="start">no battery sense, no LEDs</text>
 <rect x="375.0" y="205.0" width="250.0" height="95.0" rx="10" class="mod"/>
 <text x="387.0" y="229.0" class="title" text-anchor="start">Main hub  x1</text>
 <text x="387.0" y="249.0" class="small" text-anchor="start">ESP32-S3 + 2.8&quot; ILI9341</text>
-<text x="387.0" y="266.0" class="small" text-anchor="start">battery sense + 2 LEDs</text>
+<text x="387.0" y="266.0" class="small" text-anchor="start">no battery sense, no LEDs</text>
 <rect x="720.0" y="205.0" width="250.0" height="95.0" rx="10" class="mod"/>
 <text x="732.0" y="229.0" class="title" text-anchor="start">Caregiver wearable  x1</text>
 <text x="732.0" y="249.0" class="small" text-anchor="start">ESP32-C3 + SSD1306 OLED</text>
-<text x="732.0" y="266.0" class="small" text-anchor="start">haptic motor + battery sense; no LEDs</text>
+<text x="732.0" y="266.0" class="small" text-anchor="start">haptic motor; no LEDs, no sense</text>
 <polyline points="280.0,252.0 375.0,252.0" class="wire teal" stroke-width="2.0" stroke-dasharray="7 5"/>
 <text x="292.0" y="242.0" class="small" text-anchor="start" style="fill:#15979c">ESP-NOW</text>
 <polyline points="625.0,252.0 720.0,252.0" class="wire teal" stroke-width="2.0" stroke-dasharray="7 5"/>
@@ -78,8 +78,8 @@ svg text.note{font-size:12px}
 <text x="30.0" y="371.0" class="note" text-anchor="start">2 - Set the boost trimpot to 5.1 V with a meter before any board.</text>
 <text x="30.0" y="390.0" class="note" text-anchor="start">3 - Never power a board from USB and the boost at the same time.</text>
 <text x="30.0" y="413.0" class="small" text-anchor="start">Dashed teal = wireless link, no wire.  Solid = a real conductor.</text>
-</svg><div class="warning">Proposed, bench-validation pending: the whole battery chain, the wearables and the LEDs. The node and hub signal wiring is the verified part.</div><div class="ok"><b>Cells (D-81):</b> an 18650 (3.7 V, 4.2 V full, 3000 mAh) on each node and the hub, because a node sits on a cot frame within a baby&#39;s reach and needs a cell that cannot be punctured; a 1000 mAh Li-Po pouch on the wearable, because an 18650 is 18 x 65 mm and 48 g and cannot go on a wrist. <b>Never LiFePO4</b> - the module charges to 4.2 V and an LFP cell tops out at 3.65 V. The module&#39;s ~1 A charger must come down to ~400-500 mA for the wearable&#39;s pouch (1 C is too high for it).</div><div class="warning"><b>Runtime (D-82):</b> the chain boosts to 5.1 V and the board drops that to 3.3 V through a <i>linear</i> regulator, which passes current rather than power - so the cell supplies roughly 1.8x the 3.3 V load current. That projects to about six hours for the wearable on a 1000 mAh pouch. These are projections, not measurements. Feeding the 3V3 pin from a 3.3 V buck-boost would roughly double it - a change to the power chain, deferred to the bench.</div><div class="foot">No signal wire exists between the nodes and the hub - the link is wireless. Each unit is electrically independent; never join their batteries or grounds. Read with SYSTEM_WIRING.md sections 5 and 6.</div></section>
-<section class="page"><h1>2 / Cot node - complete wiring (one per node, x3)</h1><h2>ESP32-C3 SuperMini + INMP441 + LX-LCBST + switch + battery-sense divider + 2 LEDs</h2><svg viewBox="0 0 1000 480" class="diagram">
+</svg><div class="warning">Proposed, bench-validation pending: the whole battery chain, the wearables and the LEDs. The node and hub signal wiring is the verified part. <b>No unit has a battery sense or a status LED (D-83)</b> - the node's divider and its GPIO10 blue link LED, the node's GPIO7 amber SOC LED, the hub's GPIO1 divider, the hub's GPIO2 BLE LED and the hub's GPIO17 SOC LED have all been removed. The hub's panel is the only display in the system, so nothing anywhere will warn the caregiver that a cell is nearly flat.</div><div class="ok"><b>Cells (D-81):</b> an 18650 (3.7 V, 4.2 V full, 3000 mAh) on each node and the hub, because a node sits on a cot frame within a baby&#39;s reach and needs a cell that cannot be punctured; a 1000 mAh Li-Po pouch on the wearable, because an 18650 is 18 x 65 mm and 48 g and cannot go on a wrist. <b>Never LiFePO4</b> - the module charges to 4.2 V and an LFP cell tops out at 3.65 V. The module&#39;s ~1 A charger must come down to ~400-500 mA for the wearable&#39;s pouch (1 C is too high for it).</div><div class="warning"><b>Runtime (D-82):</b> the chain boosts to 5.1 V and the board drops that to 3.3 V through a <i>linear</i> regulator, which passes current rather than power - so the cell supplies roughly 1.8x the 3.3 V load current. That projects to about six hours for the wearable on a 1000 mAh pouch. These are projections, not measurements. Feeding the 3V3 pin from a 3.3 V buck-boost would roughly double it - a change to the power chain, deferred to the bench.</div><div class="foot">No signal wire exists between the nodes and the hub - the link is wireless. Each unit is electrically independent; never join their batteries or grounds. Read with SYSTEM_WIRING.md sections 5 and 6.</div></section>
+<section class="page"><h1>2 / Cot node - complete wiring (one per node, x3)</h1><h2>ESP32-C3 SuperMini + INMP441 + LX-LCBST + switch - no battery sense, no status LEDs</h2><svg viewBox="0 0 1000 480" class="diagram">
 <rect x="25.0" y="55.0" width="175.0" height="245.0" rx="10" class="proposed"/>
 <text x="37.0" y="79.0" class="title" text-anchor="start">LX-LCBST-TC-001</text>
 <text x="37.0" y="99.0" class="small" text-anchor="start">charger + protection + boost</text>
@@ -102,9 +102,6 @@ svg text.note{font-size:12px}
 <text x="577.0" y="230.0" class="pin mono" text-anchor="end">GPIO4</text>
 <text x="577.0" y="270.0" class="pin mono" text-anchor="end">GPIO5</text>
 <text x="577.0" y="310.0" class="pin mono" text-anchor="end">GPIO6</text>
-<text x="420.0" y="347.0" class="pin mono" text-anchor="middle">GPIO3</text>
-<text x="490.0" y="347.0" class="pin mono" text-anchor="middle">GPIO7</text>
-<text x="545.0" y="347.0" class="pin mono" text-anchor="middle">GPIO10</text>
 <rect x="690.0" y="55.0" width="180.0" height="270.0" rx="10" class="mod"/>
 <text x="702.0" y="79.0" class="title" text-anchor="start">INMP441</text>
 <text x="698.0" y="110.0" class="pin mono" text-anchor="start">VDD</text>
@@ -126,27 +123,10 @@ svg text.note{font-size:12px}
 <polyline points="390.0,320.0 355.0,320.0" class="wire black" stroke-width="2.5"/>
 <path d="M355.0 320.0 h-8" class="wire black" stroke-width="2.5"/>
 <path d="M347.0 311.0 v18 M342.0 314.0 v12 M337.0 317.0 v6" class="wire black" stroke-width="2.5"/>
-<polyline points="200.0,225.0 248.0,225.0 248.0,375.0 250.0,375.0" class="wire red" stroke-width="2.5"/>
-<rect x="250.0" y="362.0" width="76.0" height="26.0" rx="4" class="part"/>
-<text x="288.0" y="379.1" class="small" text-anchor="middle">220 kΩ</text>
-<polyline points="326.0,375.0 345.0,375.0" class="wire red" stroke-width="2.5"/>
-<circle cx="345.0" cy="375.0" r="4" class="dot"/>
-<text x="352.0" y="366.0" class="small mono" text-anchor="start">1.31 V</text>
-<text x="256.0" y="352.0" class="small" text-anchor="start">sense divider</text>
-<polyline points="345.0,375.0 345.0,398.0" class="wire black" stroke-width="2.5"/>
-<polyline points="345.0,398.0 320.0,398.0" class="wire black" stroke-width="2.5"/>
-<polyline points="345.0,398.0 370.0,398.0" class="wire black" stroke-width="2.5"/>
-<rect x="308.0" y="400.0" width="24.0" height="44.0" rx="3" class="part"/>
-<text x="304.0" y="426.1" class="small mono" text-anchor="end">100 kΩ</text>
-<rect x="358.0" y="400.0" width="24.0" height="44.0" rx="3" class="part"/>
-<text x="386.0" y="426.1" class="small mono" text-anchor="start">100 nF</text>
-<polyline points="320.0,444.0 320.0,456.0" class="wire black" stroke-width="2.5"/>
-<path d="M320.0 456.0 v8" class="wire black" stroke-width="2.5"/>
-<path d="M311.0 464.0 h18 M314.0 469.0 h12 M317.0 474.0 h6" class="wire black" stroke-width="2.5"/>
-<polyline points="370.0,444.0 370.0,456.0" class="wire black" stroke-width="2.5"/>
-<path d="M370.0 456.0 v8" class="wire black" stroke-width="2.5"/>
-<path d="M361.0 464.0 h18 M364.0 469.0 h12 M367.0 474.0 h6" class="wire black" stroke-width="2.5"/>
-<polyline points="345.0,375.0 420.0,375.0 420.0,355.0" class="wire black" stroke-width="2.5"/>
+<text x="210.0" y="382.0" class="note" text-anchor="start">No battery sense and no status LEDs (D-83).</text>
+<text x="210.0" y="404.0" class="note" text-anchor="start">B+ and B- carry the cell and nothing else: no divider,</text>
+<text x="210.0" y="421.0" class="note" text-anchor="start">no ADC read, no telemetry field, no battery text on the panel.</text>
+<text x="210.0" y="441.0" class="note" text-anchor="start">GPIO3, GPIO7 and GPIO10 are free.</text>
 <polyline points="585.0,105.0 690.0,105.0" class="wire red" stroke-width="2.5"/>
 <text x="600.0" y="96.0" class="small" text-anchor="start" style="fill:#c43e39">3.3 V</text>
 <polyline points="585.0,145.0 690.0,145.0" class="wire black" stroke-width="2.5"/>
@@ -156,28 +136,8 @@ svg text.note{font-size:12px}
 <polyline points="585.0,225.0 690.0,225.0" class="wire blue" stroke-width="2.5"/>
 <polyline points="585.0,265.0 690.0,265.0" class="wire green" stroke-width="2.5"/>
 <polyline points="585.0,305.0 690.0,305.0" class="wire orange" stroke-width="2.5"/>
-<polyline points="545.0,355.0 545.0,395.0 650.0,395.0" class="wire blue" stroke-width="2.5"/>
-<rect x="650.0" y="382.0" width="72.0" height="26.0" rx="4" class="part"/>
-<text x="686.0" y="399.1" class="small" text-anchor="middle">1 kΩ</text>
-<polyline points="722.0,395.0 740.0,395.0" class="wire blue" stroke-width="2.5"/>
-<rect x="740.0" y="382.0" width="70.0" height="26.0" rx="4" class="part"/>
-<text x="775.0" y="399.1" class="small" text-anchor="middle">BLUE LED</text>
-<polyline points="810.0,395.0 830.0,395.0" class="wire blue" stroke-width="2.5"/>
-<path d="M830.0 395.0 h8" class="wire black" stroke-width="2.5"/>
-<path d="M838.0 386.0 v18 M843.0 389.0 v12 M848.0 392.0 v6" class="wire black" stroke-width="2.5"/>
-<text x="856.0" y="399.0" class="small" text-anchor="start">link</text>
-<polyline points="490.0,355.0 490.0,440.0 650.0,440.0" class="wire orange" stroke-width="2.5"/>
-<rect x="650.0" y="427.0" width="72.0" height="26.0" rx="4" class="part"/>
-<text x="686.0" y="444.1" class="small" text-anchor="middle">1 kΩ</text>
-<polyline points="722.0,440.0 740.0,440.0" class="wire orange" stroke-width="2.5"/>
-<rect x="740.0" y="427.0" width="70.0" height="26.0" rx="4" class="part"/>
-<text x="775.0" y="444.1" class="small" text-anchor="middle">RED LED</text>
-<polyline points="810.0,440.0 830.0,440.0" class="wire orange" stroke-width="2.5"/>
-<path d="M830.0 440.0 h8" class="wire black" stroke-width="2.5"/>
-<path d="M838.0 431.0 v18 M843.0 434.0 v12 M848.0 437.0 v6" class="wire black" stroke-width="2.5"/>
-<text x="856.0" y="444.0" class="small" text-anchor="start">SOC</text>
-</svg><div class="ok">Verified on the live system: mic wiring (3V3 / GND / L/R&#8594;GND, GPIO4 SCK, GPIO5 WS, GPIO6 SD) and the node firmware. GPIO1 stays spare.</div><div class="warning">Proposed, needs bench validation: the whole battery chain, the divider and the LEDs. The divider reads about 13 uA. RED LED = SOC (off / slow / fast), BLUE LED = link (ACK-driven). Firmware for the divider and the LEDs does not exist yet - branch work.</div><div class="foot">Every &#9169; symbol is the same net: the module's VO- (battery negative through the module's protection FET). Wires join only where a dot is drawn. Pin names, not header positions. Repeat identically for nodes 2 and 3.</div></section>
-<section class="page"><h1>3 / Main hub - complete wiring (x1)</h1><h2>ESP32-S3-DevKitC-1 N16R8 + 2.8" ILI9341 + LX-LCBST + switch + battery-sense divider + 2 LEDs</h2><svg viewBox="0 0 1000 480" class="diagram">
+</svg><div class="ok">Verified on the live system: mic wiring (3V3 / GND / L/R&#8594;GND, GPIO4 SCK, GPIO5 WS, GPIO6 SD) and the node firmware.</div><div class="ok"><b>No battery sense and no LEDs (D-83).</b> The 220 k&#937; / 100 k&#937; divider, its 100 nF, and the planned GPIO10 blue link LED and GPIO7 red SOC LED are all withdrawn: the node does not read its cell, and the hub's panel already shows which cots are answering. This repository's node firmware did carry the divider read (PIN_BATTERY 3) until D-83 took it out; the LEDs were never in any firmware. <b>Do not fit a divider or an LED on this board.</b> GPIO1, GPIO3, GPIO7 and GPIO10 are free.</div><div class="foot">Every &#9169; symbol is the same net: the module's VO- (battery negative through the module's protection FET). Wires join only where a dot is drawn. Pin names, not header positions. Repeat identically for nodes 2 and 3.</div></section>
+<section class="page"><h1>3 / Main hub - complete wiring (x1)</h1><h2>ESP32-S3-DevKitC-1 N16R8 + 2.8" ILI9341 + LX-LCBST + switch - no battery sense, no status LEDs</h2><svg viewBox="0 0 1000 480" class="diagram">
 <rect x="25.0" y="55.0" width="175.0" height="245.0" rx="10" class="proposed"/>
 <text x="37.0" y="79.0" class="title" text-anchor="start">LX-LCBST-TC-001</text>
 <text x="37.0" y="99.0" class="small" text-anchor="start">charger + protection + boost</text>
@@ -202,9 +162,6 @@ svg text.note{font-size:12px}
 <text x="577.0" y="260.0" class="pin mono" text-anchor="end">GPIO12</text>
 <text x="577.0" y="295.0" class="pin mono" text-anchor="end">GPIO13</text>
 <text x="577.0" y="330.0" class="pin mono" text-anchor="end">GPIO14</text>
-<text x="420.0" y="347.0" class="pin mono" text-anchor="middle">GPIO1</text>
-<text x="490.0" y="347.0" class="pin mono" text-anchor="middle">GPIO2</text>
-<text x="545.0" y="347.0" class="pin mono" text-anchor="middle">GPIO17</text>
 <rect x="690.0" y="55.0" width="180.0" height="270.0" rx="10" class="mod"/>
 <text x="702.0" y="79.0" class="title" text-anchor="start">2.8&quot; ILI9341</text>
 <text x="698.0" y="110.0" class="pin mono" text-anchor="start">VCC</text>
@@ -228,27 +185,6 @@ svg text.note{font-size:12px}
 <polyline points="390.0,320.0 355.0,320.0" class="wire black" stroke-width="2.5"/>
 <path d="M355.0 320.0 h-8" class="wire black" stroke-width="2.5"/>
 <path d="M347.0 311.0 v18 M342.0 314.0 v12 M337.0 317.0 v6" class="wire black" stroke-width="2.5"/>
-<polyline points="200.0,225.0 248.0,225.0 248.0,375.0 250.0,375.0" class="wire red" stroke-width="2.5"/>
-<rect x="250.0" y="362.0" width="76.0" height="26.0" rx="4" class="part"/>
-<text x="288.0" y="379.1" class="small" text-anchor="middle">220 kΩ</text>
-<polyline points="326.0,375.0 345.0,375.0" class="wire red" stroke-width="2.5"/>
-<circle cx="345.0" cy="375.0" r="4" class="dot"/>
-<text x="352.0" y="366.0" class="small mono" text-anchor="start">1.31 V</text>
-<text x="256.0" y="352.0" class="small" text-anchor="start">sense divider</text>
-<polyline points="345.0,375.0 345.0,398.0" class="wire black" stroke-width="2.5"/>
-<polyline points="345.0,398.0 320.0,398.0" class="wire black" stroke-width="2.5"/>
-<polyline points="345.0,398.0 370.0,398.0" class="wire black" stroke-width="2.5"/>
-<rect x="308.0" y="400.0" width="24.0" height="44.0" rx="3" class="part"/>
-<text x="304.0" y="426.1" class="small mono" text-anchor="end">100 kΩ</text>
-<rect x="358.0" y="400.0" width="24.0" height="44.0" rx="3" class="part"/>
-<text x="386.0" y="426.1" class="small mono" text-anchor="start">100 nF</text>
-<polyline points="320.0,444.0 320.0,456.0" class="wire black" stroke-width="2.5"/>
-<path d="M320.0 456.0 v8" class="wire black" stroke-width="2.5"/>
-<path d="M311.0 464.0 h18 M314.0 469.0 h12 M317.0 474.0 h6" class="wire black" stroke-width="2.5"/>
-<polyline points="370.0,444.0 370.0,456.0" class="wire black" stroke-width="2.5"/>
-<path d="M370.0 456.0 v8" class="wire black" stroke-width="2.5"/>
-<path d="M361.0 464.0 h18 M364.0 469.0 h12 M367.0 474.0 h6" class="wire black" stroke-width="2.5"/>
-<polyline points="345.0,375.0 420.0,375.0 420.0,355.0" class="wire black" stroke-width="2.5"/>
 <polyline points="585.0,105.0 690.0,105.0" class="wire red" stroke-width="2.5"/>
 <text x="600.0" y="96.0" class="small" text-anchor="start" style="fill:#c43e39">3.3 V</text>
 <polyline points="585.0,145.0 690.0,145.0" class="wire black" stroke-width="2.5"/>
@@ -260,28 +196,10 @@ svg text.note{font-size:12px}
 <polyline points="870.0,145.0 895.0,145.0" class="wire black" stroke-width="2.5"/>
 <path d="M895.0 145.0 h8" class="wire black" stroke-width="2.5"/>
 <path d="M903.0 136.0 v18 M908.0 139.0 v12 M913.0 142.0 v6" class="wire black" stroke-width="2.5"/>
-<polyline points="545.0,355.0 545.0,395.0 650.0,395.0" class="wire blue" stroke-width="2.5"/>
-<rect x="650.0" y="382.0" width="72.0" height="26.0" rx="4" class="part"/>
-<text x="686.0" y="399.1" class="small" text-anchor="middle">1 kΩ</text>
-<polyline points="722.0,395.0 740.0,395.0" class="wire blue" stroke-width="2.5"/>
-<rect x="740.0" y="382.0" width="70.0" height="26.0" rx="4" class="part"/>
-<text x="775.0" y="399.1" class="small" text-anchor="middle">BLUE LED</text>
-<polyline points="810.0,395.0 830.0,395.0" class="wire blue" stroke-width="2.5"/>
-<path d="M830.0 395.0 h8" class="wire black" stroke-width="2.5"/>
-<path d="M838.0 386.0 v18 M843.0 389.0 v12 M848.0 392.0 v6" class="wire black" stroke-width="2.5"/>
-<text x="856.0" y="399.0" class="small" text-anchor="start">BLE</text>
-<polyline points="490.0,355.0 490.0,440.0 650.0,440.0" class="wire orange" stroke-width="2.5"/>
-<rect x="650.0" y="427.0" width="72.0" height="26.0" rx="4" class="part"/>
-<text x="686.0" y="444.1" class="small" text-anchor="middle">1 kΩ</text>
-<polyline points="722.0,440.0 740.0,440.0" class="wire orange" stroke-width="2.5"/>
-<rect x="740.0" y="427.0" width="70.0" height="26.0" rx="4" class="part"/>
-<text x="775.0" y="444.1" class="small" text-anchor="middle">RED LED</text>
-<polyline points="810.0,440.0 830.0,440.0" class="wire orange" stroke-width="2.5"/>
-<path d="M830.0 440.0 h8" class="wire black" stroke-width="2.5"/>
-<path d="M838.0 431.0 v18 M843.0 434.0 v12 M848.0 437.0 v6" class="wire black" stroke-width="2.5"/>
-<text x="856.0" y="444.0" class="small" text-anchor="start">SOC</text>
-</svg><div class="ok">Verified on the live system: TFT signals (CS 10, MOSI 11, SCK 12, DC 13, RST 14, BL 4, VCC 3V3, GND) and the hub firmware.</div><div class="warning">Proposed, needs bench validation: the battery chain, the divider on GPIO1 (ADC1_CH0), BLUE LED on GPIO2 (BLE client connected) and RED LED on GPIO17 (SOC). The hub's peak current with TFT + radios is unmeasured - confirm the LX-LCBST holds 5.1 V during bursts before trusting it here.</div><div class="foot">GPIO35-37 are the Octal PSRAM bus - never wire them. The TFT wiring is the recorded working one for the existing module. Every &#9169; symbol is the same net: the module's VO-.</div></section>
-<section class="page"><h1>4 / Caregiver wearable - complete wiring (x1)</h1><h2>ESP32-C3 SuperMini + SSD1306 OLED + LX-LCBST + switch + battery-sense divider + BC547 haptic drive (status on OLED)</h2><svg viewBox="0 0 1000 540" class="diagram">
+<text x="210.0" y="382.0" class="note" text-anchor="start">No battery sense and no status LEDs (D-83).</text>
+<text x="210.0" y="404.0" class="note" text-anchor="start">GPIO1 (ADC), GPIO17 and GPIO2 are free.</text>
+</svg><div class="ok">Verified on the live system: TFT signals (CS 10, MOSI 11, SCK 12, DC 13, RST 14, BL 4, VCC 3V3, GND) and the hub firmware.</div><div class="ok"><b>No battery sense and no LEDs (D-83).</b> The GPIO1 divider (ADC1_CH0), the GPIO2 blue BLE-status LED and the GPIO17 red SOC LED have been removed before they were fitted. The hub does not measure its own cell and drives no indicator: the panel is the only display, and the wearable tells the caregiver what the hub is doing over BLE. <b>Do not fit a divider or an LED on this board.</b> GPIO1, GPIO2 and GPIO17 are free.</div><div class="warning">Proposed, needs bench validation: the battery chain. The hub's peak current with TFT + radios is unmeasured - confirm the LX-LCBST holds 5.1 V during bursts before trusting it here.</div><div class="foot">GPIO35-37 are the Octal PSRAM bus - never wire them. The TFT wiring is the recorded working one for the existing module. Every &#9169; symbol is the same net: the module's VO-.</div></section>
+<section class="page"><h1>4 / Caregiver wearable - complete wiring (x1)</h1><h2>ESP32-C3 SuperMini + SSD1306 OLED + LX-LCBST + switch + BC547 haptic drive (status on OLED)</h2><svg viewBox="0 0 1000 540" class="diagram">
 <rect x="25.0" y="55.0" width="175.0" height="245.0" rx="10" class="proposed"/>
 <text x="37.0" y="79.0" class="title" text-anchor="start">LX-LCBST-TC-001</text>
 <text x="37.0" y="99.0" class="small" text-anchor="start">charger + protection + boost</text>
@@ -302,7 +220,6 @@ svg text.note{font-size:12px}
 <text x="577.0" y="110.0" class="pin mono" text-anchor="end">3V3</text>
 <text x="577.0" y="145.0" class="pin mono" text-anchor="end">GPIO5</text>
 <text x="577.0" y="175.0" class="pin mono" text-anchor="end">GPIO6</text>
-<text x="420.0" y="347.0" class="pin mono" text-anchor="middle">GPIO3</text>
 <text x="470.0" y="347.0" class="pin mono" text-anchor="middle">GPIO7</text>
 <text x="520.0" y="347.0" class="pin mono" text-anchor="middle">3V3</text>
 <rect x="690.0" y="55.0" width="180.0" height="140.0" rx="10" class="mod"/>
@@ -324,27 +241,6 @@ svg text.note{font-size:12px}
 <polyline points="390.0,320.0 360.0,320.0" class="wire black" stroke-width="2.5"/>
 <path d="M360.0 320.0 h-8" class="wire black" stroke-width="2.5"/>
 <path d="M352.0 311.0 v18 M347.0 314.0 v12 M342.0 317.0 v6" class="wire black" stroke-width="2.5"/>
-<polyline points="200.0,229.0 248.0,229.0 248.0,375.0 250.0,375.0" class="wire red" stroke-width="2.5"/>
-<rect x="250.0" y="362.0" width="76.0" height="26.0" rx="4" class="part"/>
-<text x="288.0" y="379.1" class="small" text-anchor="middle">220 kΩ</text>
-<polyline points="326.0,375.0 345.0,375.0" class="wire red" stroke-width="2.5"/>
-<circle cx="345.0" cy="375.0" r="4" class="dot"/>
-<text x="352.0" y="366.0" class="small mono" text-anchor="start">1.31 V</text>
-<text x="256.0" y="352.0" class="small" text-anchor="start">sense divider</text>
-<polyline points="345.0,375.0 345.0,398.0" class="wire black" stroke-width="2.5"/>
-<polyline points="345.0,398.0 320.0,398.0" class="wire black" stroke-width="2.5"/>
-<polyline points="345.0,398.0 370.0,398.0" class="wire black" stroke-width="2.5"/>
-<rect x="308.0" y="400.0" width="24.0" height="44.0" rx="3" class="part"/>
-<text x="304.0" y="426.1" class="small mono" text-anchor="end">100 kΩ</text>
-<rect x="358.0" y="400.0" width="24.0" height="44.0" rx="3" class="part"/>
-<text x="386.0" y="426.1" class="small mono" text-anchor="start">100 nF</text>
-<polyline points="320.0,444.0 320.0,456.0" class="wire black" stroke-width="2.5"/>
-<path d="M320.0 456.0 v8" class="wire black" stroke-width="2.5"/>
-<path d="M311.0 464.0 h18 M314.0 469.0 h12 M317.0 474.0 h6" class="wire black" stroke-width="2.5"/>
-<polyline points="370.0,444.0 370.0,456.0" class="wire black" stroke-width="2.5"/>
-<path d="M370.0 456.0 v8" class="wire black" stroke-width="2.5"/>
-<path d="M361.0 464.0 h18 M364.0 469.0 h12 M367.0 474.0 h6" class="wire black" stroke-width="2.5"/>
-<polyline points="345.0,375.0 420.0,375.0 420.0,355.0" class="wire black" stroke-width="2.5"/>
 <polyline points="585.0,110.0 690.0,110.0" class="wire red" stroke-width="2.5"/>
 <text x="600.0" y="101.0" class="small" text-anchor="start" style="fill:#c43e39">3.3 V</text>
 <polyline points="585.0,145.0 690.0,145.0" class="wire blue" stroke-width="2.5"/>
@@ -353,7 +249,7 @@ svg text.note{font-size:12px}
 <path d="M780.0 212.0 v8" class="wire black" stroke-width="2.5"/>
 <path d="M771.0 220.0 h18 M774.0 225.0 h12 M777.0 230.0 h6" class="wire black" stroke-width="2.5"/>
 <text x="690.0" y="250.0" class="note" text-anchor="start">No wearable status LEDs</text>
-<text x="690.0" y="270.0" class="note" text-anchor="start">Link + battery: OLED</text>
+<text x="690.0" y="270.0" class="note" text-anchor="start">Link: OLED (no battery readout)</text>
 <polyline points="520.0,352.0 520.0,356.0 660.0,356.0" class="wire red" stroke-width="2.5"/>
 <rect x="660.0" y="343.0" width="60.0" height="26.0" rx="4" class="part"/>
 <text x="690.0" y="360.1" class="small" text-anchor="middle">10 Ω</text>
@@ -395,7 +291,7 @@ svg text.note{font-size:12px}
 <polyline points="920.0,475.0 950.0,475.0" class="wire black" stroke-width="2.5"/>
 <path d="M950.0 475.0 h8" class="wire black" stroke-width="2.5"/>
 <path d="M958.0 466.0 v18 M963.0 469.0 v12 M968.0 472.0 v6" class="wire black" stroke-width="2.5"/>
-</svg><div class="warning">Divider confirmed: 220 k&#937; from B+ and 100 k&#937; to ground give 4.2 V &#215; 100/320 = 1.31 V at the ADC (the 100 nF filters it), 13 uA of divider current; the node firmware already uses this ratio (reading &#215; 3.2). Motor: the 10 &#937; caps the stall current at 3.3 V &#247; (R + 10 &#937;) - about 69 mA for a 37 &#937; coin ERM, inside the BC547's 100 mA; a lower-impedance motor needs 22 &#937; or a 2N2222A. GPIO7 drives the switch in 250 ms pulses. No LEDs are fitted: link status is shown on the OLED; battery display needs the divider and firmware support.</div><div class="foot">Every &#9169; symbol is the same net; wires join only where a dot is drawn. The BC547 emitter is the motor's ground, and the flyback sits across the motor with the cathode up.</div></section>
+</svg><div class="ok"><b>No battery sense and no LEDs (D-83).</b> The 220 k&#937; / 100 k&#937; divider and its 100 nF are withdrawn, and the wearable has no indicator of any kind: the OLED carries LINK and SCAN, and says nothing about the cell. <b>Do not fit a divider or an LED on this board.</b> GPIO3 is free. Motor: the 10 &#937; caps the stall current at 3.3 V &#247; (R + 10 &#937;) - about 69 mA for a 37 &#937; coin ERM, inside the BC547's 100 mA; a lower-impedance motor needs 22 &#937; or a 2N2222A. GPIO7 drives the switch in 250 ms pulses. The OLED carries the state and the firmware already shows LINK or SCAN on it.</div><div class="foot">Every &#9169; symbol is the same net; wires join only where a dot is drawn. The BC547 emitter is the motor's ground, and the flyback sits across the motor with the cathode up.</div></section>
 <section class="page"><h1>5 / LX-LCBST-TC-001 - pad map and bench procedure</h1><h2>From the user's front-and-back photograph - Chinese silk text translated</h2><svg viewBox="0 0 1000 470" class="diagram">
 <rect x="60.0" y="60.0" width="330.0" height="228.0" rx="10" class="proposed"/>
 <text x="72.0" y="84.0" class="title" text-anchor="start">FRONT</text>

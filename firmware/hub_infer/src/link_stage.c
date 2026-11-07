@@ -209,8 +209,6 @@ typedef struct {
     float    event_rms;
     float    frozen_rms;   /* the level of the window the node froze */
     float    floor_rms;    /* the node's noise floor */
-    uint16_t battery_mv;   /* its battery cell voltage; 0 = no reading */
-    uint8_t  battery_band; /* HUB_BAT_*, moved with hysteresis */
     /* The node's own radio counters, from its telemetry: what it handed
      * to the radio, what the radio refused, what actually left it, and
      * how often the radio had no room.  They are what tell a burst that
@@ -335,33 +333,6 @@ static bool node_live(const node_state_t *n, int64_t now_us)
         deaf = age;
     }
     return (age - deaf) < NODE_LIVE_TIMEOUT_US;
-}
-
-/* The battery band a node sits in, moved with hysteresis.  The first
- * reading starts at NORMAL, whatever it is: a cell that boots already
- * deep in LOW or CRITICAL walks one band per reading until it arrives,
- * which takes seconds and cannot frighten anyone.  A node with no
- * reading has no band, and the panel shows nothing for it. */
-static uint8_t battery_band_advance(uint8_t band, uint16_t mv)
-{
-    if (mv == 0u) {
-        return HUB_BAT_NONE;
-    }
-    if (band == HUB_BAT_NONE) {
-        band = HUB_BAT_NORMAL;
-    }
-    if (band == HUB_BAT_NORMAL && mv < 3670u) {
-        band = HUB_BAT_LOW;
-    } else if (band == HUB_BAT_LOW) {
-        if (mv > 3730u) {
-            band = HUB_BAT_NORMAL;
-        } else if (mv < 3520u) {
-            band = HUB_BAT_CRITICAL;
-        }
-    } else if (band == HUB_BAT_CRITICAL && mv > 3580u) {
-        band = HUB_BAT_LOW;
-    }
-    return band;
 }
 
 /* How long the Bluetooth advertising stays off after a cot is heard
@@ -799,15 +770,6 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
             st->frozen_rms = tel.frozen_rms;
             st->floor_rms = tel.floor_rms;
 
-            /* The battery, and the band it sits in.  The band moves on
-             * hysteresis -- into a worse band 30 mV below its edge, out
-             * of it 30 mV above -- so one radio-load dip cannot flash
-             * LOW at the caregiver.  The edges are SYSTEM_WIRING.md 7's:
-             * normal above 3.70 V, low 3.55-3.70, critical below 3.55. */
-            st->battery_mv = tel.battery_mv;
-            st->battery_band = battery_band_advance(st->battery_band,
-                                                    tel.battery_mv);
-
             /* The node's radio counters.  They are kept so that a
              * stalled burst can say whether the node handed the
              * fragments over and lost them in the air, or whether its
@@ -873,13 +835,11 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
                  * the window it froze.  When a cry goes unheard, this
                  * line is where the answer is. */
                 ESP_LOGI(TAG, "node %u: rms %.4f  seq %u  flags 0x%02X"
-                         "  crc 0x%08X  level %.4f  streak %u  win %.4f"
-                         "  bat %u mV",
+                         "  crc 0x%08X  level %.4f  streak %u  win %.4f",
                          tel.node_id, (double)tel.rms,
                          (unsigned)tel.burst_seq, (unsigned)tel.flags,
                          (unsigned)tel.frozen_crc, (double)st->event_rms,
-                         (unsigned)st->loud_streak, (double)st->frozen_rms,
-                         (unsigned)tel.battery_mv);
+                         (unsigned)st->loud_streak, (double)st->frozen_rms);
             }
         }
 
@@ -1617,13 +1577,6 @@ void link_stage_run(crynet_dsp_ctx_t *dsp, crynet_infer_t *infer)
             ds.nodes[slot].crying = live && link_stage_crying(state[i].node_id);
             ds.nodes[slot].level = state[i].rms;
             ds.nodes[slot].confidence = state[i].last_confidence;
-            /* The battery only while the cot is answering: a card that
-             * has gone quiet must not go on quoting a level nothing is
-             * measuring -- and a cot that died of a flat cell must not
-             * be shown a healthy one. */
-            ds.nodes[slot].battery_mv = live ? state[i].battery_mv : 0u;
-            ds.nodes[slot].battery_band = live ? state[i].battery_band
-                                               : HUB_BAT_NONE;
             /* A cot whose windows never arrive is online but deaf: it
              * is transmitting, and the hub still cannot get its audio,
              * so it cannot announce a cry. */

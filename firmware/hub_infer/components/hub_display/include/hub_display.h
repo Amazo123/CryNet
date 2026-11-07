@@ -45,25 +45,18 @@ extern "C" {
 /* How many cots the hub knows about. */
 #define HUB_DISPLAY_MAX_NODES 3
 
-/* The battery band, from the cell voltage with hysteresis.  The bands
- * follow SYSTEM_WIRING.md 7: normal, low (charge soon), critical
- * (switch off and charge).  NONE means no reading -- USB power, no
- * divider wired, or a node too old to send the field -- and the panel
- * shows nothing for it. */
-#define HUB_BAT_NONE     0u
-#define HUB_BAT_NORMAL   1u
-#define HUB_BAT_LOW      2u
-#define HUB_BAT_CRITICAL 3u
-
-/* One cot, as the dashboard shows it. */
+/* One cot, as the dashboard shows it.
+ *
+ * There is no battery field here (D-83): the cots do not report a cell
+ * voltage any more, and the card says nothing about the cell.  The
+ * HUB_BAT_* bands that used to sit beside these fields are gone with
+ * it. */
 typedef struct {
     uint8_t id;            /* 1..3 */
     bool    online;        /* the hub has heard from it */
     bool    crying;        /* the hub is announcing a cry from it */
     float   level;         /* its last RMS */
     uint8_t confidence;    /* the last confirmed confidence, in percent */
-    uint16_t battery_mv;   /* its battery cell voltage; 0 = no reading */
-    uint8_t battery_band;  /* HUB_BAT_* */
     bool    deaf;          /* the hub cannot get a window from it, so it
                             * cannot announce a cry: it is not being
                             * watched, and the card has to say so */

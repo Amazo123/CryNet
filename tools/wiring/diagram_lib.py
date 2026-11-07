@@ -194,37 +194,6 @@ class Page:
 
     # -- reusable sub-circuits ----------------------------------------------
 
-    def battery_sense(self, bx, by, sx, sy, label="1.31 V"):
-        """Battery-sense divider, drawn in the band below the boards.
-
-        (bx, by) is the module's B+ pad; (sx, sy) is the board's ADC pin.
-        The 220 k top resistor and the 100 k / 100 nF shunt pair make the
-        usual 100 k/300 k divider: about 1.31 V at a 4.2 V cell.
-
-        The routing channel sits at x=248, clear of the module's ground
-        symbol at x=225 - a wire through a ground symbol reads as a
-        connection, and the layout checker cannot see that.
-        """
-        self.wire([(bx, by), (248, by), (248, 375), (250, 375)], color="red")
-        self.part(250, 362, 76, 26, "220 kΩ")
-        self.wire([(326, 375), (345, 375)], color="red")
-        self.dot(345, 375)
-        self.label(352, 366, label, size=11, cls="small", mono=True)
-        self.label(256, 352, "sense divider", size=11, cls="small")
-        # shunt pair
-        self.wire([(345, 375), (345, 398)], color="black")
-        self.wire([(345, 398), (320, 398)], color="black")
-        self.wire([(345, 398), (370, 398)], color="black")
-        self.vpart(308, 400, 24, 44, "100 kΩ", anchor="end", label_dx=-4)
-        self.vpart(358, 400, 24, 44, "100 nF", label_dx=4)
-        self.wire([(320, 444), (320, 456)], color="black")
-        self.ground(320, 456)
-        self.wire([(370, 444), (370, 456)], color="black")
-        self.ground(370, 456)
-        # sense node out to the ADC pin
-        self.wire([(345, 375), (sx, 375), (sx, sy)], color="black")
-        return self
-
     # -- checks -------------------------------------------------------------
 
     def check(self):

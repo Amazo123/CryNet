@@ -41,7 +41,6 @@ typedef struct {
     float    frozen_rms;
     float    floor_rms;
     uint32_t frozen_crc;
-    uint16_t battery_mv;
     uint32_t last_seen_ms;
     bool     telemetry_new;
 
@@ -289,7 +288,6 @@ static void handle_telemetry(node_link_t *nl, uint8_t node_id, uint16_t seq,
     slot->frozen_rms = tel.frozen_rms;
     slot->floor_rms = tel.floor_rms;
     slot->frozen_crc = tel.frozen_crc;
-    slot->battery_mv = tel.battery_mv;
     slot->frames_sent = tel.frames_sent;
     slot->frames_lost = tel.frames_lost;
     slot->frames_acked = tel.frames_acked;
@@ -753,7 +751,6 @@ bool node_link_poll_telemetry(node_link_t *nl, node_link_telemetry_t *out)
         out->frozen_rms = slot->frozen_rms;
         out->floor_rms = slot->floor_rms;
         out->frozen_crc = slot->frozen_crc;
-        out->battery_mv = slot->battery_mv;
         out->frames_sent = slot->frames_sent;
         out->frames_lost = slot->frames_lost;
         out->frames_acked = slot->frames_acked;
@@ -789,7 +786,6 @@ bool node_link_last_telemetry(const node_link_t *nl, uint8_t node_id,
         out->frozen_rms = slot->frozen_rms;
         out->floor_rms = slot->floor_rms;
         out->frozen_crc = slot->frozen_crc;
-        out->battery_mv = slot->battery_mv;
         out->frames_sent = slot->frames_sent;
         out->frames_lost = slot->frames_lost;
         out->frames_acked = slot->frames_acked;

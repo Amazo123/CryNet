@@ -1,8 +1,8 @@
 # CryNet — USB Test and Complete-System Wiring Guide
 
-**Revision:** 2 November 2026. Read alongside `HARDWARE_COMPONENTS.md`.
+**Revision:** 7 November 2026. Read alongside `HARDWARE_COMPONENTS.md`.
 
-> **Important:** The node + hub signal wiring in section 2 reflects the working prototype. The wearable, battery power, node LEDs and battery sensing are **not implemented or verified**. Their exact part-to-part power wiring and GPIO choices cannot safely be finalised until the actual board and charger modules, cell and motor are selected. Section 3 is a proposed connection architecture, not permission to wire an unspecified lithium charger. This academic prototype is not a certified infant-monitoring device and must not replace supervision. Keep cables, cells, modules and small parts out of reach of the infant.
+> **Important:** The node + hub signal wiring in section 2 reflects the working prototype. The wearable and battery power are **not implemented or verified**. There are **no status LEDs anywhere in the system** (D-83): the node's planned connection LED, the node's planned SOC LED, the hub's planned BLE-status LED and the hub's planned SOC LED have all been removed, and the battery sense divider has been removed with them. Their exact part-to-part power wiring and GPIO choices cannot safely be finalised until the actual board and charger modules, cell and motor are selected. Section 3 is a proposed connection architecture, not permission to wire an unspecified lithium charger. This academic prototype is not a certified infant-monitoring device and must not replace supervision. Keep cables, cells, modules and small parts out of reach of the infant.
 
 ## 1. System picture
 
@@ -96,7 +96,7 @@ The haptic drive is the user's own **BC547** low-side switch (the DRV2605L break
 
 ### 3.1 Connections that remain the same
 
-For each of the three nodes, retain **all six microphone connections** in section 2.1. For the hub, retain the TFT signal and ground connections in section 2.2. For the wearable, use only a finalised and tested version of section 2.3. Only the **power source** and proposed indicators/battery sensing change; never join all five batteries together.
+For each of the three nodes, retain **all six microphone connections** in section 2.1. For the hub, retain the TFT signal and ground connections in section 2.2. For the wearable, use only a finalised and tested version of section 2.3. Only the **power source** changes; never join all five batteries together. **The battery sensing and the status LEDs are gone** (D-83) — there is nothing on B+/B− but the cell, and no indicator of any kind on any unit.
 
 ### 3.2 Power architecture for each separate unit
 
@@ -117,11 +117,17 @@ For each of the three nodes, retain **all six microphone connections** in sectio
 
 For each of the three nodes and the hub, the BOM proposes a protected 1-cell battery and a 5 V boost if the selected board uses its 5 V input. The wearable's suitable voltage/converter remains undecided. A lithium cell can be **4.2 V fully charged**, so do not connect it to a 3.3 V rail or GPIO; do not apply 5 V to 3V3. The converter's output must remain within the board input specifications under measured peak loads and low cell voltage. A 100 µF bulk capacitor is a **candidate**, not an unconditional connection: confirm location, voltage rating and stability requirements in the actual converter datasheet, then connect + to the intended rail and − to local GND only if appropriate. Do not connect bench USB and a battery supply simultaneously without a designed, verified power path preventing backfeed.
 
-### 3.3 Node battery voltage measurement and LEDs
+### 3.3 No battery sensing, and no status LEDs
 
-Superseded by the concrete plan in §5.1: B+ → 220 kΩ → sense node; sense node → 100 kΩ ∥ 100 nF → B−; sense node → GPIO3 (ADC1_CH3). At 4.2 V the ADC sees ≈ 1.31 V and the divider draws ≈ 13 µA continuously. The status LEDs land on GPIO10 (link, ACK-driven) and GPIO7 (SOC) through 1 kΩ resistors. Firmware for the divider, the LED patterns and the heartbeat ACK is **not yet implemented**; all of it goes to a branch first.
+**This section used to describe the divider and two LEDs. It does not any more (D-83).**
 
-**The divider is a fixed pair, and that is deliberate (D-81).** There is **no potentiometer** in the battery path. A variable resistor was suggested; the owner's clarification (set it once so the reading stays inside the pin's range) makes the decision rest on two points rather than three, and the corrected reasons are worth stating plainly. A **two-terminal** pot cannot divide at all: the ADC pin's only path to ground is its own high-impedance input, so the pin still sits near 4.2 V — past the C3 IO's 3.6 V absolute maximum. A **three-terminal** pot used as a real divider does work, and the firmware does not need to read the wiper; what it costs is a **per-unit measured ratio**, **silent drift** with heat, vibration and wear, and **magnitude** — `BAT_CURVE` moves 100 mV = 20 percentage points around 3.8 V, so 1 % of ratio error is already ~10 points of SOC error, against a pot's 1–5 %. Two 1 % resistors give a ratio the firmware knows exactly (**×3.2**) on every unit with no per-unit step, `analogReadMilliVolts()` already applies the chip's factory-calibrated ADC reference, and SOC comes from the curve already in `hub_display.c` (`BAT_CURVE`), printed as `BAT ~80 %` because a voltage-derived figure is an estimate. The bottom of the scale is ~3.3 V, not 3.0 V: 3.0 V is where a protected cell's protection circuit cuts out, which is end-of-life rather than "empty". **The 100 nF on the sense node is required, not optional (O-1e in the two-node repository)** — the divider's source impedance is 68.75 kΩ, and the capacitor is what lets the ADC read it accurately.
+There is **no battery sense divider on any unit** — not on the nodes, not on the hub, not on the wearable. B+ and B− carry the cell and nothing else. There is **no 220 kΩ, no 100 kΩ and no 100 nF** anywhere in the system, and there is **no LED on any unit**: no connection LED, no SOC LED, no BLE-status LED. The parts on the bill of materials for them are gone; they should not be bought and must not be fitted.
+
+The **battery power itself is unchanged**: the cells, the LX-LCBST modules, the switches and the boost converters are exactly as planned in §3.2, §5.1, §5.2 and §5.3. What has been removed is only the *measurement* of the cell and the *indication* of it.
+
+Why: the hub's panel already shows which cots are answering, and it shows it better than a second, slower LED on a cot could. The battery reading was always an estimate — a resting-voltage curve printed with a tilde — and the owner does not want it. The cost of removing it is that **nothing in the system will warn the caregiver that a cell is nearly flat**; the charge-prompt idea (§7) is gone with it.
+
+**For the record, the divider was designed and then withdrawn.** It was a fixed pair — B+ → 220 kΩ → sense node; sense node → 100 kΩ ∥ 100 nF → B−; sense node → GPIO3 (ADC1_CH3) on the nodes and the wearable, GPIO1 (ADC1_CH0) on the hub — a ratio of ×3.2, so 4.2 V on the cell read as ≈ 1.31 V at the pin, drawing ≈ 13 µA continuously. It was a fixed pair and **not** a potentiometer, on purpose (D-81): a **two-terminal** pot cannot divide at all — the ADC pin's only path to ground is its own high-impedance input, so the pin still sits near 4.2 V — past the C3 IO's 3.6 V absolute maximum. A **three-terminal** pot used as a real divider does work, and the firmware does not need to read the wiper; what it costs is a **per-unit measured ratio**, **silent drift** with heat, vibration and wear, and **magnitude** — the SOC curve moved 100 mV = 20 percentage points around 3.8 V, so 1 % of ratio error is already ~10 points of SOC error, against a pot's 1–5 %. Two 1 % resistors gave a ratio the firmware knew exactly on every unit with no per-unit step. All sound; it simply is not wanted. The reasoning is kept in `DECISIONS.md` (D-81, D-83) and not repeated here.
 
 ### 3.4 Wearable battery and haptics
 
@@ -146,31 +152,11 @@ This is the proposed design for the next firmware/hardware branch. It deliberate
 | I²S BCLK | GPIO4 | Existing INMP441 SCK |
 | I²S WS | GPIO5 | Existing INMP441 WS |
 | I²S data | GPIO6 | Existing INMP441 SD |
-| Battery ADC | **GPIO3 / ADC1_CH3** | Divider across the module's battery pads: **B+ → 220 kΩ → sense node; sense node → 100 kΩ → B−; sense node → 100 nF → B−**. B+/B− are the pads printed 电池 (battery) on the board photo. |
-| Connection LED | **GPIO10**, active high | GPIO10 → 1 kΩ → blue LED anode; LED cathode → GND. 1 kΩ keeps LED current modest and reduces radio/power impact. |
-| SOC LED | **GPIO7**, active high | GPIO7 → 1 kΩ → red/amber LED anode; LED cathode → GND. |
+| Battery sense | **none** | The divider is removed (D-83): no 220 kΩ, no 100 kΩ, no 100 nF, nothing on B+/B−. GPIO3 is free. |
+| Status LEDs | **none** | The planned GPIO10 connection LED and the planned GPIO7 SOC LED are removed before being fitted (D-83). GPIO7 and GPIO10 are free. |
 | Power switch | **VO+ → switch → C3 5V pin** | SPST switch rated ≥1 A. VO+ / VO− are the pads printed 输出 (output). B+/B− stay connected for charging while the node is off. Do not switch the battery side. |
 
-The 220 kΩ / 100 kΩ divider reads the battery directly at B+/B− (≈ 13 µA continuous drain, ≈ 13 µA injection into the unpowered GPIO's protection diode when the unit is switched off — negligible next to a 2,000 mAh cell, and accepted deliberately; if bench testing ever shows odd behaviour with the unit off, an isolated switched-sense design replaces it). At 4.2 V cell voltage the ADC sees about 1.31 V; divider current is about 13 µA. The ADC capacitor makes the reading less sensitive to boost/radio pulses. The firmware must average samples while the radio is quiet, calibrate the ADC, and use hysteresis. This gives an estimate and low-battery warning—not an accurate fuel-gauge percentage.
-
-The first firmware thresholds should be conservative and calibrated with the actual cell:
-
-- normal: estimated cell voltage above approximately 3.70 V,
-- low: approximately 3.55–3.70 V,
-- critical: below approximately 3.45–3.55 V under a rested/light-load sample,
-- shut down / charge prompt: at the project-selected cutoff with hysteresis.
-
-Do not convert loaded voltage directly to a precise percentage. Report `battery estimate` and `charge soon`, and only prompt to switch off after repeated low readings. Never intentionally drive the cell to the protection cutoff.
-
-The connection LED is **not** driven from a local transmit-success flag. It is on only while the node has received a valid hub heartbeat/ACK within a timeout. The planned protocol change is:
-
-```text
-node → hub: HEARTBEAT(node_id, counter, CRC)
-hub → node: HEARTBEAT_ACK(node_id, counter, CRC)
-node: connection_ok = matching hub ACK received within the last 3 seconds
-```
-
-The node should send the heartbeat to the hub, and the hub should return the matching ACK to that node. The node turns GPIO10 on only after receiving a fresh matching ACK within a timeout, blinks slowly when powered but no recent ACK exists, and turns it off before deep sleep/shutdown. The hub must also track the last heartbeat/telemetry time; an ESP-NOW send callback alone is not application delivery confirmation.
+**There is no battery reading on the unit (D-83), and there is no LED of any kind.** The divider and its 100 nF are not fitted; the ADC pin is not read; the telemetry carries no cell voltage; the hub's panel carries no battery text. GPIO3, GPIO7 and GPIO10 are free. The planned heartbeat-and-ACK protocol was never about the LED: the LED was only ever going to *display* the ACK, and it is dropped from the plan with the rest of the indicators. The hub must still track the last telemetry time itself; an ESP-NOW send callback alone is not application delivery confirmation.
 
 ### 5.2 Hub — one unit
 
@@ -178,12 +164,11 @@ The current TFT assignments remain fixed: GPIO10 CS, GPIO11 MOSI, GPIO12 SCK, GP
 
 | Function | GPIO / connection | Components |
 |---|---|---|
-| Battery ADC | **GPIO1 / ADC1_CH0** | Proposed 220 kΩ / 100 kΩ divider and 100 nF filter across verified protected battery rails; ADC isolation when switched off and actual module ground topology require design. |
-| Connection / BLE status LED | **GPIO2**, active high | GPIO2 → 1 kΩ → blue LED anode; cathode → GND. GPIO2 is a **normal GPIO on the ESP32-S3** (S3 strapping pins are GPIO0/3/45/46 — GPIO2's strap role is on the older ESP32 and the C3, not here). Firmware means "at least one caregiver client connected/subscribed," not merely BLE initialized. |
-| SOC LED | **GPIO17**, active high | GPIO17 → 1 kΩ → amber/red LED anode; cathode → GND. GPIO17 is chosen to avoid ESP32-S3 strapping GPIO3. |
+| Battery sense | **none** | The divider is removed (D-83): no 220 kΩ, no 100 kΩ, no 100 nF, nothing on GPIO1. |
+| Status LEDs | **none** | The planned GPIO2 BLE-status LED and the planned GPIO17 SOC LED are removed before being fitted (D-83). GPIO2 and GPIO17 are free. |
 | Power switch | **VO+ → switch → S3 5V pin** | Battery remains on module B+/B− while the hub is off. Verify the DevKitC input and converter output under TFT/radio load; the hub's peak draw is the heaviest of the five units and is not yet measured. |
 
-The hub TFT keeps its working assignments (GPIO4 backlight, GPIO10–14 signals). The battery ADC uses **GPIO1 = ADC1_CH0** — ADC1 is the converter that still works while Wi-Fi/BLE are active, which the hub runs constantly. The BLE-status LED lands on **GPIO2** (a normal pin on the S3) and the SOC LED on **GPIO17**. Avoid GPIO0/3/45/46 (S3 strapping) and GPIO35–37 (Octal PSRAM bus on the N16R8). GPIO3 in particular is a strap pin on the S3, which is why the hub's divider goes to GPIO1, not GPIO3 as on the C3 nodes.
+The hub TFT keeps its working assignments (GPIO4 backlight, GPIO10–14 signals) and the hub has **no battery sense and no status LED** (D-83). Avoid GPIO0/3/45/46 (S3 strapping) and GPIO35–37 (Octal PSRAM bus on the N16R8). GPIO1, GPIO2 and GPIO17 are free.
 
 ### 5.3 Wearable — one unit
 
@@ -191,10 +176,9 @@ The wearable uses the same C3 board class, but the final board must be checked a
 
 | Function | GPIO / connection | Components |
 |---|---|---|
-| Battery ADC | **GPIO3 / ADC1_CH3** | Battery-side divider 220 kΩ / 100 kΩ and 100 nF as above |
 | OLED SDA | **GPIO5** | I²C SDA; add no external pull-up until the OLED breakout is checked |
 | OLED SCL | **GPIO6** | I²C SCL; pull-ups, if needed, to 3.3 V only |
-| Link and battery status | **OLED**, no indicator LEDs | The current firmware shows LINK or SCAN on its normal dashboard. Battery sensing and an estimated SOC display are not yet implemented. GPIO1 and GPIO4 are not used for indicators. |
+| **Status LEDs** | **none** | The wearable has **no status LEDs** — and now no battery sense either (D-76, D-83). An earlier revision gave it a blue link LED on GPIO1 and a red SOC LED on GPIO4; neither was ever in firmware, and the OLED already carries LINK/SCAN. The OLED stays the only display on the wrist, and it says nothing about the cell. GPIO3 is free. |
 | Haptic drive | **GPIO7** → 2.2 kΩ → BC547 base; collector → motor −; emitter → GND | 10 Ω in the motor's + lead, 100 kΩ base-emitter pulldown, 1N5819 across the motor with the cathode up. Page 4 of `SYSTEM_WIRING_DIAGRAMS.pdf`. |
 | Power switch | **VO+ → switch → C3 5V pin** | Same pattern as the node: disconnects the device, battery stays on B+/B− for charging. |
 
@@ -224,7 +208,7 @@ VO− → ESP32 board GND pin
 
 **Set the trimpot before any ESP32 is connected:** battery attached, meter on VO+/VO−, adjust to ≈ 5.1 V. The module can ship set anywhere in its 4.2–28 V range; connecting a board before setting it can destroy the board. Re-check after the first full charge cycle and occasionally thereafter.
 
-Two characteristics remain unknown and must come from the bench validation: the **actual charge current** (the charger's program resistor is too small to read in the photo; if it programmes near 1 A, the wearable's 1,000 mAh cell needs its datasheet to permit that), and the boost converter's **quiescent drain while the unit is switched off** (the switch disconnects the load, not the converter — if off-state drain proves significant, the switch moves or the module changes). Note also that B− and VO− connect through the module's protection FET: in normal operation they are effectively the same ground, but at deep-discharge cutoff the battery disconnects and the ADC reading collapses — acceptable, since that *is* the dead-battery condition.
+Two characteristics remain unknown and must come from the bench validation: the **actual charge current** (the charger's program resistor is too small to read in the photo; if it programmes near 1 A, the wearable's 1,000 mAh cell needs its datasheet to permit that), and the boost converter's **quiescent drain while the unit is switched off** (the switch disconnects the load, not the converter — if off-state drain proves significant, the switch moves or the module changes). Note also that B− and VO− connect through the module's protection FET: in normal operation they are effectively the same ground, but at deep-discharge cutoff the battery disconnects and the unit dies — with no battery readout in the system (D-83), the caregiver finds that because a cot goes quiet, not because anything warned her; watch the cells by eye.
 
 ### Required one-board validation before buying four more
 
@@ -235,16 +219,20 @@ Two characteristics remain unknown and must come from the bench validation: the 
 5. Run one node from it: compare reboot count, burst completion, radio range and microphone noise with the known USB baseline.
 6. Only then decide whether it is suitable for the hub and whether a separate 3.3 V regulator is needed for the wearable.
 
-## 7. SOC display and charge prompt
+## 7. There is no battery readout (D-83)
 
-The hub's display should show an **estimated battery band** rather than falsely precise percentage. The proposed UI is `BAT ~80%`, `BAT LOW — CHARGE SOON`, and `BAT CRITICAL — SWITCH OFF AND CHARGE`. The wearable OLED is intended to show its own estimated battery status; this is not implemented yet, and needs calibration for the selected cell and divider. The wearable has no status LEDs, and its normal OLED dashboard already shows LINK or SCAN as the connection state. The node has only LEDs: normal SOC LED off, low slow blink, critical fast blink. Use voltage hysteresis and require repeated samples to prevent radio-current dips from causing a false prompt. SOC percentages need a calibration table for the selected Li-Po chemistry and actual cell; they must not be copied blindly from nominal voltage.
+**This section used to describe an SOC display and a charge prompt. Both are gone.**
 
-**The map from voltage to percent is a curve, and the bottom is ~3.3 V, not 3.0 V (D-81).** A lithium cell is not linear between 3.0 V and 4.2 V. A representative curve is **4.20 V = 100 %, 4.05 ≈ 90 %, 3.90 ≈ 65 %, 3.80 ≈ 40 %, 3.70 ≈ 20 %, 3.55 ≈ 8 %, 3.45 ≈ 3 %, 3.30 ≈ 0 %**, and that is the table `hub_display.c` already holds as `BAT_CURVE`. A straight line from 3.0 V to 4.2 V would report a genuinely quarter-full cell as "58 %" — wrong across exactly the region the cell spends most of its life, and wrong in the direction that says "fine" when the answer is "not fine". The bottom of the scale is **3.3 V**, because 3.0 V is roughly where a protected cell's protection circuit cuts out: that is end-of-life, not "empty", and the banded warning should arrive well before it. The firmware must never deliberately drive a cell that far.
+There is no battery text on the hub's panel, no battery readout on the wearable's OLED, and no battery LED anywhere. The hub's cot card shows the cot's name, whether it is answering, its sound level and confidence — nothing about the cell. The wearable has no status LEDs (D-76), and the OLED carries LINK or SCAN as the connection state.
 
-**Two things make the reading an estimate rather than a measurement.** The cell's terminal voltage **sags under load** — the boost converter and the radio draw current while the ADC samples, dipping the terminal 100–200 mV — so the reading is taken as the average of many samples through the 100 nF filter, and trusted only after it has landed in the expected window repeatedly. And the divider's ratio is known only as well as its resistors (a few per cent), which is why the display bands the result with hysteresis instead of trusting a single sample. The `~` in `BAT ~80%` is doing real work: it tells the caregiver the number is a guide, and it must not be dropped until a real fuel gauge is fitted.
+**The consequence is worth stating plainly: nothing in the system will tell the caregiver that a cell is nearly flat.** That was the whole point of the feature, and it is the thing being given up. The cells still need watching by eye: charge each unit before it goes back on the cot, and take a unit off the cot when its cell is nearly flat rather than waiting for the protection circuit to disconnect it.
+
+**What was removed, for the record.** The plan was a fixed 220 kΩ / 100 kΩ divider (ratio ×3.2) with a 100 nF across the bottom leg, read on ADC1 and averaged over sixteen samples every four seconds, a trust gate that refused a reading until three of them landed in the expected window, and a banded result on the panel: `BAT ~80 %`, `BAT LOW`, `BAT CRITICAL`, the band moving on hysteresis so one radio-load dip could not flash a warning at the caregiver. The map from voltage to percent was a curve, not a line — **4.20 V = 100 %, 4.05 ≈ 90 %, 3.90 ≈ 65 %, 3.80 ≈ 40 %, 3.70 ≈ 20 %, 3.55 ≈ 8 %, 3.45 ≈ 3 %, 3.30 ≈ 0 %** — because a lithium cell is not linear between 3.0 V and 4.2 V and a straight line reports a genuinely quarter-full cell as "58 %", wrong in the direction that says "fine" when the answer is "not fine". The bottom of the scale was **3.3 V**, because 3.0 V is roughly where a protected cell's protection circuit cuts out: end-of-life, not "empty".
+
+**If it is ever wanted back**, the honest version is not a divider but a real fuel gauge — a **MAX17048** on I²C (the hub and the wearable have spare buses; the node's microphone occupies I²S, so a node would need the gauge part on another interface). A gauge reports the charge in the cell's own coulombs and does not care how much the terminal sags under load, which was the divider's other weakness. The reasoning is in `DECISIONS.md` (D-81 for the divider, D-83 for the withdrawal).
 
 ## 8. What is still required before this counts as verified
 
-The LX-LCBST pad map is now known from the photograph; what remains is bench truth. Build **one** node power assembly exactly as in §5.1/§6, measure charge current, set the trimpot to 5.1 V, confirm switch-off behaviour and off-state drain, then run the working node firmware from it and compare with the USB baseline (reboots, bursts, mic noise). In parallel the user plans a **board swap**: ESP32-C3 Pro Mini boards for the three nodes and the existing SuperMini for the wearable — the firmware targets the chip, not the board, but each Pro Mini must prove native USB, 4 MB flash and the needed pins (GPIO3/4/5/6/7/10) before the swap counts; re-verify one node end to end on a branch. Firmware work (divider read, LED patterns, heartbeat ACK, SOC display) is all new and lives on a branch until verified. No merge into `main` without the user's decision.
+The LX-LCBST pad map is now known from the photograph; what remains is bench truth. Build **one** node power assembly exactly as in §5.1/§6, measure charge current, set the trimpot to 5.1 V, confirm switch-off behaviour and off-state drain, then run the working node firmware from it and compare with the USB baseline (reboots, bursts, mic noise). In parallel the user plans a **board swap**: ESP32-C3 Pro Mini boards for the three nodes and the existing SuperMini for the wearable — the firmware targets the chip, not the board, but each Pro Mini must prove native USB, 4 MB flash and the needed pins (GPIO4/5/6) before the swap counts; re-verify one node end to end on a branch. The battery sense and the status LEDs have been removed rather than built (D-83), so the pins they would have used — GPIO3, GPIO7, GPIO10 on a node, GPIO1, GPIO2, GPIO17 on the hub — are free and need no verification. No merge into `main` without the user's decision.
 
 **Evidence:** `firmware/node/node_crynet/node_crynet.ino` (GPIO4/5/6); `firmware/hub_infer/components/hub_display/hub_display.c` (TFT pins); `SYSTEM_UPDATE.md` (working display wiring and hardware tests); `HARDWARE_COMPONENTS.md` (proposed BOM).

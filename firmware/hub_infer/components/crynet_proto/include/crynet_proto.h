@@ -106,14 +106,8 @@ extern "C" {
 /* The telemetry payload is 16 bytes. */
 #define CRYNET_PROTO_TELEMETRY_BYTES 16u
 
-/* The battery tier: the same 16 bytes, then the node's battery cell
- * voltage in millivolts, little-endian.  Zero means "no reading" —
- * the node is on USB power, or the sense divider is not wired. */
-#define CRYNET_PROTO_TELEMETRY_BYTES_BATTERY \
-    (CRYNET_PROTO_TELEMETRY_BYTES + 2u)
-
-/* The radio-counter tier: the same 18 bytes, then the node's own radio
- * counters -- the frames it handed to the radio, the frames the radio
+/* The radio-counter tier: the same 16 bytes, then the node's own radio
+ * counters — the frames it handed to the radio, the frames the radio
  * refused, the frames that actually left it, and the number of times it
  * had to wait for the radio to have room.
  *
@@ -122,9 +116,22 @@ extern "C" {
  * them in the air; a node whose radio refused them has a queue that is
  * too small for the burst.  The hub cannot tell the two apart from the
  * fragments alone, and the difference is the difference between moving
- * a cot and rewriting a radio's pacing. */
+ * a cot and rewriting a radio's pacing.
+ *
+ * There was a battery tier between this one and the base tier — the
+ * node's cell voltage, in two bytes.  It is gone (D-83): the cots do
+ * not measure their cells, so the tier would only have carried zeroes,
+ * and the counters moved down to fill the gap. */
 #define CRYNET_PROTO_TELEMETRY_BYTES_COUNTERS \
-    (CRYNET_PROTO_TELEMETRY_BYTES_BATTERY + 16u)
+    (CRYNET_PROTO_TELEMETRY_BYTES + 16u)
+
+/* The payload a node flashed before the battery tier was removed sent:
+ * the same bytes, plus the battery voltage, plus the counters.  The hub
+ * still reads it, so a node that has not been reflashed yet does not
+ * turn the hub's counters into noise while the units are being
+ * reflashed one at a time. */
+#define CRYNET_PROTO_TELEMETRY_BYTES_OLD_COUNTERS \
+    (CRYNET_PROTO_TELEMETRY_BYTES + 2u + 16u)
 
 /* The payload an older node sent: the same fields, without the event
  * level, the window's own level or the noise floor, and with the CRC
@@ -198,11 +205,6 @@ typedef struct {
     /* The node's noise floor, in full-scale units. */
     float    floor_rms;
     uint32_t frozen_crc; /* CRC-32 of the node's frozen window, 0 if none */
-    /* The node's battery cell voltage, in millivolts, measured behind
-     * its own divider and averaged.  Zero means the node sent no
-     * reading: it is on USB power, or the divider is not wired, or the
-     * node's firmware predates the field. */
-    uint16_t battery_mv;
     /* The node's radio counters.  Zero means the node did not report
      * them: its firmware predates the field. */
     uint32_t frames_sent;   /* frames handed over to the radio   */

@@ -56,7 +56,6 @@ typedef struct {
     float    frozen_rms;
     float    floor_rms;   /* the node's noise floor */
     uint32_t frozen_crc;  /* the node's frozen-window CRC-32, 0 if it has none */
-    uint16_t battery_mv;  /* the node's battery cell voltage, 0 = no reading */
     uint32_t age_ms;      /* how long ago this telemetry arrived */
     /* The node's own radio counters.  These are what say whether a
      * burst was lost in the air or refused by the node's radio: a node

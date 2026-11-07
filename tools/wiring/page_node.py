@@ -7,7 +7,7 @@ W, H = 1000, 480
 
 def build():
     p = Page(W, H, "2 / Cot node - complete wiring (one per node, x3)",
-             "ESP32-C3 SuperMini + INMP441 + LX-LCBST + switch + battery-sense divider + 2 LEDs")
+             "ESP32-C3 SuperMini + INMP441 + LX-LCBST + switch - no battery sense, no status LEDs")
 
     # ---------------------------------------------------------- LX-LCBST --
     mod = p.box(25, 55, 175, 245, "LX-LCBST-TC-001", cls="proposed",
@@ -31,9 +31,6 @@ def build():
                     ("GPIO6", 305)):
         p.label(577, y + 5, name, size=12.5, cls="pin", anchor="end", mono=True,
                 owner=board)
-    for name, x in (("GPIO3", 420), ("GPIO7", 490), ("GPIO10", 545)):
-        p.label(x, 347, name, size=12.5, cls="pin", anchor="middle", mono=True,
-                owner=board)
 
     # --------------------------------------------------------------- mic --
     mic = p.box(690, 55, 180, 270, "INMP441", cls="mod")
@@ -55,8 +52,18 @@ def build():
     p.wire([(390, 320), (355, 320)], color="black")
     p.ground(355, 320, dir="left")
 
-    # ------------------------------------------------- battery sense ------
-    p.battery_sense(200, 225, 420, 355)
+    # --------------------------------------------- no sense, no LEDs -----
+    # The band the divider and the two LEDs used to occupy now says
+    # what is there instead, which is nothing: the cell, and no
+    # indicators at all (D-83).
+    p.label(210, 382, "No battery sense and no status LEDs (D-83).",
+            size=13, cls="note")
+    p.label(210, 404, "B+ and B- carry the cell and nothing else: no divider,",
+            size=12, cls="note")
+    p.label(210, 421, "no ADC read, no telemetry field, no battery text on the panel.",
+            size=12, cls="note")
+    p.label(210, 441, "GPIO3, GPIO7 and GPIO10 are free.",
+            size=12, cls="note")
 
     # ------------------------------------------------------------- mic ---
     p.wire([(585, 105), (690, 105)], color="red")
@@ -68,30 +75,16 @@ def build():
     p.wire([(585, 265), (690, 265)], color="green")
     p.wire([(585, 305), (690, 305)], color="orange")
 
-    # ------------------------------------------------------------ LEDs ---
-    p.wire([(545, 355), (545, 395), (650, 395)], color="blue")
-    p.part(650, 382, 72, 26, "1 kΩ")
-    p.wire([(722, 395), (740, 395)], color="blue")
-    p.part(740, 382, 70, 26, "BLUE LED")
-    p.wire([(810, 395), (830, 395)], color="blue")
-    p.ground(830, 395, dir="right")
-    p.label(856, 399, "link", size=11, cls="small")
-
-    p.wire([(490, 355), (490, 440), (650, 440)], color="orange")
-    p.part(650, 427, 72, 26, "1 kΩ")
-    p.wire([(722, 440), (740, 440)], color="orange")
-    p.part(740, 427, 70, 26, "RED LED")
-    p.wire([(810, 440), (830, 440)], color="orange")
-    p.ground(830, 440, dir="right")
-    p.label(856, 444, "SOC", size=11, cls="small")
-
     notes = (
         '<div class="ok">Verified on the live system: mic wiring (3V3 / GND / L/R&#8594;GND, '
-        'GPIO4 SCK, GPIO5 WS, GPIO6 SD) and the node firmware. GPIO1 stays spare.</div>'
-        '<div class="warning">Proposed, needs bench validation: the whole battery chain, '
-        'the divider and the LEDs. The divider reads about 13 uA. RED LED = SOC '
-        '(off / slow / fast), BLUE LED = link (ACK-driven). Firmware for the divider and '
-        'the LEDs does not exist yet - branch work.</div>'
+        'GPIO4 SCK, GPIO5 WS, GPIO6 SD) and the node firmware.</div>'
+        '<div class="ok"><b>No battery sense and no LEDs (D-83).</b> The 220 k&#937; / 100 k&#937; '
+        'divider, its 100 nF, and the planned GPIO10 blue link LED and GPIO7 red SOC LED are all '
+        'withdrawn: the node does not read its cell, and the hub\'s panel already shows '
+        'which cots are answering. This repository\'s node firmware did carry the divider '
+        'read (PIN_BATTERY 3) until D-83 took it out; the LEDs were never in any firmware. '
+        '<b>Do not fit a divider or an LED on this board.</b> '
+        'GPIO1, GPIO3, GPIO7 and GPIO10 are free.</div>'
     )
     foot = ("Every &#9169; symbol is the same net: the module's VO- (battery negative through "
             "the module's protection FET). Wires join only where a dot is drawn. Pin names, "

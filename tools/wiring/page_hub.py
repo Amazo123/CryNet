@@ -7,7 +7,7 @@ W, H = 1000, 480
 
 def build():
     p = Page(W, H, "3 / Main hub - complete wiring (x1)",
-             "ESP32-S3-DevKitC-1 N16R8 + 2.8\" ILI9341 + LX-LCBST + switch + battery-sense divider + 2 LEDs")
+             "ESP32-S3-DevKitC-1 N16R8 + 2.8\" ILI9341 + LX-LCBST + switch - no battery sense, no status LEDs")
 
     # ---------------------------------------------------------- LX-LCBST --
     mod = p.box(25, 55, 175, 245, "LX-LCBST-TC-001", cls="proposed",
@@ -31,9 +31,6 @@ def build():
                     ("GPIO12", 255), ("GPIO13", 290), ("GPIO14", 325)):
         p.label(577, y + 5, name, size=12.5, cls="pin", anchor="end", mono=True,
                 owner=board)
-    for name, x in (("GPIO1", 420), ("GPIO2", 490), ("GPIO17", 545)):
-        p.label(x, 347, name, size=12.5, cls="pin", anchor="middle", mono=True,
-                owner=board)
 
     # --------------------------------------------------------------- TFT --
     tft = p.box(690, 55, 180, 270, "2.8\" ILI9341", cls="mod")
@@ -55,8 +52,8 @@ def build():
     p.ground(355, 320, dir="left")
 
     # ------------------------------------------------- battery sense ------
-    p.battery_sense(200, 225, 420, 355)
-
+    # The divider and the two LEDs are gone (D-83); the band they used
+    # to occupy says what is there instead, which is nothing.
     # ------------------------------------------------------------- TFT ---
     p.wire([(585, 105), (690, 105)], color="red")
     p.label(600, 96, "3.3 V", size=11, cls="small", color="#c43e39")
@@ -69,29 +66,23 @@ def build():
     p.wire([(870, 145), (895, 145)], color="black")
     p.ground(895, 145, dir="right")
 
-    # ------------------------------------------------------------ LEDs ---
-    p.wire([(545, 355), (545, 395), (650, 395)], color="blue")
-    p.part(650, 382, 72, 26, "1 kΩ")
-    p.wire([(722, 395), (740, 395)], color="blue")
-    p.part(740, 382, 70, 26, "BLUE LED")
-    p.wire([(810, 395), (830, 395)], color="blue")
-    p.ground(830, 395, dir="right")
-    p.label(856, 399, "BLE", size=11, cls="small")
-
-    p.wire([(490, 355), (490, 440), (650, 440)], color="orange")
-    p.part(650, 427, 72, 26, "1 kΩ")
-    p.wire([(722, 440), (740, 440)], color="orange")
-    p.part(740, 427, 70, 26, "RED LED")
-    p.wire([(810, 440), (830, 440)], color="orange")
-    p.ground(830, 440, dir="right")
-    p.label(856, 444, "SOC", size=11, cls="small")
+    # --------------------------------------------- no sense, no LEDs -----
+    p.label(210, 382, "No battery sense and no status LEDs (D-83).",
+            size=13, cls="note")
+    p.label(210, 404, "GPIO1 (ADC), GPIO17 and GPIO2 are free.",
+            size=12, cls="note")
 
     notes = (
         '<div class="ok">Verified on the live system: TFT signals (CS 10, MOSI 11, SCK 12, '
         'DC 13, RST 14, BL 4, VCC 3V3, GND) and the hub firmware.</div>'
-        '<div class="warning">Proposed, needs bench validation: the battery chain, the '
-        'divider on GPIO1 (ADC1_CH0), BLUE LED on GPIO2 (BLE client connected) and RED '
-        'LED on GPIO17 (SOC). The hub\'s peak current with TFT + radios is unmeasured - '
+        '<div class="ok"><b>No battery sense and no LEDs (D-83).</b> The GPIO1 divider '
+        '(ADC1_CH0), the GPIO2 blue BLE-status LED and the GPIO17 red SOC LED have been '
+        'removed before they were fitted. The hub does not measure its own cell and drives '
+        'no indicator: the panel is the only display, and the wearable tells the caregiver '
+        'what the hub is doing over BLE. <b>Do not fit a divider or an LED on this board.</b> '
+        'GPIO1, GPIO2 and GPIO17 are free.</div>'
+        '<div class="warning">Proposed, needs bench validation: the battery chain. '
+        'The hub\'s peak current with TFT + radios is unmeasured - '
         'confirm the LX-LCBST holds 5.1 V during bursts before trusting it here.</div>'
     )
     foot = ("GPIO35-37 are the Octal PSRAM bus - never wire them. The TFT wiring is the "

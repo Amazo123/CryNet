@@ -206,19 +206,25 @@ bool crynet_proto_decode_telemetry(const uint8_t *payload,
                           ((uint32_t)payload[11] << 24);
     }
 
-    /* The battery cell voltage rides after the CRC in the newest tier.
-     * A node that does not send it — any current flashed node, or a
-     * node with no divider wired — decodes as "no reading". */
-    out->battery_mv = (len >= CRYNET_PROTO_TELEMETRY_BYTES_BATTERY)
-                    ? get_u16(&payload[16]) : 0u;
-
-    /* The radio counters ride after the battery in the newest tier.  A
-     * node that does not send them decodes as zeroes. */
-    if (len >= CRYNET_PROTO_TELEMETRY_BYTES_COUNTERS) {
+    /* The radio counters ride after the CRC.  A node that does not send
+     * them decodes as zeroes.
+     *
+     * The counters used to start at byte 18, behind the two bytes of
+     * battery voltage that used to sit there (D-83).  A node flashed
+     * before that removal still sends the longer payload, so it is read
+     * from where that node put them, and a node on the current firmware
+     * from where this one puts them.  The length tells the two apart:
+     * 32 bytes is the new layout, 34 the old one. */
+    if (len >= CRYNET_PROTO_TELEMETRY_BYTES_OLD_COUNTERS) {
         out->frames_sent  = get_u32(&payload[18]);
         out->frames_lost  = get_u32(&payload[22]);
         out->frames_acked = get_u32(&payload[26]);
         out->radio_full   = get_u32(&payload[30]);
+    } else if (len >= CRYNET_PROTO_TELEMETRY_BYTES_COUNTERS) {
+        out->frames_sent  = get_u32(&payload[16]);
+        out->frames_lost  = get_u32(&payload[20]);
+        out->frames_acked = get_u32(&payload[24]);
+        out->radio_full   = get_u32(&payload[28]);
     } else {
         out->frames_sent  = 0u;
         out->frames_lost  = 0u;
