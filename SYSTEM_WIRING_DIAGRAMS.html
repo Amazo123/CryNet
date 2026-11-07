@@ -35,8 +35,10 @@ svg text.note{font-size:12px}
 </style></head><body>
 <section class="page"><h1>1 / CryNet system - power chain and links</h1><h2>Every unit has its own battery and its own ground. No wire ever joins two units.</h2><svg viewBox="0 0 1000 430" class="diagram">
 <rect x="30.0" y="55.0" width="165.0" height="95.0" rx="10" class="proposed"/>
-<text x="42.0" y="79.0" class="title" text-anchor="start">Li-Po cell</text>
-<text x="42.0" y="99.0" class="small" text-anchor="start">3.7 V - 2000 / 3000 / 1000 mAh</text>
+<text x="42.0" y="79.0" class="title" text-anchor="start">Cell</text>
+<text x="42.0" y="99.0" class="small" text-anchor="start">3.7 V nominal, 4.2 V full</text>
+<text x="42.0" y="116.0" class="small" text-anchor="start">18650 on node + hub,</text>
+<text x="42.0" y="133.0" class="small" text-anchor="start">Li-Po pouch on wearable</text>
 <rect x="255.0" y="55.0" width="190.0" height="95.0" rx="10" class="proposed"/>
 <text x="267.0" y="79.0" class="title" text-anchor="start">LX-LCBST-TC-001</text>
 <text x="267.0" y="99.0" class="small" text-anchor="start">charger + protection + boost</text>
@@ -76,7 +78,7 @@ svg text.note{font-size:12px}
 <text x="30.0" y="371.0" class="note" text-anchor="start">2 - Set the boost trimpot to 5.1 V with a meter before any board.</text>
 <text x="30.0" y="390.0" class="note" text-anchor="start">3 - Never power a board from USB and the boost at the same time.</text>
 <text x="30.0" y="413.0" class="small" text-anchor="start">Dashed teal = wireless link, no wire.  Solid = a real conductor.</text>
-</svg><div class="warning">Proposed, bench-validation pending: the whole battery chain, the wearables and the LEDs. The node and hub signal wiring is the verified part.</div><div class="foot">No signal wire exists between the nodes and the hub - the link is wireless. Each unit is electrically independent; never join their batteries or grounds. Read with SYSTEM_WIRING.md sections 5 and 6.</div></section>
+</svg><div class="warning">Proposed, bench-validation pending: the whole battery chain, the wearables and the LEDs. The node and hub signal wiring is the verified part.</div><div class="ok"><b>Cells (D-81):</b> an 18650 (3.7 V, 4.2 V full, 3000 mAh) on each node and the hub, because a node sits on a cot frame within a baby&#39;s reach and needs a cell that cannot be punctured; a 1000 mAh Li-Po pouch on the wearable, because an 18650 is 18 x 65 mm and 48 g and cannot go on a wrist. <b>Never LiFePO4</b> - the module charges to 4.2 V and an LFP cell tops out at 3.65 V. The module&#39;s ~1 A charger must come down to ~400-500 mA for the wearable&#39;s pouch (1 C is too high for it).</div><div class="warning"><b>Runtime (D-82):</b> the chain boosts to 5.1 V and the board drops that to 3.3 V through a <i>linear</i> regulator, which passes current rather than power - so the cell supplies roughly 1.8x the 3.3 V load current. That projects to about six hours for the wearable on a 1000 mAh pouch. These are projections, not measurements. Feeding the 3V3 pin from a 3.3 V buck-boost would roughly double it - a change to the power chain, deferred to the bench.</div><div class="foot">No signal wire exists between the nodes and the hub - the link is wireless. Each unit is electrically independent; never join their batteries or grounds. Read with SYSTEM_WIRING.md sections 5 and 6.</div></section>
 <section class="page"><h1>2 / Cot node - complete wiring (one per node, x3)</h1><h2>ESP32-C3 SuperMini + INMP441 + LX-LCBST + switch + battery-sense divider + 2 LEDs</h2><svg viewBox="0 0 1000 480" class="diagram">
 <rect x="25.0" y="55.0" width="175.0" height="245.0" rx="10" class="proposed"/>
 <text x="37.0" y="79.0" class="title" text-anchor="start">LX-LCBST-TC-001</text>

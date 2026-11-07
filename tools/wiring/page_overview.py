@@ -10,8 +10,9 @@ def build():
              "Every unit has its own battery and its own ground. No wire ever joins two units.")
 
     # ------------------------------------------------------- power chain --
-    p.box(30, 55, 165, 95, "Li-Po cell", cls="proposed",
-          sub=["3.7 V - 2000 / 3000 / 1000 mAh"])
+    p.box(30, 55, 165, 95, "Cell", cls="proposed",
+          sub=["3.7 V nominal, 4.2 V full", "18650 on node + hub,",
+               "Li-Po pouch on wearable"])
     p.box(255, 55, 190, 95, "LX-LCBST-TC-001", cls="proposed",
           sub=["charger + protection + boost", "USB-C = charging input"])
     p.box(505, 55, 150, 95, "SPST switch", cls="proposed",
@@ -55,6 +56,19 @@ def build():
     notes = (
         '<div class="warning">Proposed, bench-validation pending: the whole battery chain, '
         'the wearables and the LEDs. The node and hub signal wiring is the verified part.</div>'
+        '<div class="ok"><b>Cells (D-81):</b> an 18650 (3.7 V, 4.2 V full, 3000 mAh) on each '
+        'node and the hub, because a node sits on a cot frame within a baby&#39;s reach and '
+        'needs a cell that cannot be punctured; a 1000 mAh Li-Po pouch on the wearable, '
+        'because an 18650 is 18 x 65 mm and 48 g and cannot go on a wrist. '
+        '<b>Never LiFePO4</b> - the module charges to 4.2 V and an LFP cell tops out at '
+        '3.65 V. The module&#39;s ~1 A charger must come down to ~400-500 mA for the '
+        'wearable&#39;s pouch (1 C is too high for it).</div>'
+        '<div class="warning"><b>Runtime (D-82):</b> the chain boosts to 5.1 V and the '
+        'board drops that to 3.3 V through a <i>linear</i> regulator, which passes current '
+        'rather than power - so the cell supplies roughly 1.8x the 3.3 V load current. '
+        'That projects to about six hours for the wearable on a 1000 mAh pouch. These are '
+        'projections, not measurements. Feeding the 3V3 pin from a 3.3 V buck-boost would '
+        'roughly double it - a change to the power chain, deferred to the bench.</div>'
     )
     foot = ("No signal wire exists between the nodes and the hub - the link is wireless. "
             "Each unit is electrically independent; never join their batteries or grounds. "

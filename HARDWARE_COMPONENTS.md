@@ -37,19 +37,27 @@ The original document's battery arrangement is restored as a **planning design**
 
 | Individual item | Per node | All nodes | Selection / purpose |
 |---|---:|---:|---|
-| Protected rechargeable 1-cell Li-ion/Li-Po battery | 1 | **3** | 3.7 V nominal, 4.2 V full. Original target 2000 mAh each; select genuine cells with appropriate protection, discharge rating and connectors. Runtime not yet measured. |
+| Protected 18650 Li-ion cell (3.7 V nominal, 4.2 V full) | 1 | **3** | 3000 mAh or better, with protection. **Never LiFePO4.** Runtime not yet measured — see the runtime note in §3. |
+| 18650 cell holder with leads | 1 | **3** | Soldered or bayonet type, sized for the cell. The holder must survive a cot rail being knocked; the cell must not be able to move. |
 | 1-cell charger module | 1 | **3** | TP4056-based module is a candidate; ensure suitable cell protection and **load sharing/power-path**, and set a charge current appropriate for the actual cell. A common TP4056 protection board alone does not guarantee safe simultaneous operation and charging. |
 | 5 V boost converter | 1 | **3** | MT3608 module is a candidate; select a converter with adequate **continuous** output at the lowest cell voltage and transient headroom, not merely its advertised peak figure. Verify shutdown, efficiency and actual ripple. |
 | On/off switch | 1 | **3** | Rated for the chosen power-path current; final placement depends on charger/load-sharing design. |
 | 100 µF electrolytic capacitor | 1 | **3** | Initial bulk-capacitor allowance for the 5 V rail, voltage rating at least 10 V; respect polarity. Confirm value and placement with the selected converter. |
-| 100 nF ceramic capacitor, marked 104 | 1 | **3** | Additional allowance for battery-voltage ADC filtering, separate from optional mic decoupling above. |
-| 100 kΩ, 1% resistors | 2 | **6** | Proposed battery-voltage divider: two per node. With a 4.2 V fully charged cell, nominal divided voltage is 2.1 V. Confirm ADC pin, ESP32-C3 attenuation/calibration and tolerances; consider divider power drain or switched sensing. |
+| 100 nF ceramic capacitor, marked 104 | 1 | **3** | Battery-voltage ADC filter on the divider sense node — **required**, not optional. |
+| 220 kΩ, 1% resistor | 1 | **3** | Divider top leg, from the cell's B+ to the sense node. |
+| 100 kΩ, 1% resistor | 1 | **3** | Divider bottom leg, sense node to B−. Paired with the 220 kΩ this gives a **×3.2** ratio: about 1.31 V at the ADC pin for a full 4.2 V cell, and about 13 µA of continuous drain. |
 | Red LED | 1 | **3** | Proposed battery indicator; current firmware does not implement it. |
 | Blue LED | 1 | **3** | Proposed link indicator; current firmware does not implement it. |
 | 330 Ω, ¼ W resistor | 2 | **6** | One per indicator LED as an initial 3.3 V design value. Verify actual LED current and selected GPIOs. |
 | Battery connector pair | 1 | **3 pairs** | Match cell and charger; check polarity physically, not by colour alone. |
 
 **Pin and firmware warning:** the old PDF assigns the red LED to GPIO4, which is now used by the microphone. GPIO9 is a boot-strapping pin, so do not assume its old LED circuit is safe. New available pins and boot behaviour must be checked, and battery readings, low-battery handling and LED behaviour must be implemented and tested. The complete charger/power-path design must be selected before ordering or connecting these parts.
+
+**Why a fixed divider and not a variable resistor (D-81 in the two-node repository):** the sense resistor pair is **fixed, 1 % parts — there is no potentiometer in the battery path**. A pot's wiper position cannot be read by the firmware, so the chip would not know the division ratio; the reading would drift with temperature, vibration and age, and a worn wiper is a failure mode on a device that is bumped by a cot every night. Two 1 % resistors give a ratio the firmware knows exactly (×3.2), and the residual error is a few per cent, which the firmware's banding absorbs. `analogReadMilliVolts()` already applies the chip's factory-calibrated ADC reference. **The battery voltage must never reach the ADC pin directly** — the C3's IO is 3.3 V only, and a full cell is 4.2 V.
+
+**Reading SOC from voltage (D-81): the mapping is a curve, not a straight line.** Lithium cells are not linear between 3.0 V and 4.2 V: roughly 4.20 V = 100 %, 3.85 ≈ 55 %, 3.70 ≈ 25 %, 3.60 ≈ 10 %, 3.40 ≈ 0 %. A linear 3.0→4.2 V map would call 3.70 V "58 %" when the cell is really about a quarter full — wrong across exactly the range a cell spends most of its life, and wrong in the safe direction. `hub_display.c` already holds this as a table (`BAT_CURVE`) and prints it as `BAT ~80%` with a tilde, because a voltage-derived figure is an estimate and must look like one. **Anchor the bottom at ~3.3 V, not 3.0 V** — 3.0 V is roughly where a protected cell's protection circuit cuts out, so it is end-of-life, not "empty"; the banded warning should arrive well before it, and the firmware should never drive the cell that far deliberately.
+
+**The reading is taken under load, so it sags.** The boost converter and the radio both draw current while the ADC samples, and a lithium cell's terminal voltage dips 100–200 mV doing it. The firmware therefore averages many samples (16 in the node firmware), filters through the 100 nF capacitor, and only trusts a reading that has landed in the expected window three times running. The hub then bands the value with hysteresis rather than trusting a single sample. A percentage read this way is a **caregiver-facing estimate and a low-battery warning, not a fuel gauge**. If a true percentage is ever wanted, the part for it is a **MAX17048** fuel gauge on I²C, which reports a model-based SOC with no calibration table; the hub and the wearable have a spare I²C bus, but the node's microphone occupies I²S, so nodes would keep the divider.
 
 ## 3. Central hub — one unit
 
@@ -70,7 +78,8 @@ The original document's battery arrangement is restored as a **planning design**
 
 | Individual item | Qty | Selection / purpose |
 |---|---:|---|
-| Protected single-cell Li-ion/Li-Po battery | **1** | Original proposal: about 3000 mAh; capacity, discharge rating, protection and physical format require selection based on measured hub/display current. Use a holder if the selected cell requires one. |
+| Protected 18650 Li-ion cell (3.7 V nominal, 4.2 V full) | **1** | 3000 mAh or better, with protection. **Never LiFePO4.** The hub draws the most current of any unit, so this is the cell most worth sizing carefully. Use a holder if the selected cell requires one. |
+| 18650 cell holder with leads | **1** | Sized for the cell; the cell must not be able to move in its holder. |
 | Single-cell charger with suitable protection and power-path/load sharing | **1** | Select for the actual battery and simultaneous-load requirements. A basic TP4056 is not automatically a load-sharing solution. |
 | Regulated 5 V boost converter | **1** | MT3608 is a candidate only if verified for the actual continuous and peak hub/display loads over the full battery range. |
 | Power switch | **1** | Rated and placed for the final power path. |
@@ -79,6 +88,8 @@ The original document's battery arrangement is restored as a **planning design**
 | Battery connector pair | **1 pair** | Match the cell and charger; verify polarity. |
 
 These are a proposed design, not verified hub wiring. A portable power system needs measurement, a reviewed schematic and test before permanent assembly. The existing ESP32-S3 board already contains its own supporting circuitry; do not automatically add a separate TFT backlight resistor.
+
+**Runtime is the open question on every battery-powered unit, and the power chain is why (D-82).** The chain is **cell → boost to 5.1 V → the board's 5 V pin → the board's own linear regulator → 3.3 V**. A linear regulator passes *current*, not power, so the current the cell must supply is set by the 3.3 V load while the difference between 5.1 V and 3.3 V is burned as heat. If the load draws 100 mA at 3.3 V, the cell is supplying roughly **160 mA** — about 1.8× the load current. A 1000 mAh pouch would therefore last on the order of **six hours**, and a 3000 mAh 18650 rather less than a day, at the hub's heavier load. *These are projections from the regulator's behaviour, not measurements — no runtime has been measured on this system.* The largest single lever on runtime is to skip the 5 V→3.3 V linear stage: feeding the board's **3V3 pin** from a 3.3 V buck-boost converter would roughly double the runtime for the same cell. That changes the power architecture, so it is recorded as an option to evaluate at the bench (D-82), not something to rewire before the current build is finished.
 
 ## 4. Caregiver wearable — one planned unit
 
@@ -94,7 +105,7 @@ The hub's BLE service has been exercised with a phone, but **the wearable itself
 | 2.2 kΩ resistor | **1** | BC547 base resistor: 1.2 mA of base current at 3.3 V, so a BC547A saturates. |
 | 100 kΩ resistor | **1** | Base-emitter pulldown, so the motor stays off while the C3 boots with GPIO7 floating. |
 | Compatible vibration actuator | **1** | A small ERM coin vibration motor is a practical candidate; select its rated voltage, startup/operating current and mechanical mounting to suit the driver, supply and intended vibration. Exact part is not yet selected. **Measure its stall current with a bench supply and a meter in series before soldering — do not guess.** |
-| Protected rechargeable 1-cell Li-ion/Li-Po battery | **1** | Original proposal about 500 mAh; choose actual capacity, dimensions, protection, discharge rating and connector after the wearable current and runtime are measured. |
+| Protected rechargeable 1-cell **Li-Po pouch** battery | **1** | **The opposite choice to the node's 18650 (D-81), and deliberately so.** An 18650 is 18 × 65 mm and 48 g — it will not sit on a wrist. A flat pouch cell is the right form factor here. Target **1000 mAh** (the original 500 mAh was too small to survive a night shift). Same chemistry as an 18650: 3.7 V nominal, 4.2 V full. **Never LiFePO4** — the module charges to 4.2 V. |
 | 1-cell charger with protection and load-sharing/power-path | **1** | Select charge current for the chosen cell; a typical 1 A TP4056 module is not automatically suitable for a 500 mAh cell. |
 | Regulated 5 V boost converter | **1 candidate** | Only if the selected C3 board is powered via its 5 V input; alternatively a properly specified 3.3 V regulator may be designed. Do not fit both by default; final architecture is undecided. |
 | On/off switch | **1** | Rated and positioned for the selected power path. |
@@ -135,11 +146,14 @@ The hub's BLE service has been exercised with a phone, but **the wearable itself
 | BC547 haptic switch | **1** | The user's own part; the wearable's haptic drive. Replaces the DRV2605L breakout. |
 | Compatible vibration motor | **1** | Exact model pending selection. |
 | LX-LCBST-TC-001 charger + boost modules | **4 + 1 candidate** | Battery pads B+/B−, output VO+/VO−, charging via USB-C — pad map confirmed from the user's photograph. Bench-validate ONE board (charge current, trimpot-set 5.1 V output, off-state drain) before buying the rest; wearable use pending the same check. |
-| Protected 1-cell rechargeable Li-Po cells | **5** | 3 nodes, 1 hub, 1 wearable; suggested starting sizes 2,000 / 3,000 / 1,000 mAh; each cell's datasheet must permit the module's measured charge current. |
+| Protected 18650 Li-ion cells, 3000 mAh | **4** | 3 nodes + 1 hub. **Never LiFePO4.** Buy protected cells. |
+| 18650 cell holders with leads | **4** | One per 18650; the cell must not move in its holder. |
+| Protected 1-cell Li-Po pouch cell, 1000 mAh | **1** | The wearable only — an 18650 is too large and heavy for a wrist (D-81). |
 | On/off power switches | **5** | One per unit; match the actual current and power-path placement. |
 | 100 µF electrolytic capacitors | **4 + 1 candidate** | Proposed 3 node and 1 hub rail capacitors; wearable candidate. |
 | 100 nF ceramic capacitors, marked 104 | **4 + up to 4 candidates** | 3 node ADC filters and 1 hub decoupling allowance; plus up to 3 supplemental mic capacitors and 1 wearable supply capacitor if needed. |
-| 100 kΩ 1% resistors | **6** | Proposed node battery dividers, 2 per node. |
+| 220 kΩ 1% resistors | **4** | Divider top leg: 3 nodes + 1 wearable. |
+| 100 kΩ 1% resistors | **4** | Divider bottom leg: 3 nodes + 1 wearable. Ratio ×3.2. |
 | Red indicator LEDs | **3** | Proposed node battery indicators; firmware and pin selection pending. |
 | Blue indicator LEDs | **3** | Proposed node radio indicators; firmware and pin selection pending. |
 | 330 Ω ¼ W resistors | **6** | Proposed node LED current limiters. |
@@ -152,12 +166,16 @@ The hub's BLE service has been exercised with a phone, but **the wearable itself
 1. Hub TFT corrected from **2.4 inches to the user's 2.8 inches**; the ILI9341 and 240 × 320 resolution remain relevant to the existing implementation.
 2. Rechargeable power, node battery ADC parts and node indicator LEDs are included as a complete-system **proposal**, with individual quantities; unlike the USB prototype they are not yet implemented or validated. A fixed TFT backlight resistor is not assumed.
 3. The wearable's haptic drive is the **BC547 low-side switch** the user owns (with a 1N5819 flyback, a 10 Ω stall cap, a 2.2 kΩ base resistor and a 100 kΩ pulldown); the DRV2605L breakout is dropped from the bill of materials, and the discrete MOSFET with its gate resistors is not used either.
-4. Wearable charging, protection and regulation are acknowledged as necessary **if battery powered**, but remain to be selected together rather than copied as an unverified circuit.
-5. Vero board, power supplies, enclosures, mounting and safety considerations are included. Bench breadboards are optional rather than required for the finished build.
-6. The current model already runs using the hub's existing PSRAM; an extra memory component is not required.
+4. **Battery cells are 18650 for the nodes and the hub, and a Li-Po pouch for the wearable** (D-81, decided in the two-node repository and applied here because the hardware is the same). The old document named one generic pouch cell for all five units, which was wrong on both counts: a pouch cell is mechanically wrong for a unit sitting on a cot within a baby's reach, and an 18650 is physically wrong for a wrist strap. **LiFePO4 cells must not be used anywhere in this system** — the module charges to 4.2 V and an LFP cell tops out at 3.65 V.
+5. **The battery sense divider is a fixed 220 kΩ / 100 kΩ pair** (ratio ×3.2), not a variable resistor, and SOC is read from a curve rather than a linear voltage map (D-81). The old advice to put a variable resistor in the battery path would put up to 4.2 V on a 3.3 V pin, and the firmware could not know where the wiper was.
+6. Wearable charging, protection and regulation are acknowledged as necessary **if battery powered**, but remain to be selected together rather than copied as an unverified circuit.
+7. Vero board, power supplies, enclosures, mounting and safety considerations are included. Bench breadboards are optional rather than required for the finished build.
+8. The current model already runs using the hub's existing PSRAM; an extra memory component is not required.
 
 ## References and project evidence
 
 - User-supplied original: `HARDWARE_COMPONENTS_DETAILED_SPECIFICATION.pdf`, five pages, October 2026; reviewed as the superseded specification.
 - Project status: `SYSTEM_UPDATE.md`; implementation and project decisions: `DECISIONS.md` and `firmware/`.
+- The battery-sense and cell decisions (D-81) and the runtime projection (D-82) are recorded in the **two-node** repository's `DECISIONS.md` §1.9, because that is the system on the bench.
 - [Infineon IRLML2502 datasheet](https://www.infineon.com/assets/row/public/documents/24/49/infineon-irlml2502-datasheet-en.pdf): existing MOSFET package and electrical ratings.
+- [MAX17048 fuel-gauge data sheet](https://www.analog.com/media/en/technical-documentation/data-sheets/max17048-max17049.pdf): the I²C alternative if a true SOC percentage is wanted later (D-81).
