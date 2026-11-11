@@ -77,9 +77,9 @@ def build():
     # BC547 low-side switch: GPIO7 -> 2.2 k -> base, motor in the collector
     # leg, 1N5819 across the motor with the cathode up.
 
-    # 3V3 rail to the motor's + terminal, through the 10 ohm stall cap
+    # 3V3 rail to the motor's + terminal, through the 22 ohm stall cap
     p.wire([(520, 352), (520, 356), (660, 356)], color="red")
-    p.part(660, 343, 60, 26, "10 Ω")
+    p.part(660, 343, 60, 26, "22 Ω")
     p.wire([(720, 356), (932, 356)], color="red")
     p.dot(780, 356)
 
@@ -137,9 +137,11 @@ def build():
         '100 k&#937; divider and its 100 nF are withdrawn, and the wearable has no '
         'indicator of any kind: the OLED carries LINK and SCAN, and says nothing about '
         'the cell. <b>Do not fit a divider or an LED on this board.</b> GPIO3 is free. '
-        'Motor: the 10 &#937; caps the stall current at '
-        '3.3 V &#247; (R + 10 &#937;) - about 69 mA for a 37 &#937; coin ERM, inside '
-        'the BC547\'s 100 mA; a lower-impedance motor needs 22 &#937; or a 2N2222A. '
+        'Motor: the fitted stall cap is <b>22 &#937;</b> (not the 10 &#937; this diagram '
+        'used to show) - it caps the stall current at 3.3 V &#247; (R + 22 &#937;) - about '
+        '56 mA for a 37 &#937; coin ERM, inside the BC547\'s 100 mA. It is the safer '
+        'value, but it drops about 1.2 V of the rail, so the motor sees about 2.1 V and '
+        'the buzz is softer than a 10 &#937; would give. '
         'GPIO7 drives the switch in 250 ms pulses. The OLED carries the state and the '
         'firmware already shows LINK or SCAN on it.</div>'
     )

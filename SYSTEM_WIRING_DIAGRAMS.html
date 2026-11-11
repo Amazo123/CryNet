@@ -252,7 +252,7 @@ svg text.note{font-size:12px}
 <text x="690.0" y="270.0" class="note" text-anchor="start">Link: OLED (no battery readout)</text>
 <polyline points="520.0,352.0 520.0,356.0 660.0,356.0" class="wire red" stroke-width="2.5"/>
 <rect x="660.0" y="343.0" width="60.0" height="26.0" rx="4" class="part"/>
-<text x="690.0" y="360.1" class="small" text-anchor="middle">10 Ω</text>
+<text x="690.0" y="360.1" class="small" text-anchor="middle">22 Ω</text>
 <polyline points="720.0,356.0 932.0,356.0" class="wire red" stroke-width="2.5"/>
 <circle cx="780.0" cy="356.0" r="4" class="dot"/>
 <rect x="740.0" y="368.0" width="150.0" height="72.0" rx="10" class="mod"/>
@@ -291,7 +291,7 @@ svg text.note{font-size:12px}
 <polyline points="920.0,475.0 950.0,475.0" class="wire black" stroke-width="2.5"/>
 <path d="M950.0 475.0 h8" class="wire black" stroke-width="2.5"/>
 <path d="M958.0 466.0 v18 M963.0 469.0 v12 M968.0 472.0 v6" class="wire black" stroke-width="2.5"/>
-</svg><div class="ok"><b>No battery sense and no LEDs (D-83).</b> The 220 k&#937; / 100 k&#937; divider and its 100 nF are withdrawn, and the wearable has no indicator of any kind: the OLED carries LINK and SCAN, and says nothing about the cell. <b>Do not fit a divider or an LED on this board.</b> GPIO3 is free. Motor: the 10 &#937; caps the stall current at 3.3 V &#247; (R + 10 &#937;) - about 69 mA for a 37 &#937; coin ERM, inside the BC547's 100 mA; a lower-impedance motor needs 22 &#937; or a 2N2222A. GPIO7 drives the switch in 250 ms pulses. The OLED carries the state and the firmware already shows LINK or SCAN on it.</div><div class="foot">Every &#9169; symbol is the same net; wires join only where a dot is drawn. The BC547 emitter is the motor's ground, and the flyback sits across the motor with the cathode up.</div></section>
+</svg><div class="ok"><b>No battery sense and no LEDs (D-83).</b> The 220 k&#937; / 100 k&#937; divider and its 100 nF are withdrawn, and the wearable has no indicator of any kind: the OLED carries LINK and SCAN, and says nothing about the cell. <b>Do not fit a divider or an LED on this board.</b> GPIO3 is free. Motor: the fitted stall cap is <b>22 &#937;</b> (not the 10 &#937; this diagram used to show) - it caps the stall current at 3.3 V &#247; (R + 22 &#937;) - about 56 mA for a 37 &#937; coin ERM, inside the BC547's 100 mA. It is the safer value, but it drops about 1.2 V of the rail, so the motor sees about 2.1 V and the buzz is softer than a 10 &#937; would give. GPIO7 drives the switch in 250 ms pulses. The OLED carries the state and the firmware already shows LINK or SCAN on it.</div><div class="foot">Every &#9169; symbol is the same net; wires join only where a dot is drawn. The BC547 emitter is the motor's ground, and the flyback sits across the motor with the cathode up.</div></section>
 <section class="page"><h1>5 / LX-LCBST-TC-001 - pad map and bench procedure</h1><h2>From the user's front-and-back photograph - Chinese silk text translated</h2><svg viewBox="0 0 1000 470" class="diagram">
 <rect x="60.0" y="60.0" width="330.0" height="228.0" rx="10" class="proposed"/>
 <text x="72.0" y="84.0" class="title" text-anchor="start">FRONT</text>
