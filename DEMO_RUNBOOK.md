@@ -85,8 +85,9 @@ crosses the trigger). 15 cm.
 | nothing at all | the cry never crossed the trigger | phone closer |
 
 **The log is the evidence. The wrist is the output.** The wrist buzzes
-once per cry and names the loudest cot, so "it buzzed" proves much less
-than the log line does.
+once per cry and lists every cot the hub says is crying (D-86) — with one
+cot crying it names that cot, as it always did — so "it buzzed" proves
+much less than the log line does.
 
 ---
 

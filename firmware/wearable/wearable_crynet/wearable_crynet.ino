@@ -9,7 +9,9 @@
  * to as well: the hub publishes it whenever it changes and at least once
  * a second, so a wearable that attaches in the middle of a cry still
  * sees it, and the idle face's crying mask stays honest for as long as
- * the link is up.
+ * the link is up.  The alert face reads that mask too: the alert names
+ * one cot, because the hub names the loudest and one cry must be one
+ * buzz, but the screen lists every cot the hub says is crying.
  *
  * All BLE work — scanning, connecting, subscribing — runs on its own
  * FreeRTOS task, and loop() only renders: the library's scan start,
@@ -315,22 +317,82 @@ static void draw_dashboard(uint32_t now, int frame)
         }
         display.setCursor(2, 2);
         display.print(cry_now ? "CRY" : "DEAF");
+
+        /* Every cot that is crying, not only the one the alert names.
+         * The alert names the loudest cot -- that is the hub's alert
+         * policy, and it is what keeps one cry to one buzz -- while the
+         * state characteristic carries the whole crying mask.  Two cots
+         * hearing one cry, or two babies crying at once, both read as
+         * the list here.
+         *
+         * The named cot is always in the list.  The alert is instant
+         * and the mask can be a second behind it, or already clear
+         * while this face still holds, so the mask alone could leave
+         * the screen saying CRY with nobody named.
+         *
+         * A deaf cot is one cot by definition: it keeps the mask out. */
+        char ids[16];
+        uint8_t count = 0;
+        if (cry_now) {
+            const uint8_t limit = g_cots ? g_cots : 8;
+            uint8_t mask = g_mask;
+            if (g_cot >= 1 && g_cot <= 8) {
+                mask |= (uint8_t)(1u << (g_cot - 1));
+            }
+            size_t used = 0;
+            ids[0] = '\0';
+            for (uint8_t bit = 0; bit < 8 && bit < limit; ++bit) {
+                if (!(mask & (1u << bit))) {
+                    continue;
+                }
+                ++count;
+                if (used && used < sizeof ids - 1) {
+                    ids[used++] = ' ';
+                }
+                if (used < sizeof ids - 1) {
+                    ids[used++] = (char)('1' + bit);
+                }
+                ids[used] = '\0';
+            }
+        }
+        const bool many = count > 1;
+
         char pill[8];
-        snprintf(pill, sizeof pill, "COT %u", (unsigned)g_cot);
+        if (many) {
+            snprintf(pill, sizeof pill, "COTS");
+        } else {
+            snprintf(pill, sizeof pill, "COT %u", (unsigned)g_cot);
+        }
         display.setCursor(126 - (int)strlen(pill) * 6, 2);
         display.print(pill);
         display.setTextColor(SSD1306_WHITE);
 
-        /* Who, large -- read from across a room. */
-        display.setTextSize(3);
-        display.setCursor(centre_x(pill, 3), 17);
-        display.print(pill);
+        /* Who, large -- read from across a room.  One cot keeps the
+         * size-3 "COT n".  A list drops to size 2, because "COT 1+2+3"
+         * is wider than the glass at size 3 and this system has three
+         * cots; the size falls again rather than let snprintf cut a cot
+         * off the end of the string. */
+        char big[24];
+        if (many) {
+            snprintf(big, sizeof big, "COTS %s", ids);
+        } else {
+            snprintf(big, sizeof big, "%s", pill);
+        }
+        uint8_t big_size = many ? 2 : 3;
+        while (big_size > 1 && (int)strlen(big) * 6 * big_size > 126) {
+            --big_size;
+        }
+        display.setTextSize(big_size);
+        display.setCursor(centre_x(big, big_size), many ? 20 : 17);
+        display.print(big);
         display.setTextSize(1);
 
         if (cry_now) {
             /* The confidence, on a bar: the panel's level bar, scaled
              * to what the model is sure of rather than to how loud the
-             * room is -- a wrist has no microphone. */
+             * room is -- a wrist has no microphone.  With several cots
+             * crying this is the loudest cry's confidence, which is the
+             * only figure the hub sends; it is not a per-cot number. */
             const int bar_w = 86, bar_y = 45;
             display.drawRect(-1, bar_y - 1, bar_w + 2, 8, SSD1306_WHITE);
             const int filled = (int)(bar_w * (g_conf_pct / 100.0f));
@@ -502,6 +564,13 @@ class HubClientCallbacks : public BLEClientCallbacks {
         g_connected = false;
         g_alert     = nullptr;
         g_state     = nullptr;
+        /* The mask describes the hub's cots as they were when the link
+         * was up.  The alert face outlives a drop by up to a minute, so
+         * a stale mask left here would name cots nobody is watching any
+         * more.  Cleared, the face falls back to the cot the alert
+         * named. */
+        g_mask      = 0;
+        g_cots      = 0;
         g_dirty     = true;
     }
 };
